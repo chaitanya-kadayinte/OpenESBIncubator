@@ -1,0 +1,12 @@
+com\fiorano\openesb\microservice\launch\LaunchConfiguration$BinaryType.class
+com\fiorano\openesb\microservice\launch\impl\SeparateProcessLaunchHandle.class
+com\fiorano\openesb\microservice\launch\LaunchConfiguration$LaunchMode.class
+com\fiorano\openesb\microservice\bundle\Activator.class
+com\fiorano\openesb\microservice\launch\impl\InMemoryLauncher.class
+com\fiorano\openesb\microservice\launch\impl\InMemoryLaunchHandle.class
+com\fiorano\openesb\microservice\launch\LaunchConfiguration.class
+com\fiorano\openesb\microservice\launch\impl\SeparateProcessLauncher.class
+com\fiorano\openesb\microservice\launch\Launcher.class
+com\fiorano\openesb\microservice\launch\impl\CommandProvider.class
+com\fiorano\openesb\microservice\launch\MicroserviceLaunchHandle.class
+com\fiorano\openesb\microservice\repository\MicroserviceRepositoryManager.class

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fiorano.openesb</groupId>
+    <artifactId>transport-api</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>transport-api Bundle</name>
+    <version>1.0.0</version>
+    <description>
+        transport-api OSGi bundle project.
+    </description>
+    <properties>
+        <maven-bundle-plugin.version>2.5.4</maven-bundle-plugin.version>
+        <osgi.version>6.0.0</osgi.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${osgi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-core</artifactId>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven-bundle-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>1.0.0</Bundle-Version>
+                        <Bundle-Activator>com.fiorano.openesb.Activator</Bundle-Activator>
+                        <Export-Package>
+                            com.fiorano.openesb*;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>
+                            !org.slf4j*,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-core</artifactId>
+                <version>5.7.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

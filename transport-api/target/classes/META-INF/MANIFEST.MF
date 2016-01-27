@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1453406519883
+Build-Jdk: 1.8.0_51
+Built-By: chaitanya
+Bundle-Activator: com.fiorano.openesb.Activator
+Bundle-Description: transport-api OSGi bundle project.
+Bundle-ManifestVersion: 2
+Bundle-Name: transport-api Bundle
+Bundle-SymbolicName: transport-api
+Bundle-Version: 1.0.0
+Created-By: Apache Maven Bundle Plugin
+Export-Package: com.fiorano.openesb;version="1.0.0";uses:="org.osgi.fram
+ ework",com.fiorano.openesb.application;version="1.0.0",com.fiorano.open
+ esb.transport;version="1.0.0",com.fiorano.openesb.transport.impl.jms;ve
+ rsion="1.0.0";uses:="com.fiorano.openesb.transport,javax.jms"
+Import-Package: javax.jms;version="[1.1,2)",org.osgi.framework;version="
+ [1.8,2)"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.5))"
+Tool: Bnd-2.4.1.201501161923

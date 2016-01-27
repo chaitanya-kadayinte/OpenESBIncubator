@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="fiorano-feature-1.0-SNAPSHOT">
+    <feature name="fiorano-feature" description="Fiorano feature" version="1.0.0.SNAPSHOT">
+        <details>Feature which encapsulates Fiorano Deployment</details>
+        <feature version="[2,3)" prerequisite="false" dependency="false">transaction</feature>
+        <bundle start-level="50">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
+        <bundle start-level="51">mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
+        <bundle start-level="52">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
+        <bundle start-level="53">mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
+        <bundle start-level="55">mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
+        <bundle start-level="50">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
+    </feature>
+</features>
