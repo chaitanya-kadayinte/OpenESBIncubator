@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1453406520627
-Build-Jdk: 1.8.0_51
-Built-By: chaitanya
+Bnd-LastModified: 1454057163758
+Build-Jdk: 1.8.0_45
+Built-By: Janardhan
 Bundle-Activator: com.fiorano.openesb.amq.Activator
 Bundle-Description: activemq-transport OSGi bundle project.
 Bundle-ManifestVersion: 2
@@ -9,12 +9,9 @@ Bundle-Name: activemq-transport Bundle
 Bundle-SymbolicName: activemq-transport
 Bundle-Version: 1.0.0
 Created-By: Apache Maven Bundle Plugin
-Export-Package: com.fiorano.openesb;version="1.0.0";uses:="org.osgi.fram
- ework",com.fiorano.openesb.amq;version="1.0.0";uses:="com.fiorano.opene
- sb.transport,com.fiorano.openesb.transport.impl.jms,javax.jms,org.osgi.
- framework",com.fiorano.openesb.application;version="1.0.0",com.fiorano.
- openesb.transport;version="1.0.0",com.fiorano.openesb.transport.impl.jm
- s;version="1.0.0";uses:="com.fiorano.openesb.transport,javax.jms"
+Export-Package: com.fiorano.openesb.amq;version="1.0.0";uses:="com.fiora
+ no.openesb.transport,com.fiorano.openesb.transport.impl.jms,javax.jms,o
+ rg.osgi.framework"
 Import-Package: com.fiorano.openesb.transport;version="[1.0,2)",com.fior
  ano.openesb.transport.impl.jms;version="[1.0,2)",javax.jms;version="[1.
  1,2)",org.osgi.framework;version="[1.8,2)"

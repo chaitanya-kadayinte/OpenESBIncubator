@@ -64,9 +64,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>com.fiorano.openesb.Activator</Bundle-Activator>
+                        <Bundle-Activator>com.fiorano.openesb.jmsroute.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb*;version=${project.version}
+                            com.fiorano.openesb.jmsroute*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *

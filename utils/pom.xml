@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>OpenESBProject</artifactId>
-        <groupId>com.fiorano.openesb</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
 
     <!--
        Licensed to the Apache Software Foundation (ASF) under one
@@ -28,7 +23,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.fiorano.openesb</groupId>
     <artifactId>utils</artifactId>
+    <version>1.0</version>
     <packaging>bundle</packaging>
 
     <name>utils Bundle</name>
@@ -88,7 +85,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.fiorano.openesb.utils.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb*;version=${project.version}
+                            com.fiorano.openesb.utils*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *
