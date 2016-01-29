@@ -1,20 +1,20 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1453837791098
-Build-Jdk: 1.8.0_51
-Built-By: chaitanya
+Bnd-LastModified: 1454057161041
+Build-Jdk: 1.8.0_45
+Built-By: Janardhan
 Bundle-Activator: com.fiorano.openesb.utils.Activator
 Bundle-Description: utils OSGi bundle project.
 Bundle-ManifestVersion: 2
 Bundle-Name: utils Bundle
 Bundle-SymbolicName: utils
-Bundle-Version: 1.0.0.SNAPSHOT
+Bundle-Version: 1.0
 Created-By: Apache Maven Bundle Plugin
-Export-Package: com.fiorano.openesb.utils;version="1.0.0.SNAPSHOT";uses:
- ="com.fiorano.openesb.utils.exception,javax.xml.namespace,javax.xml.par
- sers,javax.xml.stream,javax.xml.stream.util,org.osgi.framework,org.w3c.
- dom,org.w3c.dom.traversal,org.xml.sax,org.xml.sax.ext,org.xml.sax.helpe
- rs",com.fiorano.openesb.utils.crypto;version="1.0.0.SNAPSHOT",com.fiora
- no.openesb.utils.exception;version="1.0.0.SNAPSHOT"
+Export-Package: com.fiorano.openesb.utils;version="1.0";uses:="com.fiora
+ no.openesb.utils.exception,javax.xml.namespace,javax.xml.parsers,javax.
+ xml.stream,javax.xml.stream.util,org.osgi.framework,org.w3c.dom,org.w3c
+ .dom.traversal,org.xml.sax,org.xml.sax.ext,org.xml.sax.helpers",com.fio
+ rano.openesb.utils.crypto;version="1.0",com.fiorano.openesb.utils.excep
+ tion;version="1.0"
 Import-Package: com.fiorano.openesb.utils.exception;version="[1.0,2)",ja
  vax.crypto,javax.crypto.spec,javax.swing.plaf.basic,javax.xml.namespace
  ,javax.xml.parsers,javax.xml.stream,javax.xml.stream.util,org.apache.co

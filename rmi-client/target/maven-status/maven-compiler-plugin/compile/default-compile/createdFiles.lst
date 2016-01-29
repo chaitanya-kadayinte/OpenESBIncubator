@@ -1,0 +1,3 @@
+com\fiorano\openesb\rmiclient\Activator.class
+com\fiorano\openesb\rmiclient\RmiClient.class
+com\fiorano\openesb\rmiclient\RmiMain.class

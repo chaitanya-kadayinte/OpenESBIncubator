@@ -64,7 +64,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.fiorano.openesb.amq.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb*;version=${project.version}
+                            com.fiorano.openesb.amq*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *

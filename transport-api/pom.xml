@@ -46,9 +46,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>1.0.0</Bundle-Version>
-                        <Bundle-Activator>com.fiorano.openesb.Activator</Bundle-Activator>
+                        <Bundle-Activator>com.fiorano.openesb.transport.bundle.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb*;version=${project.version}
+                            com.fiorano.openesb.transport*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             !org.slf4j*,

@@ -18,7 +18,7 @@ package com.fiorano.openesb;
 
 import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.route.RouteService;
-import com.fiorano.openesb.route.impl.JMSRouteConfiguration;
+import com.fiorano.openesb.jmsroute.impl.JMSRouteConfiguration;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

@@ -1,6 +1,6 @@
-com\fiorano\openesb\route\impl\JMSRouteImpl.class
-com\fiorano\openesb\route\impl\JMSRouteConfiguration.class
-com\fiorano\openesb\route\impl\JMSRouteImpl$1.class
-com\fiorano\openesb\route\impl\JMSRouteServiceImpl.class
-com\fiorano\openesb\Activator.class
-com\fiorano\openesb\route\impl\JMSRouteImpl$2.class
+com\fiorano\openesb\jmsroute\impl\JMSRouteImpl.class
+com\fiorano\openesb\jmsroute\Activator.class
+com\fiorano\openesb\jmsroute\impl\JMSRouteImpl$1.class
+com\fiorano\openesb\jmsroute\impl\JMSRouteConfiguration.class
+com\fiorano\openesb\jmsroute\impl\JMSRouteImpl$2.class
+com\fiorano\openesb\jmsroute\impl\JMSRouteServiceImpl.class
