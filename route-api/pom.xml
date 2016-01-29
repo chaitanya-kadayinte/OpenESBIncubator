@@ -64,7 +64,7 @@
                         <Bundle-Version>1.0-SNAPSHOT</Bundle-Version>
                         <Bundle-Activator>com.fiorano.openesb.route.bundle.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb*;version=1.0-SNAPSHOT
+                            com.fiorano.openesb.route*;version=1.0-SNAPSHOT
                         </Export-Package>
                         <Import-Package>
                             *

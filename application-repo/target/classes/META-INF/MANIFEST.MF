@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1453837879945
-Build-Jdk: 1.8.0_51
-Built-By: chaitanya
+Bnd-LastModified: 1454057167005
+Build-Jdk: 1.8.0_45
+Built-By: Janardhan
 Bundle-Activator: com.fiorano.openesb.application.Activator
 Bundle-Description: application-repo OSGi bundle project.
 Bundle-ManifestVersion: 2
@@ -36,12 +36,7 @@ Export-Package: com.fiorano.openesb.application;version="1.0";uses:="com
  ls.exception,javax.xml.stream,org.xml.sax.helpers",com.fiorano.openesb.
  application.sps;version="1.0";uses:="com.fiorano.openesb.application,co
  m.fiorano.openesb.application.common,com.fiorano.openesb.utils.exceptio
- n,org.w3c.dom,org.xml.sax",com.fiorano.openesb.utils;version="1.0";uses
- :="com.fiorano.openesb.utils.exception,javax.xml.namespace,javax.xml.pa
- rsers,javax.xml.stream,javax.xml.stream.util,org.osgi.framework,org.w3c
- .dom,org.w3c.dom.traversal,org.xml.sax,org.xml.sax.ext,org.xml.sax.help
- ers",com.fiorano.openesb.utils.crypto;version="1.0",com.fiorano.openesb
- .utils.exception;version="1.0"
+ n,org.w3c.dom,org.xml.sax"
 Import-Package: com.fiorano.openesb.application;resolution:=optional;ver
  sion="[1.0,2)",com.fiorano.openesb.application.application;resolution:=
  optional;version="[1.0,2)",com.fiorano.openesb.application.aps;resoluti
@@ -55,19 +50,13 @@ Import-Package: com.fiorano.openesb.application;resolution:=optional;ver
  1.0,2)",com.fiorano.openesb.utils;resolution:=optional;version="[1.0,2)
  ",com.fiorano.openesb.utils.crypto;resolution:=optional;version="[1.0,2
  )",com.fiorano.openesb.utils.exception;resolution:=optional;version="[1
- .0,2)",javax.crypto;resolution:=optional,javax.crypto.spec;resolution:=
- optional,javax.swing.plaf.basic;resolution:=optional,javax.xml.namespac
- e;resolution:=optional,javax.xml.parsers;resolution:=optional,javax.xml
- .stream;resolution:=optional,javax.xml.stream.util;resolution:=optional
- ,javax.xml.transform;resolution:=optional,javax.xml.transform.dom;resol
- ution:=optional,javax.xml.transform.stream;resolution:=optional,org.apa
- che.commons.lang3;resolution:=optional;version="[3.2,4)",org.apache.xer
- ces.dom;resolution:=optional,org.apache.xerces.jaxp;resolution:=optiona
- l,org.apache.xerces.util;resolution:=optional,org.apache.xml.serialize;
- resolution:=optional,org.osgi.framework;resolution:=optional;version="[
- 1.8,2)",org.w3c.dom;resolution:=optional,org.w3c.dom.ls;resolution:=opt
- ional,org.w3c.dom.traversal;resolution:=optional,org.xml.sax;resolution
- :=optional,org.xml.sax.ext;resolution:=optional,org.xml.sax.helpers;res
- olution:=optional,sun.misc;resolution:=optional
+ .0,2)",javax.xml.parsers;resolution:=optional,javax.xml.stream;resoluti
+ on:=optional,javax.xml.transform;resolution:=optional,javax.xml.transfo
+ rm.dom;resolution:=optional,javax.xml.transform.stream;resolution:=opti
+ onal,org.apache.commons.lang3;resolution:=optional;version="[3.2,4)",or
+ g.apache.xerces.dom;resolution:=optional,org.osgi.framework;resolution:
+ =optional;version="[1.8,2)",org.w3c.dom;resolution:=optional,org.w3c.do
+ m.ls;resolution:=optional,org.xml.sax;resolution:=optional,org.xml.sax.
+ helpers;resolution:=optional
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.5))"
 Tool: Bnd-3.0.0.201509101326

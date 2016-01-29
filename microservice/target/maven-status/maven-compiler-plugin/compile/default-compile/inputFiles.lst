@@ -1,6 +1,10 @@
-D:\development\repos\Head\Projects\OpenESB\microservice\src\main\java\com\fiorano\openesb\microservice\bundle\Activator.java
-D:\development\repos\Head\Projects\OpenESB\microservice\src\main\java\com\fiorano\openesb\microservice\launch\LaunchConfiguration.java
-D:\development\repos\Head\Projects\OpenESB\microservice\src\main\java\com\fiorano\openesb\microservice\launch\MicroserviceLaunchHandle.java
-D:\development\repos\Head\Projects\OpenESB\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\SeparateProcessLaunchHandle.java
-D:\development\repos\Head\Projects\OpenESB\microservice\src\main\java\com\fiorano\openesb\microservice\launch\Launcher.java
-D:\development\repos\Head\Projects\OpenESB\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\SeparateProcessLauncher.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\LaunchConfiguration.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\bundle\Activator.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\SeparateProcessLauncher.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\Launcher.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\repository\MicroserviceRepositoryManager.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\CommandProvider.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\InMemoryLaunchHandle.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\InMemoryLauncher.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\MicroserviceLaunchHandle.java
+D:\Development\repo1\microservice\src\main\java\com\fiorano\openesb\microservice\launch\impl\SeparateProcessLaunchHandle.java
