@@ -9,8 +9,9 @@ import java.io.IOException;
 public class SeparateProcessLauncher implements Launcher<SeparateProcessLaunchHandle> {
     public MicroserviceLaunchHandle launch(LaunchConfiguration launchConfiguration) throws Exception {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        ProcessBuilder command = processBuilder.command(CommandProvider.generateCommand(launchConfiguration));
-        Process process = processBuilder.start();
+        CommandProvider commandProvider = new CommandProvider();
+        ProcessBuilder command = processBuilder.command(commandProvider.generateCommand(launchConfiguration));
+        Process process = command.start();
         return new SeparateProcessLaunchHandle(process);
     }
 

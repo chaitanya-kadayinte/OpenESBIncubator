@@ -21,21 +21,24 @@ package com.fiorano.openesb.microservice.launch.impl;
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.application.service.ServiceParser;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
+import com.fiorano.openesb.microservice.repository.MicroserviceRepositoryManager;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 class CommandProvider {
-    public static List<String> generateCommand(LaunchConfiguration launchConfiguration) throws  Exception {
+
+    public List<String> generateCommand(LaunchConfiguration launchConfiguration) throws  Exception {
         List<String> command = new ArrayList<String>();
-        String microServiceDetails = launchConfiguration.getMicroserviceDetails();
-        String guid = microServiceDetails.substring(0,microServiceDetails.indexOf(":"));
-        String version = microServiceDetails.substring(microServiceDetails.indexOf(":")+1);
-        String repositoryLocation = System.getProperty("REPO");
-        Service service = ServiceParser.readService(new File(repositoryLocation + File.separator + guid
-                + File.separator + version + File.separator + "ServiceDescriptor.xml"));
+        Service service = ServiceParser.readService(new File(getMicroserviceBaseDirectory(launchConfiguration.getMicroserviceGuid(), launchConfiguration.getMicroserviceVersion()) + File.separator + "ServiceDescriptor.xml"));
         service.getDeployment().getResources();
         return command;
     }
+
+    private String getMicroserviceBaseDirectory(String componentGUID, String componentVersion) {
+        return MicroserviceRepositoryManager.getInstance().getRepositoryLocation() + File.separator +
+                componentGUID + File.separator + componentVersion;
+    }
+
 }

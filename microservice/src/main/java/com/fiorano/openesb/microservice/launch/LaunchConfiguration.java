@@ -19,11 +19,13 @@
 package com.fiorano.openesb.microservice.launch;
 
 
-public interface LaunchConfiguration {
+public interface LaunchConfiguration<A> {
     enum LaunchMode {SEPARATE_PROCESS, IN_MEMORY, DOCKER}
     enum BinaryType {JAR, EXECUTABLE}
     LaunchMode getLaunchMode();
     long getStopRetryInterval();
     int getNumberOfStopAttempts();
-    String getMicroserviceDetails();
+    String getMicroserviceGuid();
+    String getMicroserviceVersion();
+    A getAdditionalConfiguration();
 }

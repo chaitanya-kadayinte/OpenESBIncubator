@@ -11,6 +11,8 @@
  * enclosed with this product or entered into with Fiorano.
  * <p>
  * Created by chaitanya on 23-01-2016.
+ * <p>
+ * Created by chaitanya on 23-01-2016.
  */
 
 /**
@@ -18,6 +20,20 @@
  */
 package com.fiorano.openesb.microservice.repository;
 
+import java.io.File;
+//todo move to management related modules
 public class MicroserviceRepositoryManager {
 
+    private static final MicroserviceRepositoryManager microserviceRepositoryManager = new MicroserviceRepositoryManager();
+    private MicroserviceRepositoryManager() {
+    }
+
+    public static MicroserviceRepositoryManager getInstance() {
+        return microserviceRepositoryManager;
+    }
+
+    public String getRepositoryLocation() {
+        File karafBase = new File(System.getProperty("karaf.base"));
+        return karafBase + File.separator + "repository" + File.separator + "microservices";
+    }
 }

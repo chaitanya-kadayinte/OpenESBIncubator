@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/OpenESB.iml" filepath="$PROJECT_DIR$/OpenESB.iml" />
       <module fileurl="file://$PROJECT_DIR$/activemq-transport/activemq-transport.iml" filepath="$PROJECT_DIR$/activemq-transport/activemq-transport.iml" />
       <module fileurl="file://$PROJECT_DIR$/application-repo/application-repo.iml" filepath="$PROJECT_DIR$/application-repo/application-repo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/fiorano-feature/feature-generate.iml" filepath="$PROJECT_DIR$/fiorano-feature/feature-generate.iml" />
       <module fileurl="file://$PROJECT_DIR$/fiorano-feature/fiorano-feature.iml" filepath="$PROJECT_DIR$/fiorano-feature/fiorano-feature.iml" />
       <module fileurl="file://$PROJECT_DIR$/jms-route/jms-route.iml" filepath="$PROJECT_DIR$/jms-route/jms-route.iml" />
       <module fileurl="file://$PROJECT_DIR$/microservice/microservice.iml" filepath="$PROJECT_DIR$/microservice/microservice.iml" />
