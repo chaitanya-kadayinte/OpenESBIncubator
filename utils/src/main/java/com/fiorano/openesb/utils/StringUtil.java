@@ -644,6 +644,23 @@ public final class StringUtil{
         return sb.toString();
     }*/
 
+    public static String toJavaIdentifier(String name){
+        if(name.length()==0)
+            return "_"; //NOI18N
+        StringBuffer buf = new StringBuffer(name.length());
+        for(int i = 0; i<name.length(); i++){
+            if(i==0 && !Character.isJavaIdentifierStart(name.charAt(i)))
+                buf.append('_');
+            if(!Character.isJavaIdentifierPart(name.charAt(i)))
+                buf.append('_');
+            else
+                buf.append(name.charAt(i));
+        }
 
+        name = buf.toString();
+        return JavaUtil.KEY_WORDS.contains(name)
+                ? '_'+name
+                : name;
+    }
 }
 
