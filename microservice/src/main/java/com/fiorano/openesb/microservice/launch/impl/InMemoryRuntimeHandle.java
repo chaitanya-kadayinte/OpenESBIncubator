@@ -10,21 +10,27 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 13-01-2016.
+ * Created by chaitanya on 21-01-2016.
  */
 
 /**
- * Created by chaitanya on 13-01-2016.
+ * Created by chaitanya on 21-01-2016.
  */
-package com.fiorano.openesb.microservice.launch;
+package com.fiorano.openesb.microservice.launch.impl;
 
-public interface MicroserviceLaunchHandle {
+import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
 
-    boolean isRunning();
+public class InMemoryRuntimeHandle implements MicroserviceRuntimeHandle {
 
-    void stop();
+    public boolean isRunning() {
+        return false;
+    }
 
-    void kill();
+    public void stop() {
 
+    }
+
+    public void kill() {
+
+    }
 }
-

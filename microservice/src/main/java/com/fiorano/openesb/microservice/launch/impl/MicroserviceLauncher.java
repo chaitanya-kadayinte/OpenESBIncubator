@@ -10,11 +10,11 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 21-01-2016.
+ * Created by chaitanya on 01-02-2016.
  */
 
 /**
- * Created by chaitanya on 21-01-2016.
+ * Created by chaitanya on 01-02-2016.
  */
 package com.fiorano.openesb.microservice.launch.impl;
 
@@ -22,11 +22,12 @@ import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
 
-import java.io.IOException;
-
-public class InMemoryLauncher implements Launcher {
-    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration) throws IOException {
+public class MicroserviceLauncher implements Launcher<MicroserviceRuntimeHandle>{
+    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration) throws Exception {
+        if(launchConfiguration.getLaunchMode() == LaunchConfiguration.LaunchMode.SEPARATE_PROCESS) {
+            SeparateProcessLauncher separateProcessLauncher = new SeparateProcessLauncher();
+            return separateProcessLauncher.launch(launchConfiguration);
+        }
         return null;
     }
-
 }

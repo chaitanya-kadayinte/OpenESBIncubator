@@ -20,6 +20,10 @@
  */
 package com.fiorano.openesb.microservice.repository;
 
+import com.fiorano.openesb.application.service.Service;
+import com.fiorano.openesb.application.service.ServiceParser;
+import com.fiorano.openesb.utils.exception.FioranoException;
+
 import java.io.File;
 //todo move to management related modules
 public class MicroserviceRepositoryManager {
@@ -36,4 +40,25 @@ public class MicroserviceRepositoryManager {
         File karafBase = new File(System.getProperty("karaf.base"));
         return karafBase + File.separator + "repository" + File.separator + "microservices";
     }
+
+    /**
+     * Returns service property sheet for the parameter component.
+     * Returns null if the component is not present in the  repository
+     *
+     * @param microServiceId specifies a microservice uniquely.
+     * @param version specifies the version of microservice.
+     * @return ServicePropertySheet
+     * @exception FioranoException
+     */
+    public Service readMicroService(String microServiceId, String version)
+            throws FioranoException {
+        File file = new File(getRepositoryLocation() + File.separator + microServiceId + File.separator + version
+                + File.separator + "ServiceDescriptor.xml");
+        if(!file.exists()) {
+            throw new FioranoException("Component " + microServiceId + ":" + version + " is not present in repository");
+        }
+        return ServiceParser.readService(file);
+    }
+
+
 }

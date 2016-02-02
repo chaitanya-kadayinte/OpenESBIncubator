@@ -18,23 +18,13 @@
  */
 package com.fiorano.openesb.microservice.launch;
 
+public interface MicroserviceRuntimeHandle {
 
-import java.util.List;
+    boolean isRunning();
 
-public interface LaunchConfiguration<A> {
-    String getUserName();
-    String getPassword();
+    void stop();
 
-    List getRuntimeArgs();
+    void kill();
 
-    enum LaunchMode {SEPARATE_PROCESS, IN_MEMORY, DOCKER}
-    LaunchMode getLaunchMode();
-    long getStopRetryInterval();
-    int getNumberOfStopAttempts();
-    String getMicroserviceId();
-    String getMicroserviceVersion();
-    String getName();
-    String getApplicationName();
-    String getApplicationVersion();
-    A getAdditionalConfiguration();
 }
+

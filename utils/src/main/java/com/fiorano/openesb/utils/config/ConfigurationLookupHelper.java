@@ -10,27 +10,24 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 21-01-2016.
+ * Created by chaitanya on 02-02-2016.
  */
 
 /**
- * Created by chaitanya on 21-01-2016.
+ * Created by chaitanya on 02-02-2016.
  */
-package com.fiorano.openesb.microservice.launch.impl;
+package com.fiorano.openesb.utils.config;
 
-import com.fiorano.openesb.microservice.launch.MicroserviceLaunchHandle;
-
-public class InMemoryLaunchHandle implements MicroserviceLaunchHandle {
-
-    public boolean isRunning() {
-        return false;
+public class ConfigurationLookupHelper {
+    private static ConfigurationLookupHelper CONFIGURATION_LOOKUP_HELPER = new ConfigurationLookupHelper();
+    private ConfigurationLookupHelper() {
     }
 
-    public void stop() {
-
+    public static ConfigurationLookupHelper getInstance() {
+        return CONFIGURATION_LOOKUP_HELPER;
     }
 
-    public void kill() {
-
+    public String getValue(String key) {
+        return null;
     }
 }
