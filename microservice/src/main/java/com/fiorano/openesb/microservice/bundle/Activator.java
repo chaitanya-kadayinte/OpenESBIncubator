@@ -16,13 +16,19 @@
  */
 package com.fiorano.openesb.microservice.bundle;
 
+import com.fiorano.openesb.microservice.launch.impl.MicroserviceLauncher;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+
+import java.util.HashMap;
+import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
         System.out.println("Starting the bundle"+ context.getBundle().getSymbolicName());
+        context.registerService(MicroserviceLauncher.class,new MicroserviceLauncher(),new Hashtable<String, Object>());
+        System.out.println("Started the bundle"+ context.getBundle().getSymbolicName());
     }
 
     public void stop(BundleContext context) {
