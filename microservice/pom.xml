@@ -49,6 +49,11 @@
             <artifactId>application-repo</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.fiorano.openesb</groupId>
+            <artifactId>transport-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
