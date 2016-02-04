@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
  * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
+ * <p>
  * All rights reserved.
- *
+ * <p>
  * This software is the confidential and proprietary information
  * of Fiorano Software ("Confidential Information").  You
  * shall not disclose such Confidential Information and shall use
@@ -27,7 +27,7 @@ import java.io.IOException;
  * @author FSTPL
  * @version 10
  */
-public class MemoryUsage extends Data{
+public class MemoryUsage extends Data {
     private long heapMemoryUsed;
     private long heapMemoryAllocated;
     private long nonHeapMemoryUsed;
@@ -40,10 +40,10 @@ public class MemoryUsage extends Data{
      * @param nonHeapMemoryUsed
      * @param nonHeapMemoryAllocated
      */
-    public MemoryUsage(long heapMemoryUsed, long heapMemoryAllocated, long nonHeapMemoryUsed, long nonHeapMemoryAllocated){
-        this.heapMemoryUsed         = heapMemoryUsed;
-        this.heapMemoryAllocated    = heapMemoryAllocated;
-        this.nonHeapMemoryUsed      = nonHeapMemoryUsed;
+    public MemoryUsage(long heapMemoryUsed, long heapMemoryAllocated, long nonHeapMemoryUsed, long nonHeapMemoryAllocated) {
+        this.heapMemoryUsed = heapMemoryUsed;
+        this.heapMemoryAllocated = heapMemoryAllocated;
+        this.nonHeapMemoryUsed = nonHeapMemoryUsed;
         this.nonHeapMemoryAllocated = nonHeapMemoryAllocated;
     }
 
@@ -51,16 +51,16 @@ public class MemoryUsage extends Data{
      * Default Constructor
      */
     public MemoryUsage() {
-           }
+    }
 
     /**
      * This method is not implemented
      * @param nonHeapMemoryUsage
      */
     public void setNonHeapMemoryUsage(String nonHeapMemoryUsage) {
-        String[]TMPMemoryUsage=nonHeapMemoryUsage.split("/");
-        nonHeapMemoryUsed= Long. parseLong( TMPMemoryUsage[0] .substring( 0, TMPMemoryUsage[0] .length() - 1 ) );
-        nonHeapMemoryAllocated = Long. parseLong( TMPMemoryUsage[1] .substring( 1, TMPMemoryUsage[1] .length() - 1 ) );
+        String[] TMPMemoryUsage = nonHeapMemoryUsage.split("/");
+        nonHeapMemoryUsed = Long.parseLong(TMPMemoryUsage[0].substring(0, TMPMemoryUsage[0].length() - 1));
+        nonHeapMemoryAllocated = Long.parseLong(TMPMemoryUsage[1].substring(1, TMPMemoryUsage[1].length() - 1));
     }
 
     /**
@@ -68,9 +68,9 @@ public class MemoryUsage extends Data{
      * @param heapMemoryUsage
      */
     public void setHeapMemoryUsage(String heapMemoryUsage) {
-        String[]TMPMemoryUsage=heapMemoryUsage.split("/");
-        heapMemoryUsed= Long. parseLong( TMPMemoryUsage[0] .substring( 0, TMPMemoryUsage[0] .length() - 1 ) );
-        heapMemoryAllocated = Long. parseLong( TMPMemoryUsage[1] .substring( 1, TMPMemoryUsage[1] .length() - 1 ) );
+        String[] TMPMemoryUsage = heapMemoryUsage.split("/");
+        heapMemoryUsed = Long.parseLong(TMPMemoryUsage[0].substring(0, TMPMemoryUsage[0].length() - 1));
+        heapMemoryAllocated = Long.parseLong(TMPMemoryUsage[1].substring(1, TMPMemoryUsage[1].length() - 1));
     }
 
     /**
@@ -78,7 +78,7 @@ public class MemoryUsage extends Data{
      * @return String - Representation of the Object as a String
      */
     public String toString() {
-        StringBuffer strbuff=new StringBuffer(this.heapMemoryUsed+"");
+        StringBuffer strbuff = new StringBuffer(this.heapMemoryUsed + "");
         strbuff.append("K/");
         strbuff.append(heapMemoryAllocated);
         strbuff.append("K;");
@@ -88,6 +88,7 @@ public class MemoryUsage extends Data{
         strbuff.append("K");
         return strbuff.toString();
     }
+
     /**
      * Returns the heap memory (in bytes) being currently used by the VM.
      * @return long - Heap memory used (in bytes)
@@ -118,7 +119,7 @@ public class MemoryUsage extends Data{
     /**
      * This method tells the Peer Server the amount of heap memory currently allocated to the JVM (in bytes).
      * @param heapMemoryAllocated Heap Memory Allocated (in bytes)
-     * @see #getHeapMemoryAllocated() 
+     * @see #getHeapMemoryAllocated()
      */
     public void setHeapMemoryAllocated(long heapMemoryAllocated) {
         this.heapMemoryAllocated = heapMemoryAllocated;

@@ -199,7 +199,7 @@ public class Deployment extends InflatableDMIObject{
      */
     public static final String ELEM_RESOURCES = "resources";
 
-    private List resources = new ArrayList();
+    private List<Resource> resources = new ArrayList<>();
 
     /**
      * Adds a specified resource <code>resource</code> to this service
@@ -221,7 +221,7 @@ public class Deployment extends InflatableDMIObject{
      * Returns resources of this service
      * @return List
      */
-    public List getResources(){
+    public List<Resource> getResources(){
         return resources;
     }
 
@@ -229,7 +229,7 @@ public class Deployment extends InflatableDMIObject{
      * Sets specified list <code>resources</code> as resources of this service
      * @param resources list of resources
      */
-    public void setResources(List resources){
+    public void setResources(List<Resource> resources){
         this.resources = resources;
     }
 
@@ -239,7 +239,7 @@ public class Deployment extends InflatableDMIObject{
      */
     public static final String ELEM_SERVICEREFS = "servicerefs";
 
-    private List serviceRefs = new ArrayList();
+    private List<ServiceRef> serviceRefs = new ArrayList<>();
 
     /**
      * Adds specified service reference <code>serviceRef</code> to this service
@@ -261,7 +261,7 @@ public class Deployment extends InflatableDMIObject{
      * Returns a list of service references of this service
      * @return list of service references
      */
-    public List getServiceRefs(){
+    public List<ServiceRef> getServiceRefs(){
         return serviceRefs;
     }
 
@@ -269,7 +269,7 @@ public class Deployment extends InflatableDMIObject{
      * Sets specified list <code>serviceRefs</code> as service references of this service
      * @param serviceRefs list of service references
      */
-    public void setServiceRefs(List serviceRefs){
+    public void setServiceRefs(List<ServiceRef> serviceRefs){
         this.serviceRefs = serviceRefs;
     }
 
@@ -397,7 +397,7 @@ public class Deployment extends InflatableDMIObject{
         if(StringUtil.isEmpty(label))
             throw new FioranoException( "LABEL_UNSPECIFIED");
 
-        Set names = new HashSet();
+        Set<String> names = new HashSet<String>();
         Iterator iter = resources.iterator();
         while(iter.hasNext()){
             Resource resource = (Resource)iter.next();

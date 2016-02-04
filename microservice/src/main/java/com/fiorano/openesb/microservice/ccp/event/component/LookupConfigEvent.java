@@ -1,6 +1,6 @@
 package com.fiorano.openesb.microservice.ccp.event.component;
 
-import com.fiorano.openesb.microservice.ccp.CCPEventType;
+import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
 import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.RequestEventFactory;
@@ -27,12 +27,12 @@ public class LookupConfigEvent extends ControlEvent {
      * @return {@link com.fiorano.openesb.microservice.ccp.event.CCPEventType} - An enumeration constant representing the data request event from Peer Server i.e. {@link CCPEventType#DATA_REQUEST}
      */
     public CCPEventType getEventType() {
-        return CCPEventType.DATA_REQUEST;
+        return CCPEventType.LOOKUP_CONFIG;
     }
 
     /**
      * Returns a collection of data requests contained within this event. Each request is identified
-     * by a {@link DataIdentifier}. The response to all of these requests should be wrapped in
+     * by a data identifier. The response to all of these requests should be wrapped in
      * {@link DataEvent} by the component process and sent as a single event to Peer Server.
      * @return Collection - Set of data identifiers
      * @see #setDataIdentifiers(java.util.Collection)
@@ -105,7 +105,7 @@ public class LookupConfigEvent extends ControlEvent {
         int size = bytesMessage.readInt();
         for (int i = 0; i < size; i++) {
             if(dataIdentifiers == null)
-                dataIdentifiers = new ArrayList<String>();
+                dataIdentifiers = new ArrayList<>();
 
             dataIdentifiers.add(String.valueOf(bytesMessage.readUTF()));
         }
@@ -128,7 +128,7 @@ public class LookupConfigEvent extends ControlEvent {
         if (dataIdentifiers != null) {
             bytesMessage.writeInt(dataIdentifiers.size());
             for(String  id:dataIdentifiers)
-                bytesMessage.writeUTF(id.toString());
+                bytesMessage.writeUTF(id);
         } else
             bytesMessage.writeInt(-1);
     }

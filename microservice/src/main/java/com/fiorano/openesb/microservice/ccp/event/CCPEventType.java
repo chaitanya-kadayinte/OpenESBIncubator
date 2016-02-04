@@ -1,4 +1,4 @@
-package com.fiorano.openesb.microservice.ccp;
+package com.fiorano.openesb.microservice.ccp.event;
 
 import com.fiorano.openesb.microservice.ccp.event.EventFactory;
 

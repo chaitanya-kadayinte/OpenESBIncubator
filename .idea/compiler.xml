@@ -25,13 +25,10 @@
         <module name="activemq-transport" />
         <module name="activemqtransport" />
         <module name="application-repo" />
-        <module name="applicationcontroller" />
         <module name="feature-generate" />
         <module name="fiorano-feature" />
         <module name="jms-route" />
         <module name="microservice" />
-        <module name="rmi-client" />
-        <module name="rmi-connector" />
         <module name="route-api" />
         <module name="route-impl" />
         <module name="Routes" />
@@ -44,14 +41,11 @@
       <module name="activemq-transport" target="1.5" />
       <module name="activemqtransport" target="1.5" />
       <module name="application-repo" target="1.5" />
-      <module name="applicationcontroller" target="1.5" />
       <module name="feature-generate" target="1.5" />
       <module name="fiorano-feature" target="1.5" />
       <module name="jms-route" target="1.5" />
       <module name="microservice" target="1.5" />
       <module name="OpenESB" target="1.5" />
-      <module name="rmi-client" target="1.5" />
-      <module name="rmi-connector" target="1.5" />
       <module name="route-api" target="1.5" />
       <module name="route-impl" target="1.5" />
       <module name="Routes" target="1.5" />

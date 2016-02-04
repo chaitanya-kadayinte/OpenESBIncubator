@@ -1,6 +1,5 @@
 package com.fiorano.openesb.microservice.ccp.event;
 
-import com.fiorano.openesb.microservice.ccp.CCPEventType;
 import com.fiorano.openesb.microservice.ccp.event.common.DataEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
 import com.fiorano.openesb.microservice.ccp.event.component.HandShakeAckEvent;

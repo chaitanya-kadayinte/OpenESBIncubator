@@ -18,24 +18,78 @@
  */
 package com.fiorano.openesb.microservice.launch.impl;
 
+import com.fiorano.openesb.application.DmiObject;
+import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.Service;
-import com.fiorano.openesb.application.service.ServiceParser;
+import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
+import com.fiorano.openesb.microservice.launch.LaunchConstants;
+import com.fiorano.openesb.microservice.repository.MicroserviceRepositoryManager;
+import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-class CommandProvider {
-    public static List<String> generateCommand(LaunchConfiguration launchConfiguration) throws  Exception {
+public abstract class CommandProvider<J extends AdditionalConfiguration> {
+
+    public List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception {
         List<String> command = new ArrayList<String>();
-        String microServiceDetails = launchConfiguration.getMicroserviceDetails();
-        String guid = microServiceDetails.substring(0,microServiceDetails.indexOf(":"));
-        String version = microServiceDetails.substring(microServiceDetails.indexOf(":")+1);
-        String repositoryLocation = System.getProperty("REPO");
-        Service service = ServiceParser.readService(new File(repositoryLocation + File.separator + guid
-                + File.separator + version + File.separator + "ServiceDescriptor.xml"));
-        service.getDeployment().getResources();
+        Service service = MicroserviceRepositoryManager.getInstance().readMicroService(
+                launchConfiguration.getMicroserviceId(),launchConfiguration.getMicroserviceVersion());
+
         return command;
+    }
+
+    protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
+        Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
+        String serverIp = ConfigurationLookupHelper.getInstance().getValue("SERVER_IP");
+        String connectURL = serverIp == null ?  "http://localhost:61616" : "http://"+ serverIp+":61616";
+        commandLineArgs.put(LaunchConstants.URL, connectURL);
+        commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
+        commandLineArgs.put(LaunchConstants.FES_URL, connectURL);
+        commandLineArgs.put(LaunchConstants.USERNAME, launchConfiguration.getUserName());
+        commandLineArgs.put(LaunchConstants.PASSWORD, launchConfiguration.getPassword());
+        commandLineArgs.put(LaunchConstants.CONN_FACTORY, getServiceInstanceLookupName(launchConfiguration.getApplicationName(),
+                launchConfiguration.getApplicationVersion(), launchConfiguration.getName()));
+        commandLineArgs.put(LaunchConstants.EVENT_PROC_NAME, launchConfiguration.getApplicationName());
+        commandLineArgs.put(LaunchConstants.EVENT_PROC_VERSION, launchConfiguration.getApplicationVersion());
+        commandLineArgs.put(LaunchConstants.COMP_INSTANCE_NAME, launchConfiguration.getName());
+        commandLineArgs.put(LaunchConstants.EVENTS_TOPIC, ConfigurationLookupHelper.getInstance().getValue("EVENTS_TOPIC"));
+
+        if (launchConfiguration.getLaunchMode() == LaunchConfiguration.LaunchMode.IN_MEMORY) {
+            commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, "true");
+        } else {
+            commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, "false");
+        }
+        commandLineArgs.put(LaunchConstants.NODE_NAME, ConfigurationLookupHelper.getInstance().getValue("PROFILE_NAME"));
+        commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
+        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroserviceRepositoryManager.getInstance().getRepositoryLocation());
+        commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
+        commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
+
+
+        RuntimeArgument arg = (RuntimeArgument) DmiObject.findNamedObject(launchConfiguration.getRuntimeArgs(), LaunchConstants.JCA_INTERACTION_SPEC);
+        if (arg != null)
+            commandLineArgs.put(LaunchConstants.JCA_INTERACTION_SPEC, arg.getValueAsString());
+
+        for (Object aTemp : launchConfiguration.getRuntimeArgs()) {
+            RuntimeArgument runtimeArg = (RuntimeArgument) aTemp;
+            String argValue = runtimeArg.getValueAsString();
+            if (!runtimeArg.getName().equalsIgnoreCase("JVM_PARAMS") && argValue!=null)
+                commandLineArgs.put(runtimeArg.getName(), runtimeArg.getValueAsString());
+        }
+
+        List<String> commandLineParams = new ArrayList<String>();
+        for(Map.Entry<String, String> entry:commandLineArgs.entrySet()){
+            commandLineParams.add(entry.getKey());
+            commandLineParams.add(entry.getValue());
+        }
+        return commandLineParams;
+    }
+
+    private String getServiceInstanceLookupName(String applicationName, String applicationVersion, String name) {
+        return applicationName + "__" + applicationVersion + "__" + name;
     }
 }

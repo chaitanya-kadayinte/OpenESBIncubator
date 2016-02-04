@@ -1,12 +1,12 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
-import com.fiorano.openesb.microservice.launch.MicroserviceLaunchHandle;
+import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
 
-public class SeparateProcessLaunchHandle implements MicroserviceLaunchHandle {
+public class SeparateProcessRuntimeHandle implements MicroserviceRuntimeHandle {
 
     private Process osProcess;
 
-    public SeparateProcessLaunchHandle(Process osProcess) {
+    public SeparateProcessRuntimeHandle(Process osProcess) {
         this.osProcess = osProcess;
     }
 

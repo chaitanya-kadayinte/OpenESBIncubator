@@ -14,7 +14,7 @@
 package com.fiorano.openesb.microservice.ccp.event.component;
 
 
-import com.fiorano.openesb.microservice.ccp.CCPEventType;
+import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
 import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 
 import javax.jms.BytesMessage;

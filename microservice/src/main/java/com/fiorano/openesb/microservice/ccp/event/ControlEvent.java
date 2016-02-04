@@ -1,7 +1,5 @@
 package com.fiorano.openesb.microservice.ccp.event;
 
-import com.fiorano.openesb.microservice.ccp.CCPEventType;
-
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.util.Date;

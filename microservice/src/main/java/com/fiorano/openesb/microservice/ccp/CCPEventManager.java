@@ -16,6 +16,7 @@
  */
 package com.fiorano.openesb.microservice.ccp;
 
+import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
 import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
 import com.fiorano.openesb.microservice.ccp.event.EventFactory;
 import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
