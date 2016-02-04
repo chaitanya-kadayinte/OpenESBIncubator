@@ -26,6 +26,7 @@ import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.repository.MicroserviceRepositoryManager;
 import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
+import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -34,13 +35,7 @@ import java.util.Map;
 
 public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
-    public List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception {
-        List<String> command = new ArrayList<String>();
-        Service service = MicroserviceRepositoryManager.getInstance().readMicroService(
-                launchConfiguration.getMicroserviceId(),launchConfiguration.getMicroserviceVersion());
-
-        return command;
-    }
+    protected abstract List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception;
 
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
@@ -91,5 +86,14 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
     private String getServiceInstanceLookupName(String applicationName, String applicationVersion, String name) {
         return applicationName + "__" + applicationVersion + "__" + name;
+    }
+
+    protected String getExecutionDir(LaunchConfiguration launchConfiguration) {
+        return MicroserviceRepositoryManager.getInstance().getMicroServiceBase(launchConfiguration.getMicroserviceId(),
+                launchConfiguration.getMicroserviceVersion());
+    }
+
+    protected Service getComponentPS(String componentGUID, String componentVersion) throws FioranoException {
+        return MicroserviceRepositoryManager.getInstance().readMicroService(componentGUID, componentVersion);
     }
 }

@@ -33,7 +33,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         initialize();
         List<String> command = new ArrayList<>();
         command.add(getLaunchCommand());
-        String executionDir = getExecutionDir();
+        String executionDir = getExecutionDir(launchConfiguration);
         String javaLibraryPathStr = null;
 
         if ((javaLibQueue != null) && (javaLibQueue.size() > 0))
@@ -49,7 +49,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         }
 
         command.add(prepareSystemProperty("java.library.path", javaLibraryPathStr));
-
 
         command.add(prepareSystemProperty("FPS_HOME", fioranoHomeDir + File.separator + "esb" + File.separator + "fps"));
 
@@ -265,7 +264,13 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     private void checkExtDir(List<String> list) {
-        String systemExtDir = getSystemExtDir();
+        String javaHome = System.getProperty("java.home");
+        String systemExtDir = javaHome + File.separator + "lib" + File.separator + "ext" + File.separator;
+        if (!javaHome.endsWith("jre")) {
+            systemExtDir = systemExtDir + File.pathSeparator + javaHome + File.separator + "jre" + File.separator + "lib" + File.separator + "ext" + File.separator;
+        }
+        systemExtDir = systemExtDir + File.pathSeparator + fioranoHomeDir + File.separator + "esb" + File.separator + "lib" + File.separator + "ext";
+
         String javaExtDirs = popWithPrefix(list, "-Djava.ext.dirs=");
 
         if (javaExtDirs != null) {
@@ -274,16 +279,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         } else {
             systemProps.setProperty("java.ext.dirs", systemExtDir);
         }
-    }
-
-    private String getSystemExtDir() {
-        String javaHome = System.getProperty("java.home");
-        String extDirs = javaHome + File.separator + "lib" + File.separator + "ext" + File.separator;
-        if (!javaHome.endsWith("jre")) {
-            extDirs = extDirs + File.pathSeparator + javaHome + File.separator + "jre" + File.separator + "lib" + File.separator + "ext" + File.separator;
-        }
-        extDirs = extDirs + File.pathSeparator + fioranoHomeDir + File.separator + "esb" + File.separator + "lib" + File.separator + "ext";
-        return extDirs;
     }
 
     private void fillResourcePacket(String componentGUID, String componentVersion, ResourcePacket resPacket,
@@ -321,11 +316,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         }
         list.remove(index);
         return null;
-    }
-
-    private String getExecutionDir() {
-        return MicroserviceRepositoryManager.getInstance().getMicroServiceBase(launchConfiguration.getMicroserviceId(),
-                launchConfiguration.getMicroserviceVersion());
     }
 
     protected void createSystemProps() {
@@ -429,10 +419,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
                 File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "xml-commons-resolver" +
                 File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "mx4j" +
                 File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "ObjectHandler";
-    }
-
-    private Service getComponentPS(String componentGUID, String componentVersion) throws FioranoException {
-        return MicroserviceRepositoryManager.getInstance().readMicroService(componentGUID, componentVersion);
     }
 
     private void addDependencies(String componentGUID, String componentVersion, ResourcePacket resPacket, List<ComponentPacket> traversedComponents)
