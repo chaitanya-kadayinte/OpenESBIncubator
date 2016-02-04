@@ -5,7 +5,7 @@
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="microservice-1.0-SNAPSHOT.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="com.fiorano.openesb.microservice.bundle.Activator" bundleSymbolicName="microservice" bundleVersion="1.0-SNAPSHOT" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
           <property key="Bundle-Description" value="microservice OSGi bundle project." />
-          <property key="Export-Package" value="com.fiorano.openesb*;version=1.0-SNAPSHOT" />
+          <property key="Export-Package" value="com.fiorano.openesb.microservice*;version=1.0-SNAPSHOT" />
           <property key="Import-Package" value="*" />
           <property key="Bundle-Name" value="microservice Bundle" />
         </additionalProperties>
@@ -13,7 +13,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
