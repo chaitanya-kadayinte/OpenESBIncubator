@@ -64,7 +64,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
             }
         }
 
-        if (launchConfiguration.getAdditionalConfiguration().isDebugMode())
+        if (launchConfiguration.getAdditionalConfiguration()!=null && launchConfiguration.getAdditionalConfiguration().isDebugMode())
             command.addAll(getDebugParams(launchConfiguration.getAdditionalConfiguration().getDebugPort()));
 
         if ((jvmArguments != null) && (jvmArguments.trim().length() > 0))
@@ -349,7 +349,11 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     private String getLaunchCommand() {
-        boolean isDebug = launchConfiguration.getAdditionalConfiguration().isDebugMode();
+        boolean isDebug = false;
+        if(launchConfiguration.getAdditionalConfiguration()!=null){
+            isDebug = launchConfiguration.getAdditionalConfiguration().isDebugMode();
+        }
+
         String java = Util.isWindows() ? "java.exe" : "java";
         String userJavaHome = ConfigurationLookupHelper.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME);
         String javaHome = (userJavaHome != null && userJavaHome.trim().length() != 0) ? userJavaHome : System.getProperty("java.home");

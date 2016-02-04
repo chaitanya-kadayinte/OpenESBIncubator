@@ -51,14 +51,14 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.EVENT_PROC_NAME, launchConfiguration.getApplicationName());
         commandLineArgs.put(LaunchConstants.EVENT_PROC_VERSION, launchConfiguration.getApplicationVersion());
         commandLineArgs.put(LaunchConstants.COMP_INSTANCE_NAME, launchConfiguration.getName());
-        commandLineArgs.put(LaunchConstants.EVENTS_TOPIC, ConfigurationLookupHelper.getInstance().getValue("EVENTS_TOPIC"));
+       // commandLineArgs.put(LaunchConstants.EVENTS_TOPIC, ConfigurationLookupHelper.getInstance().getValue("EVENTS_TOPIC"));
 
         if (launchConfiguration.getLaunchMode() == LaunchConfiguration.LaunchMode.IN_MEMORY) {
             commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, "true");
         } else {
             commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, "false");
         }
-        commandLineArgs.put(LaunchConstants.NODE_NAME, ConfigurationLookupHelper.getInstance().getValue("PROFILE_NAME"));
+        //commandLineArgs.put(LaunchConstants.NODE_NAME, ConfigurationLookupHelper.getInstance().getValue("PROFILE_NAME"));
         commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
         commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroserviceRepositoryManager.getInstance().getRepositoryLocation());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
