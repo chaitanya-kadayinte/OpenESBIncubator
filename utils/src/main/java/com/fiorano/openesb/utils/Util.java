@@ -19,4 +19,15 @@ public class Util{
     public static Boolean toBoolean(boolean b){
         return b ? Boolean.TRUE : Boolean.FALSE;
     }
+
+    public static boolean isWindows(){
+        String os = System.getProperty("os.name");
+
+        if(os==null)
+            return false;
+
+        int index = os.toLowerCase().indexOf("win");
+
+        return (index!=-1);
+    }
 }

@@ -52,12 +52,16 @@ public class MicroserviceRepositoryManager {
      */
     public Service readMicroService(String microServiceId, String version)
             throws FioranoException {
-        File file = new File(getRepositoryLocation() + File.separator + microServiceId + File.separator + version
+        File file = new File(getMicroServiceBase(microServiceId, version)
                 + File.separator + "ServiceDescriptor.xml");
         if(!file.exists()) {
             throw new FioranoException("Component " + microServiceId + ":" + version + " is not present in repository");
         }
         return ServiceParser.readService(file);
+    }
+
+    public String getMicroServiceBase(String microServiceId, String version) {
+        return getRepositoryLocation() + File.separator + microServiceId + File.separator + version;
     }
 
 

@@ -19,23 +19,22 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.application.DmiObject;
-import com.fiorano.openesb.application.service.Execution;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.Service;
+import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.repository.MicroserviceRepositoryManager;
 import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-class CommandProvider {
+public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
-    public List<String> generateCommand(LaunchConfiguration launchConfiguration) throws  Exception {
+    public List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception {
         List<String> command = new ArrayList<String>();
         Service service = MicroserviceRepositoryManager.getInstance().readMicroService(
                 launchConfiguration.getMicroserviceId(),launchConfiguration.getMicroserviceVersion());
@@ -43,7 +42,7 @@ class CommandProvider {
         return command;
     }
 
-    protected String[] getCommandLineParams(LaunchConfiguration launchConfiguration, String componentPath) {
+    protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
         String serverIp = ConfigurationLookupHelper.getInstance().getValue("SERVER_IP");
         String connectURL = serverIp == null ?  "http://localhost:61616" : "http://"+ serverIp+":61616";
@@ -66,7 +65,7 @@ class CommandProvider {
         }
         commandLineArgs.put(LaunchConstants.NODE_NAME, ConfigurationLookupHelper.getInstance().getValue("PROFILE_NAME"));
         commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
-        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, componentPath);
+        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroserviceRepositoryManager.getInstance().getRepositoryLocation());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
 
@@ -75,32 +74,17 @@ class CommandProvider {
         if (arg != null)
             commandLineArgs.put(LaunchConstants.JCA_INTERACTION_SPEC, arg.getValueAsString());
 
-        //// TODO: 02-02-2016 remove this if not supported in initial release 
-//        String securityProtocol = connectionManager.getSecurityProtocol();
-//        if (securityProtocol != null){
-//            commandLineArgs.put(LaunchConstants.SECURITY_PROTOCOL, securityProtocol);
-//            if(securityProtocol.equalsIgnoreCase("SUN_SSL") )
-//                commandLineArgs.put(LaunchConstants.SECURITY_MANAGER, "fiorano.jms.runtime.sm.JSSESecurityManager");
-//        }
-
-//        for(RouteInfo info:handle.getRouteManager().getRoutes().values()){
-//            if(info.getTrgtSecurityManager() != null)
-//                commandLineArgs.put(LaunchConstants.SECURITY_MANAGER, info.getTrgtSecurityManager());
-//        }
-
-        // get the runtime arguments and also look for the JVM params
         for (Object aTemp : launchConfiguration.getRuntimeArgs()) {
             RuntimeArgument runtimeArg = (RuntimeArgument) aTemp;
             String argValue = runtimeArg.getValueAsString();
-            if (!runtimeArg.getName().equalsIgnoreCase("JVM_PARAMS") && argValue!=null)     /*Bugzilla – Bug 18542 , making null check for argValue*/
+            if (!runtimeArg.getName().equalsIgnoreCase("JVM_PARAMS") && argValue!=null)
                 commandLineArgs.put(runtimeArg.getName(), runtimeArg.getValueAsString());
         }
 
-        String[] commandLineParams = new String[commandLineArgs.size() * 2];
-        int i = 0;
+        List<String> commandLineParams = new ArrayList<String>();
         for(Map.Entry<String, String> entry:commandLineArgs.entrySet()){
-            commandLineParams[i++] = entry.getKey();
-            commandLineParams[i++] = entry.getValue();
+            commandLineParams.add(entry.getKey());
+            commandLineParams.add(entry.getValue());
         }
         return commandLineParams;
     }

@@ -19,13 +19,21 @@
 package com.fiorano.openesb.microservice.launch;
 
 
+import com.fiorano.openesb.application.service.RuntimeArgument;
+import com.fiorano.openesb.application.service.ServiceRef;
+
+import java.util.Enumeration;
 import java.util.List;
 
-public interface LaunchConfiguration<A> {
+public interface LaunchConfiguration<A extends AdditionalConfiguration> {
     String getUserName();
     String getPassword();
 
-    List getRuntimeArgs();
+    List<RuntimeArgument> getRuntimeArgs();
+
+    List getLogModules();
+
+    Enumeration<ServiceRef> getRuntimeDependencies();
 
     enum LaunchMode {SEPARATE_PROCESS, IN_MEMORY, DOCKER}
     LaunchMode getLaunchMode();

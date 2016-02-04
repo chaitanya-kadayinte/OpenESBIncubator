@@ -93,4 +93,5 @@ public class LaunchConstants {
     public final static String REPOSITORY = "repository";
     public final static String CERTS_DIR = "-DCERTS_DIR";
     public final static String TRUST_STORE = "-Djavax.net.ssl.trustStore";
+    public static final String USER_DEFINED_JAVA_HOME = "user.java.home";
 }

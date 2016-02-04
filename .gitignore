@@ -58,3 +58,9 @@ Temporary Items
 .idea/vcs.xml
 .idea/workspace.xml
 OpenESB.iml
+*.iml
+.idea/compiler.xml
+.idea/workspace.xml
+application-repo/application-repo.iml
+microservice/microservice.iml
+microservice/microservice.iml
