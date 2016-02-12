@@ -32,6 +32,7 @@ public class LaunchConstants {
     public final static String USERNAME = "-username";
     public final static String PASSWORD = "-password";
     public final static String CONN_FACTORY = "-connfactory";
+    public final static String CLIENT_ID = "-clientid";
     public final static String EVENT_PROC_NAME = "-eventprocessname";
     public final static String EVENT_PROC_VERSION = "-eventprocessversion";
     public final static String COMP_INSTANCE_NAME = "-instancename";

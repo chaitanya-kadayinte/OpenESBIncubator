@@ -21,12 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * @author FSIPL
- * @version 1.0
- * @created January 3, 2006
- * @bundle XSD_NOT_PRESENT=Could not find {0} in the classpath
- */
 public class CommonSchemas{
     public final static String ERROR_XSD;
 
@@ -42,9 +36,8 @@ public class CommonSchemas{
             url = ClassLoader.getSystemResource(resourceName);
 
         if(url==null){
-            System.err.println( "XSD_NOT_PRESENT "+" fiorano/fault.xsd");
             try {
-                url = new File(System.getProperty("FIORANO_HOME")+"/xml-catalog/fiorano/fault.xsd").toURI().toURL();
+                url = new File(System.getProperty("karaf.base")+"/xml-catalog/fiorano/fault.xsd").toURI().toURL();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

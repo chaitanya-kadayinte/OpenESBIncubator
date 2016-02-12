@@ -1,9 +1,17 @@
 package com.fiorano.openesb.transport.impl.jms;
 
-public class JMSMessageconfiguration {
+import com.fiorano.openesb.transport.MessageConfiguration;
 
-    MessageType type;
-    public JMSMessageconfiguration(MessageType type) {
+public class JMSMessageConfiguration implements MessageConfiguration {
+    public MessageType getType() {
+        return type;
+    }
+
+    public enum MessageType {
+        Bytes, Text , Object , Stream;
+    }
+    private MessageType type;
+    public JMSMessageConfiguration(MessageType type) {
         this.type = type;
     }
 }

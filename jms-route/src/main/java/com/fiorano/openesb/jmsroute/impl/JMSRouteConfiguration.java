@@ -26,7 +26,7 @@ public class JMSRouteConfiguration extends AbstractRouteConfiguration implements
     }
 
     public JMSConsumerConfiguration getConsumerConfiguration() {
-        return new JMSConsumerConfiguration();
+        return new JMSConsumerConfiguration(null);
     }
 
 }

@@ -16,7 +16,9 @@
  */
 package com.fiorano.openesb.amq;
 
+import com.fiorano.openesb.transport.ConnectionProvider;
 import com.fiorano.openesb.transport.TransportService;
+import com.fiorano.openesb.transport.impl.jms.JMSConnectionConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -29,25 +31,17 @@ import java.util.Hashtable;
 public class Activator implements BundleActivator {
 
     private BundleContext bundleContext;
-    private Session session;
-    private Connection connection;
 
     public void start(BundleContext context) throws Exception {
         System.out.println("Starting the bundle " + context.getBundle().getSymbolicName());
         this.bundleContext = context;
-        ConnectionFactory cf = context.getService(lookupConnectionFactory("FioranoCF"));
-        connection = cf.createConnection("karaf", "karaf");
-        connection.start();
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        TransportService service = new AMQTransportService(session);
+        TransportService service = new AMQTransportService();
         bundleContext.registerService(TransportService.class, service,new Hashtable<String, Object>());
         System.out.println("Started the bundle " + context.getBundle().getSymbolicName());
     }
 
     public void stop(BundleContext context) throws Exception {
         System.out.println("Stopping the bundle " + context.getBundle().getSymbolicName());
-        session.close();
-        connection.close();
         System.out.println("Stopped the bundle " + context.getBundle().getSymbolicName());
     }
 

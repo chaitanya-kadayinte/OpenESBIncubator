@@ -2,6 +2,7 @@ package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.transport.Consumer;
 import com.fiorano.openesb.transport.MessageListener;
+import com.fiorano.openesb.utils.exception.FioranoException;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -15,12 +16,14 @@ public class JMSConsumer implements Consumer<JMSMessage> {
     }
 
     public void attachMessageListener(final MessageListener<JMSMessage> messageListener) throws JMSException {
-        System.out.println("Attaching Message Listener");
 
         messageConsumer.setMessageListener(new javax.jms.MessageListener() {
             public void onMessage(Message message) {
-                System.out.println("Message Received from Queue");
-                messageListener.messageReceived(new JMSMessage(message));
+                try {
+                    messageListener.messageReceived(new JMSMessage(message));
+                } catch (FioranoException e) {
+                    //todo log
+                }
             }
         });
     }

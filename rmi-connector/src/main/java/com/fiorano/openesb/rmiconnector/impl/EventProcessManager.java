@@ -95,7 +95,11 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
 
     @Override
     public void startEventProcess(String appGUID, String version, boolean startServicesSeparately) throws RemoteException, ServiceException {
-        applicationController.launchApplication(appGUID, version);
+        try {
+            applicationController.launchApplication(appGUID, version);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(),e);
+        }
     }
 
     @Override
@@ -104,8 +108,12 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public void stopEventProcess(String appGUID, float version) throws RemoteException, ServiceException {
-
+    public void stopEventProcess(String appGUID, String version) throws RemoteException, ServiceException {
+        try {
+            applicationController.stopApplication(appGUID,version);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(),e);
+        }
     }
 
     @Override

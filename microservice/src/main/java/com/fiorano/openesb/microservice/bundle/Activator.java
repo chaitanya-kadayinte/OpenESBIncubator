@@ -16,23 +16,25 @@
  */
 package com.fiorano.openesb.microservice.bundle;
 
-import com.fiorano.openesb.microservice.launch.impl.MicroserviceLauncher;
+import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
+import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
-        System.out.println("Starting the bundle"+ context.getBundle().getSymbolicName());
-        context.registerService(MicroserviceLauncher.class,new MicroserviceLauncher(),new Hashtable<String, Object>());
-        System.out.println("Started the bundle"+ context.getBundle().getSymbolicName());
+        System.out.println("Starting the bundle - " + context.getBundle().getSymbolicName());
+        TransportService service = context.getService(context.getServiceReference(TransportService.class));
+        MicroServiceLauncher microServiceLauncher = new MicroServiceLauncher(service);
+        context.registerService(MicroServiceLauncher.class, microServiceLauncher, new Hashtable<String, Object>());
+        System.out.println("Started the bundle - " + context.getBundle().getSymbolicName());
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle"+ context.getBundle().getSymbolicName());
+        System.out.println("Stopping the bundle - " + context.getBundle().getSymbolicName());
     }
 
 }

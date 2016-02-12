@@ -995,7 +995,7 @@ public class ServiceInstance extends InflatableDMIObject implements NamedObject{
      * Returns runtime arguments for this service instance
      * @return List - List of runtime arguments
      */
-    public List getRuntimeArguments(){
+    public List<RuntimeArgument> getRuntimeArguments(){
         return runtimeArguments;
     }
 
@@ -1046,7 +1046,7 @@ public class ServiceInstance extends InflatableDMIObject implements NamedObject{
      */
     public static final String ELEM_SERVICEREFS = "servicerefs";
 
-    private List serviceRefs = new ArrayList();
+    private List<ServiceRef> serviceRefs = new ArrayList<>();
 
     /**
      * Adds specified service Reference <code>serviceRef</code> to service references of this service instance
@@ -1068,7 +1068,7 @@ public class ServiceInstance extends InflatableDMIObject implements NamedObject{
      * Returns service references of this service instance
      * @return List - List of service references
      */
-    public List getServiceRefs(){
+    public List<ServiceRef> getServiceRefs(){
         return serviceRefs;
     }
 
@@ -1076,7 +1076,7 @@ public class ServiceInstance extends InflatableDMIObject implements NamedObject{
      * Sets specified list <code>serviceRefs</code> as service references of this service instances
      * @param serviceRefs List of service References
      */
-    public void setServiceRefs(List serviceRefs){
+    public void setServiceRefs(List<ServiceRef> serviceRefs){
         this.serviceRefs = serviceRefs;
     }
 

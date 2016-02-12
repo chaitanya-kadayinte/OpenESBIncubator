@@ -18,7 +18,6 @@
  */
 package com.fiorano.openesb.microservice.launch.impl;
 
-import com.fiorano.openesb.application.service.Execution;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
@@ -26,7 +25,7 @@ import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
 import java.io.IOException;
 
 public class InMemoryLauncher implements Launcher {
-    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration) throws IOException {
+    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws IOException {
 //            setProperty("java.util.logging.FileHandler.formatter", DefaultFormatter.class.getName());
 
         return null;

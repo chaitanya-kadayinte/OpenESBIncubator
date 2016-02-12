@@ -29,10 +29,10 @@ import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 
 
 public class JMSRouteServiceImpl implements RouteService<JMSRouteConfiguration> {
-    private TransportService<JMSPort,JMSMessage,JMSPortConfiguration> transportService;
+    private TransportService<JMSPort,JMSMessage> transportService;
 
 
-    public JMSRouteServiceImpl(TransportService<JMSPort,JMSMessage,JMSPortConfiguration>  transportService) {
+    public JMSRouteServiceImpl(TransportService<JMSPort,JMSMessage>  transportService) {
         this.transportService = transportService;
     }
 

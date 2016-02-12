@@ -55,6 +55,8 @@ public abstract class Data implements Serializable {
          * Constant representing data of type {@link ComponentStats}
          */
         COMPONENT_STATS,
+
+        COMPONENT_CONFIGURATION,
     }
 
     /**

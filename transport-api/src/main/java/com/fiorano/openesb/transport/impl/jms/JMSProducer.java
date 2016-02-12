@@ -15,4 +15,11 @@ public class JMSProducer implements Producer<JMSMessage> {
     public void send(JMSMessage message) throws JMSException {
         producer.send(message.message);
     }
+
+    @Override
+    public void close() throws JMSException {
+        producer.close();
+    }
+
+
 }

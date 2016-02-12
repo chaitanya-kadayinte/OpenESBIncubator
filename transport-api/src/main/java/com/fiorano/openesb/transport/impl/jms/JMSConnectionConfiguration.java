@@ -10,18 +10,24 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 16-01-2016.
+ * Created by chaitanya on 09-02-2016.
  */
 
 /**
- * Created by chaitanya on 16-01-2016.
+ * Created by chaitanya on 09-02-2016.
  */
-package com.fiorano.openesb.transport;
+package com.fiorano.openesb.transport.impl.jms;
 
-public interface Producer<M extends Message> {
+import com.fiorano.openesb.transport.ConnectionConfiguration;
 
-    void send(M message) throws Exception;
+public class JMSConnectionConfiguration implements ConnectionConfiguration {
+    private String clientId;
 
-    void close() throws Exception;
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 }
-

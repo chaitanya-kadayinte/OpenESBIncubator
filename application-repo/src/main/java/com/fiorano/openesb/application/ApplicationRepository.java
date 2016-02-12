@@ -32,6 +32,7 @@ public class ApplicationRepository {
 
     public String getApplicationRepoPath(){
         File karafBase = new File(System.getProperty("karaf.base"));
-        return karafBase + File.separator + "repository" + File.separator + "applications";
+        return karafBase + File.separator + "data"
+                + File.separator + "fiorano"+ File.separator + "repository" + File.separator + "applications";
     }
 }

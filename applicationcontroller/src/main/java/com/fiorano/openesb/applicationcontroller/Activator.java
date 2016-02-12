@@ -17,44 +17,31 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
-import com.fiorano.openesb.application.application.Application;
+import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
+import com.fiorano.openesb.route.RouteService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
-        System.out.println("Starting the application controller bundle");
-        ServiceReference[] references = new ServiceReference[0];
-        try {
-            references = context.getServiceReferences(ApplicationRepository.class.getName(),null);
-        } catch (InvalidSyntaxException e) {
-            e.printStackTrace();
-        }
-        if (references != null) {
-            ApplicationRepository applicationRepository = (ApplicationRepository) context.getService(references[0]);
-            ApplicationController applicationController = new ApplicationController(applicationRepository);
+        System.out.println("Starting bundle - " + context.getBundle().getSymbolicName());
+        ServiceReference<ApplicationRepository> applicationRepositoryRef = context.getServiceReference(ApplicationRepository.class);
+        if (applicationRepositoryRef != null) {
+            ApplicationRepository applicationRepository = context.getService(applicationRepositoryRef);
 
-            context.registerService(
-                    ApplicationController.class.getName(), applicationController, null);
-            try {
-                Application application = applicationRepository.readApplication("SIMPLECHAT", "1.0");
-                if (application != null) {
-                    System.out.println(application.toString());
-
-                } else {
-                    System.out.println("error occured while reading the application");
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            RouteService service = context.getService(context.getServiceReference(RouteService.class));
+            MicroServiceLauncher microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
+            ApplicationController applicationController = new ApplicationController(applicationRepository, microServiceLauncher,
+                    service);
+            context.registerService(ApplicationController.class.getName(), applicationController, null);
         }
+
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle");
+        System.out.println("Stopping the bundle - " + context.getBundle().getSymbolicName());
     }
 
 }

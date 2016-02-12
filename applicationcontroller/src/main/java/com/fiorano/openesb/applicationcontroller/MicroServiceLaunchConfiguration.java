@@ -1,8 +1,11 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.application.ServiceInstance;
+import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.ServiceRef;
+import com.fiorano.openesb.application.sps.RuntimeArg;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
+import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 
 import java.util.Enumeration;
@@ -12,22 +15,22 @@ import java.util.Vector;
 
 public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
 
-    String userName;
-    String password;
-    List runtimeArgs;
-    long stopRetryInterval;
-    int numberOfStopAttempts;
-    String microserviceId;
-    String microserviceVersion;
-    String name;
-    String applicationName;
-    String applicationVersion;
-    AdditionalConfiguration additionalConfiguration;
-    LaunchMode launchMode;
-    List logModules;
-    Vector runtimeDependencies;
+    private String userName;
+    private String password;
+    private List<RuntimeArgument> runtimeArgs;
+    private long stopRetryInterval;
+    private int numberOfStopAttempts;
+    private String microserviceId;
+    private String microserviceVersion;
+    private String name;
+    private String applicationName;
+    private String applicationVersion;
+    private AdditionalConfiguration additionalConfiguration;
+    private LaunchMode launchMode;
+    private List logModules;
+    private Vector<ServiceRef> runtimeDependencies;
 
-    MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, ServiceInstance si){
+    MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, final ServiceInstance si){
         this.userName = userName;
         this.password = password;
         this.runtimeArgs = si.getRuntimeArguments();
@@ -45,18 +48,27 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
             this.launchMode = LaunchMode.DOCKER;
         }
         this.logModules = si.getLogModules();
-        Iterator _enum = (si.getServiceRefs()).iterator();
-        while(_enum!=null && _enum.hasNext()){
-            ServiceRef runtimeDependency = (ServiceRef)_enum.next();
+        for (ServiceRef runtimeDependency : (si.getServiceRefs())) {
             addRuntimeDependency(runtimeDependency);
         }
+
+        additionalConfiguration = new JavaLaunchConfiguration() {
+            @Override
+            public boolean isDebugMode() {
+                return si.isDebugMode();
+            }
+            @Override
+            public int getDebugPort() {
+                return si.getDebugPort();
+            }
+        };
 
     }
     public void addRuntimeDependency(ServiceRef servDependencyInfo)
     {
         if (runtimeDependencies == null)
         {
-            runtimeDependencies = new Vector();
+            runtimeDependencies = new Vector<>();
         }
         if (!runtimeDependencies.contains(servDependencyInfo))
             runtimeDependencies.add(servDependencyInfo);

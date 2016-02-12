@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
-        System.out.println("Starting the bundle- rmi client");
+        System.out.println("Starting the bundle - " + context.getBundle().getSymbolicName());
         RmiClient rmiClient = null;
         try {
             rmiClient = new RmiClient();
@@ -49,16 +49,20 @@ public class Activator implements BundleActivator {
         System.out.println(handleid);
         try {
            IEventProcessManager eventProcessManager = rmiManager.getEventProcessManager(handleid);
-           eventProcessManager.startEventProcess("SIMPLECHAT", "1.0", false);
+           eventProcessManager.startEventProcess("OS_TEST", "1.0", false);
+            Thread.sleep(10000);
+            eventProcessManager.stopEventProcess("OS_TEST", "1.0");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (ServiceException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle");
+        System.out.println("Stopping the bundle - " + context.getBundle().getSymbolicName());
     }
 
 }

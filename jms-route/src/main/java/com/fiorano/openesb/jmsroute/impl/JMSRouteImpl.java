@@ -13,17 +13,17 @@ import com.fiorano.openesb.transport.impl.jms.JMSProducerConfiguration;
 
 public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route<JMSMessage> {
 
+    private final Producer<JMSMessage> producer;
     private JMSPort sourcePort;
-    private JMSPort destinationPort;
-    private TransportService<JMSPort,JMSMessage,JMSPortConfiguration> transportService;
+    private TransportService<JMSPort, JMSMessage> transportService;
     private RouteConfiguration routeConfiguration;
     private Consumer<JMSMessage> messageConsumer;
 
-    public JMSRouteImpl(final TransportService<JMSPort,JMSMessage,JMSPortConfiguration> transportService, final RouteConfiguration routeConfiguration) throws Exception {
+    public JMSRouteImpl(final TransportService<JMSPort, JMSMessage> transportService, final RouteConfiguration routeConfiguration) throws Exception {
         super(routeConfiguration.getRouteOperationConfigurations());
         this.transportService = transportService;
         this.routeConfiguration = routeConfiguration;
-        final Producer<JMSMessage> producer = transportService.createProducer(transportService.enablePort((JMSPortConfiguration) routeConfiguration.getDestinationConfiguration()), new JMSProducerConfiguration());
+        producer = transportService.createProducer(transportService.enablePort(routeConfiguration.getDestinationConfiguration()), new JMSProducerConfiguration());
 
         routeOperationHandlers.add(new RouteOperationHandler<JMSMessage>() {
             public void handleOperation(JMSMessage message) throws FilterMessageException {
@@ -34,11 +34,11 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
                 }
             }
         });
-        sourcePort = transportService.enablePort((JMSPortConfiguration) routeConfiguration.getSourceConfiguration());
+        sourcePort = transportService.enablePort(routeConfiguration.getSourceConfiguration());
     }
 
     public void start() throws Exception {
-        messageConsumer = transportService.createConsumer(sourcePort,routeConfiguration.getConsumerConfiguration());
+        messageConsumer = transportService.createConsumer(sourcePort, routeConfiguration.getConsumerConfiguration());
 
         messageConsumer.attachMessageListener(new MessageListener<JMSMessage>() {
             public void messageReceived(JMSMessage message) {
@@ -53,7 +53,8 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     }
 
     public void stop() throws Exception {
-       messageConsumer.close();
+        messageConsumer.close();
+        producer.close();
     }
 
     public void delete() {

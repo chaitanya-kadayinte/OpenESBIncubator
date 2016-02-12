@@ -39,7 +39,7 @@ public class DataRequestEvent extends ControlEvent {
      * Initializes new data request event
      */
     public DataRequestEvent() {
-        dataIdentifiers = new ArrayList<DataIdentifier>();
+        dataIdentifiers = new ArrayList<>();
     }
 
     /**
@@ -141,7 +141,7 @@ public class DataRequestEvent extends ControlEvent {
          */
         COMPONENT_STATS,
 
-
+        COMPONENT_CONFIGURATION
 
     }
 

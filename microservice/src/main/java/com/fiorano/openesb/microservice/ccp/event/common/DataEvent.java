@@ -38,7 +38,7 @@ public class DataEvent extends ControlEvent {
      * Initializes a new Data Event
      */
     public DataEvent() {
-        data = new HashMap<DataRequestEvent.DataIdentifier, Data>();
+        data = new HashMap<>();
     }
 
     /**

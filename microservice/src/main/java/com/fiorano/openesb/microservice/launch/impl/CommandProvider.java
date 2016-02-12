@@ -40,43 +40,38 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
         String serverIp = ConfigurationLookupHelper.getInstance().getValue("SERVER_IP");
-        String connectURL = serverIp == null ?  "http://localhost:61616" : "http://"+ serverIp+":61616";
+        //todo active mq port lookup
+        String connectURL = serverIp == null ?  "tcp://localhost:61616" : "tcp://"+ serverIp+":61616";
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
         commandLineArgs.put(LaunchConstants.FES_URL, connectURL);
         commandLineArgs.put(LaunchConstants.USERNAME, launchConfiguration.getUserName());
         commandLineArgs.put(LaunchConstants.PASSWORD, launchConfiguration.getPassword());
-        commandLineArgs.put(LaunchConstants.CONN_FACTORY, getServiceInstanceLookupName(launchConfiguration.getApplicationName(),
+        commandLineArgs.put(LaunchConstants.CONN_FACTORY,"ConnectionFactory");
+        commandLineArgs.put(LaunchConstants.CLIENT_ID, getServiceInstanceLookupName(launchConfiguration.getApplicationName(),
                 launchConfiguration.getApplicationVersion(), launchConfiguration.getName()));
         commandLineArgs.put(LaunchConstants.EVENT_PROC_NAME, launchConfiguration.getApplicationName());
         commandLineArgs.put(LaunchConstants.EVENT_PROC_VERSION, launchConfiguration.getApplicationVersion());
         commandLineArgs.put(LaunchConstants.COMP_INSTANCE_NAME, launchConfiguration.getName());
-       // commandLineArgs.put(LaunchConstants.EVENTS_TOPIC, ConfigurationLookupHelper.getInstance().getValue("EVENTS_TOPIC"));
 
-        if (launchConfiguration.getLaunchMode() == LaunchConfiguration.LaunchMode.IN_MEMORY) {
-            commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, "true");
-        } else {
-            commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, "false");
-        }
-        //commandLineArgs.put(LaunchConstants.NODE_NAME, ConfigurationLookupHelper.getInstance().getValue("PROFILE_NAME"));
+        commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, launchConfiguration.getLaunchMode() == LaunchConfiguration.
+                LaunchMode.IN_MEMORY ? "true" : "false");
         commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
         commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroserviceRepositoryManager.getInstance().getRepositoryLocation());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
 
-
         RuntimeArgument arg = (RuntimeArgument) DmiObject.findNamedObject(launchConfiguration.getRuntimeArgs(), LaunchConstants.JCA_INTERACTION_SPEC);
         if (arg != null)
             commandLineArgs.put(LaunchConstants.JCA_INTERACTION_SPEC, arg.getValueAsString());
 
-        for (Object aTemp : launchConfiguration.getRuntimeArgs()) {
-            RuntimeArgument runtimeArg = (RuntimeArgument) aTemp;
+        for (RuntimeArgument runtimeArg : launchConfiguration.getRuntimeArgs()) {
             String argValue = runtimeArg.getValueAsString();
             if (!runtimeArg.getName().equalsIgnoreCase("JVM_PARAMS") && argValue!=null)
                 commandLineArgs.put(runtimeArg.getName(), runtimeArg.getValueAsString());
         }
 
-        List<String> commandLineParams = new ArrayList<String>();
+        List<String> commandLineParams = new ArrayList<>();
         for(Map.Entry<String, String> entry:commandLineArgs.entrySet()){
             commandLineParams.add(entry.getKey());
             commandLineParams.add(entry.getValue());

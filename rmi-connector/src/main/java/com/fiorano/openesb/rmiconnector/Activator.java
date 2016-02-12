@@ -37,7 +37,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
-        System.out.println("Starting the bundle- Rmi Connector");
+        System.out.println("Starting the bundle- RMI Connector");
         Thread.currentThread().setContextClassLoader(
                 this.getClass().getClassLoader());
         RmiConnector rmiConnector = new RmiConnector();
@@ -46,40 +46,28 @@ public class Activator implements BundleActivator {
         } catch (FioranoException e) {
             e.printStackTrace();
         }
-        //context.registerService(RmiConnector.class.getName(), rmiConnector, null);
         IRmiManager rmiManagerStub = null;
-        Registry registry = null;
+        Registry registry;
         IRmiManager rmiManager = null;
         try {
             rmiManager = new RmiManager(context, 2047, rmiConnector.getCsf(), rmiConnector.getSsf());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        try {
             rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, 2047, rmiConnector.getCsf(), rmiConnector.getSsf());
             registry = LocateRegistry.getRegistry(2047);
+            try {
+                registry.unbind("rmi");
+            } catch (NotBoundException |  RemoteException ignored) {
+
+            }
+            try {
+                registry.bind("rmi", rmiManagerStub);
+            } catch (AlreadyBoundException | RemoteException e) {
+                e.printStackTrace();
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-        try {
-            registry.unbind("rmi");  //unbind if it is already bound
-        } catch (NotBoundException e) {
-            //ignore the exception as its not bound
-        } catch (AccessException e) {
 
-        } catch (RemoteException e) {
-
-        }
-        try {
-            registry.bind("rmi", rmiManagerStub);
-        } catch (AlreadyBoundException e) {
-            e.printStackTrace();
-        } catch (AccessException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public void stop(BundleContext context) {

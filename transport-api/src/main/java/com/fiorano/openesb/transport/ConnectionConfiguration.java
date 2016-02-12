@@ -10,18 +10,14 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 16-01-2016.
+ * Created by chaitanya on 09-02-2016.
  */
 
 /**
- * Created by chaitanya on 16-01-2016.
+ * Created by chaitanya on 09-02-2016.
  */
 package com.fiorano.openesb.transport;
 
-public interface Producer<M extends Message> {
+public interface ConnectionConfiguration {
 
-    void send(M message) throws Exception;
-
-    void close() throws Exception;
 }
-

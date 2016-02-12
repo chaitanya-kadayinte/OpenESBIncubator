@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 
 public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration> {
     private LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration;
-    private static String fioranoHomeDir = System.getProperty("karaf.base");
+    private static String fioranoHomeDir = System.getProperty("karaf.base") +File.separator +
+            "data" + File.separator + "fiorano";
     private static final Map favorites = Collections.singletonMap("FIORANO_HOME", new File(fioranoHomeDir));
 
     private String m_componentRepositoryDir;
@@ -34,6 +35,39 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         List<String> command = new ArrayList<>();
         command.add(getLaunchCommand());
         String executionDir = getExecutionDir(launchConfiguration);
+        String javaLibraryPathStr = getJavaLibraryPath(executionDir);
+        command.add(prepareSystemProperty("java.library.path", javaLibraryPathStr));
+
+        if (systemProps != null) {
+            Enumeration propNames = systemProps.propertyNames();
+            while (propNames.hasMoreElements()) {
+                String propName = (String) propNames.nextElement();
+                String propValue = systemProps.getProperty(propName);
+                command.add(prepareSystemProperty(propName, propValue));
+            }
+        }
+        if (launchConfiguration.getAdditionalConfiguration()!=null && launchConfiguration.getAdditionalConfiguration().isDebugMode())
+            command.addAll(getDebugParams(launchConfiguration.getAdditionalConfiguration().getDebugPort()));
+
+        if ((jvmArguments != null) && (jvmArguments.trim().length() > 0))
+            ArrayUtil.toCollection(StringUtil.getTokens(jvmArguments, " ", true), command);
+
+        prepareClasspath(command);
+        command.add(getComponentPS(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
+        List<String> commandLineParams = getCommandLineParams(launchConfiguration);
+        command.addAll(commandLineParams);
+        System.out.println(command);
+        return command;
+    }
+
+    private void prepareClasspath(List<String> command) {
+        command.add("-classpath");
+        String classPath = customClassPath + File.pathSeparator +
+                convertToPath(genClassPath);
+        command.add(classPath);
+    }
+
+    private String getJavaLibraryPath(String executionDir) {
         String javaLibraryPathStr = null;
 
         if ((javaLibQueue != null) && (javaLibQueue.size() > 0))
@@ -47,49 +81,13 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
             javaLibraryPathStr = userLibraryPath + File.pathSeparator + javaLibraryPathStr;
             systemProps.remove("java.library.path");
         }
-
-        command.add(prepareSystemProperty("java.library.path", javaLibraryPathStr));
-
-        command.add(prepareSystemProperty("FPS_HOME", fioranoHomeDir + File.separator + "esb" + File.separator + "fps"));
-
-        if (systemProps != null) {
-            Enumeration propNames = systemProps.propertyNames();
-
-            while (propNames.hasMoreElements()) {
-                String propName = (String) propNames.nextElement();
-                String propValue = systemProps.getProperty(propName);
-
-                command.add(prepareSystemProperty(propName, propValue));
-
-            }
-        }
-
-        if (launchConfiguration.getAdditionalConfiguration()!=null && launchConfiguration.getAdditionalConfiguration().isDebugMode())
-            command.addAll(getDebugParams(launchConfiguration.getAdditionalConfiguration().getDebugPort()));
-
-        if ((jvmArguments != null) && (jvmArguments.trim().length() > 0))
-            ArrayUtil.toCollection(StringUtil.getTokens(jvmArguments, " ", true), command);
-
-        command.add("-classpath");
-
-        String classPath = customClassPath + File.pathSeparator +
-                convertToPath(genClassPath);
-
-        command.add(classPath);
-
-
-        command.add(getComponentPS(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
-
-        List<String> commandLineParams = getCommandLineParams(launchConfiguration);
-        command.addAll(commandLineParams);
-
-        return command;
+        return javaLibraryPathStr;
     }
 
     private void initialize() throws FioranoException {
         createSystemProps();
         List<String> list = toList(getCustomJVMParams());
-        checkExtDir(list);
+        checkExtDir(list); //// TODO: 11-02-2016  spaces in paths
         checkEndorsedDirs(list);
         checkLibraryPath(list);
         checkCustomClasspath(list);
@@ -99,7 +97,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         String jvmParams = "";
         if ((list != null) && (list.size() > 0)) {
             jvmParams = toSpaceSeparatedString(list);
-
             jvmParams = Pattern.compile("\\$\\{user_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("user.home"));
             jvmParams = Pattern.compile("\\$\\{fiorano_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("FIORANO_HOME"));
             jvmParams = Pattern.compile("\\$\\{appName\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(launchConfiguration.getApplicationName());
@@ -158,12 +155,12 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     private String prepareSystemProperty(String name, String value) {
-        return "-D" + name + "=" + value;
+        return "-D" + name + "="  + value ;
     }
 
     private List<String> getDebugParams(int debugPort) {
         return Arrays.asList("-Xdebug",
-                "-Xrunjdwp:transport=dt_socket,server=y,address=" + debugPort + ",suspend=n",
+                "-Xrunjdwp:transport=dt_socket,server=y,address=" + debugPort + ",suspend=y",
                 "-Xnoagent");
     }
 
@@ -184,7 +181,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     private String getMSHome(String componentGUID, String componentVersion) {
-        return m_componentRepositoryDir + componentGUID + File.separator + componentVersion;
+        return m_componentRepositoryDir + File.separator + componentGUID + File.separator + componentVersion;
     }
 
     protected void addDefaults(Queue<String> cPathQueue) {
@@ -264,7 +261,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     private void checkExtDir(List<String> list) {
-        String javaHome = System.getProperty("java.home");
+        String javaHome =  System.getProperty("java.home");
         String systemExtDir = javaHome + File.separator + "lib" + File.separator + "ext" + File.separator;
         if (!javaHome.endsWith("jre")) {
             systemExtDir = systemExtDir + File.pathSeparator + javaHome + File.separator + "jre" + File.separator + "lib" + File.separator + "ext" + File.separator;
@@ -274,7 +271,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         String javaExtDirs = popWithPrefix(list, "-Djava.ext.dirs=");
 
         if (javaExtDirs != null) {
-            javaExtDirs = javaExtDirs + File.pathSeparator + systemExtDir;
+            javaExtDirs = javaExtDirs + File.pathSeparator  + systemExtDir;
             systemProps.setProperty("java.ext.dirs", javaExtDirs);
         } else {
             systemProps.setProperty("java.ext.dirs", systemExtDir);
@@ -325,7 +322,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         systemProps.setProperty("DontSetReadOnly", "true");
         systemProps.setProperty("mx4j.log.priority", "error");
         systemProps.setProperty("COMP_REPOSITORY_DIR", MicroserviceRepositoryManager.getInstance().getRepositoryLocation());
-        systemProps.setProperty("FIORANO_HOME", System.getProperty("karaf.base"));
+        systemProps.setProperty("FIORANO_HOME", fioranoHomeDir);
 
         //todo need to assign log handlers
         List logModules = launchConfiguration.getLogModules();

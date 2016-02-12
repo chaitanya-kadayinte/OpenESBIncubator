@@ -35,7 +35,7 @@ public class ComponentStats extends Data {
 
     /**
      * This method initializes an object of this class
-     * @param value ProcessID of the component JVM
+     * @param value Component Statistics of the component 
      */
     public ComponentStats(String value) {
         this.value = value;
@@ -50,17 +50,17 @@ public class ComponentStats extends Data {
     }
 
     /**
-     * Returns the process ID of the component JVM as a String
-     * @return String - Process ID of component JVM
+     * Returns the stats of the component  as a String
+     * @return String - stats of component 
      */
     public String toString() {
         return this.value;
     }
 
     /**
-     * Returns the Process ID of the component JVM if the component is not launched in memory.
+     * Returns the stats of the component  if the component is not launched in memory.
      *
-     * @return String - Process ID of component JVM
+     * @return String - stats of component 
      * @see #setValue(String)
      */
     public String getValue() {
@@ -68,9 +68,9 @@ public class ComponentStats extends Data {
     }
 
     /**
-     * Sets the Process ID of the component JVM
+     * Sets the stats of the component 
      *
-     * @param value Process ID of the component JVM
+     * @param value stats of the component 
      * @see #getValue()
      */
     public void setValue(String value) {

@@ -19,11 +19,9 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
-import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class NJCommandProvider extends CommandProvider {

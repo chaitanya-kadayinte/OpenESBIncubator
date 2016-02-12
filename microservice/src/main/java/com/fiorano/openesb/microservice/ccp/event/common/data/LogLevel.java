@@ -70,7 +70,7 @@ public class LogLevel extends Data {
         if(numLoggers < 1)
             return;
 
-        loggerLevels = new HashMap<String, Level>();
+        loggerLevels = new HashMap<>();
         for(int i = 0; i < numLoggers; i++){
             String loggerName = bytesMessage.readUTF();
             int intLogLevel = bytesMessage.readInt();
@@ -135,7 +135,7 @@ public class LogLevel extends Data {
         if(numLoggers < 1)
             return;
 
-        loggerLevels = new HashMap<String, Level>();
+        loggerLevels = new HashMap<>();
         for(int i = 0; i < numLoggers; i++){
             String loggerName = in.readUTF();
             int intLogLevel = in.readInt();

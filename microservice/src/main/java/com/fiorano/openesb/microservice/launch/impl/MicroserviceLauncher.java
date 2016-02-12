@@ -21,12 +21,19 @@ package com.fiorano.openesb.microservice.launch.impl;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
+import com.fiorano.openesb.transport.TransportService;
 
-public class MicroserviceLauncher implements Launcher<MicroserviceRuntimeHandle>{
-    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration) throws Exception {
+public class MicroServiceLauncher implements Launcher<MicroserviceRuntimeHandle>{
+    private TransportService service;
+
+    public MicroServiceLauncher(TransportService service) {
+        this.service = service;
+    }
+
+    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
         if(launchConfiguration.getLaunchMode() == LaunchConfiguration.LaunchMode.SEPARATE_PROCESS) {
-            SeparateProcessLauncher separateProcessLauncher = new SeparateProcessLauncher();
-            return separateProcessLauncher.launch(launchConfiguration);
+            SeparateProcessLauncher separateProcessLauncher = new SeparateProcessLauncher(service);
+            return separateProcessLauncher.launch(launchConfiguration, configuration);
         }
         return null;
     }

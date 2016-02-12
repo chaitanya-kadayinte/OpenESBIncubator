@@ -20,5 +20,5 @@ package com.fiorano.openesb.microservice.launch;
 
 
 public interface Launcher<H extends MicroserviceRuntimeHandle> {
-    MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration) throws Exception;
+    MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception;
 }
