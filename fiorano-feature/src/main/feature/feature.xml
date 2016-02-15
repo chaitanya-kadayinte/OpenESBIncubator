@@ -36,6 +36,8 @@
         <bundle start-level='90'>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
         <bundle start-level='91'>wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
         <bundle start-level='92'>mvn:com.fiorano.openesb/utils/1.0</bundle>
+        <bundle start-level='92'>mvn:com.fiorano.openesb/events/1.0</bundle>
+        <bundle start-level='92'>mvn:com.fiorano.openesb/security/1.0</bundle>
         <bundle start-level='93'>mvn:com.fiorano.openesb/application-repo/1.0</bundle>
         <bundle start-level='94'>mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
         <bundle start-level='95'>mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
