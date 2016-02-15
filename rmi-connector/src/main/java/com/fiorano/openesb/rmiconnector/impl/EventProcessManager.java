@@ -2,7 +2,13 @@ package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.rmiconnector.api.*;
+import com.fiorano.openesb.utils.FileUtil;
+import com.fiorano.openesb.utils.ZipUtil;
+import com.fiorano.openesb.utils.exception.FioranoException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -15,6 +21,8 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
 
     private IEventProcessManager clientProxyInstance;
 
+    private HashMap<String, File> tempFileNameMap = new HashMap<String, File>(8);
+
     void setClientProxyInstance(IEventProcessManager clientProxyInstance) {
         this.clientProxyInstance = clientProxyInstance;
     }
@@ -23,9 +31,10 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
         return clientProxyInstance;
     }
 
-    EventProcessManager(RmiManager rmiManager){
+    EventProcessManager(RmiManager rmiManager, InstanceHandler instanceHandler){
         super(rmiManager);
         this.applicationController = rmiManager.getApplicationController();
+        this.handleId = instanceHandler.getHandleID();
     }
 
     @Override
@@ -43,9 +52,80 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
         return new float[0];
     }
 
-    @Override
-    public void deployEventProcess(byte[] zippedContents, boolean completed) throws RemoteException, ServiceException {
+    public void saveApplication(byte[] zippedContents, boolean completed) throws RemoteException, ServiceException {
+        //Check the validity of the connection
+        validateHandleID(handleId, "Save Application");
+        String key = handleId + "__SAVEAPP";
+        File tempZipFile = null;
+        FileOutputStream outstream = null;
+        File appFileTempFolder = null;
+        boolean successfulzip = true;
 
+        //get the Application zip as byte array from server. keep writing to a zip file until client notifies completed
+        try {
+            tempZipFile = tempFileNameMap.get(key);
+            if (tempZipFile == null) {
+                tempZipFile = getTempFile("Application", "zip");
+                tempFileNameMap.put(key, tempZipFile);
+            }
+            outstream = new FileOutputStream(tempZipFile, true);
+            outstream.write(zippedContents);
+        } catch (IOException ioe) {
+            successfulzip = false;
+            ioe.printStackTrace();
+            throw new ServiceException(ioe.getMessage());
+        }
+        finally {
+            try {
+                if (outstream != null) {
+                    outstream.close();
+                }
+                if (!successfulzip && tempZipFile != null) {
+                    tempZipFile.delete();
+                }
+            } catch (IOException e) {
+                //ignore
+            }
+        }
+        if (!completed) {
+            return;
+        }
+
+        //extract contents.
+        boolean successfulextract = true;
+        try {
+            appFileTempFolder = getTempFile("application", "tmp");
+            appFileTempFolder.mkdir();
+            //extractZip(appFileTempFolder, tempZipFile);
+            ZipUtil.unzip(tempZipFile, appFileTempFolder);
+        } catch (Exception e) {
+            successfulextract = false;
+//            LogHelper.log("Unable to save event flow process::Error occured while extracting zipped contents.", e);
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
+        finally {
+            //Removing the temporary zip entry in hashmap. and deleteing the file
+            if (!successfulextract && appFileTempFolder != null) {
+                FileUtil.deleteDir(appFileTempFolder);
+                tempFileNameMap.remove(key);
+                tempZipFile.delete();
+            }
+        }
+
+        //save to fes repository.
+        try {
+            applicationController.saveApplication(appFileTempFolder, handleId, getBytesFromFile(tempZipFile));
+        } catch (FioranoException e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
+        finally {
+            // Temporaray application Folder is being deleted in Application Repository Code
+//            FileUtil.deleteDir(appFileTempFolder);
+            tempFileNameMap.remove(key);
+            tempZipFile.delete();
+        }
     }
 
     @Override
@@ -83,9 +163,13 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
         return new byte[0];
     }
 
-    @Override
-    public void deleteEventProcess(String appGUID, float version, boolean deleteApplicationEvents, boolean deleteSBWEvents) throws RemoteException, ServiceException {
-
+    public void deleteApplication(String appGUID, String version) throws RemoteException, ServiceException {
+        try {
+            applicationController.deleteApplication(appGUID, version);
+        } catch (FioranoException e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
