@@ -16,8 +16,7 @@ import java.util.regex.Pattern;
 
 public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration> {
     private LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration;
-    private static String fioranoHomeDir = System.getProperty("karaf.base") +File.separator +
-            "data" + File.separator + "fiorano";
+    private static String fioranoHomeDir = System.getProperty("karaf.base");
     private static final Map favorites = Collections.singletonMap("FIORANO_HOME", new File(fioranoHomeDir));
 
     private String m_componentRepositoryDir;
@@ -87,7 +86,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     private void initialize() throws FioranoException {
         createSystemProps();
         List<String> list = toList(getCustomJVMParams());
-        checkExtDir(list); //// TODO: 11-02-2016  spaces in paths
+        checkExtDir(list);
         checkEndorsedDirs(list);
         checkLibraryPath(list);
         checkCustomClasspath(list);
@@ -100,7 +99,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
             jvmParams = Pattern.compile("\\$\\{user_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("user.home"));
             jvmParams = Pattern.compile("\\$\\{fiorano_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("FIORANO_HOME"));
             jvmParams = Pattern.compile("\\$\\{appName\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(launchConfiguration.getApplicationName());
-            jvmParams = Pattern.compile("\\$\\{serviceInstanceName\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(launchConfiguration.getName());
+            jvmParams = Pattern.compile("\\$\\{serviceInstanceName\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(launchConfiguration.getServiceName());
             int logFileParamIndex = jvmParams.indexOf("-Xloggc:");
             if (logFileParamIndex != -1) {
                 int logFileNameEndIndex = jvmParams.indexOf(" ", logFileParamIndex);
@@ -160,7 +159,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
     private List<String> getDebugParams(int debugPort) {
         return Arrays.asList("-Xdebug",
-                "-Xrunjdwp:transport=dt_socket,server=y,address=" + debugPort + ",suspend=y",
+                "-Xrunjdwp:transport=dt_socket,server=y,address=" + debugPort + ",suspend=n",
                 "-Xnoagent");
     }
 
@@ -333,7 +332,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
             while (modules.hasNext()) {
                 LogModule logModule = (LogModule) modules.next();
                 String moduleName = logModule.isUniqueNameRequired() ? LoggerUtil.getServiceLoggerName(logModule.getName(), launchConfiguration.getApplicationName(), launchConfiguration.getApplicationVersion(),
-                        launchConfiguration.getMicroserviceId(), launchConfiguration.getName()) : logModule.getName();
+                        launchConfiguration.getMicroserviceId(), launchConfiguration.getServiceName()) : logModule.getName();
                 String logLevel = logModule.getTraceLevelAsString();
                 systemProps.setProperty(moduleName, logLevel);
                 categories = categories + moduleName;
