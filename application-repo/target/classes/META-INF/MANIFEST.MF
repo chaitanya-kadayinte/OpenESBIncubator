@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1454057167005
-Build-Jdk: 1.8.0_45
-Built-By: Janardhan
+Bnd-LastModified: 1455548751980
+Build-Jdk: 1.8.0_51
+Built-By: chaitanya
 Bundle-Activator: com.fiorano.openesb.application.Activator
 Bundle-Description: application-repo OSGi bundle project.
 Bundle-ManifestVersion: 2
@@ -58,5 +58,5 @@ Import-Package: com.fiorano.openesb.application;resolution:=optional;ver
  =optional;version="[1.8,2)",org.w3c.dom;resolution:=optional,org.w3c.do
  m.ls;resolution:=optional,org.xml.sax;resolution:=optional,org.xml.sax.
  helpers;resolution:=optional
-Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.5))"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.7))"
 Tool: Bnd-3.0.0.201509101326
