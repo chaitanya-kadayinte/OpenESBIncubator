@@ -1,5 +1,6 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
+import com.fiorano.openesb.rmiconnector.api.IDapiEventManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -17,17 +18,22 @@ import java.util.Hashtable;
 public abstract class AbstractRmiManager implements IDistributedRemoteObject {
 
     protected String handleId="FioranohandleID";
+    protected DapiEventManager dapiEventManager;
 
     /** Contains info like client locale,client ip addresses.*/
     protected HashMap clientInfo;
+    private RmiManager rmiManager;
 
     protected AbstractRmiManager(RmiManager rmiManager){
         super();
+        this.rmiManager = rmiManager;
+        this.dapiEventManager = rmiManager.getDapiEventsManager();
         loadMethods();
     }
 
     protected final void validateHandleID(String handleId, String operation) throws ServiceException {
-
+        if (rmiManager.getConnectionHandle(handleId) == null)
+            throw new ServiceException("Failed to " + operation + ", Reason : Invalid Handle ID");
     }
 
 

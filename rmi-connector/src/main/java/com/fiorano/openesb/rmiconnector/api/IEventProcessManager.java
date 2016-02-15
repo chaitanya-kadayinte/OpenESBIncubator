@@ -76,7 +76,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    void deployEventProcess(byte[] zippedContents, boolean completed) throws RemoteException, ServiceException;
+    void saveApplication(byte[] zippedContents, boolean completed) throws RemoteException, ServiceException;
 
     /**
      * This method changes transformation on a route of a running event flow process.
@@ -180,13 +180,11 @@ public interface IEventProcessManager extends Remote{
      *
      * @param appGUID  Application GUID of the Event Process
      * @param version  The version of the Event Process
-     * @param deleteApplicationEvents boolean specifying whether all application events related to this application should also be deleted while deleting this application
-     * @param deleteSBWEvents boolean specifying whether all sbw events related to this application should also be deleted while deleting this application
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      * @see IEventProcessManager#ANY_VERSION
      */
-    void deleteEventProcess(String appGUID, float version, boolean deleteApplicationEvents, boolean deleteSBWEvents) throws RemoteException, ServiceException;
+    void deleteApplication(String appGUID, String version) throws RemoteException, ServiceException;
 
     /**
      * This method checks for existence of dependencies
