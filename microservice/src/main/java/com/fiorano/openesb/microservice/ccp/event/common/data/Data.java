@@ -114,7 +114,9 @@ public abstract class Data implements Serializable {
                 return new ProcessID();
             case COMPONENT_STATS:
                 return new ComponentStats();
+            case COMPONENT_CONFIGURATION:
+                return new MicroserviceConfiguration();
         }
-        throw new IllegalArgumentException("INVALID_DATA_TYPE");
+        throw new IllegalArgumentException("INVALID_DATA_TYPE - " + dataType.name());
     }
 }

@@ -50,13 +50,10 @@ public class Activator implements BundleActivator {
         try {
            IEventProcessManager eventProcessManager = rmiManager.getEventProcessManager(handleid);
            eventProcessManager.startEventProcess("OS_TEST", "1.0", false);
-            Thread.sleep(10000);
-            eventProcessManager.stopEventProcess("OS_TEST", "1.0");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (ServiceException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
