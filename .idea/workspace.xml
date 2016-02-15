@@ -5,366 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f81c1b9d-c14d-4fb2-b13c-f7f05b5ddf93" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/Activator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/ApplicationEvent.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/Event.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/EventListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/EventType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/EventsManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/MicroServiceEvent.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/events/src/main/java/com/fiorano/openesb/events/SystemEvent.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/security/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/security/src/main/java/com/fiorano/openesb/security/Activator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/security/src/main/java/com/fiorano/openesb/security/ConnectionHandle.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/security/src/main/java/com/fiorano/openesb/security/SecurityManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/ZipUtil.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/queue/FioranoQueueEnumerator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/queue/FioranoQueueImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/queue/FioranoQueueNode.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/queue/ICallState.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/queue/IFioranoQueue.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/src/main/java/com/fiorano/openesb/utils/queue/IFioranoQueueable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/src/main/java/com/fiorano/openesb/application/ApplicationRepository.java" afterPath="$PROJECT_DIR$/application-repo/src/main/java/com/fiorano/openesb/application/ApplicationRepository.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/src/main/feature/feature.xml" afterPath="$PROJECT_DIR$/fiorano-feature/src/main/feature/feature.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/src/main/history/dependencies.xml" afterPath="$PROJECT_DIR$/fiorano-feature/src/main/history/dependencies.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-    </list>
-    <list id="b80e1fc1-1454-416c-9306-52ddcb675d1e" name="LocalChanges" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/target/activemq-transport-1.0.0.jar" afterPath="$PROJECT_DIR$/activemq-transport/target/activemq-transport-1.0.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/target/classes/com/fiorano/openesb/amq/AMQTransportService.class" afterPath="$PROJECT_DIR$/activemq-transport/target/classes/com/fiorano/openesb/amq/AMQTransportService.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/target/classes/com/fiorano/openesb/amq/Activator.class" afterPath="$PROJECT_DIR$/activemq-transport/target/classes/com/fiorano/openesb/amq/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/application-repo-1.0.jar" afterPath="$PROJECT_DIR$/application-repo/target/application-repo-1.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/AckPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/AckPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/Activator.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ApplicationInfoPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ApplicationInfoPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ApplicationRepository.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ApplicationRepository.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/BindReq.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/BindReq.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/CommonSchemas.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/CommonSchemas.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DataPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DataPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiCarryForwardContext.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiCarryForwardContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiErrorCodes.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiErrorCodes.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiObjectTypes.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiObjectTypes.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiRequesterInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiRequesterInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiResourceData.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiResourceData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiSourceContext.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/DmiSourceContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/EsbDmiErrorCodes.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/EsbDmiErrorCodes.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/InQueuePacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/InQueuePacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/InflatableDMIObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/InflatableDMIObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/LogPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/LogPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/LoginInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/LoginInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/LoginResponse.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/LoginResponse.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/MQPropertySheet.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/MQPropertySheet.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/MapThreadLocale.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/MapThreadLocale.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/NamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/NamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/OutQueuePacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/OutQueuePacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/PingPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/PingPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ReadDataReq.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ReadDataReq.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/RuntimeArgsReq.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/RuntimeArgsReq.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/SBWSearchContext.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/SBWSearchContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/SendDataReq.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/SendDataReq.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceInstanceInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceInstanceInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceRemovalInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceRemovalInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceStatus.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServiceStatus.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServicesRemovalStatus.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServicesRemovalStatus.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServicesStatusPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/ServicesStatusPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/TargetPort.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/TargetPort.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/TestMain.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/TestMain.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/XPathDmi.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/XPathDmi.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Application$Label.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Application$Label.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Application.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Application.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationContext.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$2.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$3.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$4.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$4.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$5.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$5.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$6.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$6.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$7.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$7.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$8.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$8.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$9.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$9.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$TransformationConfig.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser$TransformationConfig.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationParser.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$APP_CORE_CONFIG_FLAG.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$APP_CORE_CONFIG_FLAG.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$SubType.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$SubType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$Type.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference$Type.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ApplicationReference.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/DBCallOutParameter.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/DBCallOutParameter.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/InputPortInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/InputPortInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/LogManager.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/LogManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ManageableProperty.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ManageableProperty.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/MessageTransformation.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/MessageTransformation.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/NamedConfigurationProperty.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/NamedConfigurationProperty.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/OutputPortInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/OutputPortInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/PortInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/PortInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/RemoteServiceInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/RemoteServiceInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Route$PRIORITY_LEVEL.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Route$PRIORITY_LEVEL.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Route.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Route.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/SchemaInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/SchemaInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/SchemaReference.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/SchemaReference.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ServiceInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/ServiceInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Transformation.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/Transformation.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/XPathSelector.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/application/XPathSelector.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/APSConstants.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/APSConstants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/AlternateDestination.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/AlternateDestination.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationContext.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationHeader.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationHeader.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationPropertySheet.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationPropertySheet.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationStateDetails.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationStateDetails.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationStateInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApplicationStateInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApsEventModule.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApsEventModule.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApsLogModule.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ApsLogModule.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Argument.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Argument.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/DeploymentProfile.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/DeploymentProfile.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/EndState.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/EndState.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ExternalServiceInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ExternalServiceInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/InPortInst.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/InPortInst.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/LogModules.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/LogModules.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Monitor.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Monitor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/OnException.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/OnException.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/OutPortInst.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/OutPortInst.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/PortInst.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/PortInst.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/PortInstConstants.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/PortInstConstants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/PortInstDescriptor.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/PortInstDescriptor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Route.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Route.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Routes.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/Routes.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/RuntimeArgs.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/RuntimeArgs.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/RuntimeDependency.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/RuntimeDependency.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstance.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstance.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstanceConstants.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstanceConstants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstanceStateDetails.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstanceStateDetails.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstances.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/ServiceInstances.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/State.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/State.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/StatusTracking.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/StatusTracking.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WfInPort.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WfInPort.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WfOutPort.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WfOutPort.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WorkflowExitPorts.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WorkflowExitPorts.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WorkflowStartPorts.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/aps/WorkflowStartPorts.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/common/Param.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/common/Param.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/common/RouteInfo.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/common/RouteInfo.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DataObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DataObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DataType$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DataType$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DataType.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DataType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DestinationType.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/DestinationType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/Label$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/Label$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/Label.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/Label.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/NamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/NamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ObjectCategory$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ObjectCategory$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ObjectCategory.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ObjectCategory.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortConfigurationDataObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortConfigurationDataObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortConfigurationNamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortConfigurationNamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortType$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortType$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortType.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/PortType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ResourceConfigurationDataObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ResourceConfigurationDataObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ResourceConfigurationNamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ResourceConfigurationNamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/RuntimeargConfigurationDataObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/RuntimeargConfigurationDataObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/RuntimeargConfigurationNamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/RuntimeargConfigurationNamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ServiceConfigurationDataObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ServiceConfigurationDataObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ServiceConfigurationNamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ServiceConfigurationNamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ServiceConfigurationType.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/ServiceConfigurationType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/TransformationConfigurationDataObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/TransformationConfigurationDataObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/TransformationConfigurationNamedObject.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/configuration/data/TransformationConfigurationNamedObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/constants/ConfigurationRepoConstants.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/constants/ConfigurationRepoConstants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/lp/ApplicationLaunchPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/lp/ApplicationLaunchPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/lp/RouteLaunchPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/lp/RouteLaunchPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/lp/ServiceLaunchPacket.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/lp/ServiceLaunchPacket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/rb/Bundle.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/rb/Bundle.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/schema/SchemaUtil$SchemaChecker.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/schema/SchemaUtil$SchemaChecker.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/schema/SchemaUtil.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/schema/SchemaUtil.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/CPS.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/CPS.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Deployment.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Deployment.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Execution.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Execution.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/LogModule.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/LogModule.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Port.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Port.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Resource.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Resource.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/RuntimeArgument.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/RuntimeArgument.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Schema.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Schema.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Service.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/Service.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceMetadata.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceMetadata.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$1.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$2.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$3.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$4.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser$4.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceParser.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceRef.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceRef.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceReference.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/service/ServiceReference.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Certificate.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Certificate.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Deployment.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Deployment.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/EventModule.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/EventModule.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Execution.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Execution.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/InPort.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/InPort.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/LogModule.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/LogModule.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/MonitorableModule.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/MonitorableModule.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/OutPort.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/OutPort.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/PortDescriptor.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/PortDescriptor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Resource.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Resource.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/RuntimeArg.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/RuntimeArg.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Security.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/Security.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServiceDependency.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServiceDependency.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServiceHeader.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServiceHeader.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServicePropertySheet.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServicePropertySheet.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServiceSearchContext.class" afterPath="$PROJECT_DIR$/application-repo/target/classes/com/fiorano/openesb/application/sps/ServiceSearchContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/applicationcontroller-1.0.jar" afterPath="$PROJECT_DIR$/applicationcontroller/target/applicationcontroller-1.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/Activator.class" afterPath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/ApplicationController.class" afterPath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/ApplicationController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/ApplicationHandle.class" afterPath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/ApplicationHandle.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/MicroServiceLaunchConfiguration.class" afterPath="$PROJECT_DIR$/applicationcontroller/target/classes/com/fiorano/openesb/applicationcontroller/MicroServiceLaunchConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteConfiguration.class" afterPath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteImpl$2.class" afterPath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteImpl$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteImpl.class" afterPath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteImpl.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteServiceImpl.class" afterPath="$PROJECT_DIR$/jms-route/target/classes/com/fiorano/openesb/jmsroute/impl/JMSRouteServiceImpl.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/jms-route-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/jms-route/target/jms-route-1.0-SNAPSHOT.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/bundle/Activator.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/bundle/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/LaunchConfiguration$LaunchMode.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/LaunchConfiguration$LaunchMode.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/LaunchConfiguration.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/LaunchConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/Launcher.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/Launcher.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/impl/CommandProvider.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/impl/CommandProvider.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/impl/InMemoryLauncher.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/impl/InMemoryLauncher.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/impl/SeparateProcessLauncher.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/launch/impl/SeparateProcessLauncher.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/repository/MicroserviceRepositoryManager.class" afterPath="$PROJECT_DIR$/microservice/target/classes/com/fiorano/openesb/microservice/repository/MicroserviceRepositoryManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/microservice-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/microservice/target/microservice-1.0-SNAPSHOT.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-client/target/classes/com/fiorano/openesb/rmiclient/Activator.class" afterPath="$PROJECT_DIR$/rmi-client/target/classes/com/fiorano/openesb/rmiclient/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-client/target/rmi-client-1.0.jar" afterPath="$PROJECT_DIR$/rmi-client/target/rmi-client-1.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/Activator.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/BreakpointMetaData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/BreakpointMetaData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/EventProcessReference.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/EventProcessReference.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/EventProcessStateData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/EventProcessStateData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/FESPerformanceStats.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/FESPerformanceStats.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IAPIProjectManagerListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IAPIProjectManagerListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IAPIProjectsManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IAPIProjectsManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IAPIProjectsRepositoryEventListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IAPIProjectsRepositoryEventListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IConfigurationManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IConfigurationManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IConfigurationRepositoryListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IConfigurationRepositoryListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDapiEventManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDapiEventManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDebugManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDebugManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDebugger.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDebugger.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDocTrackManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IDocTrackManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IEventProcessManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IEventProcessManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IEventProcessManagerListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IEventProcessManagerListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IFPSManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IFPSManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IKeyStoreManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IKeyStoreManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IRepositoryEventListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IRepositoryEventListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IRmiManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IRmiManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ISchemaReferenceManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ISchemaReferenceManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServerStateListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServerStateListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServiceManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServiceManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServiceManagerListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServiceManagerListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServiceProviderManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IServiceProviderManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IUserSecurityManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IUserSecurityManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IUserSecurityManagerListener.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/IUserSecurityManagerListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/MemoryUsageMetaData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/MemoryUsageMetaData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/PortInstanceMetaData$DestinationType.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/PortInstanceMetaData$DestinationType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/PortInstanceMetaData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/PortInstanceMetaData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/RemoteServiceInstanceMetaData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/RemoteServiceInstanceMetaData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/RouteMetaData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/RouteMetaData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceException.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceException.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceInstanceMetaData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceInstanceMetaData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceReference.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceReference.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceStateData.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/ServiceStateData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/SystemInfoReference.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/SystemInfoReference.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/proxy/IRemoteServerProxy.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/proxy/IRemoteServerProxy.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/proxy/RemoteClientInterceptor.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/api/proxy/RemoteClientInterceptor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/client/FioranoRMIClientSocketFactory.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/client/FioranoRMIClientSocketFactory.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/connector/FioranoNamingService.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/connector/FioranoNamingService.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/connector/RmiConnector.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/connector/RmiConnector.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/AbstractRmiManager$1.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/AbstractRmiManager$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/AbstractRmiManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/AbstractRmiManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/EventProcessManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/EventProcessManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/IDistributedRemoteObject.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/IDistributedRemoteObject.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/InstanceHandler.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/InstanceHandler.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/RemoteServerProxy.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/RemoteServerProxy.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/RmiManager.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/impl/RmiManager.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/server/FioranoRMIMasterSocketFactory.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/server/FioranoRMIMasterSocketFactory.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/server/FioranoRMIServerSocketFactory.class" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/com/fiorano/openesb/rmiconnector/server/FioranoRMIServerSocketFactory.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/rmi-connector-1.0.jar" afterPath="$PROJECT_DIR$/rmi-connector/target/rmi-connector-1.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/target/classes/com/fiorano/openesb/route/RouteOperationConfiguration$Type.class" afterPath="$PROJECT_DIR$/route-api/target/classes/com/fiorano/openesb/route/RouteOperationConfiguration$Type.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/target/classes/com/fiorano/openesb/route/impl/AbstractRouteImpl.class" afterPath="$PROJECT_DIR$/route-api/target/classes/com/fiorano/openesb/route/impl/AbstractRouteImpl.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/target/route-api-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/route-api/target/route-api-1.0-SNAPSHOT.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/simulate-launch/target/simulate-launch-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/simulate-launch/target/simulate-launch-1.0-SNAPSHOT.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Consumer.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Consumer.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/ConsumerConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/ConsumerConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Message.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Message.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/MessageListener.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/MessageListener.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Port.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Port.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/PortConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/PortConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Producer.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/Producer.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/ProducerConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/ProducerConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/TransportService.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/TransportService.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/application/ApplicationConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/application/ApplicationConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/application/ApplicationLauncher.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/application/ApplicationLauncher.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/bundle/Activator.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/bundle/Activator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/AbstractJMSTransportService$1.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/AbstractJMSTransportService$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/AbstractJMSTransportService.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/AbstractJMSTransportService.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSConsumer$1.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSConsumer$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSConsumer.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSConsumer.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSConsumerConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSConsumerConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSMessage.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSMessage.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSPort.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSPort.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSPortConfiguration$PortType.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSPortConfiguration$PortType.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSPortConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSPortConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSProducer.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSProducer.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSProducerConfiguration.class" afterPath="$PROJECT_DIR$/transport-api/target/classes/com/fiorano/openesb/transport/impl/jms/JMSProducerConfiguration.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/transport-api-1.0.0.jar" afterPath="$PROJECT_DIR$/transport-api/target/transport-api-1.0.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/classes/com/fiorano/openesb/utils/StringUtil.class" afterPath="$PROJECT_DIR$/utils/target/classes/com/fiorano/openesb/utils/StringUtil.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/classes/com/fiorano/openesb/utils/Util.class" afterPath="$PROJECT_DIR$/utils/target/classes/com/fiorano/openesb/utils/Util.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/classes/com/fiorano/openesb/utils/exception/FioranoException.class" afterPath="$PROJECT_DIR$/utils/target/classes/com/fiorano/openesb/utils/exception/FioranoException.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/utils-1.0.jar" afterPath="$PROJECT_DIR$/utils/target/utils-1.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OpenESB.iml" afterPath="$PROJECT_DIR$/OpenESB.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/activemq-transport.iml" afterPath="$PROJECT_DIR$/activemq-transport/activemq-transport.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/activemq-transport/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/activemq-transport/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activemq-transport/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/activemq-transport/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/application-repo.iml" afterPath="$PROJECT_DIR$/application-repo/application-repo.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/application-repo/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application-repo/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/application-repo/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/applicationcontroller.iml" afterPath="$PROJECT_DIR$/applicationcontroller/applicationcontroller.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/applicationcontroller/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/applicationcontroller/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/applicationcontroller/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/applicationcontroller/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/target/feature/feature.xml" afterPath="$PROJECT_DIR$/fiorano-feature/target/feature/feature.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/target/feature/filteredInputFeature.xml" afterPath="$PROJECT_DIR$/fiorano-feature/target/feature/filteredInputFeature.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/target/history/dependencies.added.xml" afterPath="$PROJECT_DIR$/fiorano-feature/target/history/dependencies.added.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/target/history/dependencies.removed.xml" afterPath="$PROJECT_DIR$/fiorano-feature/target/history/dependencies.removed.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiorano-feature/target/history/dependencies.xml" afterPath="$PROJECT_DIR$/fiorano-feature/target/history/dependencies.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/jms-route.iml" afterPath="$PROJECT_DIR$/jms-route/jms-route.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/jms-route/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/jms-route/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jms-route/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/jms-route/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/microservice/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/microservice/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/microservice/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/microservice/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-client/rmi-client.iml" afterPath="$PROJECT_DIR$/rmi-client/rmi-client.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-client/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/rmi-client/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-client/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/rmi-client/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-client/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/rmi-client/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/rmi-connector.iml" afterPath="$PROJECT_DIR$/rmi-connector/rmi-connector.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/rmi-connector/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/rmi-connector/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rmi-connector/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/rmi-connector/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/route-api.iml" afterPath="$PROJECT_DIR$/route-api/route-api.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/route-api/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/route-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/route-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/route-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/simulate-launch/simulate-launch.iml" afterPath="$PROJECT_DIR$/simulate-launch/simulate-launch.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/simulate-launch/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/simulate-launch/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/simulate-launch/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/simulate-launch/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/transport-api/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/transport-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/transport-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transport-api/transport-api.iml" afterPath="$PROJECT_DIR$/transport-api/transport-api.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/utils/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/utils/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/utils/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/utils.iml" afterPath="$PROJECT_DIR$/utils/utils.iml" />
     </list>
+    <list id="b80e1fc1-1454-416c-9306-52ddcb675d1e" name="LocalChanges" comment="" />
     <ignored path="OpenESB.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -389,7 +32,6 @@
     <ignored path="$PROJECT_DIR$/security/target/" />
     <ignored path="$PROJECT_DIR$/events/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <file path="$PROJECT_DIR$/.idea/workspace.xml" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -436,36 +78,61 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ApplicationRepository.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ApplicationRepository.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application-repo/src/main/java/com/fiorano/openesb/application/ApplicationRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41580757">
-              <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
-              <folding>
-                <element signature="e#995#996#0" expanded="true" />
-                <element signature="e#1037#1038#0" expanded="true" />
-                <element signature="e#1109#1110#0" expanded="true" />
-                <element signature="e#1137#1138#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MicroserviceConfiguration.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/microservice/src/main/java/com/fiorano/openesb/microservice/ccp/event/common/data/MicroserviceConfiguration.java">
-          <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="27" column="33" selection-start-line="27" selection-start-column="33" selection-end-line="27" selection-end-column="33" />
+              <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RouteOperationHandler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/route-api/src/main/java/com/fiorano/openesb/route/RouteOperationHandler.java">
+      <file leaf-file-name=".name" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/.name">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.29360968">
+              <caret line="145" column="21" selection-start-line="145" selection-start-column="21" selection-end-line="145" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="vcs.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/vcs.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="modules.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="uiDesigner.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/uiDesigner.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -486,9 +153,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="18" column="70" selection-start-line="18" selection-start-column="70" selection-end-line="18" selection-end-column="70" />
-              <folding>
-                <element signature="e#516#539#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -508,36 +173,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TransformationOperationHandler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/route-api/src/main/java/com/fiorano/openesb/route/impl/TransformationOperationHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="6" column="56" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TransformationConfiguration.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/route-api/src/main/java/com/fiorano/openesb/route/impl/TransformationConfiguration.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ApplicationHandle.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/applicationcontroller/src/main/java/com/fiorano/openesb/applicationcontroller/ApplicationHandle.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="49" column="71" selection-start-line="49" selection-start-column="71" selection-end-line="49" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -585,7 +220,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/transport-api/src/main/java/com/fiorano/openesb/transport/MessageListener.java" />
         <option value="$PROJECT_DIR$/transport-api/src/main/java/com/fiorano/openesb/transport/impl/jms/JMSConsumer.java" />
         <option value="$PROJECT_DIR$/transport-api/src/main/java/com/fiorano/openesb/transport/impl/jms/JMSConsumerConfiguration.java" />
         <option value="$PROJECT_DIR$/jms-route/src/main/java/com/fiorano/openesb/jmsroute/impl/JMSRouteConfiguration.java" />
@@ -636,6 +270,7 @@
         <option value="$PROJECT_DIR$/microservice/src/main/java/com/fiorano/openesb/microservice/ccp/event/common/data/MicroserviceConfiguration.java" />
         <option value="$PROJECT_DIR$/microservice/src/main/java/com/fiorano/openesb/microservice/launch/impl/JVMCommandProvider.java" />
         <option value="$PROJECT_DIR$/application-repo/src/main/java/com/fiorano/openesb/application/ApplicationRepository.java" />
+        <option value="$PROJECT_DIR$/.idea/workspace.xml" />
       </list>
     </option>
   </component>
@@ -784,6 +419,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -1714,11 +1351,23 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OpenESB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OpenESB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value=".idea" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2211,28 +1860,28 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296355" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2947702" sideWeight="0.49719775" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39936608" sideWeight="0.15292233" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16679968" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16919394" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296355" sideWeight="0.49719775" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.49762282" sideWeight="0.7197758" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.76703644" sideWeight="0.4939577" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2793296" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51664025" sideWeight="0.56044835" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2793296" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24901186" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51664025" sideWeight="0.84707767" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2947702" sideWeight="0.49719775" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.49762282" sideWeight="0.7197758" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296355" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24980237" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51664025" sideWeight="0.56044835" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51664025" sideWeight="0.84707767" order="9" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -2329,51 +1978,10 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/microservice/src/main/java/com/fiorano/openesb/microservice/launch/impl/SeparateProcessRuntimeHandle.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/microservice/src/main/java/com/fiorano/openesb/microservice/launch/MicroserviceRuntimeHandle.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="9" selection-start-line="24" selection-start-column="9" selection-end-line="24" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rmi-connector/src/main/java/com/fiorano/openesb/rmiconnector/api/IEventProcessManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/route-api/src/main/java/com/fiorano/openesb/route/RouteConfiguration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/osgi/org.osgi.core/6.0.0/org.osgi.core-6.0.0-sources.jar!/org/osgi/framework/BundleActivator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="67" column="16" selection-start-line="67" selection-start-column="16" selection-end-line="67" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/transport-api/src/main/java/com/fiorano/openesb/transport/impl/jms/JMSConsumerConfiguration.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="7" column="11" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
-          <folding>
-            <element signature="e#274#275#0" expanded="false" />
-            <element signature="e#314#315#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2381,7 +1989,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="14" column="11" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2431,7 +2038,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="40" column="25" selection-start-line="40" selection-start-column="25" selection-end-line="40" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2439,7 +2045,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="110" column="22" selection-start-line="110" selection-start-column="22" selection-end-line="110" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2447,7 +2052,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="57" column="9" selection-start-line="57" selection-start-column="9" selection-end-line="57" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2455,7 +2059,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2470,7 +2073,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2478,7 +2080,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="23" column="39" selection-start-line="23" selection-start-column="39" selection-end-line="23" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2486,7 +2087,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2523,12 +2123,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="35" column="46" selection-start-line="35" selection-start-column="46" selection-end-line="35" selection-end-column="46" />
-          <folding>
-            <element signature="e#0#1592#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#1098#1099#0" expanded="false" />
-            <element signature="e#1136#1137#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2536,146 +2130,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="453" column="18" selection-start-line="453" selection-start-column="18" selection-end-line="453" selection-end-column="18" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2195#2196#0" expanded="false" />
-            <element signature="e#2253#2254#0" expanded="false" />
-            <element signature="e#2762#2763#0" expanded="false" />
-            <element signature="e#2789#2790#0" expanded="false" />
-            <element signature="e#2944#2945#0" expanded="false" />
-            <element signature="e#2976#2977#0" expanded="false" />
-            <element signature="e#3364#3365#0" expanded="false" />
-            <element signature="e#3394#3395#0" expanded="false" />
-            <element signature="e#3563#3564#0" expanded="false" />
-            <element signature="e#3601#3602#0" expanded="false" />
-            <element signature="e#3969#3970#0" expanded="false" />
-            <element signature="e#3996#3997#0" expanded="false" />
-            <element signature="e#4151#4152#0" expanded="false" />
-            <element signature="e#4183#4184#0" expanded="false" />
-            <element signature="e#4735#4736#0" expanded="false" />
-            <element signature="e#4777#4778#0" expanded="false" />
-            <element signature="e#5046#5047#0" expanded="false" />
-            <element signature="e#5108#5109#0" expanded="false" />
-            <element signature="e#5584#5585#0" expanded="false" />
-            <element signature="e#5623#5624#0" expanded="false" />
-            <element signature="e#5817#5818#0" expanded="false" />
-            <element signature="e#5873#5874#0" expanded="false" />
-            <element signature="e#6338#6339#0" expanded="false" />
-            <element signature="e#6376#6377#0" expanded="false" />
-            <element signature="e#6587#6588#0" expanded="false" />
-            <element signature="e#6641#6642#0" expanded="false" />
-            <element signature="e#7242#7243#0" expanded="false" />
-            <element signature="e#7270#7271#0" expanded="false" />
-            <element signature="e#7490#7491#0" expanded="false" />
-            <element signature="e#7524#7525#0" expanded="false" />
-            <element signature="e#8042#8043#0" expanded="false" />
-            <element signature="e#8078#8079#0" expanded="false" />
-            <element signature="e#8347#8348#0" expanded="false" />
-            <element signature="e#8397#8398#0" expanded="false" />
-            <element signature="e#8969#8970#0" expanded="false" />
-            <element signature="e#9002#9003#0" expanded="false" />
-            <element signature="e#9190#9191#0" expanded="false" />
-            <element signature="e#9234#9235#0" expanded="false" />
-            <element signature="e#9888#9889#0" expanded="false" />
-            <element signature="e#9926#9927#0" expanded="false" />
-            <element signature="e#10157#10158#0" expanded="false" />
-            <element signature="e#10211#10212#0" expanded="false" />
-            <element signature="e#11531#11532#0" expanded="false" />
-            <element signature="e#11572#11573#0" expanded="false" />
-            <element signature="e#11782#11783#0" expanded="false" />
-            <element signature="e#11842#11843#0" expanded="false" />
-            <element signature="e#16157#16158#0" expanded="false" />
-            <element signature="e#16207#16208#0" expanded="false" />
-            <element signature="e#16657#16658#0" expanded="false" />
-            <element signature="e#16690#16691#0" expanded="false" />
-            <element signature="e#16867#16868#0" expanded="false" />
-            <element signature="e#16911#16912#0" expanded="false" />
-            <element signature="e#17513#17514#0" expanded="false" />
-            <element signature="e#17547#17548#0" expanded="false" />
-            <element signature="e#17741#17742#0" expanded="false" />
-            <element signature="e#17787#17788#0" expanded="false" />
-            <element signature="e#18297#18298#0" expanded="false" />
-            <element signature="e#18336#18337#0" expanded="false" />
-            <element signature="e#18522#18523#0" expanded="false" />
-            <element signature="e#18578#18579#0" expanded="false" />
-            <element signature="e#18765#18766#0" expanded="false" />
-            <element signature="e#18818#18819#0" expanded="false" />
-            <element signature="e#19014#19015#0" expanded="false" />
-            <element signature="e#19070#19071#0" expanded="false" />
-            <element signature="e#19818#19819#0" expanded="false" />
-            <element signature="e#19873#19874#0" expanded="false" />
-            <element signature="e#21621#21622#0" expanded="false" />
-            <element signature="e#21671#21672#0" expanded="false" />
-            <element signature="e#22533#22534#0" expanded="false" />
-            <element signature="e#22583#22584#0" expanded="false" />
-            <element signature="e#23603#23604#0" expanded="false" />
-            <element signature="e#23654#23655#0" expanded="false" />
-            <element signature="e#24665#24666#0" expanded="false" />
-            <element signature="e#24697#24698#0" expanded="false" />
-            <element signature="e#24949#24950#0" expanded="false" />
-            <element signature="e#24991#24992#0" expanded="false" />
-            <element signature="e#25535#25536#0" expanded="false" />
-            <element signature="e#25567#25568#0" expanded="false" />
-            <element signature="e#25729#25730#0" expanded="false" />
-            <element signature="e#25771#25772#0" expanded="false" />
-            <element signature="e#26559#26560#0" expanded="false" />
-            <element signature="e#26601#26602#0" expanded="false" />
-            <element signature="e#26794#26795#0" expanded="false" />
-            <element signature="e#26856#26857#0" expanded="false" />
-            <element signature="e#27453#27454#0" expanded="false" />
-            <element signature="e#27493#27494#0" expanded="false" />
-            <element signature="e#27698#27699#0" expanded="false" />
-            <element signature="e#27756#27757#0" expanded="false" />
-            <element signature="e#28327#28328#0" expanded="false" />
-            <element signature="e#28371#28372#0" expanded="false" />
-            <element signature="e#28573#28574#0" expanded="false" />
-            <element signature="e#28620#28621#0" expanded="false" />
-            <element signature="e#28806#28807#0" expanded="false" />
-            <element signature="e#28847#28848#0" expanded="false" />
-            <element signature="e#31158#31159#0" expanded="false" />
-            <element signature="e#31203#31204#0" expanded="false" />
-            <element signature="e#31417#31418#0" expanded="false" />
-            <element signature="e#31465#31466#0" expanded="false" />
-            <element signature="e#31659#31660#0" expanded="false" />
-            <element signature="e#31701#31702#0" expanded="false" />
-            <element signature="e#32714#32715#0" expanded="false" />
-            <element signature="e#32747#32748#0" expanded="false" />
-            <element signature="e#32960#32961#0" expanded="false" />
-            <element signature="e#33004#33005#0" expanded="false" />
-            <element signature="e#33481#33482#0" expanded="false" />
-            <element signature="e#33522#33523#0" expanded="false" />
-            <element signature="e#33711#33712#0" expanded="false" />
-            <element signature="e#33755#33756#0" expanded="false" />
-            <element signature="e#33909#33910#0" expanded="false" />
-            <element signature="e#33942#33943#0" expanded="false" />
-            <element signature="e#34147#34148#0" expanded="false" />
-            <element signature="e#34191#34192#0" expanded="false" />
-            <element signature="e#34294#34295#0" expanded="false" />
-            <element signature="e#34333#34334#0" expanded="false" />
-            <element signature="e#34893#34894#0" expanded="false" />
-            <element signature="e#34946#34947#0" expanded="false" />
-            <element signature="e#35186#35187#0" expanded="false" />
-            <element signature="e#35242#35243#0" expanded="false" />
-            <element signature="e#35422#35423#0" expanded="false" />
-            <element signature="e#35461#35462#0" expanded="false" />
-            <element signature="e#35698#35699#0" expanded="false" />
-            <element signature="e#35754#35755#0" expanded="false" />
-            <element signature="e#36747#36748#0" expanded="false" />
-            <element signature="e#36796#36797#0" expanded="false" />
-            <element signature="e#37695#37696#0" expanded="false" />
-            <element signature="e#37738#37739#0" expanded="false" />
-            <element signature="e#37985#37986#0" expanded="false" />
-            <element signature="e#38031#38032#0" expanded="false" />
-            <element signature="e#38202#38203#0" expanded="false" />
-            <element signature="e#38236#38237#0" expanded="false" />
-            <element signature="e#38468#38469#0" expanded="false" />
-            <element signature="e#38514#38515#0" expanded="false" />
-            <element signature="e#39666#39667#0" expanded="false" />
-            <element signature="e#39709#39710#0" expanded="false" />
-            <element signature="e#79919#79920#0" expanded="false" />
-            <element signature="e#79951#79952#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2683,10 +2137,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="43" column="14" selection-start-line="43" selection-start-column="14" selection-end-line="43" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#1455#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2694,37 +2144,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="117" column="23" selection-start-line="117" selection-start-column="23" selection-end-line="117" selection-end-column="23" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#2227#2228#0" expanded="false" />
-            <element signature="e#2282#2283#0" expanded="false" />
-            <element signature="e#2344#2345#0" expanded="false" />
-            <element signature="e#2400#2401#0" expanded="false" />
-            <element signature="e#2830#2831#0" expanded="false" />
-            <element signature="e#2861#2862#0" expanded="false" />
-            <element signature="e#2897#2898#0" expanded="false" />
-            <element signature="e#2931#2932#0" expanded="false" />
-            <element signature="e#2966#2967#0" expanded="false" />
-            <element signature="e#2999#3000#0" expanded="false" />
-            <element signature="e#3230#3231#0" expanded="false" />
-            <element signature="e#3263#3264#0" expanded="false" />
-            <element signature="e#3305#3306#0" expanded="false" />
-            <element signature="e#3329#3330#0" expanded="false" />
-            <element signature="e#3373#3374#0" expanded="false" />
-            <element signature="e#3397#3398#0" expanded="false" />
-            <element signature="e#3438#3439#0" expanded="false" />
-            <element signature="e#3475#3476#0" expanded="false" />
-            <element signature="e#3521#3522#0" expanded="false" />
-            <element signature="e#3563#3564#0" expanded="false" />
-            <element signature="e#3601#3602#0" expanded="false" />
-            <element signature="e#3635#3636#0" expanded="false" />
-            <element signature="e#3677#3678#0" expanded="false" />
-            <element signature="e#3715#3716#0" expanded="false" />
-            <element signature="e#3760#3761#0" expanded="false" />
-            <element signature="e#3801#3802#0" expanded="false" />
-            <element signature="e#3868#3869#0" expanded="false" />
-            <element signature="e#3914#3915#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2732,7 +2151,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2740,7 +2158,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2748,7 +2165,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="5" column="9" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2764,9 +2180,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding>
-            <element signature="e#241#242#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2774,7 +2187,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2793,7 +2205,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="81" column="29" selection-start-line="81" selection-start-column="29" selection-end-line="81" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2889,9 +2300,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="18" column="70" selection-start-line="18" selection-start-column="70" selection-end-line="18" selection-end-column="70" />
-          <folding>
-            <element signature="e#516#539#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2929,14 +2338,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/application-repo/src/main/java/com/fiorano/openesb/application/ApplicationRepository.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41580757">
-          <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
-          <folding>
-            <element signature="e#995#996#0" expanded="true" />
-            <element signature="e#1037#1038#0" expanded="true" />
-            <element signature="e#1109#1110#0" expanded="true" />
-            <element signature="e#1137#1138#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/.name">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/uiDesigner.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/vcs.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29360968">
+          <caret line="145" column="21" selection-start-line="145" selection-start-column="21" selection-end-line="145" selection-end-column="21" />
+          <folding />
         </state>
       </provider>
     </entry>
