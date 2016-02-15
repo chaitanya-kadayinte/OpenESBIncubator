@@ -3,13 +3,11 @@ package com.fiorano.openesb.applicationcontroller;
 import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.ServiceRef;
-import com.fiorano.openesb.application.sps.RuntimeArg;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -22,7 +20,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
     private int numberOfStopAttempts;
     private String microserviceId;
     private String microserviceVersion;
-    private String name;
+    private String serviceName;
     private String applicationName;
     private String applicationVersion;
     private AdditionalConfiguration additionalConfiguration;
@@ -35,7 +33,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
         this.password = password;
         this.runtimeArgs = si.getRuntimeArguments();
         this.microserviceId = si.getGUID();
-        this.name = si.getName();
+        this.serviceName = si.getName();
         this.microserviceVersion = String.valueOf(si.getVersion());
         this.applicationName = appGuid;
         this.applicationVersion = appVersion;
@@ -117,8 +115,8 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
         return microserviceVersion;
     }
 
-    public String getName() {
-        return name;
+    public String getServiceName() {
+        return serviceName;
     }
 
     public String getApplicationName() {

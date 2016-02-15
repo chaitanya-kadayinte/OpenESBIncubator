@@ -49,10 +49,10 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.PASSWORD, launchConfiguration.getPassword());
         commandLineArgs.put(LaunchConstants.CONN_FACTORY,"ConnectionFactory");
         commandLineArgs.put(LaunchConstants.CLIENT_ID, getServiceInstanceLookupName(launchConfiguration.getApplicationName(),
-                launchConfiguration.getApplicationVersion(), launchConfiguration.getName()));
+                launchConfiguration.getApplicationVersion(), launchConfiguration.getServiceName()));
         commandLineArgs.put(LaunchConstants.EVENT_PROC_NAME, launchConfiguration.getApplicationName());
         commandLineArgs.put(LaunchConstants.EVENT_PROC_VERSION, launchConfiguration.getApplicationVersion());
-        commandLineArgs.put(LaunchConstants.COMP_INSTANCE_NAME, launchConfiguration.getName());
+        commandLineArgs.put(LaunchConstants.COMP_INSTANCE_NAME, launchConfiguration.getServiceName());
 
         commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, launchConfiguration.getLaunchMode() == LaunchConfiguration.
                 LaunchMode.IN_MEMORY ? "true" : "false");

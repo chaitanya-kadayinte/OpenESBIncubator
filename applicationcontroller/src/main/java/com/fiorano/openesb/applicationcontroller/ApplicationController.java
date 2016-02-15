@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ApplicationController {
-    ApplicationRepository applicationRepository;
+    private ApplicationRepository applicationRepository;
     private MicroServiceLauncher microServiceLauncher;
-    Map<String, ApplicationHandle> applicationHandleMap = new HashMap<String, ApplicationHandle>();
+    private Map<String, ApplicationHandle> applicationHandleMap = new HashMap<>();
     private RouteService<RouteConfiguration> routeService;
 
     ApplicationController(ApplicationRepository applicationRepository, MicroServiceLauncher microServiceLauncher, RouteService<RouteConfiguration> routeService){
@@ -27,32 +27,34 @@ public class ApplicationController {
     }
 
     public boolean launchApplication(String appGuid, String version) throws Exception {
-        System.out.println("launching application: " + appGuid + ":" + version);
+        System.out.println("Launching application : " + appGuid + ":" + version);
         Application application = applicationRepository.readApplication(appGuid, version);
         ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService);
-        appHandle.createMicroServiceHandles();
         appHandle.createRoutes();
         appHandle.launchComponents();
-        System.out.println("launched application: "+appGuid+":"+version);
+        applicationHandleMap.put(getKey(appGuid,version),appHandle);
+        System.out.println("Launched application: "+appGuid+":"+version);
         return true;
     }
 
     public boolean stopApplication(String appGuid, String version) throws Exception {
 
-        ApplicationHandle applicationHandle = applicationHandleMap.get(appGuid+ ""+ version );
+        ApplicationHandle applicationHandle = applicationHandleMap.get(getKey(appGuid, version));
         if(applicationHandle!=null){
             applicationHandle.stopApplication();
         }
         return true;
     }
 
-    public boolean synchronizeApplication(String appGuid, String version){
+    private String getKey(String appGuid, String version) {
+        return appGuid+ ":"+ version;
+    }
 
+    public boolean synchronizeApplication(String appGuid, String version){
         return false;
     }
 
     public boolean startAllMicroServices(String appGuid, String version){
-
         return false;
     }
 

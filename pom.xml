@@ -25,6 +25,8 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>utils</module>
+        <module>events</module>
+        <module>security</module>
         <module>transport-api</module>
         <module>activemq-transport</module>
         <module>route-api</module>
@@ -44,6 +46,16 @@
 
     <dependencies>
         <!-- add the artifact that should be in the feature in the dependencies set -->
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.config</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.modules</artifactId>
+            <version>2.4.1</version>
+        </dependency>
     </dependencies>
 
     <build>

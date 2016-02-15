@@ -21,10 +21,7 @@ import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
 import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import com.fiorano.openesb.microservice.ccp.event.EventFactory;
 import com.fiorano.openesb.transport.*;
-import com.fiorano.openesb.transport.impl.jms.JMSMessage;
-import com.fiorano.openesb.transport.impl.jms.JMSMessageConfiguration;
-import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
-import com.fiorano.openesb.transport.impl.jms.JMSProducerConfiguration;
+import com.fiorano.openesb.transport.impl.jms.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import javax.jms.BytesMessage;
@@ -34,7 +31,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class CCPEventManager implements MessageListener<Message<BytesMessage>> {
+public class CCPEventManager implements MessageListener<Message> {
     private Map<CCPEventType, Map<String, IEventListener>> eventListeners;
     private Map<Long, CCPResponseCallback> pendingResponses;
     private Map<Long, Integer> trackResponseCount;
@@ -67,7 +64,11 @@ public class CCPEventManager implements MessageListener<Message<BytesMessage>> {
         JMSPortConfiguration cToP = new JMSPortConfiguration();
         cToP.setPortType(JMSPortConfiguration.PortType.TOPIC);
         cToP.setName("CCP_COMPONENT_TO_PEER_TRANSPORT");
-        transportService.enablePort(cToP);
+        Port port = transportService.enablePort(cToP);
+
+        Consumer<Message> consumer = transportService.createConsumer(port, new JMSConsumerConfiguration(null));
+        consumer.attachMessageListener(this);
+
     }
 
     public CCPEventGenerator getCcpEventGenerator() {
@@ -91,11 +92,11 @@ public class CCPEventManager implements MessageListener<Message<BytesMessage>> {
         }
     }
 
-    public void messageReceived(Message<BytesMessage> msg) throws FioranoException {
-        BytesMessage bytesMessage = (BytesMessage) msg;
+    public void messageReceived(Message msg) throws FioranoException {
+        BytesMessage bytesMessage = (BytesMessage) msg.getMessage();
         try {
             bytesMessage.reset();
-            java.lang.String component = bytesMessage.getStringProperty(ControlEvent.SOURCE_OBJECT);
+            String component = bytesMessage.getStringProperty(ControlEvent.SOURCE_OBJECT);
             CCPEventType eventType = CCPEventType.valueOf(bytesMessage.getStringProperty(ControlEvent.EVENT_TYPE_HEADER));
             ControlEvent event = EventFactory.getEvent(eventType);
             event.fromMessage(bytesMessage);
@@ -164,11 +165,15 @@ public class CCPEventManager implements MessageListener<Message<BytesMessage>> {
          */
         public void sendEvent(ControlEvent event, CCPResponseCallback callback, String... componentIdentifiers) throws Exception {
             try {
-                TransportService<Port, Message> transportService = ccpEventManager.getTransportService();
-                BytesMessage message = (BytesMessage) transportService.createMessage(new JMSMessageConfiguration(JMSMessageConfiguration.MessageType.Bytes));
+                BytesMessage message = (BytesMessage) transportService.createMessage(new JMSMessageConfiguration(JMSMessageConfiguration.MessageType.Bytes)).getMessage();
                 event.toMessage(message);
                 StringBuilder target = new StringBuilder();
-                for (String instance : componentIdentifiers) target.append(instance).append(";");
+                for (String instance : componentIdentifiers) {
+                    System.out.println(instance);
+                    target.append(instance).append(";");
+                }
+                System.out.println("Sending event from server -" + event + "Component - " + target);
+
                 if (target.toString().length() == 0)
                     throw new FioranoException("NO_TARGET_COMPONENT_FOR_CCP_EVENT" + event.getEventId());
                 message.setJMSPriority(event.getPriority());

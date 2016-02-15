@@ -25,30 +25,30 @@ public class ApplicationHandle {
         this.routeService = routeService;
     }
 
-    public void createMicroServiceHandles() {
-
-
-    }
 
     public void createRoutes() throws Exception {
         for(final Route route: application.getRoutes()) {
+
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
-            sourceConfiguration.setName(sourcePortInstance);
-            OutputPortInstance outputPortInstance = application.getServiceInstance(route.getSourceServiceInstance()).getOutputPortInstance(sourcePortInstance);
+            String appKey = application.getGUID() + "__" + application.getVersion() + "__";
+            String sourceServiceInstance = route.getSourceServiceInstance();
+            sourceConfiguration.setName(appKey + sourceServiceInstance + "__" + sourcePortInstance);
+            OutputPortInstance outputPortInstance = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
             int type = outputPortInstance.getDestinationType();
             sourceConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
 
             String destPortInstance = route.getTargetPortInstance();
             JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
-            destinationConfiguration.setName(destPortInstance);
-            InputPortInstance inputPortInstance = application.getServiceInstance(route.getTargetServiceInstance()).getInputPortInstance(destPortInstance);
+            String targetServiceInstance = route.getTargetServiceInstance();
+            destinationConfiguration.setName(appKey + targetServiceInstance + "__" +destPortInstance);
+            InputPortInstance inputPortInstance = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
             int inputPortInstanceDestinationType = inputPortInstance.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-
             com.fiorano.openesb.route.Route route1 = routeService.createRoute(new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration));
+            route1.start();
             routeMap.put(route.getName(), route1);
         }
     }
