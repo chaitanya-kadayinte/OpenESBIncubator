@@ -2,13 +2,22 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="fiorano-feature-1.0-SNAPSHOT">
     <feature name="fiorano-feature" description="Fiorano feature" version="1.0.0.SNAPSHOT">
         <details>Feature which encapsulates Fiorano Deployment</details>
-        <feature version="[2,3)" prerequisite="false" dependency="false">transaction</feature>
-        <bundle start-level="50">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
-        <bundle start-level="51">mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
-        <bundle start-level="52">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
-        <bundle start-level="53">mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
-        <bundle start-level="65">mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
-        <bundle start-level="55">mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
-        <bundle start-level="50">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
+        <bundle start-level="80">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
+        <bundle start-level="81">mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
+        <bundle start-level="82">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
+        <bundle start-level="83">mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
+        <bundle start-level="84">mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
+        <bundle start-level="85">mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
+        <bundle start-level="86">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
+        <bundle start-level="87">wrap:mvn:xerces/xercesImpl/2.11.0</bundle>
+        <bundle start-level="88">mvn:org.apache.commons/commons-lang3/3.4</bundle>
+        <bundle start-level="89">mvn:org.codehaus.woodstox/woodstox-core-asl/4.4.1</bundle>
+        <bundle start-level="90">mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
+        <bundle start-level="91">wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
+        <bundle start-level="92">mvn:com.fiorano.openesb/utils/1.0</bundle>
+        <bundle start-level="93">mvn:com.fiorano.openesb/application-repo/1.0</bundle>
+        <bundle start-level="94">mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
+        <bundle start-level="95">mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
+        <bundle start-level="96">mvn:com.fiorano.openesb/rmi-client/1.0</bundle>
     </feature>
 </features>

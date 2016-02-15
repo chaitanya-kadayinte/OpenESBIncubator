@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1454057164086
-Build-Jdk: 1.8.0_45
-Built-By: Janardhan
+Bnd-LastModified: 1455548749236
+Build-Jdk: 1.8.0_51
+Built-By: chaitanya
 Bundle-Activator: com.fiorano.openesb.route.bundle.Activator
 Bundle-Description: routes OSGi bundle project.
 Bundle-ManifestVersion: 2

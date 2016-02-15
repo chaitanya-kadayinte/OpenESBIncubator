@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="fiorano-feature-1.0-SNAPSHOT">
     <feature version="0.0.0">
-        <feature prerequisite="false" dependency="false">transaction</feature>
         <bundle>mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
-        <bundle>mvn:com.fiorano.openesb/applicationcontroller/applicationcontroller-1.0.jar</bundle>
-        <bundle>mvn:com.fiorano.openesb/applicationrepo/application-repo-1.0.jar</bundle>
+        <bundle>mvn:com.fiorano.openesb/application-repo/1.0</bundle>
+        <bundle>mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
         <bundle>mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
-        <bundle>mvn:com.fiorano.openesb/rmi-client/rmi-client-1.0.jar</bundle>
-        <bundle>mvn:com.fiorano.openesb/rmi-connector/rmi-connector-1.0.jar</bundle>
+        <bundle>mvn:com.fiorano.openesb/rmi-client/1.0</bundle>
+        <bundle>mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
         <bundle>mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
         <bundle>mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
-        <bundle>mvn:com.fiorano.openesb/utils/utils-1.0.jar</bundle>
+        <bundle>mvn:com.fiorano.openesb/utils/1.0</bundle>
         <bundle>mvn:javax.transaction/javax.transaction-api/1.2</bundle>
         <bundle>mvn:org.apache.commons/commons-lang3/3.4</bundle>
         <bundle>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>

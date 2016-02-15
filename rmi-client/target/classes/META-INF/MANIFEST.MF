@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1454057171242
-Build-Jdk: 1.8.0_45
-Built-By: Janardhan
+Bnd-LastModified: 1455548754743
+Build-Jdk: 1.8.0_51
+Built-By: chaitanya
 Bundle-Activator: com.fiorano.openesb.rmiclient.Activator
 Bundle-Description: rmi-client OSGi bundle project.
 Bundle-ManifestVersion: 2
