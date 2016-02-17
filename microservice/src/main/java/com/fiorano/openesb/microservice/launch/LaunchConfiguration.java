@@ -41,7 +41,7 @@ public interface LaunchConfiguration<A extends AdditionalConfiguration> {
     int getNumberOfStopAttempts();
     String getMicroserviceId();
     String getMicroserviceVersion();
-    String getName();
+    String getServiceName();
     String getApplicationName();
     String getApplicationVersion();
     A getAdditionalConfiguration();

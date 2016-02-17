@@ -4,11 +4,13 @@
         <bundle>mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/application-repo/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
+        <bundle>mvn:com.fiorano.openesb/events/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
         <bundle>mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
         <bundle>mvn:com.fiorano.openesb/rmi-client/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.fiorano.openesb/security/1.0</bundle>
         <bundle>mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
         <bundle>mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/utils/1.0</bundle>

@@ -22,6 +22,12 @@ import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -29,7 +35,38 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
         System.out.println("Starting the bundle - " + context.getBundle().getSymbolicName());
-        RmiClient rmiClient = null;
+        InputStream in = getClass().getResourceAsStream("/totest.txt");
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String line;
+        try {
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith("#")) {
+                    Class testClass = Class.forName(line);
+                    Object testObject = testClass.newInstance();
+                    Method testMethod = testClass.getMethod("test");
+                    testMethod.invoke(testObject);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+        /*RmiClient rmiClient = null;
         try {
             rmiClient = new RmiClient();
         } catch (RemoteException e) {
@@ -50,15 +87,12 @@ public class Activator implements BundleActivator {
         try {
            IEventProcessManager eventProcessManager = rmiManager.getEventProcessManager(handleid);
            eventProcessManager.startEventProcess("OS_TEST", "1.0", false);
-            Thread.sleep(10000);
-            eventProcessManager.stopEventProcess("OS_TEST", "1.0");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (ServiceException e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }*/
     }
 
     public void stop(BundleContext context) {

@@ -40,7 +40,6 @@ public class InstanceHandler {
     public synchronized void onUnReferenced(String e) {
         if (e.equals(EVENT_PROCESS_MANAGER)) {
             eventProcessManager = null;
-            canlogoutForceFully();
         }
     }
 
@@ -57,7 +56,7 @@ public class InstanceHandler {
     public synchronized IEventProcessManager getEventProcessManager() throws RemoteException {
         if (eventProcessManager == null) {
             //original resource == server side stub
-            eventProcessManager = new EventProcessManager(rmiManager);
+            eventProcessManager = new EventProcessManager(rmiManager, this);
             //server side proxy instance to original resource.
             RemoteServerProxy serverSideProxy = new RemoteServerProxy(eventProcessManager,rmiManager.getRmiPort(),rmiManager.getCsf(),rmiManager.getSsf());
 

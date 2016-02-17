@@ -1,0 +1,3 @@
+com.fiorano.openesb.rmiclient.tests.LoginTest
+com.fiorano.openesb.rmiclient.tests.SaveApplicationTest
+com.fiorano.openesb.rmiclient.tests.ApplicationLaunchStopTest

@@ -2,10 +2,10 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="utils-1.0-SNAPSHOT.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="com.fiorano.openesb.utils.Activator" bundleSymbolicName="utils" bundleVersion="1.0-SNAPSHOT" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="utils-1.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="com.fiorano.openesb.utils.Activator" bundleSymbolicName="utils" bundleVersion="1.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
           <property key="Bundle-Description" value="utils OSGi bundle project." />
-          <property key="Export-Package" value="com.fiorano.openesb*;version=1.0-SNAPSHOT" />
+          <property key="Export-Package" value="com.fiorano.openesb.utils*;version=1.0" />
           <property key="Import-Package" value="*" />
           <property key="Bundle-Name" value="utils Bundle" />
         </additionalProperties>

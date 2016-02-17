@@ -38,7 +38,8 @@ import static com.fiorano.openesb.application.application.NamedConfigurationProp
  * @author FSTPL
  * @version 10
  */
-public class ServiceInstance extends InflatableDMIObject implements NamedObject{
+public class
+ServiceInstance extends InflatableDMIObject implements NamedObject{
 
     private static final String ELEM_TARGET = "target";
     /**

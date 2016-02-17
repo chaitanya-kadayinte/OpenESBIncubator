@@ -19,6 +19,7 @@ package com.fiorano.openesb.applicationcontroller;
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.RouteService;
+import com.fiorano.openesb.security.SecurityManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -33,8 +34,9 @@ public class Activator implements BundleActivator {
 
             RouteService service = context.getService(context.getServiceReference(RouteService.class));
             MicroServiceLauncher microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
+            SecurityManager securityManager = context.getService(context.getServiceReference(SecurityManager.class));
             ApplicationController applicationController = new ApplicationController(applicationRepository, microServiceLauncher,
-                    service);
+                    service, securityManager);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
         }
 
