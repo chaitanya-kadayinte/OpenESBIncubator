@@ -9,20 +9,22 @@ import java.util.StringTokenizer;
 /**
  * Created by Janardhan on 1/5/2016.
  */
-public final class StringUtil{
+public final class StringUtil {
 
-    /** the line separator for this OS */
+    /**
+     * the line separator for this OS
+     */
     public static final String LINE_SEP = System.getProperty("line.separator");
 
     private static final String XML_UNICODE_PREPEND_STR = "&#";
 
 
-
-    /** HTML-ize String, splitting long lines
-     *  NOTE: this is copy/paste of org.openide.explorer.propertysheet.PropUtils.createHtmlTooltip(...)
-     **/
-    public static String htmlize(String title, String s, int wrapAfter,String footer) {
-        if(BasicHTML.isHTMLString(s))
+    /**
+     * HTML-ize String, splitting long lines
+     * NOTE: this is copy/paste of org.openide.explorer.propertysheet.PropUtils.createHtmlTooltip(...)
+     */
+    public static String htmlize(String title, String s, int wrapAfter, String footer) {
+        if (BasicHTML.isHTMLString(s))
             return s;
 
         // break up massive tooltips
@@ -41,19 +43,19 @@ public final class StringUtil{
             //give up
             return s;
         }
-        StringTokenizer tk = new StringTokenizer (s, token, true);
+        StringTokenizer tk = new StringTokenizer(s, token, true);
 
-        StringBuffer sb = new StringBuffer (s.length() + 20);
-        sb.append ("<html><body>"); //NOI18N
-        if(title!=null){
-            sb.append ("<b><u>"); //NOI18N
-            sb.append (title);
-            sb.append ("</u></b><br>"); //NOI18N
+        StringBuffer sb = new StringBuffer(s.length() + 20);
+        sb.append("<html><body>"); //NOI18N
+        if (title != null) {
+            sb.append("<b><u>"); //NOI18N
+            sb.append(title);
+            sb.append("</u></b><br>"); //NOI18N
         }
 
 
-        int charCount=0;
-        int lineCount=0;
+        int charCount = 0;
+        int lineCount = 0;
         while (tk.hasMoreTokens()) {
             String a = tk.nextToken();
             // HTML-ize only non-html values. HTML values should already
@@ -64,67 +66,67 @@ public final class StringUtil{
             a = replaceString(a, "\r\n", "<br>"); //NOI18N
             a = replaceString(a, "\n", "<br>"); //NOI18N
 
-            int offset=a.indexOf("<br>");
-            if(offset==-1)
-                charCount +=a.length();
+            int offset = a.indexOf("<br>");
+            if (offset == -1)
+                charCount += a.length();
             else
-                charCount=a.length()-offset-1;
+                charCount = a.length() - offset - 1;
 
-            sb.append (a);
+            sb.append(a);
             if (tk.hasMoreTokens()) {
                 charCount++;
             }
             if (charCount > wrapAfter) {
-                if(tk.hasMoreTokens())
-                    sb.append ("<br>"); //NOI18N
+                if (tk.hasMoreTokens())
+                    sb.append("<br>"); //NOI18N
                 charCount = 0;
                 lineCount++;
                 if (lineCount > 10) {
                     //Don't let things like VCS variables create
                     //a tooltip bigger than the screen. 99% of the
                     //time this is not a problem.
-                    sb.append ("..."); //NOI18N
+                    sb.append("..."); //NOI18N
                     return sb.toString();
                 }
             }
         }
-        if(footer!=null){
-            sb.append ("<br><b>"); //NOI18N
-            sb.append (footer);
-            sb.append ("</b>"); //NOI18N
+        if (footer != null) {
+            sb.append("<br><b>"); //NOI18N
+            sb.append(footer);
+            sb.append("</b>"); //NOI18N
         }
-        sb.append ("<body></html>"); //NOI18N
+        sb.append("<body></html>"); //NOI18N
         return sb.toString();
     }
 
-    public static void pad(String arr[], int orientation){
+    public static void pad(String arr[], int orientation) {
         int maxLength = 0;
-        for(int i = 0; i<arr.length; i++)
-            maxLength = Math.max(maxLength, arr[i]!=null ? arr[i].length() : 0);
-        for(int i = 0; i<arr.length; i++){
-            if(arr[i]==null || arr[i].length()==0){
+        for (int i = 0; i < arr.length; i++)
+            maxLength = Math.max(maxLength, arr[i] != null ? arr[i].length() : 0);
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == null || arr[i].length() == 0) {
                 char ch[] = new char[maxLength];
                 Arrays.fill(ch, ' ');
                 arr[i] = new String(ch).intern();
             }
-            int pad = maxLength-arr[i].length();
-            switch(orientation){
-                case SwingConstants.LEFT:{
+            int pad = maxLength - arr[i].length();
+            switch (orientation) {
+                case SwingConstants.LEFT: {
                     char ch[] = new char[pad];
                     Arrays.fill(ch, ' ');
                     arr[i] = (arr[i] + new String(ch)).intern();
                     break;
                 }
-                case SwingConstants.CENTER:{
-                    int left = pad/2;
+                case SwingConstants.CENTER: {
+                    int left = pad / 2;
                     char leftCh[] = new char[left];
                     Arrays.fill(leftCh, ' ');
                     int right = pad - left;
                     char rightCh[] = new char[right];
                     Arrays.fill(rightCh, ' ');
-                    arr[i] = (new String(leftCh)+arr[i]+new String(rightCh)).intern();
+                    arr[i] = (new String(leftCh) + arr[i] + new String(rightCh)).intern();
                 }
-                case SwingConstants.RIGHT:{
+                case SwingConstants.RIGHT: {
                     char ch[] = new char[pad];
                     Arrays.fill(ch, ' ');
                     arr[i] = (new String(ch) + arr[i]).intern();
@@ -138,42 +140,42 @@ public final class StringUtil{
      * Search-and-replace fixed string matches within a string.
      * NOTE: this is copy/paste of org.openide.util.Utilities.replaceString(...)
      *
-     * @param original the original string
+     * @param original    the original string
      * @param replaceFrom the substring to be find
-     * @param replaceTo the substring to replace it with
+     * @param replaceTo   the substring to replace it with
      * @return a new string with all occurrences replaced
      */
-    public static String replaceString (String original, String replaceFrom, String replaceTo) {
+    public static String replaceString(String original, String replaceFrom, String replaceTo) {
         int index = 0;
-        if ("".equals (replaceFrom)) return original; // NOI18N
+        if ("".equals(replaceFrom)) return original; // NOI18N
 
-        StringBuffer buf = new StringBuffer ();
+        StringBuffer buf = new StringBuffer();
         while (true) {
-            int pos = original.indexOf (replaceFrom, index);
+            int pos = original.indexOf(replaceFrom, index);
             if (pos == -1) {
-                buf.append (original.substring (index));
-                return buf.toString ();
+                buf.append(original.substring(index));
+                return buf.toString();
             }
-            buf.append (original.substring (index, pos));
-            buf.append (replaceTo);
-            index = pos + replaceFrom.length ();
-            if (index == original.length ())
-                return buf.toString ();
+            buf.append(original.substring(index, pos));
+            buf.append(replaceTo);
+            index = pos + replaceFrom.length();
+            if (index == original.length())
+                return buf.toString();
         }
     }
 
     /**
      * Eliminates redundant spaces from a string
      */
-    public static String normalizeSpace(String str){
-        if(str.length() <= 1)
+    public static String normalizeSpace(String str) {
+        if (str.length() <= 1)
             return str;
 
         StringBuffer buffer = new StringBuffer();
         StringTokenizer tokenizer = new StringTokenizer(str);
-        if(tokenizer.hasMoreTokens())
+        if (tokenizer.hasMoreTokens())
             buffer.append(tokenizer.nextToken());
-        while(tokenizer.hasMoreTokens())
+        while (tokenizer.hasMoreTokens())
             buffer.append(' ').append(tokenizer.nextToken());
 
         return buffer.toString();
@@ -187,11 +189,11 @@ public final class StringUtil{
     public static String translate(String s0, String s1, String s2) {
         StringBuffer sb = new StringBuffer();
         int s2len = s2.length();
-        for (int i=0; i<s0.length(); i++) {
+        for (int i = 0; i < s0.length(); i++) {
             char c = s0.charAt(i);
             int j = s1.indexOf(c);
-            if (j<s2len) {
-                sb.append(( j<0 ? c : s2.charAt(j) ));
+            if (j < s2len) {
+                sb.append((j < 0 ? c : s2.charAt(j)));
             }
         }
         return sb.toString();
@@ -206,13 +208,27 @@ public final class StringUtil{
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
             switch (c) {
-                case '\b': buf.append("\\b"); break; // NOI18N
-                case '\t': buf.append("\\t"); break; // NOI18N
-                case '\n': buf.append("\\n"); break; // NOI18N
-                case '\f': buf.append("\\f"); break; // NOI18N
-                case '\r': buf.append("\\r"); break; // NOI18N
-                case '\"': buf.append("\\\""); break; // NOI18N
-                case '\\': buf.append("\\\\"); break; // NOI18N
+                case '\b':
+                    buf.append("\\b");
+                    break; // NOI18N
+                case '\t':
+                    buf.append("\\t");
+                    break; // NOI18N
+                case '\n':
+                    buf.append("\\n");
+                    break; // NOI18N
+                case '\f':
+                    buf.append("\\f");
+                    break; // NOI18N
+                case '\r':
+                    buf.append("\\r");
+                    break; // NOI18N
+                case '\"':
+                    buf.append("\\\"");
+                    break; // NOI18N
+                case '\\':
+                    buf.append("\\\\");
+                    break; // NOI18N
                 default:
                     if (c >= 0x0020 && (useRaw || c <= 0x007f))
                         buf.append(c);
@@ -229,20 +245,20 @@ public final class StringUtil{
     }
 
     // NOTE: the argument should not be surrounded by double-quotes
-    public static String fromJavaStringLiteral(String str){
+    public static String fromJavaStringLiteral(String str) {
         StringBuffer buf = new StringBuffer();
 
-        for(int i = 0; i < str.length(); i++){
+        for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
 
-            switch(c){
+            switch (c) {
                 case '\\':
-                    if(i == str.length() - 1){
+                    if (i == str.length() - 1) {
                         buf.append('\\');
                         break;
                     }
                     c = str.charAt(++i);
-                    switch(c){
+                    switch (c) {
                         case 'n':
                             buf.append('\n');
                             break;
@@ -253,27 +269,43 @@ public final class StringUtil{
                             buf.append('\r');
                             break;
                         case 'u':
-                            int value=0;
-                            for (int j=0; j<4; j++) {
+                            int value = 0;
+                            for (int j = 0; j < 4; j++) {
                                 c = str.charAt(++i);
                                 switch (c) {
-                                    case '0': case '1': case '2': case '3': case '4':
-                                    case '5': case '6': case '7': case '8': case '9':
+                                    case '0':
+                                    case '1':
+                                    case '2':
+                                    case '3':
+                                    case '4':
+                                    case '5':
+                                    case '6':
+                                    case '7':
+                                    case '8':
+                                    case '9':
                                         value = (value << 4) + c - '0';
                                         break;
-                                    case 'a': case 'b': case 'c':
-                                    case 'd': case 'e': case 'f':
+                                    case 'a':
+                                    case 'b':
+                                    case 'c':
+                                    case 'd':
+                                    case 'e':
+                                    case 'f':
                                         value = (value << 4) + 10 + c - 'a';
                                         break;
-                                    case 'A': case 'B': case 'C':
-                                    case 'D': case 'E': case 'F':
+                                    case 'A':
+                                    case 'B':
+                                    case 'C':
+                                    case 'D':
+                                    case 'E':
+                                    case 'F':
                                         value = (value << 4) + 10 + c - 'A';
                                         break;
                                     default:
                                         throw new IllegalArgumentException("Malformed \\uxxxx encoding.");
                                 }
                             }
-                            buf.append((char)value);
+                            buf.append((char) value);
                             break;
                         default:
                             buf.append(c);
@@ -291,80 +323,81 @@ public final class StringUtil{
 
     /**
      * Decode a single hex digit
+     *
      * @param c the hex digit
      * @return the numeric value of the hex digit
      * @throws IllegalArgumentException if it isn't a hex digit
      */
-    private static int fromHex(char c){
+    private static int fromHex(char c) {
         int d = "0123456789ABCDEFabcdef".indexOf(c); //NOI18N
-        if(d>15)
+        if (d > 15)
             d = d - 6;
-        if(d<0)
-            throw new IllegalArgumentException("Invalid hexadecimal digit: "+c);
+        if (d < 0)
+            throw new IllegalArgumentException("Invalid hexadecimal digit: " + c);
         return d;
     }
 
     public static String binary2Hex(byte binaryValue[]) {
         String digits = "0123456789ABCDEF"; //NOI18N
         StringBuffer sb = new StringBuffer(binaryValue.length * 2);
-        for (int i=0; i<binaryValue.length; i++) {
-            sb.append(digits.charAt((binaryValue[i]>>4)&0xf));
-            sb.append(digits.charAt(binaryValue[i]&0xf));
+        for (int i = 0; i < binaryValue.length; i++) {
+            sb.append(digits.charAt((binaryValue[i] >> 4) & 0xf));
+            sb.append(digits.charAt(binaryValue[i] & 0xf));
         }
         return sb.toString();
     }
 
-    public static byte[] hex2Binary(String hex){
+    public static byte[] hex2Binary(String hex) {
         if ((hex.length() & 1) != 0)
             throw new IllegalArgumentException("A hexBinary value must contain an even number of characters");
         byte binaryValue[] = new byte[hex.length() / 2];
-        for (int i=0; i<binaryValue.length; i++) {
-            binaryValue[i] = (byte)((fromHex(hex.charAt(2*i))<<4) +
-                    (fromHex(hex.charAt(2*i+1))));
+        for (int i = 0; i < binaryValue.length; i++) {
+            binaryValue[i] = (byte) ((fromHex(hex.charAt(2 * i)) << 4) +
+                    (fromHex(hex.charAt(2 * i + 1))));
         }
         return binaryValue;
     }
 
     /*-------------------------------------------------[ Color ]---------------------------------------------------*/
 
-    public static String toHex(Color c){
+    public static String toHex(Color c) {
         String s = Integer.toHexString(c.getRGB() & 0xFFFFFF);
-        while(s.length()<6)
+        while (s.length() < 6)
             s = '0' + s;
         return s;
     }
 
     /*-------------------------------------------------[ WhiteSpaces ]---------------------------------------------------*/
 
-    public static String indentString(String str, int count){
-        StringBuffer buf = new StringBuffer(str.length()*count);
-        for(int i=0; i<count; i++)
+    public static String indentString(String str, int count) {
+        StringBuffer buf = new StringBuffer(str.length() * count);
+        for (int i = 0; i < count; i++)
             buf.append(str);
         return buf.toString();
     }
 
     /**
-     *  Returns the number of leading white space characters in the specified
-     *  string.
+     * Returns the number of leading white space characters in the specified
+     * string.
      *
-     *@param  str  The string
-     *@return      The leadingWhiteSpace value
+     * @param str The string
+     * @return The leadingWhiteSpace value
      */
     public static String getLeadingWhiteSpace(String str) {
         return str.substring(0, getLeadingWhiteSpaceWidth(str));
     }
 
     /**
-     *  Returns the number of leading white space characters in the specified
-     *  string.
+     * Returns the number of leading white space characters in the specified
+     * string.
      *
-     *@param  str  The string
-     *@return      The leadingWhiteSpace value
+     * @param str The string
+     * @return The leadingWhiteSpace value
      */
     public static int getLeadingWhiteSpaceWidth(String str) {
         int whitespace = 0;
-        loop :
-        for(; whitespace < str.length(); ) {
+        loop:
+        for (; whitespace < str.length(); ) {
             switch (str.charAt(whitespace)) {
                 case ' ':
                 case '\t':
@@ -378,16 +411,16 @@ public final class StringUtil{
     }
 
     /**
-     *  Returns the width of the leading white space in the specified string.
+     * Returns the width of the leading white space in the specified string.
      *
-     *@param  str      The string
-     *@param  tabSize  The tab size
-     *@return          The leadingWhiteSpaceWidth value
+     * @param str     The string
+     * @param tabSize The tab size
+     * @return The leadingWhiteSpaceWidth value
      */
     public static int getLeadingWhiteSpaceWidth(String str, int tabSize) {
         int whitespace = 0;
-        loop :
-        for(int i = 0; i < str.length(); i++) {
+        loop:
+        for (int i = 0; i < str.length(); i++) {
             switch (str.charAt(i)) {
                 case ' ':
                     whitespace++;
@@ -403,35 +436,35 @@ public final class StringUtil{
     }
 
     /**
-     *  Create a blank String made of spaces.
+     * Create a blank String made of spaces.
      *
-     *@param  len  Amount of spaces contained in the String
-     *@return      A blank <code>String</code>
+     * @param len Amount of spaces contained in the String
+     * @return A blank <code>String</code>
      */
     public static String createWhiteSpace(int len) {
         return createWhiteSpace(len, 0);
     }
 
     /**
-     *  Create a blank String made of tabs.
+     * Create a blank String made of tabs.
      *
-     *@param  len      Amount of spaces contained in the String
-     *@param  tabSize  Tabulation size
-     *@return          A blank <code>String</code>
+     * @param len     Amount of spaces contained in the String
+     * @param tabSize Tabulation size
+     * @return A blank <code>String</code>
      */
     public static String createWhiteSpace(int len, int tabSize) {
         StringBuffer buf = new StringBuffer();
 
-        if(tabSize == 0) {
-            while(len-- > 0)
+        if (tabSize == 0) {
+            while (len-- > 0)
                 buf.append(' ');
-        }else {
+        } else {
             int count = len / tabSize;
-            while(count-- > 0)
+            while (count-- > 0)
                 buf.append('\t');
 
             count = len % tabSize;
-            while(count-- > 0)
+            while (count-- > 0)
                 buf.append(' ');
         }
         return buf.toString();
@@ -440,21 +473,21 @@ public final class StringUtil{
     /**
      * Returns true if the String is either NULL or empty(after trim)
      */
-    public static boolean isEmpty(String str){
-        if(str==null)
+    public static boolean isEmpty(String str) {
+        if (str == null)
             return true;
-        for(int i=str.length()-1; i>=0; i--){
-            if(str.charAt(i)!=' ')
+        for (int i = str.length() - 1; i >= 0; i--) {
+            if (str.charAt(i) != ' ')
                 return false;
         }
         return true;
     }
 
-    public static boolean isWhitespace(String str){
-        if(str==null)
+    public static boolean isWhitespace(String str) {
+        if (str == null)
             return true;
-        for(int i=str.length()-1; i>=0; i--){
-            if(!Character.isWhitespace(str.charAt(i)))
+        for (int i = str.length() - 1; i >= 0; i--) {
+            if (!Character.isWhitespace(str.charAt(i)))
                 return false;
         }
         return true;
@@ -462,94 +495,33 @@ public final class StringUtil{
 
     /*-------------------------------------------------[ JavaIdentifier ]---------------------------------------------------*/
 
-   /* public static boolean isJavaKeyword(String name){
-        return JavaUtil.KEY_WORDS.contains(name);
+    public static String toString(Object obj) {
+        return obj != null ? obj.toString() : null;
     }
 
-    public static boolean isJavaIdentifier(String name){
-        if(name.length()==0)
-            return false;
-        if(!Character.isJavaIdentifierStart(name.charAt(0)))
-            return false;
-        for(int i=1 ; i<name.length(); i++){
-            if(!Character.isJavaIdentifierPart(name.charAt(i)))
-                return false;
-        }
-        return !JavaUtil.KEY_WORDS.contains(name);
-    }
 
-    public static String toJavaIdentifier(String name){
-        if(name.length()==0)
-            return "_"; //NOI18N
-        StringBuffer buf = new StringBuffer(name.length());
-        for(int i = 0; i<name.length(); i++){
-            if(i==0 && !Character.isJavaIdentifierStart(name.charAt(i)))
-                buf.append('_');
-            if(!Character.isJavaIdentifierPart(name.charAt(i)))
-                buf.append('_');
-            else
-                buf.append(name.charAt(i));
-        }
-
-        name = buf.toString();
-        return JavaUtil.KEY_WORDS.contains(name)
-                ? '_'+name
-                : name;
-    }
-
-    *//**
-     * Helper method to convert the first letter of a string to uppercase.
-     * And prefix the string with some next string.
-     *//*
-    public static String firstLetterToUpperCase(String s, String pref){
-        switch(s.length()){
-            case 0:
-                return pref;
-            case 1:
-                return pref+Character.toUpperCase(s.charAt(0));
-            default:
-                return pref+Character.toUpperCase(s.charAt(0))+s.substring(1);
-        }
-    }*/
-
-    public static String toString(Object obj){
-        return obj!=null ? obj.toString() : null;
-    }
-
-    /*public static Object toObject(String value, Class clazz)
-            throws IllegalAccessException, InvocationTargetException
-            , InstantiationException, NoSuchMethodException{
-        if(value==null || clazz==String.class)
-            return value;
-
-        if(clazz.isPrimitive())
-            clazz = (Class)ClassUtil.PRIMITIVE_WRAPPER_CLASSES.get(clazz);
-        Constructor constructor = clazz.getConstructor(new Class[]{String.class});
-        return constructor.newInstance(new Object[]{value});
-    }*/
-
-    public static String[] getTokens(String str, String delim, boolean trim){
-        if(str==null)
+    public static String[] getTokens(String str, String delim, boolean trim) {
+        if (str == null)
             return new String[0];
 
         StringTokenizer stok = new StringTokenizer(str, delim);
         String tokens[] = new String[stok.countTokens()];
-        for(int i = 0; i<tokens.length; i++) {
+        for (int i = 0; i < tokens.length; i++) {
             tokens[i] = trim ? stok.nextToken().trim() : stok.nextToken();
         }
         return tokens;
     }
 
-    public static String toString(String tokens[], String delim, boolean trim){
-        if(tokens==null)
+    public static String toString(String tokens[], String delim, boolean trim) {
+        if (tokens == null)
             return null;
 
         StringBuffer buf = new StringBuffer();
-        for(int i = 0; i<tokens.length; i++){
+        for (int i = 0; i < tokens.length; i++) {
 
-            if(i>0)
+            if (i > 0)
                 buf.append(delim);
-            if(trim)
+            if (trim)
                 buf.append(tokens[i].trim());
             else
                 buf.append(tokens[i]);
@@ -559,6 +531,7 @@ public final class StringUtil{
 
     /**
      * Convinience method to test whether the given char is Unicode(16-bit encoded)
+     *
      * @param c
      * @return true if the char is Unicode, or 16-bits
      */
@@ -578,11 +551,10 @@ public final class StringUtil{
     }*/
 
     /**
-     *  Converts each Unicode character of a string to its XMLised equivalent: <pre>&#XXXX;</pre>
-     *  where XXXX is the value of the char in decimal.
+     * Converts each Unicode character of a string to its XMLised equivalent: <pre>&#XXXX;</pre>
+     * where XXXX is the value of the char in decimal.
      *
      * @param unicodeStr String containing unicode characters
-     *
      * @return xml string
      */
     public static String getUnicodeInXMLFormat(String unicodeStr) {
@@ -601,57 +573,21 @@ public final class StringUtil{
                 continue;
             }
 
-            sb.append(XML_UNICODE_PREPEND_STR).append((int)unicodeArr[i]).append(';');
+            sb.append(XML_UNICODE_PREPEND_STR).append((int) unicodeArr[i]).append(';');
         }
 
         return sb.toString();
 
     }
 
-    /**
-     * Converts a block like <pre>&#XXXX;</pre> to its unicode character equivalent XXXX
-     *
-     * @param xmlString
-     *
-     * @return unicode equivalent String
-     */
-    /*public static String extractUnicodeFromXML(String xmlString) {
-
-        if (xmlString == null || !hasXMLUnicode(xmlString)) {
-            return xmlString;
-        }
-
-        HTMLEditorKit.Parser parser = new ParserDelegator();
-
-        final StringBuffer sb = new StringBuffer();
-
-        try {
-            parser.parse(new StringReader(xmlString),
-                    new HTMLEditorKit.ParserCallback() {
-
-                        public void handleText(char[] data, int pos) {
-                            *//*for (int i = 0; i < data.length; i++) {
-                                System.out.println("#########  " + (int) data[i]);
-                            }*//*
-                            sb.append(data);
-                        }
-
-                    }, true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return sb.toString();
-    }*/
-
-    public static String toJavaIdentifier(String name){
-        if(name.length()==0)
+    public static String toJavaIdentifier(String name) {
+        if (name.length() == 0)
             return "_"; //NOI18N
         StringBuffer buf = new StringBuffer(name.length());
-        for(int i = 0; i<name.length(); i++){
-            if(i==0 && !Character.isJavaIdentifierStart(name.charAt(i)))
+        for (int i = 0; i < name.length(); i++) {
+            if (i == 0 && !Character.isJavaIdentifierStart(name.charAt(i)))
                 buf.append('_');
-            if(!Character.isJavaIdentifierPart(name.charAt(i)))
+            if (!Character.isJavaIdentifierPart(name.charAt(i)))
                 buf.append('_');
             else
                 buf.append(name.charAt(i));
@@ -659,8 +595,20 @@ public final class StringUtil{
 
         name = buf.toString();
         return JavaUtil.KEY_WORDS.contains(name)
-                ? '_'+name
+                ? '_' + name
                 : name;
     }
+
+    public static String firstLetterToUpperCase(String s, String pref) {
+        switch (s.length()) {
+            case 0:
+                return pref;
+            case 1:
+                return pref + Character.toUpperCase(s.charAt(0));
+            default:
+                return pref + Character.toUpperCase(s.charAt(0)) + s.substring(1);
+        }
+    }
+
 }
 
