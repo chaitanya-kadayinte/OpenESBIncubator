@@ -3,9 +3,19 @@ package com.fiorano.openesb.applicationcontroller;
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.application.application.ApplicationParser;
+import com.fiorano.openesb.microservice.ccp.CCPEventManager;
+import com.fiorano.openesb.microservice.ccp.IEventListener;
+import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
+import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
+import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
+import com.fiorano.openesb.microservice.ccp.event.common.DataEvent;
+import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
+import com.fiorano.openesb.microservice.ccp.event.common.data.Data;
+import com.fiorano.openesb.microservice.ccp.event.common.data.MicroserviceConfiguration;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.RouteConfiguration;
 import com.fiorano.openesb.route.RouteService;
+import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.security.SecurityManager;
 
@@ -21,11 +31,57 @@ public class ApplicationController {
     private RouteService<RouteConfiguration> routeService;
     private SecurityManager securityManager;
 
-    ApplicationController(ApplicationRepository applicationRepository, MicroServiceLauncher microServiceLauncher, RouteService<RouteConfiguration> routeService, SecurityManager securityManager){
+    @SuppressWarnings("unchecked")
+    ApplicationController(ApplicationRepository applicationRepository, MicroServiceLauncher microServiceLauncher, RouteService<RouteConfiguration> routeService, SecurityManager securityManager, TransportService transport, CCPEventManager ccpEventManager) throws Exception {
         this.applicationRepository = applicationRepository;
         this.microServiceLauncher = microServiceLauncher;
         this.routeService = routeService;
         this.securityManager = securityManager;
+        registerConfigRequestListener(ccpEventManager);
+    }
+
+    private void registerConfigRequestListener(final CCPEventManager ccpEventManager) throws Exception {
+        ccpEventManager.registerListener(new IEventListener() {
+            @Override
+            public void onEvent(ComponentCCPEvent event) throws Exception {
+                ControlEvent controlEvent = event.getControlEvent();
+
+                if(controlEvent instanceof DataRequestEvent && controlEvent.isReplyNeeded()) {
+                    for(DataRequestEvent.DataIdentifier request: ((DataRequestEvent) controlEvent).getDataIdentifiers()) {
+                        if(request == DataRequestEvent.DataIdentifier.COMPONENT_CONFIGURATION) {
+                            DataEvent dataEvent = new DataEvent();
+                            MicroserviceConfiguration microserviceConfiguration = new MicroserviceConfiguration();
+                            Application application = applicationRepository.readApplication(getAppName(event), getAppVersion(event));
+                            String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
+                            microserviceConfiguration.setConfiguration(configuration);
+                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
+                            data.put(request,microserviceConfiguration);
+                            dataEvent.setData(data);
+                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
+                            break;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public String getId() {
+                return "Components' Requests Listener";
+            }
+        }, CCPEventType.DATA_REQUEST);
+    }
+
+    private String getAppName(ComponentCCPEvent event) {
+        String componentId = event.getComponentId();
+        return componentId.substring(0,componentId.indexOf("__"));
+    }
+    private String getAppVersion(ComponentCCPEvent event) {
+        String componentId = event.getComponentId();
+        return componentId.substring(componentId.indexOf("__") + 2,componentId.lastIndexOf("__")).replace("_",".");
+    }
+    private String getInstanceName(ComponentCCPEvent event) {
+        String componentId = event.getComponentId();
+        return componentId.substring(componentId.lastIndexOf("__") + 2);
     }
 
     public void saveApplication(File appFileFolder, String handleID, byte[] zippedContents) throws FioranoException {

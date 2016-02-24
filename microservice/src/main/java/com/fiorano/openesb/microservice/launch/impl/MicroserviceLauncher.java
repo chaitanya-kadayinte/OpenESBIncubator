@@ -18,23 +18,25 @@
  */
 package com.fiorano.openesb.microservice.launch.impl;
 
+import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
-import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
-import com.fiorano.openesb.transport.TransportService;
+import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 
-public class MicroServiceLauncher implements Launcher<MicroserviceRuntimeHandle>{
-    private TransportService service;
+public class MicroServiceLauncher implements Launcher<MicroServiceRuntimeHandle>{
+    private final CCPEventManager ccpEventManager;
 
-    public MicroServiceLauncher(TransportService service) {
-        this.service = service;
+    public MicroServiceLauncher(CCPEventManager ccpEventManager) throws Exception {
+        this.ccpEventManager = ccpEventManager;
     }
 
-    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
+    public MicroServiceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
+        Launcher launcher;
         if(launchConfiguration.getLaunchMode() == LaunchConfiguration.LaunchMode.SEPARATE_PROCESS) {
-            SeparateProcessLauncher separateProcessLauncher = new SeparateProcessLauncher(service);
-            return separateProcessLauncher.launch(launchConfiguration, configuration);
+             launcher = new SeparateProcessLauncher(ccpEventManager);
+        } else {
+            launcher = new InMemoryLauncher();
         }
-        return null;
+        return launcher.launch(launchConfiguration, configuration);
     }
 }

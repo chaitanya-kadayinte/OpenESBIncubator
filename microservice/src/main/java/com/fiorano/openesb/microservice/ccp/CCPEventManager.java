@@ -25,7 +25,6 @@ import com.fiorano.openesb.transport.impl.jms.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import javax.jms.BytesMessage;
-import javax.jms.JMSException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,18 +43,11 @@ public class CCPEventManager implements MessageListener<Message> {
         eventListeners = new HashMap<>();
         pendingResponses = new HashMap<>();
         trackResponseCount = new HashMap<>();
-    }
-
-    public void init() throws Exception {
         ccpEventGenerator = new CCPEventGenerator();
         createDestinations();
     }
 
-    TransportService<Port, Message> getTransportService() {
-        return transportService;
-    }
-
-    void createDestinations() throws Exception {
+    private void createDestinations() throws Exception {
         JMSPortConfiguration jmsPortConfiguration = new JMSPortConfiguration();
         jmsPortConfiguration.setName("CCP_PEER_TO_COMPONENT_TRANSPORT");
         jmsPortConfiguration.setPortType(JMSPortConfiguration.PortType.TOPIC);
@@ -75,20 +67,20 @@ public class CCPEventManager implements MessageListener<Message> {
         return ccpEventGenerator;
     }
 
-    public synchronized void registerListener(ComponentWorkflowListener listener, CCPEventType... eventTypes) {
+    public synchronized void registerListener(IEventListener listener, CCPEventType... eventTypes) {
         for (CCPEventType eventType : eventTypes) {
             if (eventListeners.get(eventType) == null) {
                 eventListeners.put(eventType, new ConcurrentHashMap<String, IEventListener>());
             }
-            eventListeners.get(eventType).remove(listener.getApplicationName() + "__" + listener.getApplicationVersion() + "__" + listener.getComponentInstanceName());
-            eventListeners.get(eventType).put(listener.getApplicationName() + "__" + listener.getApplicationVersion() + "__" + listener.getComponentInstanceName(), listener);
+            eventListeners.get(eventType).remove(listener.getId());
+            eventListeners.get(eventType).put(listener.getId(), listener);
         }
     }
 
-    public synchronized void unregisterListener(ComponentWorkflowListener listener, CCPEventType... eventTypes) {
+    public synchronized void unregisterListener(IEventListener listener, CCPEventType... eventTypes) {
         for (CCPEventType eventType : eventTypes) {
             if (eventListeners.get(eventType) == null) continue;
-            eventListeners.get(eventType).remove(listener.getApplicationName() + "__" + listener.getApplicationVersion() + "__" + listener.getComponentInstanceName());
+            eventListeners.get(eventType).remove(listener.getId());
         }
     }
 
@@ -139,8 +131,6 @@ public class CCPEventManager implements MessageListener<Message> {
 
     public class CCPEventGenerator {
         private Port sendTopic;
-        private CCPEventManager ccpEventManager;
-
 
         /**
          * Send the control event to the list of component instances as specified.
@@ -163,7 +153,7 @@ public class CCPEventManager implements MessageListener<Message> {
          * @param componentIdentifiers - This should be <applicationName>__<componentInstanceName>
          * @throws Exception - Exception
          */
-        public void sendEvent(ControlEvent event, CCPResponseCallback callback, String... componentIdentifiers) throws Exception {
+        public void sendEvent(ControlEvent event, CCPResponseCallback callback, String... componentIdentifiers) throws FioranoException {
             try {
                 BytesMessage message = (BytesMessage) transportService.createMessage(new JMSMessageConfiguration(JMSMessageConfiguration.MessageType.Bytes)).getMessage();
                 event.toMessage(message);
@@ -183,7 +173,7 @@ public class CCPEventManager implements MessageListener<Message> {
                 Producer<Message> producer = transportService.createProducer(sendTopic, new JMSProducerConfiguration());
                 producer.send(new JMSMessage(message));
 
-            } catch (JMSException e) {
+            } catch (Exception e) {
                 throw new FioranoException(e);
             }
 

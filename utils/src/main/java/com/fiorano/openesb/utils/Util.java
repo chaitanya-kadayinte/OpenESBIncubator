@@ -1,8 +1,5 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public class Util{
 
     public static int hashCode(Object obj){

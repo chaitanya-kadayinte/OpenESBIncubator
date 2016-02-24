@@ -1,6 +1,8 @@
 package com.fiorano.openesb.utils;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -339,13 +341,17 @@ public class FileUtil{
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        HashMap map = new HashMap();
-        map.put("REPOSITORY", new File("c:")); //NOI18N
-        String relativePath;
-        System.out.println(relativePath=getRelativePath(new File("c://a/b/c"), new File("c:/a/b/c/d/e.txt"), map)); //NOI18N
-        System.out.println(resolve(new File("c://a/b/c"), relativePath, map)); //NOI18N
-        System.out.println(getRelativePath(new File("c:/a/b/c"), new File("c:/a/d/f/g.txt"))); //NOI18N
-        System.err.println(getRelativePath(new File("c:/jdk1.5"), new File("d:/fiorano/build.xml"))); //NOI18N
+    public static boolean isAbsolutePath(String str){
+        File f = new File(str);
+        return f.isAbsolute();
     }
+
+    public static URL file2URL(File file){
+        try{
+            return file.toURI().toURL();
+        } catch(MalformedURLException e){
+            throw new RuntimeException("this should never happen: " + e); //NOI18N
+        }
+    }
+
 }

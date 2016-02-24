@@ -4,4 +4,5 @@ import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
 
 public interface IEventListener {
     void onEvent(ComponentCCPEvent event) throws Exception;
+    String getId();
 }

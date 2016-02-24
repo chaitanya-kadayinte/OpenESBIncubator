@@ -2,16 +2,16 @@ package com.fiorano.openesb.microservice.ccp.event;
 
 
 public class ComponentCCPEvent {
-    public ComponentCCPEvent(String componentInstanceName, ControlEvent controlEvent) {
-        this.componentInstanceName = componentInstanceName;
+    public ComponentCCPEvent(String componentId, ControlEvent controlEvent) {
+        this.componentId = componentId;
         this.controlEvent = controlEvent;
     }
 
-    private String componentInstanceName;
+    private String componentId;
     private ControlEvent controlEvent;
 
-    public String getComponentInstanceName() {
-        return componentInstanceName;
+    public String getComponentId() {
+        return componentId;
     }
 
     public ControlEvent getControlEvent() {

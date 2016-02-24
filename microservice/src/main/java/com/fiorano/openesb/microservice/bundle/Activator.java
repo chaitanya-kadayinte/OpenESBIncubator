@@ -16,6 +16,7 @@
  */
 package com.fiorano.openesb.microservice.bundle;
 
+import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
@@ -25,10 +26,13 @@ import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 
-    public void start(BundleContext context) {
+    @SuppressWarnings("unchecked")
+    public void start(BundleContext context) throws Exception {
         System.out.println("Starting the bundle - " + context.getBundle().getSymbolicName());
         TransportService service = context.getService(context.getServiceReference(TransportService.class));
-        MicroServiceLauncher microServiceLauncher = new MicroServiceLauncher(service);
+        CCPEventManager ccpEventManager = new CCPEventManager(service);
+        MicroServiceLauncher microServiceLauncher = new MicroServiceLauncher(ccpEventManager);
+        context.registerService(CCPEventManager.class,ccpEventManager,new Hashtable<String, Object>());
         context.registerService(MicroServiceLauncher.class, microServiceLauncher, new Hashtable<String, Object>());
         System.out.println("Started the bundle - " + context.getBundle().getSymbolicName());
     }

@@ -1,34 +1,95 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2014, Fiorano Software Pte. Ltd. and affiliates.
- * <p>
- * All rights reserved.
- * <p>
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- * <p>
- * Created by chaitanya on 21-01-2016.
- */
-
-/**
- * Created by chaitanya on 21-01-2016.
- */
 package com.fiorano.openesb.microservice.launch.impl;
 
+import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
-import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
+import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
+import com.fiorano.openesb.microservice.launch.impl.cl.ClassLoaderManager;
+import com.fiorano.openesb.microservice.launch.impl.cl.IClassLoaderManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepositoryManager;
+import com.fiorano.openesb.utils.exception.FioranoException;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class InMemoryLauncher implements Launcher {
-    public MicroserviceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws IOException {
-//            setProperty("java.util.logging.FileHandler.formatter", DefaultFormatter.class.getName());
+    private IClassLoaderManager m_classLoaderManager;
+    private Object service;
+    private LaunchConfiguration launchConfiguration;
+    private Class serviceClass;
 
-        return null;
+    public InMemoryLauncher() throws FioranoException {
+        m_classLoaderManager = new ClassLoaderManager();
     }
 
+    public MicroServiceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
+        this.launchConfiguration = launchConfiguration;
+        ClassLoader classLoader = m_classLoaderManager.getClassLoader(getComponentPS());
+        InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader);
+        inMemoryLaunchThread.start();
+        return new InMemoryRuntimeHandle(service, serviceClass, launchConfiguration);
+    }
+
+    private Service getComponentPS() throws FioranoException {
+        return MicroServiceRepositoryManager.getInstance().readMicroService(launchConfiguration.getMicroserviceId(),
+                launchConfiguration.getMicroserviceVersion());
+    }
+
+    public class InMemoryLaunchThread extends Thread {
+
+        private final Method startup;
+        private ClassLoader serviceClassLoader;
+
+        public InMemoryLaunchThread(ClassLoader classLoader) throws Exception {
+            serviceClassLoader = classLoader;
+            setName(launchConfiguration.getServiceName() + " Launch In-memory Thread");
+            startup = initStartMethod();
+        }
+
+        public void run() {
+            try {
+                Thread.currentThread().setContextClassLoader(serviceClassLoader);
+                startup.invoke(service, getArguments());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        private Method initStartMethod() throws FioranoException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+            String m_implClass = getComponentPS().getExecution().getInMemoryExecutable();
+            ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(serviceClassLoader);
+
+                if (m_implClass == null || m_implClass.trim().length() == 0)
+                    throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_INMEMORY_IMPL_NOT_SPECIFIED,
+                            Bundle.COMPONENT_IMPL_INVALID);
+                serviceClass = Class.forName(m_implClass, true, serviceClassLoader);
+                try {
+                    service = serviceClass.newInstance();
+                } catch (ClassCastException e) {
+                    throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_CANNOT_LAUNCH_IN_MEMORY,
+                            Bundle.COMPONENT_IMPL_INVALID);
+                }
+                Method startup;
+                try {
+                    startup = serviceClass.getMethod("startup", String[].class);
+                    if (startup == null)
+                        throw new FioranoException("Could not find the main method.");
+                } catch (NoSuchMethodException e) {
+                    throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_CANNOT_LAUNCH_IN_MEMORY, e,
+                            Bundle.COMPONENT_IMPL_INVALID);
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(serverClassLoader);
+            }
+            return startup;
+        }
+
+        private List getArguments() throws Exception {
+            CommandProvider commandProvider = new JVMCommandProvider();
+            return commandProvider.generateCommand(launchConfiguration);
+        }
+
+    }
 }

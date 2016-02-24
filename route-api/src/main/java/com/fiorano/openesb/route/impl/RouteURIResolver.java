@@ -18,7 +18,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
-public class RouteURIResolver implements URIResolver{
+public class RouteURIResolver implements URIResolver {
     String data = null;
 
     RouteURIResolver(String data){

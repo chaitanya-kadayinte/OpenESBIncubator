@@ -26,14 +26,14 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.File;
 //todo move to management related modules
-public class MicroserviceRepositoryManager {
+public class MicroServiceRepositoryManager {
 
-    private static final MicroserviceRepositoryManager microserviceRepositoryManager = new MicroserviceRepositoryManager();
-    private MicroserviceRepositoryManager() {
+    private static final MicroServiceRepositoryManager MICRO_SERVICE_REPOSITORY_MANAGER = new MicroServiceRepositoryManager();
+    private MicroServiceRepositoryManager() {
     }
 
-    public static MicroserviceRepositoryManager getInstance() {
-        return microserviceRepositoryManager;
+    public static MicroServiceRepositoryManager getInstance() {
+        return MICRO_SERVICE_REPOSITORY_MANAGER;
     }
 
     public String getRepositoryLocation() {
@@ -63,6 +63,7 @@ public class MicroserviceRepositoryManager {
     public String getMicroServiceBase(String microServiceId, String version) {
         return getRepositoryLocation() + File.separator + microServiceId + File.separator + version;
     }
+
 
 
 }

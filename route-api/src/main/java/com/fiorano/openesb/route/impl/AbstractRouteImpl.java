@@ -5,6 +5,7 @@ import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.route.RouteOperationHandler;
 import com.fiorano.openesb.route.RouteOperationConfiguration;
 import com.fiorano.openesb.transport.Message;
+import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
                 } catch (FilterMessageException e) {
                     // TODO: 17-01-2016
                     // Message skipped by selector - trace log.
+                } catch (FioranoException e) {
+                    e.printStackTrace();
                 }
             }
         }

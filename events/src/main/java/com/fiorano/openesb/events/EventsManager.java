@@ -20,7 +20,7 @@ public class EventsManager implements EventListener {
         eventListeners.remove(listener);
     }
 
-    public void handleEvent(Event event) {
+    public void raiseEvent(Event event) {
 
             //Notify the EventListeners
             if (!eventListeners.isEmpty()) {
@@ -37,6 +37,6 @@ public class EventsManager implements EventListener {
         }
 
     public synchronized void onEvent(Event event) {
-        handleEvent(event);
+        raiseEvent(event);
     }
 }

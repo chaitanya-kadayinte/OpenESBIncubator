@@ -17,16 +17,19 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
+import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.RouteService;
 import com.fiorano.openesb.security.SecurityManager;
+import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class Activator implements BundleActivator {
 
-    public void start(BundleContext context) {
+    @SuppressWarnings("unchecked")
+    public void start(BundleContext context) throws Exception {
         System.out.println("Starting bundle - " + context.getBundle().getSymbolicName());
         ServiceReference<ApplicationRepository> applicationRepositoryRef = context.getServiceReference(ApplicationRepository.class);
         if (applicationRepositoryRef != null) {
@@ -34,12 +37,14 @@ public class Activator implements BundleActivator {
 
             RouteService service = context.getService(context.getServiceReference(RouteService.class));
             MicroServiceLauncher microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
+            CCPEventManager ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
+            TransportService transport = context.getService(context.getServiceReference(TransportService.class));
             SecurityManager securityManager = context.getService(context.getServiceReference(SecurityManager.class));
             ApplicationController applicationController = new ApplicationController(applicationRepository, microServiceLauncher,
-                    service, securityManager);
+                    service, securityManager,transport,ccpEventManager);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
-        }
 
+        }
     }
 
     public void stop(BundleContext context) {

@@ -18,19 +18,60 @@
  */
 package com.fiorano.openesb.microservice.launch.impl;
 
-import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
+import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
+import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
+import com.fiorano.openesb.utils.LoggerUtil;
+import com.fiorano.openesb.utils.exception.FioranoException;
+import com.fiorano.openesb.utils.logging.FioranoLogHandler;
 
-public class InMemoryRuntimeHandle implements MicroserviceRuntimeHandle {
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class InMemoryRuntimeHandle implements MicroServiceRuntimeHandle {
+
+    private Object service;
+    private Class serviceClass;
+    private LaunchConfiguration launchConfiguration;
+    private boolean isRunning;
+
+    public InMemoryRuntimeHandle(Object service, Class serviceClass, LaunchConfiguration launchConfiguration) {
+        this.service = service;
+        this.serviceClass = serviceClass;
+        this.launchConfiguration = launchConfiguration;
+        isRunning = true;
+    }
 
     public boolean isRunning() {
-        return false;
+        return isRunning;
     }
 
-    public void stop() {
-
+    public void stop() throws Exception {
+        Method shutDownMethod = serviceClass.getMethod("shutdown", String.class);
+        shutDownMethod.invoke(service, "Shutdown Component");
+        isRunning = false;
     }
 
-    public void kill() {
-
+    public void kill() throws Exception {
+        stop();
     }
+
+    @Override
+    public void setLogLevel(Map<String, String> modules) throws FioranoException {
+        for(Map.Entry<String, String> modifiedLevel:modules.entrySet()){
+            Logger logger = LoggerUtil.getServiceLogger(modifiedLevel.getKey(), launchConfiguration.getApplicationName(),
+                    launchConfiguration.getApplicationVersion(), launchConfiguration.getMicroserviceId(), launchConfiguration.getServiceName());
+            for(Handler handler:logger.getHandlers()){
+                logger.removeHandler(handler);
+                if(handler instanceof FioranoLogHandler)
+                    ((FioranoLogHandler)handler).setLogLevel(Level.parse(modifiedLevel.getValue()));
+                else
+                    handler.setLevel(Level.parse(modifiedLevel.getValue()));
+                logger.addHandler(handler);
+            }
+        }
+    }
+
 }

@@ -11,16 +11,8 @@ public abstract class ComponentWorkflowListener implements IEventListener {
         this.applicationVersion = applicationVersion;
     }
 
-    public String getComponentInstanceName() {
-        return componentInstanceName;
-    }
-
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public String getApplicationVersion() {
-        return applicationVersion;
+    public String getId() {
+        return applicationName + "__" + applicationVersion + "__" + componentInstanceName;
     }
 }
 

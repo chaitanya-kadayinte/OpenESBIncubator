@@ -31,11 +31,6 @@ import java.util.*;
  *  The <code>CarryForwardContext</code> can be added to a message as a property
  *  using method {@link JmsMessageUtil#setCarryForwardContext(javax.jms.Message, Object)}.
  *  <code>SourceContext</code> objects keep getting added to this object while the document flows in a workflow.
- *
- * @author Administrator
- * @created March 11, 2002
- * @version 2.0
- * @since Tifosi2.0
  */
 public class CarryForwardContext implements Serializable {
     private static final long serialVersionUID = -4012981779432749752L;

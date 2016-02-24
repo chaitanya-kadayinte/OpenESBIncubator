@@ -3,7 +3,7 @@ package com.fiorano.openesb.applicationcontroller;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.application.Route;
 import com.fiorano.openesb.jmsroute.impl.JMSRouteConfiguration;
-import com.fiorano.openesb.microservice.launch.MicroserviceRuntimeHandle;
+import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
@@ -13,16 +13,17 @@ import java.util.Map;
 
 public class ApplicationHandle {
 
-    Application application;
+    private Application application;
     private MicroServiceLauncher service;
     private RouteService<RouteConfiguration> routeService;
-    Map<String, MicroserviceRuntimeHandle> microServiceHandleList = new HashMap<>();
+    Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new HashMap<>();
     private Map<String, com.fiorano.openesb.route.Route> routeMap = new HashMap<>();
 
     ApplicationHandle(Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService){
         this.application = application;
         this.service = service;
         this.routeService = routeService;
+
     }
 
 
@@ -67,7 +68,7 @@ public class ApplicationHandle {
     }
 
     public void stopApplication() throws Exception {
-        for(MicroserviceRuntimeHandle handle:microServiceHandleList.values()){
+        for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
             handle.stop();
         }
         for(com.fiorano.openesb.route.Route route :routeMap.values()) {

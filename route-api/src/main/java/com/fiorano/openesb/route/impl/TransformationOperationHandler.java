@@ -18,8 +18,8 @@ public class TransformationOperationHandler implements RouteOperationHandler<JMS
 
     public Message _applyTransformation(JMSMessage message) throws FioranoException {
         try {
-            javax.jms.Message jmsMEssage = message.getMessage();
-            msgTransformer.transform(jmsMEssage);
+            javax.jms.Message jmsMessage = message.getMessage();
+            msgTransformer.transform(jmsMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -35,7 +35,7 @@ public interface LaunchConfiguration<A extends AdditionalConfiguration> {
 
     Enumeration<ServiceRef> getRuntimeDependencies();
 
-    enum LaunchMode {SEPARATE_PROCESS, IN_MEMORY, DOCKER}
+    enum LaunchMode {SEPARATE_PROCESS, IN_MEMORY, DOCKER, MANUAL}
     LaunchMode getLaunchMode();
     long getStopRetryInterval();
     int getNumberOfStopAttempts();
