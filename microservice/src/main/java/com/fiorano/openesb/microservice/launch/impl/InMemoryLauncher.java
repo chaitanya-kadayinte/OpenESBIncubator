@@ -80,15 +80,19 @@ public class InMemoryLauncher implements Launcher {
                     throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_CANNOT_LAUNCH_IN_MEMORY, e,
                             Bundle.COMPONENT_IMPL_INVALID);
                 }
+                return startup;
             } finally {
                 Thread.currentThread().setContextClassLoader(serverClassLoader);
             }
-            return startup;
         }
 
-        private List getArguments() throws Exception {
+        private Object[] getArguments() throws Exception {
+            Object[] argListForInvokedMain = new Object[1];
+
             CommandProvider commandProvider = new JVMCommandProvider();
-            return commandProvider.generateCommand(launchConfiguration);
+            List<String> list = commandProvider.getCommandLineParams(launchConfiguration);
+            argListForInvokedMain[0] =  list.toArray(new String[list.size()]);
+            return argListForInvokedMain;
         }
 
     }

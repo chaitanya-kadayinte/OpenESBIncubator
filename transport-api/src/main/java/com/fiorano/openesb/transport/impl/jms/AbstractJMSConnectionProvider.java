@@ -29,8 +29,8 @@ public abstract class AbstractJMSConnectionProvider implements ConnectionProvide
     private Map<String,ConnectionFactory> connectionFactories = new HashMap<>();
     public void prepareConnectionMD(JMSConnectionConfiguration jmsConnectionConfiguration) throws Exception {
         String cfName = jmsConnectionConfiguration.getClientId();
-        ConnectionFactory activeMQConnectionFactory = getConnectionFactory(cfName);
-        connectionFactories.put(cfName,activeMQConnectionFactory);
+        ConnectionFactory connectionFactory = getConnectionFactory(cfName);
+        connectionFactories.put(cfName,connectionFactory);
     }
 
     protected abstract ConnectionFactory getConnectionFactory(String name);

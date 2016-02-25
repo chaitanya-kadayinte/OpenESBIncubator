@@ -28,10 +28,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>utils</artifactId>
             <version>1.0</version>
@@ -73,13 +69,5 @@
         </plugins>
     </build>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>activemq-core</artifactId>
-                <version>5.7.0</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+
 </project>

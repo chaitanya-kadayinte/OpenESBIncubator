@@ -18,13 +18,18 @@
  */
 package com.fiorano.openesb.microservice.launch;
 
-public interface MicroserviceRuntimeHandle {
+import com.fiorano.openesb.utils.exception.FioranoException;
+
+import java.util.Map;
+
+public interface MicroServiceRuntimeHandle {
 
     boolean isRunning();
 
-    void stop();
+    void stop() throws Exception;
 
-    void kill();
+    void kill() throws Exception;
 
+    void setLogLevel(Map<String, String> modules) throws Exception;
 }
 
