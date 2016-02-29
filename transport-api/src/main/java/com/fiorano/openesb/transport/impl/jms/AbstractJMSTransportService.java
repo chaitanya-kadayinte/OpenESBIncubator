@@ -10,10 +10,31 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
     private Session session;
 
     protected AbstractJMSTransportService() throws JMSException {
-        ConnectionFactory cf = ((AbstractJMSConnectionProvider)getConnectionProvider()).getConnectionFactory("JmsTransportCf");
-        Connection connection = cf.createConnection("karaf", "karaf");
-        connection.start();
+        ConnectionFactory cf = ((AbstractJMSConnectionProvider) getConnectionProvider()).getConnectionFactory("ConnectionFactory");
+        Connection connection;
+        while ((connection = getConnection(cf)) == null) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e1) {
+                //
+            }
+        }
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    private Connection getConnection(ConnectionFactory cf) throws JMSException {
+        // TODO: 27-02-2016
+        try {
+            Connection connection = cf.createConnection("karaf", "karaf");
+            connection.start();
+            return connection;
+        } catch (JMSException e) {
+            if (e.getMessage().toUpperCase().contains("CONNECT")) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     public Consumer<JMSMessage> createConsumer(JMSPort port, ConsumerConfiguration consumerConfiguration) throws Exception {

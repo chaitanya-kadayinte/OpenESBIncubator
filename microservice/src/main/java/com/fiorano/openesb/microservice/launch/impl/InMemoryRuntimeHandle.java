@@ -50,7 +50,7 @@ public class InMemoryRuntimeHandle implements MicroServiceRuntimeHandle {
 
     public void stop() throws Exception {
         Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
-        shutDownMethod.invoke(service, "Shutdown Component");
+        shutDownMethod.invoke(service, "Shutdown Microservice");
         isRunning = false;
     }
 

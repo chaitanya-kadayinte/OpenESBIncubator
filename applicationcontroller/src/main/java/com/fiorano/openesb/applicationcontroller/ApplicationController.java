@@ -18,6 +18,7 @@ import com.fiorano.openesb.route.RouteService;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.security.SecurityManager;
+import org.osgi.framework.BundleContext;
 
 import java.io.File;
 import java.util.HashMap;
@@ -25,19 +26,21 @@ import java.util.List;
 import java.util.Map;
 
 public class ApplicationController {
+    private TransportService transport;
     private ApplicationRepository applicationRepository;
     private MicroServiceLauncher microServiceLauncher;
     private Map<String, ApplicationHandle> applicationHandleMap = new HashMap<>();
-    private RouteService<RouteConfiguration> routeService;
+    private RouteService routeService;
     private SecurityManager securityManager;
 
-    @SuppressWarnings("unchecked")
-    ApplicationController(ApplicationRepository applicationRepository, MicroServiceLauncher microServiceLauncher, RouteService<RouteConfiguration> routeService, SecurityManager securityManager, TransportService transport, CCPEventManager ccpEventManager) throws Exception {
+    public ApplicationController(ApplicationRepository applicationRepository, BundleContext context) throws Exception {
         this.applicationRepository = applicationRepository;
-        this.microServiceLauncher = microServiceLauncher;
-        this.routeService = routeService;
-        this.securityManager = securityManager;
+        routeService = context.getService(context.getServiceReference(RouteService.class));
+        microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
+        CCPEventManager ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
         registerConfigRequestListener(ccpEventManager);
+        transport = context.getService(context.getServiceReference(TransportService.class));
+        securityManager = context.getService(context.getServiceReference(SecurityManager.class));
     }
 
     private void registerConfigRequestListener(final CCPEventManager ccpEventManager) throws Exception {
@@ -109,7 +112,7 @@ public class ApplicationController {
     public boolean launchApplication(String appGuid, String version) throws Exception {
         System.out.println("Launching application : " + appGuid + ":" + version);
         Application application = applicationRepository.readApplication(appGuid, version);
-        ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService);
+        ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService,transport);
         appHandle.createRoutes();
         appHandle.launchComponents();
         applicationHandleMap.put(getKey(appGuid,version),appHandle);
@@ -149,7 +152,6 @@ public class ApplicationController {
     }
 
     public boolean stopMicroService(String appGuid, String version, String microServiceName){
-
         return false;
     }
 

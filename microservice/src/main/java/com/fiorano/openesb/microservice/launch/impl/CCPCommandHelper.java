@@ -38,8 +38,8 @@ public class CCPCommandHelper {
         this.launchConfiguration = launchConfiguration;
         this.ccpEventGenerator = ccpEventManager.getCcpEventGenerator();
         this.ccpEventManager = ccpEventManager;
-        this.componentId = launchConfiguration.getApplicationName() + "_"
-                + launchConfiguration.getApplicationVersion() + "__" + launchConfiguration.getServiceName();
+        this.componentId = launchConfiguration.getApplicationName() + "__"
+                + launchConfiguration.getApplicationVersion().replace(".","_") + "__" + launchConfiguration.getServiceName();
     }
 
     public String getComponentId() {
