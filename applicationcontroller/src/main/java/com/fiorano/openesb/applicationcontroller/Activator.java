@@ -17,11 +17,6 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
-import com.fiorano.openesb.microservice.ccp.CCPEventManager;
-import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
-import com.fiorano.openesb.route.RouteService;
-import com.fiorano.openesb.security.SecurityManager;
-import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -35,15 +30,19 @@ public class Activator implements BundleActivator {
         if (applicationRepositoryRef != null) {
             ApplicationRepository applicationRepository = context.getService(applicationRepositoryRef);
 
-            RouteService service = context.getService(context.getServiceReference(RouteService.class));
-            MicroServiceLauncher microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
-            CCPEventManager ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
-            TransportService transport = context.getService(context.getServiceReference(TransportService.class));
-            SecurityManager securityManager = context.getService(context.getServiceReference(SecurityManager.class));
-            ApplicationController applicationController = new ApplicationController(applicationRepository, microServiceLauncher,
-                    service, securityManager,transport,ccpEventManager);
+            ApplicationController applicationController = new ApplicationController(applicationRepository, context);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
-
+            try {
+//                for(int i = 0; i <3;i++) {
+//                    applicationController.launchApplication("OS_TEST", "1.0");
+//                    Thread.sleep(20000);
+//                    applicationController.stopApplication("OS_TEST", "1.0");
+//                    Thread.sleep(10000);
+//                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
