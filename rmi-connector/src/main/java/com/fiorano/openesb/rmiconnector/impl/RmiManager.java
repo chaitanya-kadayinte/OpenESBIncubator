@@ -1,23 +1,19 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
-import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.events.EventsManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.security.ConnectionHandle;
 import com.fiorano.openesb.security.SecurityManager;
 import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import org.osgi.framework.*;
-import org.osgi.framework.ServiceReference;
 
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Created by Janardhan on 1/22/2016.
@@ -25,9 +21,10 @@ import java.util.Random;
 public class RmiManager implements IRmiManager{
 
     Map<String, InstanceHandler> handlerMap = new HashMap<String, InstanceHandler>();
-    ApplicationController applicationController;
-    EventsManager eventsManager;
-    SecurityManager securityManager;
+    private ApplicationController applicationController;
+    private EventsManager eventsManager;
+    private SecurityManager securityManager;
+    private MicroServiceRepoManager microServiceRepoManager;
     private RMIServerSocketFactory ssf;
     private RMIClientSocketFactory csf;
     private int rmiPort;
@@ -42,6 +39,8 @@ public class RmiManager implements IRmiManager{
             eventsManager = (EventsManager) context.getService(references[0]);
             references = context.getServiceReferences(SecurityManager.class.getName(), null);
             securityManager = (SecurityManager) context.getService(references[0]);
+            references = context.getServiceReferences(MicroServiceRepoManager.class.getName(), null);
+            microServiceRepoManager = (MicroServiceRepoManager) context.getService(references[0]);
             dapiEventManager = new DapiEventManager(eventsManager);
             dapiEventManager.startEventListener();
 
@@ -74,6 +73,30 @@ public class RmiManager implements IRmiManager{
 
     public void setApplicationController(ApplicationController applicationController) {
         this.applicationController = applicationController;
+    }
+
+    public EventsManager getEventsManager() {
+        return eventsManager;
+    }
+
+    public void setEventsManager(EventsManager eventsManager) {
+        this.eventsManager = eventsManager;
+    }
+
+    public SecurityManager getSecurityManager() {
+        return securityManager;
+    }
+
+    public void setSecurityManager(SecurityManager securityManager) {
+        this.securityManager = securityManager;
+    }
+
+    public MicroServiceRepoManager getMicroServiceRepoManager() {
+        return microServiceRepoManager;
+    }
+
+    public void setMicroServiceRepoManager(MicroServiceRepoManager microServiceRepoManager) {
+        this.microServiceRepoManager = microServiceRepoManager;
     }
 
     public void startDapiEventListener() {
@@ -116,8 +139,8 @@ public class RmiManager implements IRmiManager{
     }
 
 
-    public IEventProcessManager getEventProcessManager(String handleID) throws RemoteException, ServiceException {
-        return handlerMap.get(handleID).getEventProcessManager();
+    public IApplicationManager getApplicationManager(String handleID) throws RemoteException, ServiceException {
+        return handlerMap.get(handleID).getApplicationManager();
     }
 
 

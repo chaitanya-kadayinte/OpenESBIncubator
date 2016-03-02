@@ -24,7 +24,7 @@ import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepositoryManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
@@ -57,7 +57,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, launchConfiguration.getLaunchMode() == LaunchConfiguration.
                 LaunchMode.IN_MEMORY ? "true" : "false");
         commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
-        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroServiceRepositoryManager.getInstance().getRepositoryLocation());
+        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroServiceRepoManager.getInstance().getRepositoryLocation());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
 
@@ -84,11 +84,11 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
     }
 
     protected String getExecutionDir(LaunchConfiguration launchConfiguration) {
-        return MicroServiceRepositoryManager.getInstance().getMicroServiceBase(launchConfiguration.getMicroserviceId(),
+        return MicroServiceRepoManager.getInstance().getMicroServiceBase(launchConfiguration.getMicroserviceId(),
                 launchConfiguration.getMicroserviceVersion());
     }
 
     protected Service getComponentPS(String componentGUID, String componentVersion) throws FioranoException {
-        return MicroServiceRepositoryManager.getInstance().readMicroService(componentGUID, componentVersion);
+        return MicroServiceRepoManager.getInstance().readMicroService(componentGUID, componentVersion);
     }
 }

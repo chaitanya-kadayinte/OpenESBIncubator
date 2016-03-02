@@ -61,14 +61,14 @@ public interface IRmiManager extends Remote {
     public String login(String userName, String password, String agent) throws RemoteException, ServiceException;
 
     /**
-     * This method returns EventProcessManager which performs operation on Event Processes
+     * This method returns ApplicationManager which performs operation on Event Processes
      *
      * @param handleID The handleID of the connection handle created
-     * @return IEventProcessManager - An instance of IEventProcessManager which is used to perform operations on Event Processes
+     * @return IApplicationManager - An instance of IApplicationManager which is used to perform operations on Event Processes
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    public IEventProcessManager getEventProcessManager(String handleID) throws RemoteException, ServiceException;
+    public IApplicationManager getApplicationManager(String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method returns ServiceManager which performs operations on services

@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ApplicationController {
     private TransportService transport;
@@ -80,7 +81,7 @@ public class ApplicationController {
     }
     private String getAppVersion(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
-        return componentId.substring(componentId.indexOf("__") + 2,componentId.lastIndexOf("__")).replace("_",".");
+        return componentId.substring(componentId.indexOf("__") + 2,componentId.lastIndexOf("__")).replace("_", ".");
     }
     private String getInstanceName(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
@@ -105,11 +106,15 @@ public class ApplicationController {
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
     }
 
-    public List<String> listApplications(){
+    public Set<String> getListOfApplications(String handleId){
         return applicationRepository.listApplications();
     }
 
-    public boolean launchApplication(String appGuid, String version) throws Exception {
+    public Set<String> getListOfRunningApplications(String handleId){
+        return applicationHandleMap.keySet();
+    }
+
+    public boolean launchApplication(String appGuid, String version, String handleID) throws Exception {
         System.out.println("Launching application : " + appGuid + ":" + version);
         Application application = applicationRepository.readApplication(appGuid, version);
         ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService,transport);
@@ -120,7 +125,7 @@ public class ApplicationController {
         return true;
     }
 
-    public boolean stopApplication(String appGuid, String version) throws Exception {
+    public boolean stopApplication(String appGuid, String version, String handleID) throws Exception {
 
         ApplicationHandle applicationHandle = applicationHandleMap.get(getKey(appGuid, version));
         if(applicationHandle!=null){
@@ -133,31 +138,34 @@ public class ApplicationController {
         return appGuid+ ":"+ version;
     }
 
-    public boolean synchronizeApplication(String appGuid, String version){
+    public boolean synchronizeApplication(String appGuid, String version, String handleID){
         return false;
     }
 
-    public boolean startAllMicroServices(String appGuid, String version){
+    public boolean startAllMicroServices(String appGuid, String version, String handleID){
         return false;
     }
 
-    public boolean stopAllMicroServices(String appGuid, String version){
-
-        return false;
-    }
-
-    public boolean startMicroService(String appGuid, String version, String microServiceName){
+    public boolean stopAllMicroServices(String appGuid, String version, String handleID){
 
         return false;
     }
 
-    public boolean stopMicroService(String appGuid, String version, String microServiceName){
+    public boolean startMicroService(String appGuid, String version, String microServiceName, String handleID){
+
         return false;
     }
 
-    public void deleteApplication(String appGUID, String version) throws FioranoException {
+    public boolean stopMicroService(String appGuid, String version, String microServiceName, String handleID){
+        return false;
+    }
+
+    public void deleteApplication(String appGUID, String version, String handleID) throws FioranoException {
         applicationRepository.deleteApplication(appGUID, version);
     }
 
+    public ApplicationHandle getApplicationHandle(String appGUID, float appVersion, String handleID) {
+        return applicationHandleMap.get(appGUID+"__"+appVersion);
+    }
 
 }

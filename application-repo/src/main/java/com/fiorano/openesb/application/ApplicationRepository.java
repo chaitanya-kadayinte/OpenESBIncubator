@@ -7,6 +7,7 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Janardhan on 1/6/2016.
@@ -28,7 +29,7 @@ public class ApplicationRepository {
         return null;
     }
 
-    public List<String> listApplications() {
+    public Set<String> listApplications() {
 
         return null;
     }

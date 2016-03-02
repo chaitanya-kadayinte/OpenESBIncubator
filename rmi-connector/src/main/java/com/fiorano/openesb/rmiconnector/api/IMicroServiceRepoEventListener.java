@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
  * @version 10
  *
  */
-public interface IRepositoryEventListener extends Remote {
+public interface IMicroServiceRepoEventListener extends Remote {
     /**
      * This notification is sent to the client when a Service Instance is deleted from the server
      *

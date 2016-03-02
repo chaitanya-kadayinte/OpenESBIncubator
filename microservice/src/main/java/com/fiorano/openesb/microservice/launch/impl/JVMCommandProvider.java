@@ -4,7 +4,7 @@ import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepositoryManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -29,7 +29,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
     public List<String> generateCommand(LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration) throws FioranoException {
         this.launchConfiguration = launchConfiguration;
-        this.m_componentRepositoryDir = MicroServiceRepositoryManager.getInstance().getRepositoryLocation();
+        this.m_componentRepositoryDir = MicroServiceRepoManager.getInstance().getRepositoryLocation();
         initialize();
         List<String> command = new ArrayList<>();
         command.add(getLaunchCommand());
@@ -320,7 +320,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         systemProps.setProperty("ENABLE_CLIENT_LOGGER", "true");
         systemProps.setProperty("DontSetReadOnly", "true");
         systemProps.setProperty("mx4j.log.priority", "error");
-        systemProps.setProperty("COMP_REPOSITORY_DIR", MicroServiceRepositoryManager.getInstance().getRepositoryLocation());
+        systemProps.setProperty("COMP_REPOSITORY_DIR", MicroServiceRepoManager.getInstance().getRepositoryLocation());
         systemProps.setProperty("FIORANO_HOME", fioranoHomeDir);
 
         //todo need to assign log handlers

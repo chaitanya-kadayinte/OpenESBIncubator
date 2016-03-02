@@ -24,7 +24,7 @@ import java.util.*;
  * @version 10
  *
  */
-public class EventProcessStateData implements Serializable {
+public class ApplicationStateData implements Serializable {
 
     private static final long serialVersionUID = 4566594311656096579L;
     private long launchTime;
@@ -44,7 +44,7 @@ public class EventProcessStateData implements Serializable {
     /**
      * Default Constructor
      */
-    public EventProcessStateData() {
+    public ApplicationStateData() {
         serviceStates = new Hashtable<String, ServiceStateData>();
         serviceExceptionTraces = new Hashtable<String, String>();
         debugRoutes = new ArrayList<String>();

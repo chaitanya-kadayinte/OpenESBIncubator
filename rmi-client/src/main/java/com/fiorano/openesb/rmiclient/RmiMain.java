@@ -1,6 +1,6 @@
 package com.fiorano.openesb.rmiclient;
 
-import com.fiorano.openesb.rmiconnector.api.IEventProcessManager;
+import com.fiorano.openesb.rmiconnector.api.IApplicationManager;
 import com.fiorano.openesb.rmiconnector.api.IRmiManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 
@@ -32,8 +32,8 @@ public class RmiMain {
         }
         System.out.println(handleid);
         try {
-            IEventProcessManager eventProcessManager = rmiManager.getEventProcessManager(handleid);
-            eventProcessManager.startEventProcess("SIMPLECHAT", "1.0", false);
+            IApplicationManager eventProcessManager = rmiManager.getApplicationManager(handleid);
+            eventProcessManager.startApplication("SIMPLECHAT", "1.0", handleid);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (ServiceException e) {

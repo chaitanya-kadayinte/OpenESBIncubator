@@ -2,7 +2,7 @@ package com.fiorano.openesb.microservice.launch.impl.cl;
 import com.fiorano.openesb.application.service.Resource;
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.application.service.ServiceRef;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepositoryManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.logging.api.FioranoClientLogger;
@@ -17,7 +17,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
     private final static String ID_SEPERATOR = "__";
     Hashtable<String, ClassLoader> classLoaderList;
     Hashtable<String, Integer> classLoaderRefCount;
-    private MicroServiceRepositoryManager componentRepository;
+    private MicroServiceRepoManager componentRepository;
     private String componentRepositoryDir;
 
     private static final Map<String, File> favorites = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("karaf.base")));
@@ -31,7 +31,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
      */
     public ClassLoaderManager() throws FioranoException {
 
-        componentRepository = MicroServiceRepositoryManager.getInstance();
+        componentRepository = MicroServiceRepoManager.getInstance();
         classLoaderList = new Hashtable<>();
         classLoaderRefCount = new Hashtable<>();
         classLoaderMgrLogger = new FioranoClientLogger().getLogger("CLM");

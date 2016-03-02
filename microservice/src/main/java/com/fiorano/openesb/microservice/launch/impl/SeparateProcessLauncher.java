@@ -5,7 +5,7 @@ import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepositoryManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 
 import java.io.File;
 
@@ -26,10 +26,10 @@ public class SeparateProcessLauncher implements Launcher<SeparateProcessRuntimeH
     @SuppressWarnings("unchecked")
     private Process startProcess(LaunchConfiguration launchConfiguration) throws Exception {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        boolean isJava = MicroServiceRepositoryManager.getInstance().readMicroService(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getType() == Execution.TYPE_JAVA;
+        boolean isJava = MicroServiceRepoManager.getInstance().readMicroService(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getType() == Execution.TYPE_JAVA;
         CommandProvider commandProvider = isJava ? new JVMCommandProvider() : new NJCommandProvider();
         ProcessBuilder command = processBuilder.command(commandProvider.generateCommand(launchConfiguration));
-        File directory = new File(MicroServiceRepositoryManager.getInstance().getMicroServiceBase(
+        File directory = new File(MicroServiceRepoManager.getInstance().getMicroServiceBase(
                 launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()));
         command.directory(directory);
         command.inheritIO();

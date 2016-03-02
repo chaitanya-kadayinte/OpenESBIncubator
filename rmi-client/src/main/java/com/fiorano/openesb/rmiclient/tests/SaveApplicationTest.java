@@ -1,7 +1,7 @@
 package com.fiorano.openesb.rmiclient.tests;
 
 import com.fiorano.openesb.rmiclient.RmiClient;
-import com.fiorano.openesb.rmiconnector.api.IEventProcessManager;
+import com.fiorano.openesb.rmiconnector.api.IApplicationManager;
 import com.fiorano.openesb.rmiconnector.api.IRmiManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 
@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 public class SaveApplicationTest implements TestCase{
 
     IRmiManager rmiManager;
-    IEventProcessManager eventProcessManager;
+    IApplicationManager eventProcessManager;
 
     public void test() throws RemoteException, ServiceException {
         RmiClient rmiClient = null;
@@ -25,13 +25,13 @@ public class SaveApplicationTest implements TestCase{
         rmiManager = rmiClient.getRmiManager();
         String handleid = null;
         handleid = rmiManager.login("karaf", "karaf");
-        eventProcessManager = rmiManager.getEventProcessManager(handleid);
+        eventProcessManager = rmiManager.getApplicationManager(handleid);
         try {
             saveApplication();
         } catch (IOException e) {
             throw new ServiceException(e.getMessage());
         }
-        eventProcessManager.deleteApplication("BP-JAN", "1.0");
+        eventProcessManager.deleteApplication("BP-JAN", "1.0", handleid);
         rmiManager.logout(handleid);
     }
     private void saveApplication() throws ServiceException, IOException {

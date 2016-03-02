@@ -6,7 +6,7 @@ import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.microservice.launch.impl.cl.ClassLoaderManager;
 import com.fiorano.openesb.microservice.launch.impl.cl.IClassLoaderManager;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepositoryManager;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.lang.reflect.Method;
@@ -31,7 +31,7 @@ public class InMemoryLauncher implements Launcher {
     }
 
     private Service getComponentPS() throws FioranoException {
-        return MicroServiceRepositoryManager.getInstance().readMicroService(launchConfiguration.getMicroserviceId(),
+        return MicroServiceRepoManager.getInstance().readMicroService(launchConfiguration.getMicroserviceId(),
                 launchConfiguration.getMicroserviceVersion());
     }
 
