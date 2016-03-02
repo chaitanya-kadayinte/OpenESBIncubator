@@ -77,14 +77,6 @@ public interface IServiceManager extends Remote {
     public ServiceReference[] getAllServices() throws RemoteException, ServiceException;
 
     /**
-     *
-     * @param zippedContents
-     * @param completed
-     * @throws RemoteException
-     * @throws ServiceException
-     */
-    public void deployService(byte[] zippedContents, boolean completed) throws RemoteException, ServiceException;
-    /**
      * This method deploys the service. If a service exists with the same GUID & version, it will be overwritten
      *
      * @param zippedContents The contents of the service in zipped form
@@ -153,7 +145,7 @@ public interface IServiceManager extends Remote {
      * @throws ServiceException ServiceException
      * @throws RemoteException  RemoteException
      */
-    public void addServiceRepositoryEventListener(IRepositoryEventListener listener) throws RemoteException, ServiceException;
+    public void addServiceRepositoryEventListener(IMicroServiceRepoEventListener listener) throws RemoteException, ServiceException;
 
     /**
      * This method removes the listener for service Repository update related events.

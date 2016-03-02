@@ -43,7 +43,7 @@ public interface IDapiEventManager {
      * @param appGUID       application GUID
      * @param handleId      handle id of client
      */
-    public void registerApplicationEventListener(IEventProcessManagerListener eventListener, String appGUID, float appVersion, String handleId);
+    public void registerApplicationEventListener(IApplicationManagerListener eventListener, String appGUID, float appVersion, String handleId);
 
     /**
      * Unregisters specified event Listener for specified appGUID
@@ -52,7 +52,7 @@ public interface IDapiEventManager {
      * @param appGUID       application GUID
      * @param handleId      handle id of client
      */
-    public void unRegisterApplicationEventListener(IEventProcessManagerListener eventListener, String appGUID, float appVersion, String handleId);
+    public void unRegisterApplicationEventListener(IAPIProjectManagerListener eventListener, String appGUID, float appVersion, String handleId);
 
     /**
      * Registers specified Event Listener for security events of specified username
@@ -78,7 +78,7 @@ public interface IDapiEventManager {
      * @param eventListener service Event listener
      * @param handleId      handle id of client
      */
-    public void registerServiceRepoEventListener(IRepositoryEventListener eventListener, String handleId);
+    public void registerServiceRepoEventListener(IMicroServiceRepoEventListener eventListener, String handleId);
 
     /**
      * Unregisters specified event listener for specified service GUID
@@ -113,7 +113,7 @@ public interface IDapiEventManager {
      * @param eventListener service Event listener
      * @param handleId      handle id of client
      */
-    public void registerApplicationRepoEventListener(IRepositoryEventListener eventListener, String handleId);
+    public void registerApplicationRepoEventListener(IMicroServiceRepoEventListener eventListener, String handleId);
 
     /**
      * UnRegisters specified Event Listener for Application Repository Events

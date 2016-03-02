@@ -16,29 +16,29 @@ import java.util.*;
 /**
  * Created by Janardhan on 1/22/2016.
  */
-public class EventProcessManager extends AbstractRmiManager implements IEventProcessManager  {
+public class ApplicationManager extends AbstractRmiManager implements IApplicationManager  {
     ApplicationController applicationController;
 
-    private IEventProcessManager clientProxyInstance;
+    private IApplicationManager clientProxyInstance;
 
     private HashMap<String, File> tempFileNameMap = new HashMap<String, File>(8);
 
-    void setClientProxyInstance(IEventProcessManager clientProxyInstance) {
+    void setClientProxyInstance(IApplicationManager clientProxyInstance) {
         this.clientProxyInstance = clientProxyInstance;
     }
 
-    IEventProcessManager getClientProxyInstance() {
+    IApplicationManager getClientProxyInstance() {
         return clientProxyInstance;
     }
 
-    EventProcessManager(RmiManager rmiManager, InstanceHandler instanceHandler){
+    ApplicationManager(RmiManager rmiManager, InstanceHandler instanceHandler){
         super(rmiManager);
         this.applicationController = rmiManager.getApplicationController();
         this.handleId = instanceHandler.getHandleID();
     }
 
     @Override
-    public String[] getEventProcessIds() throws RemoteException, ServiceException {
+    public String[] getApplicationIds() throws RemoteException, ServiceException {
         return new String[0];
     }
 
@@ -159,13 +159,13 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public byte[] getEventProcess(String appGUID, float version, long index) throws RemoteException, ServiceException {
+    public byte[] getApplication(String appGUID, float version, long index) throws RemoteException, ServiceException {
         return new byte[0];
     }
 
-    public void deleteApplication(String appGUID, String version) throws RemoteException, ServiceException {
+    public void deleteApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {
         try {
-            applicationController.deleteApplication(appGUID, version);
+            applicationController.deleteApplication(appGUID, version, handleID);
         } catch (FioranoException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
@@ -173,28 +173,28 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public boolean dependenciesExists(ServiceReference[] serviceRefs, EventProcessReference[] eventProcessRefs) throws RemoteException, ServiceException {
+    public boolean dependenciesExists(ServiceReference[] serviceRefs, ApplicationReference[] applicationRefs) throws RemoteException, ServiceException {
         return false;
     }
 
     @Override
-    public void startEventProcess(String appGUID, String version, boolean startServicesSeparately) throws RemoteException, ServiceException {
+    public void startApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {
         try {
-            applicationController.launchApplication(appGUID, version);
+            applicationController.launchApplication(appGUID, version, handleID);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(),e);
         }
     }
 
     @Override
-    public void restartEventProcess(String appGUID, float appVersion) throws RemoteException, ServiceException {
+    public void restartApplication(String appGUID, float appVersion, String handleID) throws RemoteException, ServiceException {
 
     }
 
     @Override
-    public void stopEventProcess(String appGUID, String version) throws RemoteException, ServiceException {
+    public void stopApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {
         try {
-            applicationController.stopApplication(appGUID,version);
+            applicationController.stopApplication(appGUID,version, handleID);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(),e);
         }
@@ -231,17 +231,17 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public EventProcessReference[] getRunningEventProcesses() throws RemoteException, ServiceException {
-        return new EventProcessReference[0];
+    public ApplicationReference[] getRunningApplications() throws RemoteException, ServiceException {
+        return new ApplicationReference[0];
     }
 
     @Override
-    public List<RouteMetaData> getRoutesOfEventProcesses(String appGUID, float version) throws RemoteException, ServiceException {
+    public List<RouteMetaData> getRoutesOfApplications(String appGUID, float version) throws RemoteException, ServiceException {
         return null;
     }
 
     @Override
-    public List<PortInstanceMetaData> getPortsForEventProcesses(String appGUID, float version) throws RemoteException, ServiceException {
+    public List<PortInstanceMetaData> getPortsForApplications(String appGUID, float version) throws RemoteException, ServiceException {
         return null;
     }
 
@@ -256,17 +256,17 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public void addEventProcessListener(IEventProcessManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException {
+    public void addApplicationListener(IApplicationManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException {
 
     }
 
     @Override
-    public void removeEventProcessListener(IEventProcessManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException {
+    public void removeApplicationListener(IApplicationManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException {
 
     }
 
     @Override
-    public void addRepositoryEventListener(IRepositoryEventListener listener) throws RemoteException, ServiceException {
+    public void addRepositoryEventListener(IMicroServiceRepoEventListener listener) throws RemoteException, ServiceException {
 
     }
 
@@ -281,7 +281,7 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public void synchronizeEventProcess(String appGUID, float version) throws RemoteException, ServiceException {
+    public void synchronizeApplication(String appGUID, float version) throws RemoteException, ServiceException {
 
     }
 
@@ -316,17 +316,17 @@ public class EventProcessManager extends AbstractRmiManager implements IEventPro
     }
 
     @Override
-    public EventProcessStateData getApplicationStateDetails(String appGUID, float appVersion) throws RemoteException, ServiceException {
+    public ApplicationStateData getApplicationStateDetails(String appGUID, float appVersion) throws RemoteException, ServiceException {
         return null;
     }
 
     @Override
-    public EventProcessReference[] getAllEventProcesses() throws RemoteException, ServiceException {
-        return new EventProcessReference[0];
+    public ApplicationReference[] getAllApplications() throws RemoteException, ServiceException {
+        return new ApplicationReference[0];
     }
 
     @Override
-    public EventProcessReference getEventProcess(String appGUID, float version) throws RemoteException, ServiceException {
+    public ApplicationReference getApplication(String appGUID, float version) throws RemoteException, ServiceException {
         return null;
     }
 

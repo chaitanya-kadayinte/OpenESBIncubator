@@ -13,7 +13,7 @@ import com.fiorano.openesb.transport.impl.jms.JMSProducerConfiguration;
 
 public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route<JMSMessage> {
 
-    private final Producer<JMSMessage> producer;
+    private Producer<JMSMessage> producer;
     private JMSPort sourcePort;
     private TransportService<JMSPort, JMSMessage> transportService;
     private RouteConfiguration routeConfiguration;
@@ -23,7 +23,6 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
         super(routeConfiguration.getRouteOperationConfigurations());
         this.transportService = transportService;
         this.routeConfiguration = routeConfiguration;
-        producer = transportService.createProducer(transportService.enablePort(routeConfiguration.getDestinationConfiguration()), new JMSProducerConfiguration());
 
         routeOperationHandlers.add(new RouteOperationHandler<JMSMessage>() {
             public void handleOperation(JMSMessage message) throws FilterMessageException {
@@ -38,6 +37,7 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     }
 
     public void start() throws Exception {
+        producer = transportService.createProducer(transportService.enablePort(routeConfiguration.getDestinationConfiguration()), new JMSProducerConfiguration());
         messageConsumer = transportService.createConsumer(sourcePort, routeConfiguration.getConsumerConfiguration());
 
         messageConsumer.attachMessageListener(new MessageListener<JMSMessage>() {
@@ -58,6 +58,30 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     }
 
     public void delete() {
+
+    }
+
+    public void changeTargetDestination(PortConfiguration portConfiguration) throws Exception{
+        producer.close();
+        producer = null;
+        producer = transportService.createProducer(transportService.enablePort(portConfiguration), new JMSProducerConfiguration());
+
+    }
+
+    public void changeSourceDestination(PortConfiguration portConfiguration) throws Exception{
+        messageConsumer.close();
+        messageConsumer = transportService.createConsumer(sourcePort, routeConfiguration.getConsumerConfiguration());
+
+        messageConsumer.attachMessageListener(new MessageListener<JMSMessage>() {
+            public void messageReceived(JMSMessage message) {
+                try {
+                    handleMessage(message);
+                } catch (Exception e) {
+                    //todo
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 

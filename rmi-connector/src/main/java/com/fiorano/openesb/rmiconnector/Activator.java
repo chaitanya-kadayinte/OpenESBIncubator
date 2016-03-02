@@ -38,6 +38,7 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
         System.out.println("Starting the bundle- RMI Connector");
+        System.setProperty("java.rmi.server.hostname", "192.168.2.214");
         Thread.currentThread().setContextClassLoader(
                 this.getClass().getClassLoader());
         RmiConnector rmiConnector = new RmiConnector();

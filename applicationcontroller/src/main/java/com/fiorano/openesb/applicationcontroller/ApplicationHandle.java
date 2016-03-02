@@ -8,8 +8,10 @@ import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
+import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ApplicationHandle {
@@ -26,6 +28,10 @@ public class ApplicationHandle {
         this.service = service;
         this.routeService = routeService;
         this.transport = transport;
+    }
+
+    public Application getApplication(){
+        return application;
     }
 
     public void createRoutes() throws Exception {
@@ -96,5 +102,42 @@ public class ApplicationHandle {
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
         portConfiguration.setName(getPortName(portInstance.getName(), serviceInstance.getName()));
         return portConfiguration;
+    }
+
+    public void addBreakPoint(String routeName) throws Exception {
+        com.fiorano.openesb.route.Route route = routeMap.get(routeName);
+        if(route==null){
+            throw new FioranoException("Route with name: "+routeName+" does not exist in the Application: " + application.getGUID());
+        }
+
+        JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
+        destinationConfiguration.setName(application.getGUID()+"__"+application.getVersion()+routeName+"__BP");
+        destinationConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
+        route.changeTargetDestination(destinationConfiguration);
+    }
+
+    public void removeBreakPoint(String routeName) throws Exception{
+        com.fiorano.openesb.route.Route route = routeMap.get(routeName);
+        List<Route> routes = application.getRoutes();
+        Route routeInfo = null;
+        for(Route r:routes){
+            if(r.getName().equals(routeName)){
+                routeInfo = r;
+            }
+        }
+        if(routeInfo==null){
+            throw new FioranoException("Route info with name: "+routeName+" does not exist in the Application: " + application.getGUID());
+        }
+
+        String appKey = application.getGUID() + "__" + application.getVersion() + "__";
+        String destPortInstance = routeInfo.getTargetPortInstance();
+        JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
+        String targetServiceInstance = routeInfo.getTargetServiceInstance();
+        destinationConfiguration.setName(appKey + targetServiceInstance + "__" +destPortInstance);
+        InputPortInstance inputPortInstance = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
+        int inputPortInstanceDestinationType = inputPortInstance.getDestinationType();
+        destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
+                JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
+        route.changeTargetDestination(destinationConfiguration);
     }
 }

@@ -13,7 +13,7 @@
 
 package com.fiorano.openesb.rmiconnector.api;
 
-import com.fiorano.openesb.rmiconnector.impl.EventProcessManager;
+import com.fiorano.openesb.rmiconnector.impl.ApplicationManager;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -23,60 +23,57 @@ import java.rmi.RemoteException;
  * extend UniCastRemoteObject or call {@link  java.rmi.server.UnicastRemoteObject#exportObject(Remote)}.
  * When an implementing class has registered to receive such events, it will be notified of Event Process events
  * such as launch, kill, etc. Registration for these events can be done via
- * {@link EventProcessManager#addEventProcessListener(IEventProcessManagerListener, String, float)}
+ * {@link ApplicationManager#addApplicationListener(IApplicationanagerListener, String, float)}
  *
  * @author FSTPL
  * @version 10
  */
-public interface IEventProcessManagerListener extends Remote {
+public interface IApplicationManagerListener extends Remote {
 
     /**
      * This method sends a notification to the client when an Event Process is deleted from the server
      *
      * @param appVersion The version of the Event Process deleted
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
-     * @deprecated Use {@link IRepositoryEventListener} to register for repository Updation events : eventProcessDeleted, eventProcessDeployed.
+     * @deprecated Use {@link IRepositoryEventListener} to register for repository Updation events : applicationDeleted, applicationDeployed.
      */
-    public void eventProcessDeleted(float appVersion) throws RemoteException;
+    public void applicationDeleted(float appVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when an Event Process is deployed(saved) in the server (i.e. any changes to the event process done and hence saved).
      *
      * @param appVersion The version of the Event Process deployed
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
-     * @deprecated Use {@link IRepositoryEventListener} to register for repository Update events : eventProcessDeleted, eventProcessDeployed.
+     * @deprecated Use {@link IRepositoryEventListener} to register for repository Update events : applicationDeleted, applicationDeployed.
      */
-    public void eventProcessDeployed(float appVersion) throws RemoteException;
+    public void applicationDeployed(float appVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when a Service Instance is launched in the server
      *
      * @param serviceInstanceName The name of the Service Instance started
      * @param serviceVersion      The version of the Service Instance started
-     * @param fpsName             peer server name on which the service instance has started
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
      */
-    public void serviceInstanceStarted(String serviceInstanceName, float serviceVersion, String fpsName) throws RemoteException;
+    public void serviceInstanceStarted(String serviceInstanceName, float serviceVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when a Service Instance is in Starting state.
      *
      * @param serviceInstanceName The name of the Service Instance started
      * @param serviceVersion      The version of the Service Instance started
-     * @param fpsName             peer server name on which the service instance has started
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
      */
-    public void serviceInstanceStarting(String serviceInstanceName, float serviceVersion, String fpsName) throws RemoteException;
+    public void serviceInstanceStarting(String serviceInstanceName, float serviceVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when a Service Instance is stopped in the server
      *
      * @param serviceInstanceName The name of the Service Instance stopped
      * @param serviceVersion      The version of the Service Instance stopped
-     * @param fpsName             peer server name on which the service instance is stopped
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
      */
-    public void serviceInstanceStopped(String serviceInstanceName, float serviceVersion, String fpsName) throws RemoteException;
+    public void serviceInstanceStopped(String serviceInstanceName, float serviceVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when a breakpoint is added to a route
@@ -100,7 +97,7 @@ public interface IEventProcessManagerListener extends Remote {
      * @param appVersion The version of the Event Process launched
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
      */
-    public void eventProcessStarted(float appVersion) throws RemoteException;
+    public void applicationStarted(float appVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when an Event Process is starting up in the server.
@@ -108,7 +105,7 @@ public interface IEventProcessManagerListener extends Remote {
      * @param appVersion The version of the Event Process launched
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
      */
-    public void eventProcessStarting(float appVersion) throws RemoteException;
+    public void applicationStarting(float appVersion) throws RemoteException;
 
     /**
      * This method sends a notification to the client when an Event Process is stopped in the server
@@ -116,5 +113,5 @@ public interface IEventProcessManagerListener extends Remote {
      * @param appVersion The version of the Event Process stopped
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call
      */
-    public void eventProcessStopped(float appVersion) throws RemoteException;
+    public void applicationStopped(float appVersion) throws RemoteException;
 }

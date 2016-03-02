@@ -1,6 +1,6 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
-import com.fiorano.openesb.rmiconnector.api.IEventProcessManager;
+import com.fiorano.openesb.rmiconnector.api.IApplicationManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import com.fiorano.openesb.rmiconnector.api.proxy.RemoteClientInterceptor;
 
@@ -20,8 +20,8 @@ public class InstanceHandler {
     private String handleID;
 
     private String context;
-    //EventProcessManager
-    private volatile EventProcessManager eventProcessManager;
+    //ApplicationManager
+    private volatile ApplicationManager applicationManager;
 
 
     public InstanceHandler(RmiManager rmiManager, String handleID) {
@@ -39,12 +39,12 @@ public class InstanceHandler {
      */
     public synchronized void onUnReferenced(String e) {
         if (e.equals(EVENT_PROCESS_MANAGER)) {
-            eventProcessManager = null;
+            applicationManager = null;
         }
     }
 
     private void canlogoutForceFully() {
-        if (eventProcessManager == null) {
+        if (applicationManager == null) {
             try {
                 rmiManager.logout(handleID);
             } catch (RemoteException willNeverHappen) {
@@ -53,29 +53,29 @@ public class InstanceHandler {
         }
     }
 
-    public synchronized IEventProcessManager getEventProcessManager() throws RemoteException {
-        if (eventProcessManager == null) {
+    public synchronized IApplicationManager getApplicationManager() throws RemoteException {
+        if (applicationManager == null) {
             //original resource == server side stub
-            eventProcessManager = new EventProcessManager(rmiManager, this);
+            applicationManager = new ApplicationManager(rmiManager, this);
             //server side proxy instance to original resource.
-            RemoteServerProxy serverSideProxy = new RemoteServerProxy(eventProcessManager,rmiManager.getRmiPort(),rmiManager.getCsf(),rmiManager.getSsf());
+            RemoteServerProxy serverSideProxy = new RemoteServerProxy(applicationManager,rmiManager.getRmiPort(),rmiManager.getCsf(),rmiManager.getSsf());
 
             //client proxy instance
-            IEventProcessManager returnObject = (IEventProcessManager) Proxy.newProxyInstance
+            IApplicationManager returnObject = (IApplicationManager) Proxy.newProxyInstance
                     (
                             this.getClass().getClassLoader(),
-                            new Class[]{IEventProcessManager.class, Serializable.class},
+                            new Class[]{IApplicationManager.class, Serializable.class},
                             //client stub & interceptor instance
                             new RemoteClientInterceptor(serverSideProxy)
                     );
-            eventProcessManager.setClientProxyInstance(returnObject);
+            applicationManager.setClientProxyInstance(returnObject);
         }
-        return eventProcessManager.getClientProxyInstance();
+        return applicationManager.getClientProxyInstance();
     }
 
 
     public void removeHandler() {
-        if (eventProcessManager != null) {
+        if (applicationManager != null) {
             onUnReferenced(EVENT_PROCESS_MANAGER);
         }
     }

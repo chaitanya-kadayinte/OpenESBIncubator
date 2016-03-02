@@ -25,14 +25,13 @@ import java.util.*;
  * @version 10
  *
  */
-public interface IEventProcessManager extends Remote{
+public interface IApplicationManager extends Remote{
 
     /**
      * This is a constant used to denote any version.
      *
-     * @see IEventProcessManager#exists(String, float)
-     * @see IEventProcessManager#getEventProcess(String, float,long)
-     * @see IEventProcessManager#deleteEventProcess(String, float, boolean, boolean)
+     * @see IApplicationManager#exists(String, float)
+     * @see IApplicationManager#getApplication(String, float,long)
      */
     float ANY_VERSION = -1;
 
@@ -43,7 +42,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    String[] getEventProcessIds() throws RemoteException, ServiceException;
+    String[] getApplicationIds() throws RemoteException, ServiceException;
 
     /**
      * This method checks whether an event Process exists
@@ -53,7 +52,7 @@ public interface IEventProcessManager extends Remote{
      * @return boolean - true, if exists, false otherwise
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
-     * @see IEventProcessManager#ANY_VERSION
+     * @see IApplicationManager#ANY_VERSION
      */
     boolean exists(String id, float version) throws RemoteException, ServiceException;
 
@@ -81,7 +80,7 @@ public interface IEventProcessManager extends Remote{
     /**
      * This method changes transformation on a route of a running event flow process.
      * Clients are supposed to send transformation project zip file in chunks of bytes and notify the server when done,
-     * by setting 'completed' boolean to true.The process of byte deployment is same as the process to be used in deployEventProcess call.
+     * by setting 'completed' boolean to true.The process of byte deployment is same as the process to be used in deployApplication call.
      * @param appGUID Application GUID
      * @param appVersion Application Version
      * @param routeGUID  Route GUID
@@ -170,9 +169,9 @@ public interface IEventProcessManager extends Remote{
      * @return Byte Array - The contents of the Event Process in zipped form.Returns null once all contents have been read.
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
-     * @see IEventProcessManager#ANY_VERSION
+     * @see IApplicationManager#ANY_VERSION
      */
-    byte[] getEventProcess(String appGUID, float version, long index) throws RemoteException, ServiceException;
+    byte[] getApplication(String appGUID, float version, long index) throws RemoteException, ServiceException;
 
     /**
      * This method deletes the Event Process. If <code>ANY_VERSION</code> is passed then the all the versions
@@ -182,31 +181,30 @@ public interface IEventProcessManager extends Remote{
      * @param version  The version of the Event Process
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
-     * @see IEventProcessManager#ANY_VERSION
+     * @see IApplicationManager#ANY_VERSION
      */
-    void deleteApplication(String appGUID, String version) throws RemoteException, ServiceException;
+    void deleteApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method checks for existence of dependencies
      *
      * @param serviceRefs      The service dependencies
-     * @param eventProcessRefs The Event Process depdencies
+     * @param applicationRefs The Event Process depdencies
      * @return boolean - true, if all the dependencies exist, false otherwise
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    boolean dependenciesExists(ServiceReference[] serviceRefs, EventProcessReference[] eventProcessRefs) throws RemoteException, ServiceException;
+    boolean dependenciesExists(ServiceReference[] serviceRefs, ApplicationReference[] applicationRefs) throws RemoteException, ServiceException;
 
     /**
      * This method starts the specified Event Process
      *
      * @param appGUID  Application GUID of the Event Process
      * @param version  The version of the Event Process
-     * @param startServicesSeparately eponymous flag
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    void startEventProcess(String appGUID, String version, boolean startServicesSeparately) throws RemoteException, ServiceException;
+    void startApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method restarts the specified Event Process
@@ -216,7 +214,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    void restartEventProcess(String appGUID, float appVersion) throws RemoteException, ServiceException;
+    void restartApplication(String appGUID, float appVersion, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method stops the specified Event Process
@@ -226,7 +224,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void stopEventProcess(String appGUID, String version) throws RemoteException, ServiceException;
+    void stopApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method returns the list of Applications referring the specified Applications
@@ -286,10 +284,10 @@ public interface IEventProcessManager extends Remote{
      * This method stops the specified Service Instance from a running Event Process .It also deletes the
      * destinations, incoming & outgoing routes and other resources for this serviceInstance
      * If the service instance is not running, this method call is ignored
-     * Please note that the call will only stop the running instance of the service but the service will still be present in EventProcess.
-     * EventProcess should be deployed again and synchronized after this call else the changes won't be reflected in EventProcess.
+     * Please note that the call will only stop the running instance of the service but the service will still be present in Application.
+     * Application should be deployed again and synchronized after this call else the changes won't be reflected in Application.
      * <br>
-     * see {@link IEventProcessManager#stopServiceInstance(String, float, String)}}
+     * see {@link IApplicationManager#stopServiceInstance(String, float, String)}}
      * </br>
      * Note:StopServiceInstance only stops the specified Service Instance from a running Event Process where as deleteServiceInstance
      * also deletes related resources like routes/destinations.
@@ -305,11 +303,11 @@ public interface IEventProcessManager extends Remote{
     /**
      * This method returns the list of running Event Processes
      *
-     * @return EventProcessReference Array - An array of EventProcessReference object, never <code>null</code>
+     * @return ApplicationReference Array - An array of ApplicationReference object, never <code>null</code>
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    EventProcessReference[] getRunningEventProcesses() throws RemoteException, ServiceException;
+    ApplicationReference[] getRunningApplications() throws RemoteException, ServiceException;
 
     /**
      * This method returns the list of Routes of Event Processes
@@ -320,7 +318,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    List<RouteMetaData> getRoutesOfEventProcesses(String appGUID, float version) throws RemoteException, ServiceException;
+    List<RouteMetaData> getRoutesOfApplications(String appGUID, float version) throws RemoteException, ServiceException;
 
       /**
      * This method returns the list of Ports of Event Processes
@@ -331,7 +329,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-      List<PortInstanceMetaData> getPortsForEventProcesses(String appGUID, float version) throws RemoteException, ServiceException;
+      List<PortInstanceMetaData> getPortsForApplications(String appGUID, float version) throws RemoteException, ServiceException;
 
       /**
      * This method returns the list of Ports of Service Instance
@@ -357,7 +355,7 @@ public interface IEventProcessManager extends Remote{
       List<ServiceInstanceMetaData> getServiceInstancesOfApp(String appGUID, float version) throws RemoteException, ServiceException;
 
     /**
-     * This method adds a listener to the changes of IEventProcessManager's object
+     * This method adds a listener to the changes of IApplicationManager's object
      *
      * @param listener The listener to add
      * @param appVersion Application Version
@@ -365,10 +363,10 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void addEventProcessListener(IEventProcessManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException;
+    void addApplicationListener(IApplicationManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException;
 
     /**
-     * This method removes the listener from the IEventProcessManager
+     * This method removes the listener from the IApplicationManager
      *
      * @param listener The listener to remove
      * @param appGUID  application GUID
@@ -376,19 +374,19 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void removeEventProcessListener(IEventProcessManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException;
+    void removeApplicationListener(IApplicationManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException;
 
     /**
-     * This method adds a listener to the IEventProcessManager's changes
+     * This method adds a listener to the IApplicationManager's changes
      *
      * @param listener The listener to add
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void addRepositoryEventListener(IRepositoryEventListener listener) throws RemoteException, ServiceException;
+    void addRepositoryEventListener(IMicroServiceRepoEventListener listener) throws RemoteException, ServiceException;
 
     /**
-     * This method removes the listener from the IEventProcessManager
+     * This method removes the listener from the IApplicationManager
      *
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
@@ -414,7 +412,7 @@ public interface IEventProcessManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void synchronizeEventProcess(String appGUID, float version) throws RemoteException, ServiceException;
+    void synchronizeApplication(String appGUID, float version) throws RemoteException, ServiceException;
 
     /**
      * This method starts all service instances of specified event process
@@ -486,35 +484,34 @@ public interface IEventProcessManager extends Remote{
     String viewHttpContext(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException;
 
     /**
-     * This method returns the currentState of the Application.It will contain all the details of the EventProcess, including the details of its services.
+     * This method returns the currentState of the Application.It will contain all the details of the Application, including the details of its services.
      *
      * @param appGUID  Application GUID of the Event Process
      * @param appVersion Application Version
-     * @return EventProcessStateData - EventProcessStateData Object that contains all the details of the Event Process
+     * @return ApplicationStateData - ApplicationStateData Object that contains all the details of the Event Process
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    EventProcessStateData getApplicationStateDetails(String appGUID, float appVersion) throws RemoteException, ServiceException;
+    ApplicationStateData getApplicationStateDetails(String appGUID, float appVersion) throws RemoteException, ServiceException;
 
     /**
      * This method returns the list of all Event Processes stored with the enterprise server.
      *
-     * @return EventProcessReference Array - An array of EventProcessReference, never <code>null</code>
+     * @return ApplicationReference Array - An array of ApplicationReference, never <code>null</code>
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    EventProcessReference[] getAllEventProcesses() throws RemoteException, ServiceException;
+    ApplicationReference[] getAllApplications() throws RemoteException, ServiceException;
 
     /**
-     * This method returns EventProcessReference of EP with supplied 'appGUID' and 'version' stored with the enterprise server.
+     * This method returns ApplicationReference of EP with supplied 'appGUID' and 'version' stored with the enterprise server.
      * @param appGUID  Application GUID of the Event Process
      * @param version  Version of the Event Process
-     * @return EventProcessReference - An object of EventProcessReference to the EventProcess having ID 'appGUID' and Version 'version', <br><code>null</code> is returned in case EventProcess with 'appGUID' and 'version' is not stored with the enterprise server.</br>
+     * @return ApplicationReference - An object of ApplicationReference to the Application having ID 'appGUID' and Version 'version', <br><code>null</code> is returned in case Application with 'appGUID' and 'version' is not stored with the enterprise server.</br>
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
-     * @see IEventProcessManager#getAllEventProcesses()
      */
-    EventProcessReference getEventProcess(String appGUID, float version) throws RemoteException, ServiceException;
+    ApplicationReference getApplication(String appGUID, float version) throws RemoteException, ServiceException;
 
     /**
      * This method returns the specified amount of numberofLines (records) from the Out logs for the service
@@ -612,7 +609,7 @@ public interface IEventProcessManager extends Remote{
      * application specified by the <code>appGUID</code>, <code>serviceInstName</code>
      * , and <code>moduleName</code> arguments.
      *
-     * @param appGUID         EventProcess Id
+     * @param appGUID         Application Id
      * @param appVersion Application Version
      * @param serviceInstName Name of the Service Instance
      * @param modules         The name log of modules for which log level is to be set.
@@ -659,7 +656,7 @@ public interface IEventProcessManager extends Remote{
      * Please note that it is to be used for RUNNING Application only
      *
      * @param servInstName service instance name
-     * @param appGUID      EventProcess ID
+     * @param appGUID      Application ID
      * @param appVersion Application Version
      * @param portName     name of the port for which workflow needs to be monitored
      * @param isEndState   boolean to indicate whether to track the workflow for this port
@@ -685,7 +682,7 @@ public interface IEventProcessManager extends Remote{
      * Please note that it is to be used for a RUNNING Application only
      *
      * @param servInstName service instance name
-     * @param appGUID      EventProcess ID
+     * @param appGUID      Application ID
      * @param appVersion Application Version
      * @param portName     Name of the port for which workflow needs to be monitored
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
@@ -697,7 +694,7 @@ public interface IEventProcessManager extends Remote{
      * This method sets the tracking type of a Status Based Workflow (SBW) enabled port.
      *
      * @param servInstName service instance name
-     * @param appGUID      EventProcess ID
+     * @param appGUID      Application ID
      * @param appVersion   Application Version
      * @param portName     Name of the port for which workflow needs to be monitored
      * @param trackingType int to indicate what part of message to track
@@ -720,7 +717,7 @@ public interface IEventProcessManager extends Remote{
      * Please note that it is to be used for RUNNING Application only
      *
      * @param servInstName service instance name
-     * @param appGUID      EventProcess ID
+     * @param appGUID      ApplicationID
      * @param appVersion   Application Version
      * @param portName     Name of the port to which the workflow configuration is to be applied
      * @param configurationName The name of the new workflow configuration which should be applied to the port

@@ -16,7 +16,7 @@
  */
 package com.fiorano.openesb.rmiclient;
 
-import com.fiorano.openesb.rmiconnector.api.IEventProcessManager;
+import com.fiorano.openesb.rmiconnector.api.IApplicationManager;
 import com.fiorano.openesb.rmiconnector.api.IRmiManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import org.osgi.framework.BundleActivator;
@@ -85,8 +85,8 @@ public class Activator implements BundleActivator {
         }
         System.out.println(handleid);
         try {
-           IEventProcessManager eventProcessManager = rmiManager.getEventProcessManager(handleid);
-           eventProcessManager.startEventProcess("OS_TEST", "1.0", false);
+           IApplicationManager eventProcessManager = rmiManager.getApplicationManager(handleid);
+           eventProcessManager.startApplication("OS_TEST", "1.0", false);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (ServiceException e) {

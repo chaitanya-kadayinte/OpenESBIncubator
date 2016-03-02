@@ -24,7 +24,7 @@ import java.util.List;
  * @version 10
  *
  */
-public class EventProcessReference implements Serializable {
+public class ApplicationReference implements Serializable {
     private static final long serialVersionUID = -1391094945568735309L;
     private String id;
     private float version;
@@ -39,7 +39,7 @@ public class EventProcessReference implements Serializable {
     /**
      * Dafault Constructor
      */
-    public EventProcessReference() {
+    public ApplicationReference() {
     }
 
     /**
@@ -48,7 +48,7 @@ public class EventProcessReference implements Serializable {
      * @param id      appGUID
      * @param version version
      */
-    public EventProcessReference(String id, float version) {
+    public ApplicationReference(String id, float version) {
         this.id = id;
         this.version = version;
     }
