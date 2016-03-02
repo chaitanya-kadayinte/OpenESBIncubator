@@ -38,7 +38,6 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
         System.out.println("Starting the bundle- RMI Connector");
-        System.setProperty("java.rmi.server.hostname", "192.168.2.214");
         Thread.currentThread().setContextClassLoader(
                 this.getClass().getClassLoader());
         RmiConnector rmiConnector = new RmiConnector();
@@ -51,9 +50,10 @@ public class Activator implements BundleActivator {
         Registry registry;
         IRmiManager rmiManager = null;
         try {
-            rmiManager = new RmiManager(context, 2047, rmiConnector.getCsf(), rmiConnector.getSsf());
-            rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, 2047, rmiConnector.getCsf(), rmiConnector.getSsf());
-            registry = LocateRegistry.getRegistry(2047);
+            int rmiPort = rmiConnector.getRmiConnectorConfig().getRMIServerPort();
+            rmiManager = new RmiManager(context,rmiPort , rmiConnector.getCsf(), rmiConnector.getSsf());
+            rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, rmiPort, rmiConnector.getCsf(), rmiConnector.getSsf());
+            registry = LocateRegistry.getRegistry(rmiPort);
             try {
                 registry.unbind("rmi");
             } catch (NotBoundException |  RemoteException ignored) {

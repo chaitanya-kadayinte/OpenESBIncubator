@@ -7,16 +7,18 @@ import javax.management.MBeanServerFactory;
 import javax.management.remote.*;
 import javax.management.remote.rmi.RMIConnectorServer;
 import javax.naming.Context;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Janardhan on 1/20/2016.
@@ -26,12 +28,53 @@ public class RmiConnector {
     private RMIClientSocketFactory csf;
     FioranoNamingService namingService;
     private JMXConnectorServer connectorServer;
+    private RmiConnectorConfig rmiConnectorConfig;
+
+    public RmiConnector(){
+        Properties properties = new Properties();
+        try(FileInputStream inStream = new FileInputStream(System.getProperty("karaf.base") + File.separator
+                + "etc" + File.separator + "com.fiorano.openesb.rmiconnector.cfg")) {
+            properties.load(inStream);
+            buildConfigFromProperties(properties);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void buildConfigFromProperties(Properties properties) {
+        rmiConnectorConfig = new RmiConnectorConfig();
+        try {
+            PropertiesToObjectConverter(properties, rmiConnectorConfig);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void PropertiesToObjectConverter(Properties properties, Object obj) throws InvocationTargetException, IllegalAccessException {
+        Method[] methods = obj.getClass().getMethods();
+        for (Method m : methods) {
+            if (m.getName().startsWith("set") && !m.getName().startsWith("setClass")) {
+                String key = m.getName().substring(m.getName().indexOf("set")+3);
+                if(properties.get(key)!=null){
+                    m.invoke(obj, properties.getProperty(key));
+                }
+            }
+        }
+    }
+
+    public RmiConnectorConfig getRmiConnectorConfig(){
+        return rmiConnectorConfig;
+    }
 
     public void createService()
             throws FioranoException
     {
         try
         {
+            System.setProperty("java.rmi.server.hostname", rmiConnectorConfig.getHostname());
             //Start Naming Service first.
             FioranoRMIMasterSocketFactory masterfac = FioranoRMIMasterSocketFactory.getInstance();
             List factories = masterfac.getSocketFactories("FioranoRMIServerSocketFactory",
@@ -40,15 +83,15 @@ public class RmiConnector {
             csf =(RMIClientSocketFactory)factories.get(0);
             ssf =(RMIServerSocketFactory)factories.get(1);
             setRmiRegistryIpAddress();// ---->do before starting fiorano naming service !
-            namingService = new FioranoNamingService(2047,csf,ssf);
+            namingService = new FioranoNamingService(rmiConnectorConfig.getRMIServerPort(),csf,ssf);
             namingService.start();
 
-            JMXServiceURL address = new JMXServiceURL("rmi", "localhost", 2047, "/jndi/fmq");
+            JMXServiceURL address = new JMXServiceURL("rmi", rmiConnectorConfig.getHostname(), rmiConnectorConfig.getRMIServerPort(), "/fiorano");
 
             Map environment = new HashMap();
 
             environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory");
-            environment.put(Context.PROVIDER_URL, "rmi://localhost:" + 2047);
+            environment.put(Context.PROVIDER_URL, "rmi://"+rmiConnectorConfig.getHostname()+":"+rmiConnectorConfig.getRMIServerPort());
             environment.put(RMIConnectorServer.RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE, csf);
             environment.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);
             /*JMXAuthenticator auth = JMXAuthenticatorFactory.createAuthenticator("fiorano.jms.jmx.authenticator.FMQJmxAuthenticator");
@@ -89,7 +132,7 @@ public class RmiConnector {
 */
             connectorServer.start();
 
-            System.out.println("rmi server listening on 2047");
+            System.out.println("rmi server listening on " + rmiConnectorConfig.getRMIServerPort());
         }
         catch (Exception ex)
         {
