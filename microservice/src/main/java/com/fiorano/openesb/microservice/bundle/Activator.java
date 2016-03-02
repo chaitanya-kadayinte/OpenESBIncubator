@@ -18,6 +18,7 @@ package com.fiorano.openesb.microservice.bundle;
 
 import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -32,8 +33,10 @@ public class Activator implements BundleActivator {
         TransportService service = context.getService(context.getServiceReference(TransportService.class));
         CCPEventManager ccpEventManager = new CCPEventManager(service);
         MicroServiceLauncher microServiceLauncher = new MicroServiceLauncher(ccpEventManager);
+        MicroServiceRepoManager microServiceRepoManager = MicroServiceRepoManager.getInstance();
         context.registerService(CCPEventManager.class,ccpEventManager,new Hashtable<String, Object>());
         context.registerService(MicroServiceLauncher.class, microServiceLauncher, new Hashtable<String, Object>());
+        context.registerService(MicroServiceRepoManager.class, microServiceRepoManager, new Hashtable<String, Object>());
         System.out.println("Started the bundle - " + context.getBundle().getSymbolicName());
     }
 

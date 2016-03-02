@@ -37,6 +37,18 @@ public class MicroServiceRepoManager {
 
     private static final MicroServiceRepoManager MICRO_SERVICE_REPOSITORY_MANAGER = new MicroServiceRepoManager();
     private MicroServiceRepoManager() {
+        waitObject = new Object();
+        // Create new hashtables for the properties
+        m_committedServiceVsProperties = new Hashtable<String, Service>();
+        m_nonCommittedServiceVsProperties = new Hashtable<String, Service>();
+
+        COMPONENTS_REPOSITORY_FOLDER = getRepositoryLocation();
+        try {
+            reloadRepository();
+            _switchToActiveMode();
+        } catch (FioranoException e) {
+            e.printStackTrace();
+        }
     }
 
     public static MicroServiceRepoManager getInstance() {
@@ -94,24 +106,6 @@ public class MicroServiceRepoManager {
     /*********************************************************************************************************/
     //@START State Controller Methods
     /*********************************************************************************************************/
-
-    /**
-     *  Startup the service repository. Create repository path. and reload the
-     * service repository into memory.
-     *
-     * @exception FioranoException Description of the Exception
-     */
-    public void startup()
-            throws FioranoException
-    {
-        waitObject = new Object();
-        // Create new hashtables for the properties
-        m_committedServiceVsProperties = new Hashtable<String, Service>();
-        m_nonCommittedServiceVsProperties = new Hashtable<String, Service>();
-
-        COMPONENTS_REPOSITORY_FOLDER = getRepositoryLocation();
-        reloadRepository();
-    }
 
     /**
      * Switched the module to active mode. Reloads the reposiroty.
