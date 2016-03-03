@@ -77,7 +77,7 @@ public class ApplicationController {
 
     private String getAppName(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
-        return componentId.substring(0,componentId.indexOf("__"));
+        return componentId.substring(0, componentId.indexOf("__"));
     }
     private String getAppVersion(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
@@ -161,6 +161,9 @@ public class ApplicationController {
     }
 
     public void deleteApplication(String appGUID, String version, String handleID) throws FioranoException {
+        if(applicationHandleMap.containsKey(appGUID+"__"+version)){
+            throw new FioranoException("Cannot delete running Application. Stop the Application and then delete");
+        }
         applicationRepository.deleteApplication(appGUID, version);
     }
 

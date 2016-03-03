@@ -1,6 +1,7 @@
 package com.fiorano.openesb.rmiconnector.connector;
 
 import com.fiorano.openesb.rmiconnector.server.FioranoRMIMasterSocketFactory;
+import com.fiorano.openesb.utils.ConfigReader;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import javax.management.MBeanServerFactory;
@@ -31,37 +32,20 @@ public class RmiConnector {
     private RmiConnectorConfig rmiConnectorConfig;
 
     public RmiConnector(){
-        Properties properties = new Properties();
-        try(FileInputStream inStream = new FileInputStream(System.getProperty("karaf.base") + File.separator
-                + "etc" + File.separator + "com.fiorano.openesb.rmiconnector.cfg")) {
-            properties.load(inStream);
-            buildConfigFromProperties(properties);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void buildConfigFromProperties(Properties properties) {
         rmiConnectorConfig = new RmiConnectorConfig();
         try {
-            PropertiesToObjectConverter(properties, rmiConnectorConfig);
-        } catch (InvocationTargetException e) {
+            File configFile = new File(System.getProperty("karaf.base") + File.separator
+                    + "etc" + File.separator + "com.fiorano.openesb.rmiconnector.cfg");
+            if(!configFile.exists()){
+                return;
+            }
+            ConfigReader.readConfigFromProperties(configFile, rmiConnectorConfig);
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void PropertiesToObjectConverter(Properties properties, Object obj) throws InvocationTargetException, IllegalAccessException {
-        Method[] methods = obj.getClass().getMethods();
-        for (Method m : methods) {
-            if (m.getName().startsWith("set") && !m.getName().startsWith("setClass")) {
-                String key = m.getName().substring(m.getName().indexOf("set")+3);
-                if(properties.get(key)!=null){
-                    m.invoke(obj, properties.getProperty(key));
-                }
-            }
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 

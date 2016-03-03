@@ -1,23 +1,25 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
+import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.rmiconnector.api.*;
+import com.fiorano.openesb.utils.Constants;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.ZipUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Janardhan on 1/22/2016.
  */
 public class ApplicationManager extends AbstractRmiManager implements IApplicationManager  {
-    ApplicationController applicationController;
+    private ApplicationController applicationController;
+
+    private ApplicationRepository applicationRepository;
 
     private IApplicationManager clientProxyInstance;
 
@@ -34,6 +36,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     ApplicationManager(RmiManager rmiManager, InstanceHandler instanceHandler){
         super(rmiManager);
         this.applicationController = rmiManager.getApplicationController();
+        this.applicationRepository = rmiManager.getApplicationRepository();
         this.handleId = instanceHandler.getHandleID();
     }
 
@@ -160,7 +163,94 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public byte[] getApplication(String appGUID, float version, long index) throws RemoteException, ServiceException {
-        return new byte[0];
+        byte[] contents = new byte[0];
+        //if Version is -1, get Highest Version and convert to String
+        String versionString = String.valueOf(version);
+        String eventProcessKey = appGUID.toUpperCase() + "__" + versionString + "__GETEP";
+        File tempZipFile = null;
+        BufferedInputStream bis = null;
+        boolean completed = false;
+
+        if (tempFileNameMap.get(eventProcessKey) == null) {
+            File tempdir = null;
+            ZipOutputStream zipStream = null;
+
+            try {
+                //Create Temporary Directory
+                tempdir = getTempFile("application", "tmp");
+                tempdir.mkdir();
+                //if the Application to be Zipped in APPID/Version/AppFiles.. We need to add the Required directories as follows.
+//                File appDir = new File(tempdir, appGUID + File.separator + versionString);
+//                appDir.mkdirs();
+                //fetch the Application directory from Application directory and copy the dir into Temporary location
+                File appFile = applicationRepository.getAppDir(appGUID, Float.parseFloat(versionString));
+                if (appFile == null)
+                    return null;
+                copyDirectory(appFile, tempdir);
+
+                //Create Temporary zip file for the Application directory.
+                tempZipFile = getTempFile("application", "zip");
+                zipStream = new ZipOutputStream(new FileOutputStream(tempZipFile));
+                ZipUtil.zipDir(tempdir, tempdir, zipStream);
+                tempFileNameMap.put(eventProcessKey, tempZipFile);
+            } catch (Exception e) {
+                completed = true;
+                //rmiLogger.error(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version, e);
+                throw new ServiceException("ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY");
+            }
+            finally {
+                try {
+                    if (zipStream != null)
+                        zipStream.close();
+                    if (tempdir != null)
+                        FileUtil.deleteDir(tempdir);
+                    if (completed) {
+                        tempFileNameMap.remove(eventProcessKey);
+                        if (tempZipFile != null) {
+                            tempZipFile.delete();
+                        }
+                    }
+                } catch (IOException e) {
+                    //ignore
+                }
+            }
+
+        } else
+            tempZipFile = tempFileNameMap.get(eventProcessKey);
+
+        //Now we have Application Zip file, Read the contents of the Zip file by skipping till index.
+        try {
+            bis = new BufferedInputStream(new FileInputStream(tempZipFile));
+            bis.skip(index);
+            byte[] tempContents = new byte[Constants.CHUNK_SIZE];
+            int readCount;
+            readCount = bis.read(tempContents);
+            if (readCount < 0) {
+                completed = true;
+                return null;
+            }
+            contents = new byte[readCount];
+            System.arraycopy(tempContents, 0, contents, 0, readCount);
+        } catch (IOException e) {
+            completed = true;
+            //rmiLogger.error(Bundle.class, Bundle.ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE, appGUID, version, e);
+            throw new ServiceException("ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE");
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+                if (completed) {
+                    tempFileNameMap.remove(eventProcessKey);
+                    if (tempZipFile != null) {
+                        tempZipFile.delete();
+                    }
+                }
+            } catch (IOException e) {
+                //ignore
+            }
+        }
+        return contents;
     }
 
     public void deleteApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {

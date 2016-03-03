@@ -1,5 +1,6 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
+import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
@@ -22,6 +23,7 @@ public class RmiManager implements IRmiManager{
 
     Map<String, InstanceHandler> handlerMap = new HashMap<String, InstanceHandler>();
     private ApplicationController applicationController;
+    private ApplicationRepository applicationRepository;
     private EventsManager eventsManager;
     private SecurityManager securityManager;
     private MicroServiceRepoManager microServiceRepoManager;
@@ -35,6 +37,8 @@ public class RmiManager implements IRmiManager{
         try {
             references = context.getServiceReferences(ApplicationController.class.getName(),null);
             applicationController = (ApplicationController) context.getService(references[0]);
+            references = context.getServiceReferences(ApplicationRepository.class.getName(),null);
+            applicationRepository = (ApplicationRepository) context.getService(references[0]);
             references = context.getServiceReferences(EventsManager.class.getName(), null);
             eventsManager = (EventsManager) context.getService(references[0]);
             references = context.getServiceReferences(SecurityManager.class.getName(), null);
@@ -71,8 +75,8 @@ public class RmiManager implements IRmiManager{
         return applicationController;
     }
 
-    public void setApplicationController(ApplicationController applicationController) {
-        this.applicationController = applicationController;
+    public ApplicationRepository getApplicationRepository() {
+        return applicationRepository;
     }
 
     public EventsManager getEventsManager() {
