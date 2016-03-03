@@ -223,4 +223,8 @@ public class ApplicationRepository {
         }
 
     }
+
+    public File getAppDir(String appGUID, float version) {
+        return new File(getAppRootDirectory(appGUID, version));
+    }
 }
