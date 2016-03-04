@@ -78,7 +78,7 @@ public interface IDapiEventManager {
      * @param eventListener service Event listener
      * @param handleId      handle id of client
      */
-    public void registerServiceRepoEventListener(IMicroServiceRepoEventListener eventListener, String handleId);
+    public void registerServiceRepoEventListener(IRepoEventListener eventListener, String handleId);
 
     /**
      * Unregisters specified event listener for specified service GUID
@@ -113,7 +113,7 @@ public interface IDapiEventManager {
      * @param eventListener service Event listener
      * @param handleId      handle id of client
      */
-    public void registerApplicationRepoEventListener(IMicroServiceRepoEventListener eventListener, String handleId);
+    public void registerApplicationRepoEventListener(IRepoEventListener eventListener, String handleId);
 
     /**
      * UnRegisters specified Event Listener for Application Repository Events

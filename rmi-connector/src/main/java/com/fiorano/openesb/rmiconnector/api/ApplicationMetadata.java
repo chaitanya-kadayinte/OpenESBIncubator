@@ -24,7 +24,7 @@ import java.util.List;
  * @version 10
  *
  */
-public class ApplicationReference implements Serializable {
+public class ApplicationMetadata implements Serializable {
     private static final long serialVersionUID = -1391094945568735309L;
     private String id;
     private float version;
@@ -39,7 +39,7 @@ public class ApplicationReference implements Serializable {
     /**
      * Dafault Constructor
      */
-    public ApplicationReference() {
+    public ApplicationMetadata() {
     }
 
     /**
@@ -48,7 +48,7 @@ public class ApplicationReference implements Serializable {
      * @param id      appGUID
      * @param version version
      */
-    public ApplicationReference(String id, float version) {
+    public ApplicationMetadata(String id, float version) {
         this.id = id;
         this.version = version;
     }

@@ -7,7 +7,7 @@ import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
-import com.fiorano.openesb.rmiconnector.api.IMicroServiceRepoEventListener;
+import com.fiorano.openesb.rmiconnector.api.IRepoEventListener;
 import com.fiorano.openesb.rmiconnector.api.IServiceManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import com.fiorano.openesb.rmiconnector.api.ServiceReference;
@@ -39,7 +39,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     //boolean holding kill running instances value of delete instance method local var, used for synchronising the running Event Process
     private boolean killRunningInstances = false;
     
-    protected MicroServiceManager(RmiManager rmiManager) {
+    protected MicroServiceManager(RmiManager rmiManager, InstanceHandler instanceHandler) {
         super(rmiManager);
         this.microServiceRepository = rmiManager.getMicroServiceRepoManager();
     }
@@ -563,7 +563,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         return exists;
     }
 
-    public void addServiceRepositoryEventListener(IMicroServiceRepoEventListener listener) throws RemoteException, ServiceException {
+    public void addServiceRepositoryEventListener(IRepoEventListener listener) throws RemoteException, ServiceException {
         validateHandleID(handleId, "add Service Repository Listner");
         dapiEventManager.registerMicroServiceRepoEventListener(listener, handleId);
     }
