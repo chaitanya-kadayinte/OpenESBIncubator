@@ -3,6 +3,7 @@ package com.fiorano.openesb.applicationcontroller;
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.application.application.ApplicationParser;
+import com.fiorano.openesb.application.application.ApplicationReference;
 import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.ccp.IEventListener;
 import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
@@ -21,10 +22,7 @@ import com.fiorano.openesb.security.SecurityManager;
 import org.osgi.framework.BundleContext;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ApplicationController {
     private TransportService transport;
@@ -171,4 +169,22 @@ public class ApplicationController {
         return applicationHandleMap.get(appGUID+"__"+appVersion);
     }
 
+    public void changePortAppContext(String appGUID, float appVersion, String serviceName, String portName, String scriptContent, String jmsScriptContent, String transformerType, String projectContent, String handleId) throws FioranoException{
+
+
+    }
+
+    public void changePortAppContextConfiguration(String appGUID, float appVersion, String serviceName, String portName, String configurationName, String handleId) throws FioranoException{
+
+    }
+
+    public void changeRouteTransformation(String appGUID, float appVersion, String routeGUID, String scriptContent, String jmsScriptContent, String transformerType, String projectContent, String handleId) throws FioranoException{
+    }
+
+    public void changeRouteTransformationConfiguration(String appGUID, float appVersion, String routeGUID, String configurationName, String handleId) throws FioranoException{
+    }
+
+    public Enumeration<ApplicationReference> getHeadersOfRunningApplications(String handleId) throws FioranoException{
+        return null;
+    }
 }

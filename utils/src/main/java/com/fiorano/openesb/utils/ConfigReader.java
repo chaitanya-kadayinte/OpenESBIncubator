@@ -17,9 +17,7 @@ public class ConfigReader {
            return;
        }
         Properties properties = new Properties();
-        FileInputStream inStream = null;
-        try{
-            inStream = new FileInputStream(configFile);
+        try (FileInputStream inStream = new FileInputStream(configFile)){
             properties.load(inStream);
             Method[] methods = configObject.getClass().getMethods();
             for (Method m : methods) {
@@ -29,10 +27,6 @@ public class ConfigReader {
                         m.invoke(configObject, properties.getProperty(key));
                     }
                 }
-            }
-        }finally {
-            if(inStream!=null){
-                inStream.close();
             }
         }
 

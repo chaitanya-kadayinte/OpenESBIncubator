@@ -1,6 +1,7 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.rmiconnector.api.IApplicationManager;
+import com.fiorano.openesb.rmiconnector.api.IServiceManager;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import com.fiorano.openesb.rmiconnector.api.proxy.RemoteClientInterceptor;
 
@@ -13,7 +14,8 @@ import java.rmi.RemoteException;
  */
 public class InstanceHandler {
 
-    private static final String EVENT_PROCESS_MANAGER = "EVENT_PROCESS_MANANGER";
+    private static final String APPLICATION_MANAGER = "APPLICATION_MANANGER";
+    private static final String MICRO_SERVICE_MANAGER = "MICRO_SERVICE_MANANGER";
     //Rmi Manager Instance
     private RmiManager rmiManager;
     //Handle ID of the client
@@ -22,6 +24,8 @@ public class InstanceHandler {
     private String context;
     //ApplicationManager
     private volatile ApplicationManager applicationManager;
+
+    private volatile MicroServiceManager microServiceManager;
 
 
     public InstanceHandler(RmiManager rmiManager, String handleID) {
@@ -38,19 +42,19 @@ public class InstanceHandler {
      * @param e String
      */
     public synchronized void onUnReferenced(String e) {
-        if (e.equals(EVENT_PROCESS_MANAGER)) {
+        if (e.equals(APPLICATION_MANAGER)) {
             applicationManager = null;
+        }else if (e.equals(MICRO_SERVICE_MANAGER)){
+            microServiceManager=null;
         }
     }
 
     private void canlogoutForceFully() {
-        if (applicationManager == null) {
             try {
                 rmiManager.logout(handleID);
             } catch (RemoteException willNeverHappen) {
             } catch (ServiceException ignore) {
             }
-        }
     }
 
     public synchronized IApplicationManager getApplicationManager() throws RemoteException {
@@ -73,11 +77,30 @@ public class InstanceHandler {
         return applicationManager.getClientProxyInstance();
     }
 
+    public synchronized IServiceManager getMicroServiceManager() throws RemoteException {
+        if (microServiceManager == null) {
+            //original resource == server side stub
+            microServiceManager = new MicroServiceManager(rmiManager, this);
+            //server side proxy instance to original resource.
+            RemoteServerProxy serverSideProxy = new RemoteServerProxy(microServiceManager,rmiManager.getRmiPort(),rmiManager.getCsf(),rmiManager.getSsf());
+
+            //client proxy instance
+            IServiceManager returnObject = (IServiceManager) Proxy.newProxyInstance
+                    (
+                            this.getClass().getClassLoader(),
+                            new Class[]{IServiceManager.class, Serializable.class},
+                            //client stub & interceptor instance
+                            new RemoteClientInterceptor(serverSideProxy)
+                    );
+            microServiceManager.setClientProxyInstance(returnObject);
+        }
+        return microServiceManager.getClientProxyInstance();
+    }
+
 
     public void removeHandler() {
-        if (applicationManager != null) {
-            onUnReferenced(EVENT_PROCESS_MANAGER);
-        }
+        applicationManager=null;
+        microServiceManager=null;
     }
 
     String getHandleID() {

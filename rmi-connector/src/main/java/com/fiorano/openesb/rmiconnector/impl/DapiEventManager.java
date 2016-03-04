@@ -2,14 +2,13 @@ package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.events.*;
 import com.fiorano.openesb.rmiconnector.api.IApplicationManagerListener;
-import com.fiorano.openesb.rmiconnector.api.IMicroServiceRepoEventListener;
+import com.fiorano.openesb.rmiconnector.api.IRepoEventListener;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.queue.FioranoQueueImpl;
 import com.fiorano.openesb.utils.queue.IFioranoQueue;
 
 import java.rmi.NoSuchObjectException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.*;
 
@@ -25,7 +24,7 @@ public class DapiEventManager implements EventListener {
 
     //Application Specific Event listeners
     private final Hashtable<String, IApplicationManagerListener> appEventListeners = new Hashtable<String, IApplicationManagerListener>();
-    private Hashtable<String, IMicroServiceRepoEventListener> microServiceRepoEventListeners = new Hashtable<String, IMicroServiceRepoEventListener>();
+    private Hashtable<String, IRepoEventListener> microServiceRepoEventListeners = new Hashtable<String, IRepoEventListener>();
      private static final String DAPICONSTANT = "$";
 
     private static final String DELIMITER = "__";
@@ -121,7 +120,7 @@ public class DapiEventManager implements EventListener {
         receiverThread = null;
     }
 
-    public void registerMicroServiceRepoEventListener(IMicroServiceRepoEventListener listener, String handleId) {
+    public void registerMicroServiceRepoEventListener(IRepoEventListener listener, String handleId) {
         String key = handleId;
         if (microServiceRepoEventListeners.containsKey(key))
             microServiceRepoEventListeners.remove(key);
@@ -231,7 +230,7 @@ public class DapiEventManager implements EventListener {
                  Enumeration keys = microServiceRepoEventListeners.keys();
                  while (keys.hasMoreElements()) {
                      final String handleId = (String) keys.nextElement();
-                     final IMicroServiceRepoEventListener serviceEventListener = microServiceRepoEventListeners.get(handleId);
+                     final IRepoEventListener serviceEventListener = microServiceRepoEventListeners.get(handleId);
                      exec.execute(new Runnable() {
                          public void run() {
                              try {

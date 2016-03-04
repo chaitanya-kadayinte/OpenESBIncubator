@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
  * @version 10
  *
  */
-public interface IMicroServiceRepoEventListener extends Remote {
+public interface IRepoEventListener extends Remote {
     /**
      * This notification is sent to the client when a Service Instance is deleted from the server
      *
@@ -57,7 +57,7 @@ public interface IMicroServiceRepoEventListener extends Remote {
      * @param handleId   Id of the deleting Client
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call     *
      */
-    public void eventProcessDeleted(String appGUID, float appVersion, String handleId) throws RemoteException;
+    public void applicationDeleted(String appGUID, float appVersion, String handleId) throws RemoteException;
 
     /**
      * This notification is sent to the client when an Event Process is deployed(saved) in the server (i.e. any changes to the event process done and hence saved).
@@ -67,7 +67,7 @@ public interface IMicroServiceRepoEventListener extends Remote {
      * @param handleId   Id of the deploying Client
      * @throws RemoteException A communication-related exception that may occur during the execution of a remote method call     *
      */
-    public void eventProcessDeployed(String appGUID, float appVersion, String handleId) throws RemoteException;
+    public void applicationDeployed(String appGUID, float appVersion, String handleId) throws RemoteException;
      /**
      * This notification is sent to the client when a resource of a service is deployed(saved) to the server.
      * @param serviceGUID The name of the Service Instance

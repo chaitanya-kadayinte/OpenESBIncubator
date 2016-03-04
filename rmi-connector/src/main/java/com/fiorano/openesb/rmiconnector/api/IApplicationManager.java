@@ -13,8 +13,6 @@
 
 package com.fiorano.openesb.rmiconnector.api;
 
-import com.fiorano.openesb.rmiconnector.impl.IDistributedRemoteObject;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -194,7 +192,7 @@ public interface IApplicationManager extends Remote{
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    boolean dependenciesExists(ServiceReference[] serviceRefs, ApplicationReference[] applicationRefs) throws RemoteException, ServiceException;
+    boolean dependenciesExists(ServiceReference[] serviceRefs, ApplicationMetadata[] applicationRefs) throws RemoteException, ServiceException;
 
     /**
      * This method starts the specified Event Process
@@ -303,11 +301,11 @@ public interface IApplicationManager extends Remote{
     /**
      * This method returns the list of running Event Processes
      *
-     * @return ApplicationReference Array - An array of ApplicationReference object, never <code>null</code>
+     * @return ApplicationMetadata Array - An array of ApplicationMetadata object, never <code>null</code>
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    ApplicationReference[] getRunningApplications() throws RemoteException, ServiceException;
+    ApplicationMetadata[] getRunningApplications() throws RemoteException, ServiceException;
 
     /**
      * This method returns the list of Routes of Event Processes
@@ -383,7 +381,7 @@ public interface IApplicationManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void addRepositoryEventListener(IMicroServiceRepoEventListener listener) throws RemoteException, ServiceException;
+    void addRepositoryEventListener(IRepoEventListener listener) throws RemoteException, ServiceException;
 
     /**
      * This method removes the listener from the IApplicationManager
@@ -497,21 +495,21 @@ public interface IApplicationManager extends Remote{
     /**
      * This method returns the list of all Event Processes stored with the enterprise server.
      *
-     * @return ApplicationReference Array - An array of ApplicationReference, never <code>null</code>
+     * @return ApplicationMetadata Array - An array of ApplicationMetadata, never <code>null</code>
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    ApplicationReference[] getAllApplications() throws RemoteException, ServiceException;
+    ApplicationMetadata[] getAllApplications() throws RemoteException, ServiceException;
 
     /**
-     * This method returns ApplicationReference of EP with supplied 'appGUID' and 'version' stored with the enterprise server.
+     * This method returns ApplicationMetadata of EP with supplied 'appGUID' and 'version' stored with the enterprise server.
      * @param appGUID  Application GUID of the Event Process
      * @param version  Version of the Event Process
-     * @return ApplicationReference - An object of ApplicationReference to the Application having ID 'appGUID' and Version 'version', <br><code>null</code> is returned in case Application with 'appGUID' and 'version' is not stored with the enterprise server.</br>
+     * @return ApplicationMetadata - An object of ApplicationMetadata to the Application having ID 'appGUID' and Version 'version', <br><code>null</code> is returned in case Application with 'appGUID' and 'version' is not stored with the enterprise server.</br>
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    ApplicationReference getApplication(String appGUID, float version) throws RemoteException, ServiceException;
+    ApplicationMetadata getApplication(String appGUID, float version) throws RemoteException, ServiceException;
 
     /**
      * This method returns the specified amount of numberofLines (records) from the Out logs for the service

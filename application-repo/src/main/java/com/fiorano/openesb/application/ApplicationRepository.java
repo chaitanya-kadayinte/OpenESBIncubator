@@ -38,8 +38,17 @@ public class ApplicationRepository {
         return applicationRepoPath;
     }
 
-    public boolean applicationExists(String appGuid, String version) {
-        return false;
+    public boolean applicationExists(String appGuid, float version) throws FioranoException {
+        if (appGuid == null)
+            throw new FioranoException("APPLICATION_GUID_NULL");
+
+        try {
+            File applicationFile = getAppDir(appGuid, version);
+            return applicationFile != null && applicationFile.exists();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void saveApplication(Application application, File tempAppFolder, String userName, byte[] zippedContents, String handleID) {
@@ -226,5 +235,29 @@ public class ApplicationRepository {
 
     public File getAppDir(String appGUID, float version) {
         return new File(getAppRootDirectory(appGUID, version));
+    }
+
+    public String[] getApplicationIds() {
+        File[] appFolders = new File(getApplicationRepoPath()).listFiles();
+        String applicationIds[] = new String[appFolders.length];
+        int i=0;
+        for(File f:appFolders){
+           applicationIds[i]= f.getName();
+        }
+        return applicationIds;
+    }
+
+    public float[] getAppVersions(String id) throws FioranoException {
+        File appFolder = new File(getApplicationRepoPath()+ File.separator + id);
+        if(!appFolder.exists()){
+            throw new FioranoException("application does not exists");
+        }
+        File[] versionFolders = appFolder.listFiles();
+        int i=0;
+        float[] versionNumbers = new float[versionFolders.length];
+        for(File f:versionFolders){
+            versionNumbers[i]= Float.valueOf(f.getName());
+        }
+        return versionNumbers;
     }
 }

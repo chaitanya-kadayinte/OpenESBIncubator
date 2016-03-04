@@ -145,7 +145,7 @@ public interface IServiceManager extends Remote {
      * @throws ServiceException ServiceException
      * @throws RemoteException  RemoteException
      */
-    public void addServiceRepositoryEventListener(IMicroServiceRepoEventListener listener) throws RemoteException, ServiceException;
+    public void addServiceRepositoryEventListener(IRepoEventListener listener) throws RemoteException, ServiceException;
 
     /**
      * This method removes the listener for service Repository update related events.
