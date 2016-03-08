@@ -149,7 +149,7 @@ public class RmiManager implements IRmiManager{
 
 
     public IServiceManager getServiceManager(String handleID) throws RemoteException, ServiceException {
-        return null;
+        return handlerMap.get(handleID).getMicroServiceManager();
     }
 
 

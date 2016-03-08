@@ -185,6 +185,16 @@ public class ApplicationController {
     }
 
     public Enumeration<ApplicationReference> getHeadersOfRunningApplications(String handleId) throws FioranoException{
-        return null;
+        Vector<ApplicationReference> toReturn = new Vector<ApplicationReference>();
+        // get the running application handles and fetch the application info packet from the handles.
+        for (ApplicationHandle appHandle:applicationHandleMap.values()) {
+
+            try {
+                toReturn.addElement(new ApplicationReference(appHandle.getApplication()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return toReturn.elements();
     }
 }
