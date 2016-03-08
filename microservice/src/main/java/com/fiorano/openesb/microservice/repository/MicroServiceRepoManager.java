@@ -44,7 +44,6 @@ public class MicroServiceRepoManager {
 
         COMPONENTS_REPOSITORY_FOLDER = getRepositoryLocation();
         try {
-            reloadRepository();
             _switchToActiveMode();
         } catch (FioranoException e) {
             e.printStackTrace();
@@ -2517,10 +2516,9 @@ public class MicroServiceRepoManager {
             //logger.error(Bundle.class,Bundle.SERVICE_DESCRIPTOR_NOT_PRESENT,serviceGUID,version);
             return null;
         }
-        File sdFile = new File(getRepositoryLocation()+File.separator+ servDescFile.getName());
         Service service = null;
         try {
-            service = ServiceParser.readService(sdFile);
+            service = ServiceParser.readService(servDescFile);
         } catch (FioranoException e) {
             throw new FioranoException("ERROR_PARSING_SERVICE_DESCRIPTOR",e);
         }
