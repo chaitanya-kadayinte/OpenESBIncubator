@@ -113,6 +113,7 @@ public class ApplicationController {
         Application application = applicationRepository.readApplication(appGuid, version);
         ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService,transport);
         appHandle.createRoutes();
+
         appHandle.launchComponents();
         applicationHandleMap.put(getKey(appGuid,version),appHandle);
         System.out.println("Launched application: "+appGuid+":"+version);

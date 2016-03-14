@@ -25,10 +25,10 @@ public abstract class AbstractRmiManager implements IDistributedRemoteObject {
     private RmiManager rmiManager;
 
     protected AbstractRmiManager(RmiManager rmiManager){
-        super();
+       /* super();
         this.rmiManager = rmiManager;
         this.dapiEventManager = rmiManager.getDapiEventsManager();
-        loadMethods();
+        loadMethods();*/
     }
 
     protected final void validateHandleID(String handleId, String operation) throws ServiceException {

@@ -6,6 +6,7 @@ import com.fiorano.openesb.jmsroute.impl.JMSRouteConfiguration;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.*;
+import com.fiorano.openesb.route.impl.*;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -54,7 +55,48 @@ public class ApplicationHandle {
             int inputPortInstanceDestinationType = inputPortInstance.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-            com.fiorano.openesb.route.Route route1 = routeService.createRoute(new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration));
+            JMSRouteConfiguration routeConfiguration = new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration);
+
+            if(route.getApplicationContextSelector() != null) {
+                XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+                appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
+                appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                routeConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
+            }
+            //MessageCreationHandler messageCreationHandler = new MessageCreationHandler(transport);
+            MessageCreationConfiguration messageCreationConfiguration = new MessageCreationConfiguration();
+            messageCreationConfiguration.setTransportService(transport);
+            routeConfiguration.getRouteOperationConfigurations().add(messageCreationConfiguration);
+
+            CarryForwardContextConfiguration carryForwardContextConfiguration = new CarryForwardContextConfiguration();
+            carryForwardContextConfiguration.setApplication(application);
+            carryForwardContextConfiguration.setInputPortInstance(inputPortInstance);
+            carryForwardContextConfiguration.setServiceInstanceName(sourceServiceInstance);
+            routeConfiguration.getRouteOperationConfigurations().add(carryForwardContextConfiguration);
+
+            if(route.getBodySelector() != null) {
+                XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
+                bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
+                bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
+                routeConfiguration.getRouteOperationConfigurations().add(bodySelectorConfig);
+            }
+
+            // TODO: 3/1/16
+            if(route.getMessageTransformation()!=null) {
+                TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                transformationConfiguration.setXsl(route.getMessageTransformation().getScript());
+                transformationConfiguration.setTransformerType(route.getMessageTransformation().getFactory());
+                transformationConfiguration.setJmsXsl(route.getMessageTransformation().getJMSScript());
+                routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
+            }
+            if(route.getSenderSelector()!=null){
+                SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+                senderSelectorConfiguration.setSourceName(route.getSenderSelector());
+                senderSelectorConfiguration.setAppName_version(application.getGUID()+":"+application.getVersion());
+                routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
+            }
+
+            com.fiorano.openesb.route.Route route1 = routeService.createRoute(routeConfiguration);
             route1.start();
             routeMap.put(route.getName(), route1);
         }
