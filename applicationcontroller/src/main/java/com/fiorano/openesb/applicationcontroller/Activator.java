@@ -44,6 +44,8 @@ public class Activator implements BundleActivator {
                 e.printStackTrace();
             }
         }
+        System.out.println("Started bundle - " + context.getBundle().getSymbolicName());
+
     }
 
     public void stop(BundleContext context) {

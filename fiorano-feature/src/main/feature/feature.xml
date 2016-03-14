@@ -20,35 +20,36 @@
 
     <feature name='${project.artifactId}' description='${project.name}' version='${project.version}'>
         <details>${project.description}</details>
-        <!--<feature version="[2,3)">transaction</feature>-->
-        <!-- <config>foo=bar</config> -->
-        <bundle start-level="80">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
-        <bundle start-level="81">mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
-        <bundle start-level="82">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
-        <bundle start-level="83">mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
+        <bundle start-level='89'>wrap:mvn:xerces/xercesImpl/2.11.0</bundle>
+        <bundle start-level='89'>mvn:org.slf4j/slf4j-api/1.6.6</bundle>
+        <bundle start-level='99'>mvn:javax.ws.rs/javax.ws.rs-api/2.0</bundle>
+        <bundle start-level='89'>mvn:org.slf4j/slf4j-log4j12/1.6.6</bundle>
+        <bundle start-level='99'>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.3</bundle>
+        <bundle start-level='99'>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.3</bundle>
+        <bundle start-level='89'>mvn:log4j/log4j/1.2.17</bundle>
 
-        <bundle start-level="85">mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
-        <bundle start-level="86">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
-
-        <bundle start-level='87'>wrap:mvn:xerces/xercesImpl/2.11.0</bundle>
-        <bundle start-level='87'>mvn:org.slf4j/slf4j-api/1.6.6</bundle>
-        <bundle start-level='87'>mvn:org.slf4j/slf4j-log4j12/1.6.6</bundle>
-        <bundle start-level='87'>mvn:log4j/log4j/1.2.17</bundle>
-
-        <bundle start-level='88'>mvn:org.apache.commons/commons-lang3/3.4</bundle>
-        <bundle start-level='88'>wrap:mvn:xml-resolver/xml-resolver/1.2</bundle>
+        <bundle start-level='89'>mvn:org.apache.commons/commons-lang3/3.4</bundle>
+        <bundle start-level='89'>wrap:mvn:xml-resolver/xml-resolver/1.2</bundle>
         <bundle start-level='89'>mvn:org.codehaus.woodstox/woodstox-core-asl/4.4.1</bundle>
-        <bundle start-level='90'>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
-        <bundle start-level='91'>wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
-        <bundle start-level='92'>mvn:com.fiorano.openesb/utils/1.0</bundle>
-        <bundle start-level='93'>mvn:com.fiorano.openesb/events/1.0</bundle>
-        <bundle start-level='94'>mvn:com.fiorano.openesb/security/1.0</bundle>
-        <bundle start-level='95'>mvn:com.fiorano.openesb/application-repo/1.0</bundle>
-        <bundle start-level='96'>mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
-        <bundle start-level="100">mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
-        <bundle start-level='95'>mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
-        <bundle start-level='96'>mvn:com.fiorano.openesb/rmi-client/1.0</bundle>
+        <bundle start-level='89'>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
+        <bundle start-level='89'>wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
+        <bundle start-level="89">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
 
+        <bundle start-level='90'>mvn:com.fiorano.openesb/security/1.0</bundle>
+        <bundle start-level='90'>mvn:com.fiorano.openesb/utils/1.0</bundle>
+        <bundle start-level="91">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
+        <bundle start-level="92">mvn:com.fiorano.openesb/route-api/1.0-SNAPSHOT</bundle>
+        <bundle start-level="93">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
+        <bundle start-level="94">mvn:com.fiorano.openesb/jms-route/1.0-SNAPSHOT</bundle>
+        <bundle start-level="95">mvn:com.fiorano.openesb/microservice/1.0-SNAPSHOT</bundle>
+        <bundle start-level='97'>mvn:com.fiorano.openesb/events/1.0</bundle>
+        <bundle start-level='96'>mvn:com.fiorano.openesb/application-repo/1.0</bundle>
+        <bundle start-level='98'>mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
+        <bundle start-level="99">mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
+        <bundle start-level="99">mvn:com.fiorano.openesb/management/1.0.0</bundle>
+        <!--<bundle start-level='99'>mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
+        <bundle start-level='99'>mvn:com.fiorano.openesb/rmi-client/1.0</bundle>-->
+<!--start level cannot be more than 100-->
     </feature>
 
 </features>

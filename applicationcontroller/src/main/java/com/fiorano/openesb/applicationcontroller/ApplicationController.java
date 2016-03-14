@@ -104,10 +104,6 @@ public class ApplicationController {
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
     }
 
-    public Set<String> getListOfApplications(String handleId){
-        return applicationRepository.listApplications();
-    }
-
     public Set<String> getListOfRunningApplications(String handleId){
         return applicationHandleMap.keySet();
     }

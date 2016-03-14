@@ -29,11 +29,6 @@ public class ApplicationRepository {
         return null;
     }
 
-    public Set<String> listApplications() {
-
-        return null;
-    }
-
     public String getApplicationRepoPath(){
         return applicationRepoPath;
     }
@@ -242,7 +237,7 @@ public class ApplicationRepository {
         String applicationIds[] = new String[appFolders.length];
         int i=0;
         for(File f:appFolders){
-           applicationIds[i]= f.getName();
+           applicationIds[i++]= f.getName();
         }
         return applicationIds;
     }
@@ -256,7 +251,7 @@ public class ApplicationRepository {
         int i=0;
         float[] versionNumbers = new float[versionFolders.length];
         for(File f:versionFolders){
-            versionNumbers[i]= Float.valueOf(f.getName());
+            versionNumbers[i++]= Float.valueOf(f.getName());
         }
         return versionNumbers;
     }
