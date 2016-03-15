@@ -36,6 +36,12 @@
             <artifactId>applicationcontroller</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.owlike</groupId>
+            <artifactId>genson</artifactId>
+            <version>1.2</version>
+        </dependency>
+
 
     </dependencies>
 
