@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>OpenESBProject</artifactId>
+        <groupId>com.fiorano.openesb</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <!--
        Licensed to the Apache Software Foundation (ASF) under one
@@ -23,14 +28,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.fiorano.openesb</groupId>
-    <artifactId>utils</artifactId>
+    <artifactId>namedconfiguration</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
 
-    <name>utils Bundle</name>
+    <name>namedconfiguration Bundle</name>
     <description>
-        utils OSGi bundle project.
+        namedconfiguration OSGi bundle project.
     </description>
 
     <properties>
@@ -43,53 +47,22 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>5.4.0</version>
-        </dependency>
-        <!--suppress NonOsgiMavenDependency -->
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.11.0</version>
+            <groupId>com.fiorano.openesb</groupId>
+            <artifactId>application-repo</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.2.1</version>
+            <groupId>com.fiorano.openesb</groupId>
+            <artifactId>applicationcontroller</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>woodstox-core-asl</artifactId>
-            <version>4.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-osgi</artifactId>
-            <version>2.2.11</version>
-        </dependency>
-        <!--suppress NonOsgiMavenDependency -->
-        <dependency>
-            <groupId>xml-resolver</groupId>
-            <artifactId>xml-resolver</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.6</version>
+            <groupId>com.fiorano.openesb</groupId>
+            <artifactId>utils</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
@@ -104,22 +77,14 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>com.fiorano.openesb.utils.Activator</Bundle-Activator>
+                        <Bundle-Activator>com.fiorano.openesb.namedconfig.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb.utils*;version=${project.version}
+                            com.fiorano.openesb.namedconfig*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *
                         </Import-Package>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>

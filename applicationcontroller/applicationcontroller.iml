@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="applicationcontroller-1.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="com.fiorano.openesb.applicationcontroller.Activator" bundleSymbolicName="applicationcontroller" bundleVersion="1.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
-        <additionalProperties>
-          <property key="Bundle-Description" value="applicationcontroller OSGi bundle project." />
-          <property key="Export-Package" value="com.fiorano.openesb.applicationcontroller*;version=1.0" />
-          <property key="Import-Package" value="*" />
-          <property key="Bundle-Name" value="applicationcontroller Bundle" />
-        </additionalProperties>
-        <additionalJARContents />
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -33,11 +20,20 @@
     <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-osgi:2.2.11" level="project" />
     <orderEntry type="module" module-name="utils" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: xml-resolver:xml-resolver:1.2" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.6" level="project" />
     <orderEntry type="module" module-name="microservice" />
     <orderEntry type="module" module-name="transport-api" />
+    <orderEntry type="module" module-name="events" />
+    <orderEntry type="module" module-name="route-api" />
+    <orderEntry type="module" module-name="jms-route" />
+    <orderEntry type="module" module-name="security" />
+    <orderEntry type="library" name="Maven: org.apache.karaf.jaas:org.apache.karaf.jaas.modules:4.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.fileinstall:3.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.karaf.jaas:org.apache.karaf.jaas.config:4.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.activemq:activemq-core:5.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.activemq:kahadb:5.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.activemq.protobuf:activemq-protobuf:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.mqtt-client:mqtt-client:1.3" level="project" />
@@ -55,7 +51,5 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-asm:3.0.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-net:commons-net:3.1" level="project" />
     <orderEntry type="library" name="Maven: org.jasypt:jasypt:1.9.0" level="project" />
-    <orderEntry type="module" module-name="route-api" />
-    <orderEntry type="module" module-name="jms-route" />
   </component>
 </module>

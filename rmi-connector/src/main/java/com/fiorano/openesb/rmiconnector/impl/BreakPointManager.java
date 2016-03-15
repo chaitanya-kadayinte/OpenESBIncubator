@@ -13,14 +13,15 @@ public class BreakPointManager extends AbstractRmiManager implements IDebugger {
     private ApplicationController applicationController;
 
 
-    protected BreakPointManager(RmiManager rmiManager,ApplicationController applicationController) {
+    protected BreakPointManager(RmiManager rmiManager, InstanceHandler handler) {
         super(rmiManager);
-        this.applicationController = applicationController;
+        this.applicationController = rmiManager.getApplicationController();
+        setHandleID(handler.getHandleID());
     }
 
     @Override
-    public BreakpointMetaData addBreakpoint(String appGUID, float appVersion, String routeName, String handleID) throws RemoteException, ServiceException {
-        ApplicationHandle appHandle = applicationController.getApplicationHandle(appGUID, appVersion, handleID);
+    public BreakpointMetaData addBreakpoint(String appGUID, float appVersion, String routeName) throws RemoteException, ServiceException {
+        ApplicationHandle appHandle = applicationController.getApplicationHandle(appGUID, appVersion, handleId);
         if(appHandle==null){
             throw new ServiceException("application not running");
         }
@@ -70,5 +71,14 @@ public class BreakPointManager extends AbstractRmiManager implements IDebugger {
     @Override
     public void pauseRoute(String appGUID, float version, String routeGUID, String handleId, boolean maintainSequence, long pauseTime) throws RemoteException, ServiceException {
 
+    }
+    private IDebugger clientProxyInstance;
+
+    void setClientProxyInstance(IDebugger clientProxyInstance) {
+        this.clientProxyInstance = clientProxyInstance;
+    }
+
+    IDebugger getClientProxyInstance() {
+        return clientProxyInstance;
     }
 }

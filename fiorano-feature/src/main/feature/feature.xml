@@ -45,6 +45,7 @@
         <bundle start-level='94'>mvn:com.fiorano.openesb/security/1.0</bundle>
         <bundle start-level='95'>mvn:com.fiorano.openesb/application-repo/1.0</bundle>
         <bundle start-level='96'>mvn:com.fiorano.openesb/applicationcontroller/1.0</bundle>
+        <bundle start-level='97'>mvn:com.fiorano.openesb/namedconfiguration/1.0</bundle>
         <bundle start-level="100">mvn:com.fiorano.openesb/simulate-launch/1.0-SNAPSHOT</bundle>
         <bundle start-level='95'>mvn:com.fiorano.openesb/rmi-connector/1.0</bundle>
         <bundle start-level='96'>mvn:com.fiorano.openesb/rmi-client/1.0</bundle>
