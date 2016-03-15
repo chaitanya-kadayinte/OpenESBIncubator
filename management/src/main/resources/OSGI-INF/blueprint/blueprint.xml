@@ -8,17 +8,19 @@
         </cxf:features>
     </cxf:bus>
 
-    <jaxrs:server id="applicationService" address="/applications">
+    <jaxrs:server id="service" address="/rest">
         <jaxrs:serviceBeans>
-            <ref component-id="applicationsBean">
+            <ref component-id="restSBean">
             </ref>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+            <bean class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="applicationsBean" class="com.fiorano.openesb.management.ApplicationsServiceImpl">
+    <bean id="restSBean" class="com.fiorano.openesb.management.ApplicationsServiceImpl">
 
     </bean>
+
 </blueprint>
