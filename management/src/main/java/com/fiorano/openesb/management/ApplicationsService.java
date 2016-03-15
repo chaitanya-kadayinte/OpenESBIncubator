@@ -20,17 +20,23 @@
  */
 package com.fiorano.openesb.management;
 
-import org.osgi.framework.FrameworkUtil;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
-
 
 public interface ApplicationsService {
 
 
-    List<String> getApplications();
+    Response getApplications();
+
+    Response launchApplication(String applicationName , String applicationVersion);
+
+    Response stopApplication(String applicationName , String applicationVersion);
+
+  /*  boolean startAllMicroServices(String appGuid, String version, String handleID);
+
+    boolean stopAllMicroServices(String appGuid, String version, String handleID);*/
+
+    Response startMicroService(String appGuid, String version, String microServiceName);
+
+    Response stopMicroService(String appGuid, String version, String microServiceName);
+
+    Response synchronizeApplication(String appGuid, String version);
 }
