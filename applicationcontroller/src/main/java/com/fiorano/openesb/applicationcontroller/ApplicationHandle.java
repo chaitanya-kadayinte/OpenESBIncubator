@@ -182,4 +182,8 @@ public class ApplicationHandle {
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
         route.changeTargetDestination(destinationConfiguration);
     }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
 }

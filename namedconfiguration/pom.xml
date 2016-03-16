@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>OpenESBProject</artifactId>
+        <groupId>com.fiorano.openesb</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <!--
        Licensed to the Apache Software Foundation (ASF) under one
@@ -23,14 +28,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.fiorano.openesb</groupId>
-    <artifactId>rmi-connector</artifactId>
+    <artifactId>namedconfiguration</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
 
-    <name>rmi-connector Bundle</name>
+    <name>namedconfiguration Bundle</name>
     <description>
-        rmi-connector OSGi bundle project.
+        namedconfiguration OSGi bundle project.
     </description>
 
     <properties>
@@ -43,16 +47,7 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>mx4j</groupId>
-            <artifactId>mx4j-tools</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>utils</artifactId>
-            <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
@@ -66,20 +61,11 @@
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
-            <artifactId>events</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>security</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>namedconfiguration</artifactId>
+            <artifactId>utils</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -91,9 +77,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>com.fiorano.openesb.rmiconnector.Activator</Bundle-Activator>
+                        <Bundle-Activator>com.fiorano.openesb.namedconfig.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb.rmiconnector*;version=${project.version}
+                            com.fiorano.openesb.namedconfig*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *
@@ -101,14 +87,7 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
 </project>

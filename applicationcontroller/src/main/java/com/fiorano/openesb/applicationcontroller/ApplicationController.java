@@ -1,9 +1,7 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
-import com.fiorano.openesb.application.application.Application;
-import com.fiorano.openesb.application.application.ApplicationParser;
-import com.fiorano.openesb.application.application.ApplicationReference;
+import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.ccp.IEventListener;
 import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
@@ -104,6 +102,148 @@ public class ApplicationController {
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
     }
 
+    public void saveApplication(Application application, boolean skipManagableProps, String handleID) throws FioranoException {
+        String userName = securityManager.getUserName(handleID);
+        boolean applicationExists = applicationRepository.applicationExists(application.getGUID(), application.getVersion());
+        boolean applicationAnyVersionExists=applicationRepository.applicationExists(application.getGUID(),-1);
+
+        Application oldApp = applicationRepository.readApplication(application.getGUID(), String.valueOf(application.getVersion()));
+
+            try {
+                applicationRepository.saveApplication(application, userName, handleID, skipManagableProps);
+            } catch (FioranoException e) {
+                throw e;
+            }
+
+        if (oldApp != null) {
+            Vector<String> deletedComponents = new Vector<String>();
+            Vector<String> deletedConfigComponents = new Vector<String>();
+            HashMap<String, String> deletedPorts = new HashMap<String, String>();
+
+            for (Object o1 : oldApp.getServiceInstances()) {
+                boolean check = false;
+                ServiceInstance oldInst = (ServiceInstance) o1;
+
+                for (Object o : application.getServiceInstances()) {
+                    ServiceInstance newInst = (ServiceInstance) o;
+                    if (oldInst.getName().equals(newInst.getName())) {
+                        check = false;
+
+                        List<OutputPortInstance> oldOutputPortInstances = oldInst.getOutputPortInstances();
+                        for (OutputPortInstance oldPort : oldOutputPortInstances) {
+                            boolean deletePort = false;
+
+                            List<OutputPortInstance> newOutputPortInstances = newInst.getOutputPortInstances();
+                            for (OutputPortInstance newPort : newOutputPortInstances) {
+                                if (oldPort.getName().equals(newPort.getName())) {
+                                    deletePort = false;
+                                    break;
+                                } else {
+                                    deletePort = true;
+                                }
+                            }
+
+                            if (newInst.getOutputPortInstances().size() == 0)
+                                deletePort = true;
+
+                            if (deletePort)
+                                deletedPorts.put(oldInst.getName(), oldPort.getName());
+                        }
+
+                        break;
+                    } else {
+                        check = true;
+                    }
+                }
+
+                if (application.getServiceInstances().size() == 0) {
+                    check = true;
+                }
+
+                if (check) {
+                    deletedConfigComponents.add(oldInst.getName());
+                    String[] nodes = oldInst.getNodes();
+                    if (nodes != null)
+                        deletedComponents.add(oldInst.getName());
+                }
+            }
+
+            //Bug 16340
+            if (!deletedConfigComponents.isEmpty())
+                deleteConfigurations(oldApp, deletedConfigComponents);
+
+            //Fix for bug 20434
+            if (!deletedComponents.isEmpty()) {
+                deleteInPort(oldApp, deletedConfigComponents);
+            }
+
+            if (!deletedPorts.isEmpty())
+                deletePortTransformations(oldApp, deletedPorts);
+
+            Vector<String> deletedRoutes = new Vector<String>();
+            for (Route oldRoute : oldApp.getRoutes()) {
+                boolean check = false;
+
+                for (Route newRoute : application.getRoutes()) {
+                    if (oldRoute.getName().equals(newRoute.getName())) {
+                        check = false;
+                        break;
+                    } else {
+                        check = true;
+                    }
+                }
+
+                if (application.getRoutes().size() == 0)
+                    check = true;
+
+                if (check)
+                    deletedRoutes.add(oldRoute.getName());
+            }
+
+            if (!deletedRoutes.isEmpty())
+                deleteRouteConfigurations(oldApp, deletedRoutes);
+        }
+        ApplicationHandle appHandle = getApplicationHandle(application.getGUID(), application.getVersion(), handleID);
+        if (appHandle != null) {
+            appHandle.setApplication(application);
+        }
+    }
+
+    /**
+     * Deletes port transformations for specified ports. This method is used when some of the output ports of a service
+     * instance are deleted at the time of orchestration. For example, deleting an output port of CBR component.
+     *
+     * @param oldApp       Application DMI
+     * @param deletedPorts HashMap of (ServiceInstanceName, PortName)
+     */
+    private void deletePortTransformations(Application oldApp, HashMap<String, String> deletedPorts) {
+        //todo
+    }
+
+    private void deleteConfigurations(Application oldApp, Vector<String> deletedConfigComponents) {
+        //Todo
+    }
+
+
+    /**
+     * delete InPort when running components are deleted
+     *
+     * @param oldApp oldApplication dmi
+     * @param deletedComponent deleted components
+     */
+    private void deleteInPort(Application oldApp, Vector<String> deletedComponent) {
+        //todo
+    }
+
+
+    private void deleteRouteConfigurations(Application oldApp, Vector<String> deletedRoutes) {
+        //todo
+    }
+
+    private void deleteLogs(Application application, Vector<String> components) {
+        //todo
+    }
+
     public Set<String> getListOfRunningApplications(String handleId){
         return applicationHandleMap.keySet();
     }
@@ -164,6 +304,9 @@ public class ApplicationController {
 
     public ApplicationHandle getApplicationHandle(String appGUID, float appVersion, String handleID) {
         return applicationHandleMap.get(appGUID+"__"+appVersion);
+    }
+    public boolean isApplicationRunning(String appGUID, float version, String handleID) throws FioranoException {
+        return (getApplicationHandle(appGUID, version, handleID) != null);
     }
 
     public void changePortAppContext(String appGUID, float appVersion, String serviceName, String portName, String scriptContent, String jmsScriptContent, String transformerType, String projectContent, String handleId) throws FioranoException{
