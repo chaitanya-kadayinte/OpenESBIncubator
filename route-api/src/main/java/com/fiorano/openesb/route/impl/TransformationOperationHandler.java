@@ -8,8 +8,8 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 
 public class TransformationOperationHandler implements RouteOperationHandler<JMSMessage> {
     private JMSMessageTransformer msgTransformer;
-    public TransformationOperationHandler(TransformationConfiguration configuration) {
-
+    public TransformationOperationHandler(TransformationConfiguration configuration) throws Exception {
+        msgTransformer = new JmsMessageTransformerImpl(configuration.getXsl(),configuration.getTransformerType());
     }
 
     public void handleOperation(JMSMessage message) throws FioranoException {

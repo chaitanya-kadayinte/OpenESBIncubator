@@ -38,6 +38,7 @@
         <module>rmi-connector</module>
         <module>rmi-client</module>
         <module>fiorano-feature</module>
+        <module>management</module>
     </modules>
     <packaging>pom</packaging>
 

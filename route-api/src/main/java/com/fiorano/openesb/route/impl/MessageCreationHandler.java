@@ -1,61 +1,38 @@
-package com.fiorano.openesb.transport.impl.jms;
+package com.fiorano.openesb.route.impl;
 
+import com.fiorano.openesb.route.RouteOperationHandler;
 import com.fiorano.openesb.transport.Message;
 import com.fiorano.openesb.transport.TransportService;
+import com.fiorano.openesb.transport.impl.jms.JMSMessage;
+import com.fiorano.openesb.transport.impl.jms.JMSMessageConfiguration;
+import com.fiorano.openesb.transport.impl.jms.JMSPort;
+
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.util.Enumeration;
 
-public class JMSMessage implements Message<javax.jms.Message> {
-    javax.jms.Message message;
+/**
+ * Created by root on 3/7/16.
+ */
+public class MessageCreationHandler implements RouteOperationHandler<Message<javax.jms.Message>> {
 
+    private TransportService<JMSPort,JMSMessage> transportService;
 
-
-    public JMSMessage(javax.jms.Message message) {
-        this.message = message;
-
-    }
-
-    public javax.jms.Message getMessage() {
-        return message;
+    public MessageCreationHandler(MessageCreationConfiguration  messageCreationConfiguration) {
+        this.transportService = messageCreationConfiguration.getTransportService();
     }
 
     @Override
-    public String getBody() throws JMSException {
-        if(message instanceof TextMessage) {
-            return ((TextMessage) message).getText();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
-    public String getApplicationContext() throws JMSException {
-        return message.getStringProperty("ESBX__SYSTEM__APPLICATION_CONTEXT");
-    }
-
-    @Override
-    public void setInternalMessage(javax.jms.Message message) {
-        this.message = message;
-    }
-
-    /*public javax.jms.Message reset(TransportService transportService , Message<javax.jms.Message> message) throws Exception {
-        JMSMessage messageToClone = (JMSMessage) transportService.createMessage(new JMSMessageConfiguration(getJmsType(message)));
+    public void handleOperation(Message<javax.jms.Message> message) throws Exception {
+        JMSMessage messageToClone = transportService.createMessage(new JMSMessageConfiguration(getJmsType(message)));
         javax.jms.Message writeableMessage = messageToClone.getMessage();
         javax.jms.Message readOnlyMessage = message.getMessage();
         clone(readOnlyMessage,writeableMessage);
-        return writeableMessage;
-    }*/
-
-    private JMSMessageConfiguration.MessageType getJmsType(Message<javax.jms.Message> message) throws JMSException {
-        /*String msgType = message.getMessage().getJMSType();
-        if(JMSMessageConfiguration.MessageType.Text.toString().equals(msgType)){
-
-        };*/
-        return JMSMessageConfiguration.MessageType.valueOf(message.getMessage().getJMSType());
+        message.setInternalMessage(writeableMessage);
     }
-    /*private void clone(javax.jms.Message readOnlyMessage, javax.jms.Message writeableMessage) {
+
+    private void clone(javax.jms.Message readOnlyMessage, javax.jms.Message writeableMessage) {
         try {
             Enumeration<String> propertyNames = readOnlyMessage.getPropertyNames();
             while (propertyNames.hasMoreElements()) {
@@ -81,12 +58,19 @@ public class JMSMessage implements Message<javax.jms.Message> {
                     writeableMessage.setObjectProperty(s, readOnlyMessage.getObjectProperty(s));
                 }
             }
-            if(readOnlyMessage instanceof  TextMessage) {
-                ((TextMessage)writeableMessage).setText(((TextMessage) readOnlyMessage).getText());
+            if (readOnlyMessage instanceof TextMessage) {
+                ((TextMessage) writeableMessage).setText(((TextMessage) readOnlyMessage).getText());
             }
 
         } catch (JMSException e) {
             e.printStackTrace();
         }
-    }*/
+    }
+
+    private JMSMessageConfiguration.MessageType getJmsType(Message<javax.jms.Message> message) throws JMSException {
+        if(message.getMessage().getJMSType()==null){
+            return JMSMessageConfiguration.MessageType.Text;
+        }
+        return JMSMessageConfiguration.MessageType.valueOf(message.getMessage().getJMSType());
+    }
 }

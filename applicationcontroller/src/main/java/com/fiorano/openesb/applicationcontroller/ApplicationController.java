@@ -104,10 +104,6 @@ public class ApplicationController {
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
     }
 
-    public Set<String> getListOfApplications(String handleId){
-        return applicationRepository.listApplications();
-    }
-
     public Set<String> getListOfRunningApplications(String handleId){
         return applicationHandleMap.keySet();
     }
@@ -117,6 +113,7 @@ public class ApplicationController {
         Application application = applicationRepository.readApplication(appGuid, version);
         ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService,transport);
         appHandle.createRoutes();
+
         appHandle.launchComponents();
         applicationHandleMap.put(getKey(appGuid,version),appHandle);
         System.out.println("Launched application: "+appGuid+":"+version);

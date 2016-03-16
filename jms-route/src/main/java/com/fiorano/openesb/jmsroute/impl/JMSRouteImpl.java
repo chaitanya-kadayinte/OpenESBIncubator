@@ -5,6 +5,7 @@ import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.route.RouteConfiguration;
 import com.fiorano.openesb.route.RouteOperationHandler;
 import com.fiorano.openesb.route.impl.AbstractRouteImpl;
+import com.fiorano.openesb.route.impl.CarryForwardContextHandler;
 import com.fiorano.openesb.transport.*;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
 import com.fiorano.openesb.transport.impl.jms.JMSPort;
@@ -23,6 +24,7 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
         super(routeConfiguration.getRouteOperationConfigurations());
         this.transportService = transportService;
         this.routeConfiguration = routeConfiguration;
+
 
         routeOperationHandlers.add(new RouteOperationHandler<JMSMessage>() {
             public void handleOperation(JMSMessage message) throws FilterMessageException {

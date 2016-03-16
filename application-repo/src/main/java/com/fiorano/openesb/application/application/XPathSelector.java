@@ -21,9 +21,9 @@ import com.fiorano.openesb.utils.StringUtil;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * This class is DMI representation of XpathSelector element of route in event process xml.
@@ -47,10 +47,10 @@ public class XPathSelector extends InflatableDMIObject{
      * @param xpath xpath
      * @param namespaces namespaces
      */
-    public XPathSelector(String xpath, Properties namespaces){
+    public XPathSelector(String xpath, Map namespaces){
         this.xpath = xpath;
         if(namespaces==null)
-            this.namespaces = new Properties();
+            this.namespaces = new HashMap();
         else
             this.namespaces = namespaces;
     }
@@ -77,13 +77,13 @@ public class XPathSelector extends InflatableDMIObject{
      */
     public static final String ATTR_PREFIX = "prefix";
 
-    private Properties namespaces = new Properties();
+    private Map<String,String> namespaces = new HashMap<>();
 
     /**
      * Returns namespaces of this selector
-     * @return Properties - Namespaces of this selector
+     * @return Map - Namespaces of this selector
      */
-    public Properties getNamespaces(){
+    public Map<String,String> getNamespaces(){
         return namespaces;
     }
 
@@ -91,7 +91,7 @@ public class XPathSelector extends InflatableDMIObject{
      * Sets namespaces of this selector
      * @param namespaces Namespace to be set
      */
-    public void setNamespaces(Properties namespaces){
+    public void setNamespaces(Map namespaces){
         this.namespaces = namespaces;
     }
 

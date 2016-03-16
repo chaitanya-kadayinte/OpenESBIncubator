@@ -19,11 +19,13 @@ package com.fiorano.openesb.security;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import java.util.Hashtable;
+
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
         System.out.println("Starting the bundle");
-        context.registerService(SecurityManager.class.getName(), new SecurityManager(context), null);
+        context.registerService(SecurityManager.class.getName(), new SecurityManager(context), new Hashtable<String, Object>());
     }
 
     public void stop(BundleContext context) {

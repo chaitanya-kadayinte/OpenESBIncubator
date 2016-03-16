@@ -7,7 +7,7 @@ import com.fiorano.openesb.transport.PortConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractRouteConfiguration<E> implements RouteConfiguration {
+public abstract class AbstractRouteConfiguration implements RouteConfiguration {
     private List<RouteOperationConfiguration> routeOperationConfigurations = new ArrayList<RouteOperationConfiguration>();
 
     public List<RouteOperationConfiguration> getRouteOperationConfigurations() {

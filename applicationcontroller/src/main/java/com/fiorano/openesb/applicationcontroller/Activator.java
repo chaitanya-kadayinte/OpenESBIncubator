@@ -32,18 +32,12 @@ public class Activator implements BundleActivator {
 
             ApplicationController applicationController = new ApplicationController(applicationRepository, context);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
-            try {
-//                for(int i = 0; i <3;i++) {
-//                    applicationController.launchApplication("OS_TEST", "1.0");
-//                    Thread.sleep(20000);
-//                    applicationController.stopApplication("OS_TEST", "1.0");
-//                    Thread.sleep(10000);
-//                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-            }
+            //applicationController.launchApplication("SELECTOR","1.0");
+            //applicationController.launchApplication("TRANSFORMATION","1.0");
+            applicationController.launchApplication("SENDERSELECTOR","1.0",null);
         }
+        System.out.println("Started bundle - " + context.getBundle().getSymbolicName());
+
     }
 
     public void stop(BundleContext context) {
