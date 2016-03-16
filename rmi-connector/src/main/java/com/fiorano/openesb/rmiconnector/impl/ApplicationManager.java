@@ -41,7 +41,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         super(rmiManager);
         this.applicationController = rmiManager.getApplicationController();
         this.applicationRepository = rmiManager.getApplicationRepository();
-        this.handleId = instanceHandler.getHandleID();
+        setHandleID(instanceHandler.getHandleID());
     }
 
     @Override
@@ -601,9 +601,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         return contents;
     }
 
-    public void deleteApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {
+    public void deleteApplication(String appGUID, String version) throws RemoteException, ServiceException {
         try {
-            applicationController.deleteApplication(appGUID, version, handleID);
+            applicationController.deleteApplication(appGUID, version, handleId);
         } catch (FioranoException e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
@@ -616,23 +616,23 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     }
 
     @Override
-    public void startApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {
+    public void startApplication(String appGUID, String version) throws RemoteException, ServiceException {
         try {
-            applicationController.launchApplication(appGUID, version, handleID);
+            applicationController.launchApplication(appGUID, version, handleId);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(),e);
         }
     }
 
     @Override
-    public void restartApplication(String appGUID, float appVersion, String handleID) throws RemoteException, ServiceException {
+    public void restartApplication(String appGUID, float appVersion) throws RemoteException, ServiceException {
 
     }
 
     @Override
-    public void stopApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException {
+    public void stopApplication(String appGUID, String version) throws RemoteException, ServiceException {
         try {
-            applicationController.stopApplication(appGUID,version, handleID);
+            applicationController.stopApplication(appGUID,version, handleId);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(),e);
         }

@@ -181,7 +181,7 @@ public interface IApplicationManager extends Remote{
      * @throws ServiceException ServiceException
      * @see IApplicationManager#ANY_VERSION
      */
-    void deleteApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException;
+    void deleteApplication(String appGUID, String version) throws RemoteException, ServiceException;
 
     /**
      * This method checks for existence of dependencies
@@ -202,7 +202,7 @@ public interface IApplicationManager extends Remote{
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    void startApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException;
+    void startApplication(String appGUID, String version) throws RemoteException, ServiceException;
 
     /**
      * This method restarts the specified Event Process
@@ -212,7 +212,7 @@ public interface IApplicationManager extends Remote{
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    void restartApplication(String appGUID, float appVersion, String handleID) throws RemoteException, ServiceException;
+    void restartApplication(String appGUID, float appVersion) throws RemoteException, ServiceException;
 
     /**
      * This method stops the specified Event Process
@@ -222,7 +222,7 @@ public interface IApplicationManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      * @throws ServiceException ServiceException
      */
-    void stopApplication(String appGUID, String version, String handleID) throws RemoteException, ServiceException;
+    void stopApplication(String appGUID, String version) throws RemoteException, ServiceException;
 
     /**
      * This method returns the list of Applications referring the specified Applications
