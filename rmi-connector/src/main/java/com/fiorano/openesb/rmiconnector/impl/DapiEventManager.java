@@ -1,12 +1,7 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
-import com.fiorano.openesb.application.configuration.data.NamedObject;
-import com.fiorano.openesb.application.configuration.data.ObjectCategory;
 import com.fiorano.openesb.events.*;
-import com.fiorano.openesb.namedconfig.ConfigurationRepositoryEventListener;
-import com.fiorano.openesb.namedconfig.NamedConfigRepository;
 import com.fiorano.openesb.rmiconnector.api.IApplicationManagerListener;
-import com.fiorano.openesb.rmiconnector.api.IConfigurationRepositoryListener;
 import com.fiorano.openesb.rmiconnector.api.IRepoEventListener;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.queue.FioranoQueueImpl;
@@ -26,12 +21,10 @@ public class DapiEventManager implements EventListener {
 
     //Fes Event Manager
     private EventsManager fesEventManager;
-    //Configuration Repository instance
-    private NamedConfigRepository configurationRepository;
+
     //Application Specific Event listeners
     private final Hashtable<String, IApplicationManagerListener> appEventListeners = new Hashtable<String, IApplicationManagerListener>();
     private Hashtable<String, IRepoEventListener> microServiceRepoEventListeners = new Hashtable<String, IRepoEventListener>();
-    private final Hashtable<String, IConfigurationRepositoryListener> configurationRepoEventListeners = new Hashtable<String, IConfigurationRepositoryListener>();
      private static final String DAPICONSTANT = "$";
 
     private static final String DELIMITER = "__";
@@ -40,18 +33,13 @@ public class DapiEventManager implements EventListener {
     //Queue to Store the System Events
     private final transient IFioranoQueue eventsQueue;
     //Queue to Store the Configuration Events
-    private final transient IFioranoQueue configurationEventsQueue;
-    //Queue to Store the Configuration Events
     //Condition to check before reading Events from Queue.
     private boolean isConnectionAlive;
     //Separate Thread to read events from Queue.
     private ReceiverThread receiverThread;
     //Configuration Repository Event Receiver Thread
-    private ConfigurationEventReceiverThread configurationRepositoryEventReceiverthread;
-    //Configuration Repository Event Receiver Thread
     //Service to execute event tasks in a thread pool
     private ExecutorService exec;
-    private ConfigurationEventListener configurationEventListener;
 
     /**
      * stores the ipaddress(s) of all clients connected to the fes.
@@ -74,11 +62,9 @@ public class DapiEventManager implements EventListener {
      *
      * @param fesEventManager fesEvents Mangaer
      */
-    public DapiEventManager(EventsManager fesEventManager, NamedConfigRepository namedConfigRepository) {
+    public DapiEventManager(EventsManager fesEventManager) {
         this.fesEventManager = fesEventManager;
         this.eventsQueue = new FioranoQueueImpl();
-        this.configurationEventsQueue = new FioranoQueueImpl();
-        this.configurationRepository = namedConfigRepository;
     }
 
     public void setFesEventManager(EventsManager fesEventManager) {
@@ -113,23 +99,6 @@ public class DapiEventManager implements EventListener {
     }
 
 
-    private void pushToConfigurationEventQueue(ConfigurationEvent event) {
-        if (event == null) {
-            return;
-        }
-
-        synchronized (configurationEventsQueue) {
-            if (maxBufferedEventsCount < 0 || configurationEventsQueue.getSize() < maxBufferedEventsCount) {
-                configurationEventsQueue.pushWithNotify(event);
-                return;
-            }
-        }
-
-        ObjectCategory objectCategory = event.getNamedObject().getObjectCategory();
-        String category = objectCategory != null ? objectCategory.getConfigurationTypeAsString() : null;
-    }
-
-
     public Event readEvent(long timeout) throws FioranoException {
         Object obj = eventsQueue.popWithWait(timeout);
 
@@ -139,30 +108,16 @@ public class DapiEventManager implements EventListener {
         else
             return (Event) obj;
     }
-    public ConfigurationEvent readConfigurationEvent(long timeout) throws FioranoException {
-        Object obj = configurationEventsQueue.popWithWait(timeout);
-
-        // long indicated that the connection handle is closed.
-        if (obj instanceof Long)
-            return null;
-        else
-            return (ConfigurationEvent) obj;
-    }
 
     private void startReceiving() {
         receiverThread = new ReceiverThread();
         receiverThread.setName("DAPI_EVENT_MANAGER_THREAD_FOR_RECEIVING_SYSTEM_EVENTS");
         receiverThread.start();
-
-        configurationRepositoryEventReceiverthread = new ConfigurationEventReceiverThread();
-        configurationRepositoryEventReceiverthread.setName("DAPI_EVENT_MANAGER_THREAD_FOR_RECEIVING_CONFIGURATION_EVENTS");
-        configurationRepositoryEventReceiverthread.start();
     }
 
     private void stopRunning() {
         isConnectionAlive = false;
         receiverThread = null;
-        configurationRepositoryEventReceiverthread = null;
     }
 
     public void registerMicroServiceRepoEventListener(IRepoEventListener listener, String handleId) {
@@ -311,95 +266,6 @@ public class DapiEventManager implements EventListener {
          }
     }
 
-    class ConfigurationEventReceiverThread extends Thread {
-        public void run() {
-            while (isConnectionAlive) {
-                try {
-                    ConfigurationEvent configurationEvent = readConfigurationEvent(0);
-                    if (configurationEvent != null)
-                        processConfigurationEvent(configurationEvent.getNamedObject(), configurationEvent.getEventType());
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    isConnectionAlive = false;
-                }
-            }
-        }
-
-    }
-
-    private class ConfigurationEventListener implements ConfigurationRepositoryEventListener {
-        public void configurationPersisted(NamedObject namedObject) {
-            ConfigurationEvent event = new ConfigurationEvent(1, namedObject);
-            pushToConfigurationEventQueue(event);
-        }
-
-        public void configurationDeleted(NamedObject namedObject) {
-            ConfigurationEvent event = new ConfigurationEvent(2, namedObject);
-            pushToConfigurationEventQueue(event);
-        }
-    }
-
-    private class ConfigurationEvent {
-        private int eventType;
-        private NamedObject namedObject;
-
-        private ConfigurationEvent(int eventType, NamedObject namedObject) {
-            this.eventType = eventType;
-            this.namedObject = namedObject;
-        }
-
-        public int getEventType() {
-            return eventType;
-        }
-
-        public NamedObject getNamedObject() {
-            return namedObject;
-        }
-    }
-
-    private void processConfigurationEvent(NamedObject event, int eventType) {
-        if (eventType == 1) {
-            synchronized (configurationRepoEventListeners) {
-                Enumeration<String> keys = configurationRepoEventListeners.keys();
-                while (keys.hasMoreElements()) {
-                    String key = keys.nextElement();
-                    IConfigurationRepositoryListener listener = configurationRepoEventListeners.get(key);
-                    try {
-                        listener.configurationPersisted(event);
-                    } catch (NoSuchObjectException e) {
-                        //Ignore. Dont want to log unnecessarily
-                    } catch (Throwable e) {
-                        String category = event.getObjectCategory() != null ? event.getObjectCategory().getConfigurationTypeAsString() : null;
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } else if(eventType == 2) {
-            synchronized (configurationRepoEventListeners) {
-                Enumeration<String> keys = configurationRepoEventListeners.keys();
-                while (keys.hasMoreElements()) {
-                    String key = keys.nextElement();
-                    IConfigurationRepositoryListener listener = configurationRepoEventListeners.get(key);
-                    try {
-                        listener.configurationDeleted(event);
-                    } catch (NoSuchObjectException e) {
-                        //Ignore. Dont want to log unnecessarily
-                    } catch (Throwable e) {
-                        String category = event.getObjectCategory() != null ? event.getObjectCategory().getConfigurationTypeAsString() : null;
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-
-    public void registerConfigurationRepositoryEventListener(IConfigurationRepositoryListener configurationRepositoryListener, String handleId) {
-        if (configurationRepoEventListeners.containsKey(handleId))//have one listener for one eStudio client always.
-            configurationRepoEventListeners.remove(handleId);
-        configurationRepoEventListeners.put(handleId, configurationRepositoryListener);
-    }
 
     public void registerApplicationEventListener(IApplicationManagerListener appEventListener, String appGUID, float appVersion, String handleId) {
         String key = handleId + DAPICONSTANT + appGUID + DELIMITER +appVersion;
@@ -412,11 +278,6 @@ public class DapiEventManager implements EventListener {
         String key = handleId + DAPICONSTANT + appGUID +DELIMITER+ appVersion;
         if (appEventListeners.containsKey(key))
             appEventListeners.remove(key);
-    }
-
-    public void unRegisterConfigurationRepositoryEventListener(String handleId) {
-        if (configurationRepoEventListeners.containsKey(handleId))
-            configurationRepoEventListeners.remove(handleId);
     }
 
     public void startEventListener() {
@@ -433,10 +294,6 @@ public class DapiEventManager implements EventListener {
         if (fesEventManager != null)
             fesEventManager.registerEventListener(this);
 
-        if (configurationRepository != null) {
-            configurationEventListener = new ConfigurationEventListener();
-            configurationRepository.registerEventListener(configurationEventListener);
-        }
         isConnectionAlive = true;
         startReceiving();
     }
@@ -445,8 +302,7 @@ public class DapiEventManager implements EventListener {
     public void stopEventListener() {
         if (fesEventManager != null)
             fesEventManager.unRegisterEventListener(this);
-        if (configurationRepository != null)
-            configurationRepository.unRegisterEventListener(configurationEventListener);
+
         stopRunning();
         removeAllListeners();
         exec.shutdown();

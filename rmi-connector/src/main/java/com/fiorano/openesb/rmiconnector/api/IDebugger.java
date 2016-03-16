@@ -33,7 +33,7 @@ public interface IDebugger extends Remote {
      * @throws java.rmi.RemoteException Remote Exception
      * @throws ServiceException Service Exception
      */
-    BreakpointMetaData addBreakpoint(String appGUID, float appVersion, String routeName) throws RemoteException, ServiceException;
+    BreakpointMetaData addBreakpoint(String appGUID, float appVersion, String routeName, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method returns the break point meta data of the debugger on the route.

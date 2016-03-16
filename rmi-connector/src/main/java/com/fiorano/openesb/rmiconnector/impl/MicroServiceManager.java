@@ -42,7 +42,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     protected MicroServiceManager(RmiManager rmiManager, InstanceHandler instanceHandler) {
         super(rmiManager);
         this.microServiceRepository = rmiManager.getMicroServiceRepoManager();
-        setHandleID(instanceHandler.getHandleID());
+        this.handleId = instanceHandler.getHandleID();
     }
 
     public String[] getServiceIds() throws ServiceException {

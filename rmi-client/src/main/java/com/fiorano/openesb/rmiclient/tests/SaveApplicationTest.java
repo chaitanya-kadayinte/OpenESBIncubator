@@ -31,7 +31,7 @@ public class SaveApplicationTest implements TestCase{
         } catch (IOException e) {
             throw new ServiceException(e.getMessage());
         }
-        eventProcessManager.deleteApplication("BP-JAN", "1.0");
+        eventProcessManager.deleteApplication("BP-JAN", "1.0", handleid);
         rmiManager.logout(handleid);
     }
     private void saveApplication() throws ServiceException, IOException {

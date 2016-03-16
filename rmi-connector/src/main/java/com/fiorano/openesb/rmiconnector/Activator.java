@@ -50,11 +50,10 @@ public class Activator implements BundleActivator {
         Registry registry;
         IRmiManager rmiManager = null;
         try {
-            int rmiRegisryPort = rmiConnector.getRmiConnectorConfig().getRmiRegistryPort();
-            int rmiServerPort = rmiConnector.getRmiConnectorConfig().getRmiServerPort();
-            rmiManager = new RmiManager(context,rmiServerPort , rmiConnector.getCsf(), rmiConnector.getSsf());
-            rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, rmiServerPort, rmiConnector.getCsf(), rmiConnector.getSsf());
-            registry = LocateRegistry.getRegistry(rmiRegisryPort);
+            int rmiPort = rmiConnector.getRmiConnectorConfig().getRMIServerPort();
+            rmiManager = new RmiManager(context,rmiPort , rmiConnector.getCsf(), rmiConnector.getSsf());
+            rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, rmiPort, rmiConnector.getCsf(), rmiConnector.getSsf());
+            registry = LocateRegistry.getRegistry(rmiPort);
             try {
                 registry.unbind("rmi");
             } catch (NotBoundException |  RemoteException ignored) {

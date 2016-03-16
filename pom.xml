@@ -34,7 +34,6 @@
         <module>simulate-launch</module>
         <module>microservice</module>
         <module>application-repo</module>
-        <module>namedconfiguration</module>
         <module>applicationcontroller</module>
         <module>rmi-connector</module>
         <module>rmi-client</module>

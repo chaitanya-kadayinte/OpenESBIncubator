@@ -67,18 +67,17 @@ public class RmiConnector {
             csf =(RMIClientSocketFactory)factories.get(0);
             ssf =(RMIServerSocketFactory)factories.get(1);
             setRmiRegistryIpAddress();// ---->do before starting fiorano naming service !
-            //namingService = new FioranoNamingService(rmiConnectorConfig.getRmiRegistryPort(),csf,ssf);
-            namingService = new FioranoNamingService(rmiConnectorConfig.getRmiRegistryPort(),csf,ssf);
+            namingService = new FioranoNamingService(rmiConnectorConfig.getRMIServerPort(),csf,ssf);
             namingService.start();
 
-            /*JMXServiceURL address = new JMXServiceURL("rmi", rmiConnectorConfig.getHostname(), rmiConnectorConfig.getRMIServerPort(), "/fiorano");
+            JMXServiceURL address = new JMXServiceURL("rmi", rmiConnectorConfig.getHostname(), rmiConnectorConfig.getRMIServerPort(), "/fiorano");
 
             Map environment = new HashMap();
 
             environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory");
             environment.put(Context.PROVIDER_URL, "rmi://"+rmiConnectorConfig.getHostname()+":"+rmiConnectorConfig.getRMIServerPort());
             environment.put(RMIConnectorServer.RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE, csf);
-            environment.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);*/
+            environment.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);
             /*JMXAuthenticator auth = JMXAuthenticatorFactory.createAuthenticator("fiorano.jms.jmx.authenticator.FMQJmxAuthenticator");
             Method method = auth.getClass().getMethod("setRealmManager", new Class[]{Object.class});
 
@@ -87,7 +86,7 @@ public class RmiConnector {
 
             environment.put(JMXConnectorServer.AUTHENTICATOR, auth);*/
 
-           // connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(address, environment, MBeanServerFactory.createMBeanServer("Fiorano"));
+            connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(address, environment, MBeanServerFactory.createMBeanServer("Fiorano"));
             /*listener = new JMXConnectionListener();
             listener.setLogger(m_loggerRuntime);
             connectorServer.addNotificationListener(listener, null, null);*/
@@ -115,9 +114,9 @@ public class RmiConnector {
                 System.out.println(FMQI18Nutil.getL10NMsg(this.getClass(), "warning.unable.to.set.interceptor.for.jmx.calls"));
             }
 */
-            //connectorServer.start();
+            connectorServer.start();
 
-            System.out.println("rmi registry listening on " + rmiConnectorConfig.getRmiRegistryPort());
+            System.out.println("rmi server listening on " + rmiConnectorConfig.getRMIServerPort());
         }
         catch (Exception ex)
         {

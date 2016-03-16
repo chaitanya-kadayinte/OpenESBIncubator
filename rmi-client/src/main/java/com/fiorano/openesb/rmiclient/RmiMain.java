@@ -33,7 +33,7 @@ public class RmiMain {
         System.out.println(handleid);
         try {
             IApplicationManager eventProcessManager = rmiManager.getApplicationManager(handleid);
-            eventProcessManager.startApplication("SIMPLECHAT", "1.0");
+            eventProcessManager.startApplication("SIMPLECHAT", "1.0", handleid);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (ServiceException e) {
