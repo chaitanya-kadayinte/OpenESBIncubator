@@ -23,9 +23,15 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.fiorano.openesb</groupId>
+        <artifactId>OpenESBProject</artifactId>
+        <version>0.1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>com.fiorano.openesb</groupId>
     <artifactId>rmi-connector</artifactId>
-    <version>1.0</version>
     <packaging>bundle</packaging>
 
     <name>rmi-connector Bundle</name>
@@ -52,27 +58,27 @@
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>utils</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>application-repo</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>applicationcontroller</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>events</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>security</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <build>

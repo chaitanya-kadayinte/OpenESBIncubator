@@ -5,12 +5,18 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.fiorano.openesb</groupId>
+        <artifactId>OpenESBProject</artifactId>
+        <version>0.1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>com.fiorano.openesb</groupId>
     <artifactId>transport-api</artifactId>
     <packaging>bundle</packaging>
 
     <name>transport-api Bundle</name>
-    <version>1.0.0</version>
     <description>
         transport-api OSGi bundle project.
     </description>
@@ -30,7 +36,7 @@
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>utils</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
 

@@ -1,9 +1,17 @@
 package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.transport.*;
+import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
 
 import javax.jms.*;
 import javax.jms.Message;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public abstract class AbstractJMSTransportService implements TransportService<JMSPort, JMSMessage> {
 
@@ -25,7 +33,8 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
     private Connection getConnection(ConnectionFactory cf) throws JMSException {
         // TODO: 27-02-2016
         try {
-            Connection connection = cf.createConnection("karaf", "karaf");
+            ConfigurationLookupHelper configurationLookupHelper = ConfigurationLookupHelper.getInstance();
+            Connection connection = cf.createConnection(configurationLookupHelper.getValue("userName"),configurationLookupHelper.getValue("password"));
             connection.start();
             return connection;
         } catch (JMSException e) {

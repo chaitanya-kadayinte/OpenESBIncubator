@@ -39,9 +39,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
-        String serverIp = ConfigurationLookupHelper.getInstance().getValue("SERVER_IP");
-        //todo active mq port lookup
-        String connectURL = serverIp == null ?  "tcp://localhost:61616" : "tcp://"+ serverIp+":61616";
+        String connectURL = ConfigurationLookupHelper.getInstance().getValue("providerURL");
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
         commandLineArgs.put(LaunchConstants.FES_URL, connectURL);
