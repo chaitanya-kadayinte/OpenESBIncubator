@@ -20,20 +20,30 @@
  */
 package com.fiorano.openesb.management;
 
+import com.fiorano.openesb.application.ApplicationRepository;
+import com.fiorano.openesb.application.application.Application;
+import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-
+@CrossOriginResourceSharing(
+        allowAllOrigins = true,
+        allowCredentials = true,
+        maxAge = 1
+)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ApplicationsServiceImpl implements ApplicationsService {
+public class RestServiceImpl implements ApplicationsService {
 
-    public ApplicationsServiceImpl() {
+    public RestServiceImpl() {
     }
 
     @GET
@@ -41,13 +51,35 @@ public class ApplicationsServiceImpl implements ApplicationsService {
     @Path("/applications")
     public Response getApplications() {
         BundleContext bundleContext = FrameworkUtil.getBundle(ApplicationsService.class).getBundleContext();
-        ApplicationController controller = bundleContext.getService(bundleContext.getServiceReference(ApplicationController.class));
-        ArrayList<String> list = new ArrayList<>();
-        list.addAll(controller.getListOfRunningApplications(null));
+        ApplicationRepository controller = bundleContext.getService(bundleContext.getServiceReference(ApplicationRepository.class));
         Response response = new Response();
-        response.setApplications(list);
+        response.setApplications(controller.getApplicationIdWithVersions());
         response.setStatus(true);
         return response;
+    }
+
+    @Path("/applications/{applicationName}/{applicationVersion}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public com.fiorano.openesb.management.Application getApplicationDetails(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion) {
+        ApplicationRepository controller = getApplicationRepository();
+        com.fiorano.openesb.management.Application response = new com.fiorano.openesb.management.Application();
+        try {
+            Application application = controller.readApplication(applicationName, applicationVersion);
+            List<String> services = new ArrayList<>();
+            for (ServiceInstance serviceInstance :application.getServiceInstances()){
+                services.add(serviceInstance.getName());
+            }
+            response.setServices(services);
+            response.setId(application.getGUID());
+            response.setName(application.getDisplayName());
+            response.setVersion(applicationVersion);
+            response.setIsRunning(true);
+            return response;
+        } catch (Exception e) {
+            //todo
+            return response;
+        }
     }
 
     @Path("/applications/{applicationName}/{applicationVersion}")
@@ -62,7 +94,6 @@ public class ApplicationsServiceImpl implements ApplicationsService {
             response.setStatus(true);
             return response;
         } catch (Exception e) {
-//            e.printStackTrace();
             response.setStatus(false);
             response.setMessage(e.getMessage());
             return response;
@@ -81,7 +112,6 @@ public class ApplicationsServiceImpl implements ApplicationsService {
             response.setStatus(true);
             return response;
         } catch (Exception e) {
-           // e.printStackTrace();
             response.setMessage(e.getMessage());
             response.setStatus(false);
             return response;
@@ -90,9 +120,13 @@ public class ApplicationsServiceImpl implements ApplicationsService {
     }
 
     private ApplicationController getController() {
-        BundleContext bundleContext = FrameworkUtil.getBundle(ApplicationsService.class).getBundleContext();
-        ApplicationController controller = bundleContext.getService(bundleContext.getServiceReference(ApplicationController.class));
-        return controller;
+        BundleContext bundleContext = FrameworkUtil.getBundle(ApplicationController.class).getBundleContext();
+        return bundleContext.getService(bundleContext.getServiceReference(ApplicationController.class));
+    }
+
+    private ApplicationRepository getApplicationRepository() {
+        BundleContext bundleContext = FrameworkUtil.getBundle(ApplicationRepository.class).getBundleContext();
+        return bundleContext.getService(bundleContext.getServiceReference(ApplicationRepository.class));
     }
 
     @POST

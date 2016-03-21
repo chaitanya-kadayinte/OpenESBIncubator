@@ -37,12 +37,17 @@
             <version>1.0</version>
         </dependency>
         <dependency>
+            <groupId>com.fiorano.openesb</groupId>
+            <artifactId>application-repo</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!--suppress NonOsgiMavenDependency -->
+        <dependency>
             <groupId>com.owlike</groupId>
             <artifactId>genson</artifactId>
             <version>1.2</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-core</artifactId>
@@ -53,7 +58,6 @@
             <artifactId>cxf-rt-rs-security-cors</artifactId>
             <version>3.1.5</version>
         </dependency>
-
 
     </dependencies>
 
@@ -69,7 +73,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
-                            com.fiorano.openesb*;version=${project.version}
+                            com.fiorano.openesb.management*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *

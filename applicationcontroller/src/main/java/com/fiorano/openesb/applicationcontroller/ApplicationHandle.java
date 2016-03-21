@@ -81,7 +81,6 @@ public class ApplicationHandle {
                 routeConfiguration.getRouteOperationConfigurations().add(bodySelectorConfig);
             }
 
-            // TODO: 3/1/16
             if(route.getMessageTransformation()!=null) {
                 TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
                 transformationConfiguration.setXsl(route.getMessageTransformation().getScript());

@@ -133,18 +133,6 @@ public class MicroServiceRepoManager {
     }
 
     /**
-     * Abstract method which needs to be implemented by all modules
-     * to switch themselves to passive.
-     *
-     *
-     */
-    protected void _switchToPassiveMode()
-            throws FioranoException
-    {
-        //todo clear the inmemory structures. ??
-    }
-
-    /**
      * gets the module name
      * @return String
      */

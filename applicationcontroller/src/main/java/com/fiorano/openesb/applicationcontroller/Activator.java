@@ -20,12 +20,16 @@ import com.fiorano.openesb.application.ApplicationRepository;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 
     @SuppressWarnings("unchecked")
     public void start(BundleContext context) throws Exception {
         System.out.println("Starting bundle - " + context.getBundle().getSymbolicName());
+        Logger myLogger = LoggerFactory.getLogger(getClass());
+        myLogger.info("Testing Logger");
         ServiceReference<ApplicationRepository> applicationRepositoryRef = context.getServiceReference(ApplicationRepository.class);
         if (applicationRepositoryRef != null) {
             ApplicationRepository applicationRepository = context.getService(applicationRepositoryRef);
@@ -34,7 +38,7 @@ public class Activator implements BundleActivator {
             context.registerService(ApplicationController.class.getName(), applicationController, null);
             //applicationController.launchApplication("SELECTOR","1.0");
             //applicationController.launchApplication("TRANSFORMATION","1.0");
-            applicationController.launchApplication("SENDERSELECTOR","1.0",null);
+//            applicationController.launchApplication("SENDERSELECTOR","1.0",null);
         }
         System.out.println("Started bundle - " + context.getBundle().getSymbolicName());
 

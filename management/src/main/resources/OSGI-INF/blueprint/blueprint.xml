@@ -19,7 +19,7 @@
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="restSBean" class="com.fiorano.openesb.management.ApplicationsServiceImpl">
+    <bean id="restSBean" class="com.fiorano.openesb.management.RestServiceImpl">
 
     </bean>
 

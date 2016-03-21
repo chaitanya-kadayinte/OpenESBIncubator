@@ -22,13 +22,11 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
-        System.out.println("Starting the bundle");
         context.registerService(
                 EventsManager.class.getName(), new EventsManager(), null);
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle");
     }
 
 }

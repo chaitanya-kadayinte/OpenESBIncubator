@@ -413,7 +413,6 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
     }
 
 
-    //todo
     private String getServiceGUID() {
         return launchConfiguration.getMicroserviceId();
     }
