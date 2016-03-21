@@ -12,10 +12,12 @@ public class BreakPointManager extends AbstractRmiManager implements IDebugger {
 
     private ApplicationController applicationController;
 
+    private InstanceHandler handler;
 
     protected BreakPointManager(RmiManager rmiManager, InstanceHandler handler) {
         super(rmiManager);
         this.applicationController = rmiManager.getApplicationController();
+        this.handler = handler;
         setHandleID(handler.getHandleID());
     }
 

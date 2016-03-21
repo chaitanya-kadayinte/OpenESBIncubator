@@ -13,9 +13,6 @@ import java.rmi.RemoteException;
  * Created by Janardhan on 1/27/2016.
  */
 public class InstanceHandler {
-
-    private static final String APPLICATION_MANAGER = "APPLICATION_MANANGER";
-    private static final String MICRO_SERVICE_MANAGER = "MICRO_SERVICE_MANANGER";
     //Rmi Manager Instance
     private RmiManager rmiManager;
     //Handle ID of the client
@@ -44,9 +41,9 @@ public class InstanceHandler {
      * @param e String
      */
     public synchronized void onUnReferenced(String e) {
-        if (e.equals(APPLICATION_MANAGER)) {
+        if (e.equals(Constants.APPLICATION_MANAGER)) {
             applicationManager = null;
-        }else if (e.equals(MICRO_SERVICE_MANAGER)){
+        }else if (e.equals(Constants.MICRO_SERVICE_MANAGER)){
             microServiceManager=null;
         }else if (e.equals(Constants.BREAKPOINT_MANAGER)){
             breakPointManager=null;

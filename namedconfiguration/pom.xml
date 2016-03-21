@@ -4,7 +4,7 @@
     <parent>
         <artifactId>OpenESBProject</artifactId>
         <groupId>com.fiorano.openesb</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1.0</version>
     </parent>
 
     <!--
@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>namedconfiguration</artifactId>
-    <version>1.0</version>
+    <version>0.1.0</version>
     <packaging>bundle</packaging>
 
     <name>namedconfiguration Bundle</name>
@@ -52,17 +52,17 @@
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>application-repo</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>applicationcontroller</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>utils</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
