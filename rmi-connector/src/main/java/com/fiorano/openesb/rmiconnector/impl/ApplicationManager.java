@@ -29,6 +29,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     private HashMap<String, File> tempFileNameMap = new HashMap<String, File>(8);
 
+    private InstanceHandler handler;
+
     void setClientProxyInstance(IApplicationManager clientProxyInstance) {
         this.clientProxyInstance = clientProxyInstance;
     }
@@ -41,6 +43,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         super(rmiManager);
         this.applicationController = rmiManager.getApplicationController();
         this.applicationRepository = rmiManager.getApplicationRepository();
+        this.handler = instanceHandler;
         setHandleID(instanceHandler.getHandleID());
     }
 
@@ -952,7 +955,29 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public ApplicationMetadata[] getAllApplications() throws RemoteException, ServiceException {
-        return new ApplicationMetadata[0];
+        List<ApplicationMetadata> savedEventProcesses = new ArrayList<ApplicationMetadata>();
+        try {
+            @SuppressWarnings("unchecked")
+            Enumeration<ApplicationReference> savedApplications = applicationController.getHeadersOfSavedApplications(handleId);
+            while (savedApplications.hasMoreElements()) {
+                ApplicationReference appReference = savedApplications.nextElement();
+                ApplicationMetadata epReference = new ApplicationMetadata(appReference.getGUID(), appReference.getVersion());
+                epReference.setCategories(appReference.getCategories());
+                epReference.setDisplayName(appReference.getDisplayName());
+                epReference.setSchemaVersion(appReference.getSchemaVersion());
+                epReference.setShortDescription(appReference.getShortDescription());
+                epReference.setLongDescription(appReference.getLongDescription());
+                epReference.setTypeName(appReference.getTypeName());
+                epReference.setSubType(appReference.getSubType());
+                savedEventProcesses.add(epReference);
+            }
+
+        } catch (FioranoException e) {
+            e.printStackTrace();
+            throw new ServiceException( e.getMessage());
+        }
+
+        return savedEventProcesses.toArray(new ApplicationMetadata[savedEventProcesses.size()]);
     }
 
     @Override
@@ -1083,5 +1108,13 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public boolean isDeleteDestinationSetAtApp(String appGUID, float appVersion) throws RemoteException, ServiceException {
         return false;
+    }
+
+    public void unreferenced() {
+        handler.onUnReferenced(this.toString());
+    }
+
+    public String toString() {
+        return Constants.APPLICATION_MANAGER;
     }
 }

@@ -25,6 +25,8 @@
         <bundle start-level='89'>mvn:org.slf4j/slf4j-api/1.6.6</bundle>
         <bundle start-level='99'>mvn:javax.ws.rs/javax.ws.rs-api/2.0</bundle>
         <bundle start-level='99'>mvn:org.apache.cxf/cxf-rt-rs-security-cors/3.1.5</bundle>
+        <bundle start-level='99'>wrap:mvn:woodstox/wstx-asl/2.6</bundle>
+        <bundle start-level='99'>wrap:mvn:xmlunit/xmlunit/1.6</bundle>
         <bundle start-level='89'>mvn:org.slf4j/slf4j-log4j12/1.6.6</bundle>
         <bundle start-level='99'>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.3</bundle>
         <bundle start-level='99'>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.3</bundle>
@@ -47,6 +49,7 @@
         <bundle start-level='97'>mvn:com.fiorano.openesb/events/0.1.0</bundle>
         <bundle start-level='96'>mvn:com.fiorano.openesb/application-repo/0.1.0</bundle>
         <bundle start-level='96'>mvn:com.fiorano.openesb/namedconfiguration/0.1.0</bundle>
+        <bundle start-level="96">mvn:com.fiorano.openesb/schema-repo/0.1.0</bundle>
         <bundle start-level='98'>mvn:com.fiorano.openesb/applicationcontroller/0.1.0</bundle>
         <bundle start-level="99">mvn:com.fiorano.openesb/simulate-launch/0.1.0</bundle>
         <bundle start-level="99">mvn:com.fiorano.openesb/management/0.1.0</bundle>

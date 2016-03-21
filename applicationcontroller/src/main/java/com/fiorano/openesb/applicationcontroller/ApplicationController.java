@@ -27,6 +27,7 @@ public class ApplicationController {
     private ApplicationRepository applicationRepository;
     private MicroServiceLauncher microServiceLauncher;
     private Map<String, ApplicationHandle> applicationHandleMap = new HashMap<>();
+    private Map<String, Application> savedApplicationMap = new HashMap<>();
     private RouteService routeService;
     private SecurityManager securityManager;
 
@@ -38,6 +39,13 @@ public class ApplicationController {
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
         securityManager = context.getService(context.getServiceReference(SecurityManager.class));
+        String [] appIds = applicationRepository.getApplicationIds();
+        for(String appid:appIds){
+           float[] appVersions = applicationRepository.getAppVersions(appid);
+            for(float ver : appVersions){
+               savedApplicationMap.put(appid + "__" + ver, applicationRepository.readApplication(appid, String.valueOf(ver)));
+            }
+        }
     }
 
     private void registerConfigRequestListener(final CCPEventManager ccpEventManager) throws Exception {
@@ -331,6 +339,20 @@ public class ApplicationController {
 
             try {
                 toReturn.addElement(new ApplicationReference(appHandle.getApplication()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return toReturn.elements();
+    }
+
+    public Enumeration<ApplicationReference> getHeadersOfSavedApplications(String handleId) throws FioranoException{
+        Vector<ApplicationReference> toReturn = new Vector<ApplicationReference>();
+        // get the running application handles and fetch the application info packet from the handles.
+        for (Application app:savedApplicationMap.values()) {
+
+            try {
+                toReturn.addElement(new ApplicationReference(app));
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -17,6 +17,9 @@ public class Constants {
 
     public static final String EVENT_PROCESS_MANAGER = "Event_Process_Manager";
 
+    public static final String MICRO_SERVICE_MANAGER = "micro_service_manager";
+    public static final String APPLICATION_MANAGER = "application_manager";
+
     public static final String SERVICE_MANAGER = "Service_Manager";
 
     public static final String FPS_MANAGER = "FPS_Manager";

@@ -31,7 +31,7 @@ public class ConfigurationLookupHelper {
         InputStream inputStream = null;
         try {
             properties = new Properties();
-            String propFileName = System.getProperty("KARAF_HOME") + File.separator + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg";
+            String propFileName = System.getProperty("karaf.base") + File.separator + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg";
             inputStream = new FileInputStream(propFileName);
             properties.load(inputStream);
         } catch (Exception e) {

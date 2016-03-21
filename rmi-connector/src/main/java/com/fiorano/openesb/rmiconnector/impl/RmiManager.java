@@ -1,10 +1,12 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.application.ApplicationRepository;
+import com.fiorano.openesb.application.service.Schema;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
+import com.fiorano.openesb.schemarepo.SchemaRepository;
 import com.fiorano.openesb.security.ConnectionHandle;
 import com.fiorano.openesb.security.SecurityManager;
 import com.fiorano.openesb.rmiconnector.api.*;
@@ -29,6 +31,7 @@ public class RmiManager implements IRmiManager{
     private SecurityManager securityManager;
     private MicroServiceRepoManager microServiceRepoManager;
     private NamedConfigRepository namedConfigRepository;
+    private SchemaRepository schemaRepository;
     private RMIServerSocketFactory ssf;
     private RMIClientSocketFactory csf;
     private int rmiPort;
@@ -49,6 +52,7 @@ public class RmiManager implements IRmiManager{
             microServiceRepoManager = (MicroServiceRepoManager) context.getService(references[0]);
             references = context.getServiceReferences(NamedConfigRepository.class.getName(), null);
             namedConfigRepository = (NamedConfigRepository) context.getService(references[0]);
+            schemaRepository = context.getService(context.getServiceReference(SchemaRepository.class));
 
             dapiEventManager = new DapiEventManager(eventsManager, namedConfigRepository);
             dapiEventManager.startEventListener();
@@ -86,6 +90,10 @@ public class RmiManager implements IRmiManager{
 
     public NamedConfigRepository getNamedConfigRepository(){
         return namedConfigRepository;
+    }
+
+    public SchemaRepository getSchemaRepository(){
+        return schemaRepository;
     }
 
     public EventsManager getEventsManager() {

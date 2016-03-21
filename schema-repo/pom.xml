@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>OpenESBProject</artifactId>
+        <groupId>com.fiorano.openesb</groupId>
+        <version>0.1.0</version>
+    </parent>
 
     <!--
        Licensed to the Apache Software Foundation (ASF) under one
@@ -23,20 +28,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.fiorano.openesb</groupId>
-        <artifactId>OpenESBProject</artifactId>
-        <version>0.1.0</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
-    <groupId>com.fiorano.openesb</groupId>
-    <artifactId>rmi-connector</artifactId>
+    <artifactId>schema-repo</artifactId>
+    <version>0.1.0</version>
     <packaging>bundle</packaging>
 
-    <name>rmi-connector Bundle</name>
+    <name>schema-repo Bundle</name>
     <description>
-        rmi-connector OSGi bundle project.
+        schema-repo OSGi bundle project.
     </description>
 
     <properties>
@@ -49,30 +47,11 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>mx4j</groupId>
-            <artifactId>mx4j-tools</artifactId>
-            <version>3.0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
             <artifactId>utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>application-repo</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>applicationcontroller</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>events</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -82,15 +61,16 @@
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
-            <artifactId>namedconfiguration</artifactId>
+            <artifactId>application-repo</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fiorano.openesb</groupId>
-            <artifactId>schema-repo</artifactId>
-            <version>${project.version}</version>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.6</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -102,9 +82,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>com.fiorano.openesb.rmiconnector.Activator</Bundle-Activator>
+                        <Bundle-Activator>com.fiorano.openesb.schemarepo.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb.rmiconnector*;version=${project.version}
+                            com.fiorano.openesb.schemarepo*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *
@@ -112,14 +92,7 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
 </project>
