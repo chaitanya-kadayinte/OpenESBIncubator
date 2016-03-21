@@ -183,6 +183,37 @@ public class ApplicationRepository {
         }
     }
 
+    public void saveApplication(Application application, String userName, String handleIDForEstudio, boolean skipManagableProps)
+            throws FioranoException {
+
+        // If applicationPropertySheet is null throw an Exception
+        if (application == null)
+            throw new FioranoException("ERROR_APPLICATION_SAVE_FAILURE_ERROR");
+
+        // Get the Application GUID and Version number.
+        float versionNumber = application.getVersion();
+
+        File applicationFolder;
+
+        //bug#23050: no need to delete the application if its already exists. If the version of saving app is new version,
+        // the new version will be saved in the repo. If its the same version, the old version will be overwritten.
+        /*try {
+            deleteAppIfExists(application,userName, handleIDForEstudio);
+        } catch (IOException e) {
+            //logging done inside deleteAppIfExists
+            throw new TifosiException(ApplicationRepositoryErrorCodes.ERROR_APPLICATION_SAVE_FAILURE_ERROR,ExceptionUtil.getMessage(e),e);
+        }*/
+        try {
+            applicationFolder = new File(getAppRootDirectory(application.getGUID(), application.getVersion()));
+            if(!applicationFolder.exists())
+                applicationFolder.mkdirs();
+            ApplicationParser.writeApplication(application, applicationFolder, skipManagableProps);
+        } catch (Exception e) {
+            throw new FioranoException("ERROR_APPLICATION_SAVE_FAILURE_ERROR",e);
+            //"Exception in writing the application", e);
+        }
+    }
+
     private String getConfigurationFileName(String appGUID, float version, String fileName) {
         return applicationRepoPath + File.separator + appGUID.toUpperCase() + File.separator + version + File.separator + "config" + File.separator + fileName;
     }

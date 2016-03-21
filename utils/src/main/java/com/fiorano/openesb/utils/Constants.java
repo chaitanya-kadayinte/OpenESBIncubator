@@ -5,6 +5,8 @@ package com.fiorano.openesb.utils;
  */
 public class Constants {
 
+    public final static String SYSTEM_ID_PREFIX = "ESBX__SYSTEM";
+    public final static String NAME_DELIMITER = "__";
     // The size of the chunk of data that is to be transferred from the RTL
     // to the server at the time of the upload of the resource
     public static final int CHUNK_SIZE = 1024 * 40;
@@ -14,6 +16,9 @@ public class Constants {
     public static final String RESOURCES_FOLDER_NAME = "Resources";
 
     public static final String EVENT_PROCESS_MANAGER = "Event_Process_Manager";
+
+    public static final String MICRO_SERVICE_MANAGER = "micro_service_manager";
+    public static final String APPLICATION_MANAGER = "application_manager";
 
     public static final String SERVICE_MANAGER = "Service_Manager";
 

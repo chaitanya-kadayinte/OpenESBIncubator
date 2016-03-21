@@ -22,7 +22,7 @@
 
     <groupId>com.fiorano.openesb</groupId>
     <artifactId>OpenESBProject</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <modules>
         <module>utils</module>
         <module>events</module>
@@ -34,14 +34,18 @@
         <module>simulate-launch</module>
         <module>microservice</module>
         <module>application-repo</module>
+        <module>namedconfiguration</module>
         <module>applicationcontroller</module>
+        <module>schema-repo</module>
         <module>rmi-connector</module>
         <module>rmi-client</module>
         <module>fiorano-feature</module>
         <module>management</module>
     </modules>
     <packaging>pom</packaging>
-
+    <properties>
+        <project.version>1.0.0</project.version>
+    </properties>
     <name>OpenESBProject</name>
     <description>OpenESBProject</description>
 
@@ -63,12 +67,18 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
                     <version>4.0.3</version>
                     <extensions>true</extensions>
                 </plugin>
             </plugins>
+
         </pluginManagement>
         <plugins>
             <plugin>

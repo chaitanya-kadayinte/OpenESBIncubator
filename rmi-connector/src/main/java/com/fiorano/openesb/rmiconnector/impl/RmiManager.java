@@ -1,9 +1,12 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.application.ApplicationRepository;
+import com.fiorano.openesb.application.service.Schema;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
+import com.fiorano.openesb.namedconfig.NamedConfigRepository;
+import com.fiorano.openesb.schemarepo.SchemaRepository;
 import com.fiorano.openesb.security.ConnectionHandle;
 import com.fiorano.openesb.security.SecurityManager;
 import com.fiorano.openesb.rmiconnector.api.*;
@@ -27,6 +30,8 @@ public class RmiManager implements IRmiManager{
     private EventsManager eventsManager;
     private SecurityManager securityManager;
     private MicroServiceRepoManager microServiceRepoManager;
+    private NamedConfigRepository namedConfigRepository;
+    private SchemaRepository schemaRepository;
     private RMIServerSocketFactory ssf;
     private RMIClientSocketFactory csf;
     private int rmiPort;
@@ -45,7 +50,11 @@ public class RmiManager implements IRmiManager{
             securityManager = (SecurityManager) context.getService(references[0]);
             references = context.getServiceReferences(MicroServiceRepoManager.class.getName(), null);
             microServiceRepoManager = (MicroServiceRepoManager) context.getService(references[0]);
-            dapiEventManager = new DapiEventManager(eventsManager);
+            references = context.getServiceReferences(NamedConfigRepository.class.getName(), null);
+            namedConfigRepository = (NamedConfigRepository) context.getService(references[0]);
+            schemaRepository = context.getService(context.getServiceReference(SchemaRepository.class));
+
+            dapiEventManager = new DapiEventManager(eventsManager, namedConfigRepository);
             dapiEventManager.startEventListener();
 
         } catch (InvalidSyntaxException e) {
@@ -79,6 +88,14 @@ public class RmiManager implements IRmiManager{
         return applicationRepository;
     }
 
+    public NamedConfigRepository getNamedConfigRepository(){
+        return namedConfigRepository;
+    }
+
+    public SchemaRepository getSchemaRepository(){
+        return schemaRepository;
+    }
+
     public EventsManager getEventsManager() {
         return eventsManager;
     }
@@ -104,7 +121,7 @@ public class RmiManager implements IRmiManager{
     }
 
     public void startDapiEventListener() {
-        dapiEventManager = new DapiEventManager( eventsManager);
+        dapiEventManager = new DapiEventManager( eventsManager, namedConfigRepository);
         dapiEventManager.startEventListener();
     }
 
@@ -142,16 +159,13 @@ public class RmiManager implements IRmiManager{
         return handleId;
     }
 
-
     public IApplicationManager getApplicationManager(String handleID) throws RemoteException, ServiceException {
         return handlerMap.get(handleID).getApplicationManager();
     }
 
-
     public IServiceManager getServiceManager(String handleID) throws RemoteException, ServiceException {
         return handlerMap.get(handleID).getMicroServiceManager();
     }
-
 
     public IFPSManager getFPSManager(String handleID) throws RemoteException, ServiceException {
         return null;
@@ -164,12 +178,12 @@ public class RmiManager implements IRmiManager{
 
 
     public IDebugger getBreakpointManager(String handleID) throws RemoteException, ServiceException {
-        return null;
+        return handlerMap.get(handleID).getBreakpointManager();
     }
 
 
     public IConfigurationManager getConfigurationManager(String handleID) throws RemoteException, ServiceException {
-        return null;
+        return handlerMap.get(handleID).getConfigurationManager();
     }
 
 

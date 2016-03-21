@@ -11,6 +11,8 @@
  * enclosed with this product or entered into with Fiorano.
  * <p>
  * Created by chaitanya on 02-02-2016.
+ * <p>
+ * Created by chaitanya on 02-02-2016.
  */
 
 /**
@@ -18,9 +20,30 @@
  */
 package com.fiorano.openesb.utils.config;
 
+import java.io.*;
+import java.util.Properties;
+
 public class ConfigurationLookupHelper {
     private static ConfigurationLookupHelper CONFIGURATION_LOOKUP_HELPER = new ConfigurationLookupHelper();
+    private Properties properties;
+
     private ConfigurationLookupHelper() {
+        InputStream inputStream = null;
+        try {
+            properties = new Properties();
+            String propFileName = System.getProperty("karaf.base") + File.separator + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg";
+            inputStream = new FileInputStream(propFileName);
+            properties.load(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //todo log e
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static ConfigurationLookupHelper getInstance() {
@@ -28,6 +51,6 @@ public class ConfigurationLookupHelper {
     }
 
     public String getValue(String key) {
-        return null;
+        return properties.getProperty(key);
     }
 }
