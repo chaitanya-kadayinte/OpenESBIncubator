@@ -34,7 +34,7 @@ public class Activator implements BundleActivator {
             context.registerService(ApplicationController.class.getName(), applicationController, null);
             //applicationController.launchApplication("SELECTOR","1.0");
             //applicationController.launchApplication("TRANSFORMATION","1.0");
-            applicationController.launchApplication("SENDERSELECTOR","1.0",null);
+            //applicationController.launchApplication("SENDERSELECTOR","1.0",null);
         }
         System.out.println("Started bundle - " + context.getBundle().getSymbolicName());
 

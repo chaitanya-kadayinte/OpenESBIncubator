@@ -1,9 +1,9 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
-import com.fiorano.openesb.rmiconnector.api.IApplicationManager;
-import com.fiorano.openesb.rmiconnector.api.IServiceManager;
-import com.fiorano.openesb.rmiconnector.api.ServiceException;
+import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.rmiconnector.api.proxy.RemoteClientInterceptor;
+import com.fiorano.openesb.security.*;
+import com.fiorano.openesb.utils.Constants;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
@@ -26,6 +26,8 @@ public class InstanceHandler {
     private volatile ApplicationManager applicationManager;
 
     private volatile MicroServiceManager microServiceManager;
+    private volatile BreakPointManager breakPointManager;
+    private volatile ConfigurationManager namedConfigManager;
 
 
     public InstanceHandler(RmiManager rmiManager, String handleID) {
@@ -46,6 +48,10 @@ public class InstanceHandler {
             applicationManager = null;
         }else if (e.equals(MICRO_SERVICE_MANAGER)){
             microServiceManager=null;
+        }else if (e.equals(Constants.BREAKPOINT_MANAGER)){
+            breakPointManager=null;
+        }else if (e.equals(Constants.CONFIGURATION_MANAGER)){
+            namedConfigManager=null;
         }
     }
 
@@ -97,6 +103,45 @@ public class InstanceHandler {
         return microServiceManager.getClientProxyInstance();
     }
 
+    public synchronized IDebugger getBreakpointManager() throws RemoteException {
+        if (breakPointManager == null) {
+            //original resource == server side stub
+            breakPointManager = new BreakPointManager(rmiManager, this);
+            //server side proxy instance to original resource.
+            RemoteServerProxy serverSideProxy = new RemoteServerProxy(breakPointManager,rmiManager.getRmiPort(),rmiManager.getCsf(),rmiManager.getSsf());
+
+            //client proxy instance
+            IDebugger returnObject = (IDebugger) Proxy.newProxyInstance
+                    (
+                            this.getClass().getClassLoader(),
+                            new Class[]{IDebugger.class, Serializable.class},
+                            //client stub & interceptor instance
+                            new RemoteClientInterceptor(serverSideProxy)
+                    );
+            breakPointManager.setClientProxyInstance(returnObject);
+        }
+        return breakPointManager.getClientProxyInstance();
+    }
+
+    public synchronized IConfigurationManager getConfigurationManager() throws RemoteException {
+        if (namedConfigManager == null) {
+            //original resource == server side stub
+            namedConfigManager = new ConfigurationManager(rmiManager, this);
+            //server side proxy instance to original resource.
+            RemoteServerProxy serverSideProxy = new RemoteServerProxy(namedConfigManager,rmiManager.getRmiPort(),rmiManager.getCsf(),rmiManager.getSsf());
+
+            //client proxy instance
+            IConfigurationManager returnObject = (IConfigurationManager) Proxy.newProxyInstance
+                    (
+                            this.getClass().getClassLoader(),
+                            new Class[]{IConfigurationManager.class, Serializable.class},
+                            //client stub & interceptor instance
+                            new RemoteClientInterceptor(serverSideProxy)
+                    );
+            namedConfigManager.setClientProxyInstance(returnObject);
+        }
+        return namedConfigManager.getClientProxyInstance();
+    }
 
     public void removeHandler() {
         applicationManager=null;

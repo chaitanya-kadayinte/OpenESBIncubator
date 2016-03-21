@@ -80,6 +80,11 @@
             <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fiorano.openesb</groupId>
+            <artifactId>namedconfiguration</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
