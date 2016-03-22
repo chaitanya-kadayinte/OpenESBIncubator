@@ -30,7 +30,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>security</artifactId>
     <packaging>bundle</packaging>
 

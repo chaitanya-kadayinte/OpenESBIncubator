@@ -27,7 +27,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>fiorano-feature</artifactId>
     <packaging>feature</packaging>
 

@@ -28,7 +28,6 @@
         <version>0.1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>activemq-transport</artifactId>
     <packaging>bundle</packaging>
 

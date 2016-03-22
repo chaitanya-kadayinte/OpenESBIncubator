@@ -31,7 +31,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>route-api</artifactId>
     <packaging>bundle</packaging>
     <name>route-api</name>
