@@ -63,6 +63,16 @@
             <artifactId>spring-osgi-core</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.modules</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.config</artifactId>
+            <version>4.0.4</version>
+        </dependency>
     </dependencies>
 
     <build>
