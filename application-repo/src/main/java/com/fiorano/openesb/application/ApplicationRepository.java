@@ -304,4 +304,59 @@ public class ApplicationRepository {
         }
         return versionNumbers;
     }
+
+    public Application getApplicationPropertySheet(String appGUID, float versionNumber, String label) throws FioranoException {
+        return getApplicationPropertySheet(appGUID, versionNumber, label, false);
+    }
+
+    public Application getApplicationPropertySheet(String appGUID, float versionNumber, String label, boolean checkForNamedConfigurations) throws FioranoException {
+        Application application = null;
+
+        try
+        {
+
+            File file = getAppDir(appGUID.toUpperCase(), versionNumber);
+
+
+
+            //  IMPORTANT NOTE::
+            //  If the file does NOT exist then I need to return NULL insteadof
+            //  throwing the exception. This method has been used extensively based
+            //  on the assumption that the method will return null if the application
+            //  is NOT found. So changing it to throw exception will wreck HAVOC.
+            //  Please do NOT change it again.
+            if (!file.exists())
+                return null;
+
+
+            if (file.getName().endsWith(ApplicationRepositoryConstants.XML_EXTN)) {
+                application = ApplicationParser.readApplication(file);
+            }  else {
+                if(label == null)
+                    application = ApplicationParser.readApplication(file, true, checkForNamedConfigurations);
+                else
+                    application = ApplicationParser.readApplication(file, label, true, checkForNamedConfigurations);
+            }
+
+
+            // Set the APS field values.
+            //application.setFieldValues(new FileInputStream(file.getPath()));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw e;
+            //LogHelper.getErrMessage(ILogModule.APPLICATION, 8, appGUID, "" + versionNumber, e.toString()), e);
+        }
+        // Check if the GUID specified inside the property sheet and the GUID obtained is the same.
+        // It sometimes might happen that these two are not equal if there is exceptions raised in other methods like rename application.
+        if (application != null)
+        {
+            //LogHelper.getErrMessage(ILogModule.APPLICATION, 9, appGUID, application.getGUID()));
+            if (!application.getGUID().equalsIgnoreCase(appGUID))
+                throw new FioranoException("Mismatch in Application guid.");
+        }
+
+        return application;
+    }
 }

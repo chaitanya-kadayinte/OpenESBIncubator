@@ -24,6 +24,7 @@ import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
+import com.fiorano.openesb.utils.exception.FioranoException;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -134,8 +135,15 @@ public class RestServiceImpl implements ApplicationsService {
     public Response startMicroService(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion, @PathParam("microServiceName") String microServiceName) {
         ApplicationController controller = getController();
         Response response = new Response();
-        response.setStatus(controller.startMicroService(applicationName, applicationVersion, microServiceName, null));
-        return response;
+        try {
+            response.setStatus(controller.startMicroService(applicationName, applicationVersion, microServiceName, null));
+            return response;
+        } catch (FioranoException e) {
+            response.setMessage(e.getMessage());
+            response.setStatus(false);
+            return response;
+        }
+
     }
 
     @PUT
@@ -143,8 +151,14 @@ public class RestServiceImpl implements ApplicationsService {
     public Response stopMicroService(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion, @PathParam("microServiceName") String microServiceName) {
         ApplicationController controller = getController();
         Response response = new Response();
-        response.setStatus(controller.stopMicroService(applicationName, applicationVersion, microServiceName, null));
-        return response;
+        try{
+            response.setStatus(controller.stopMicroService(applicationName, applicationVersion, microServiceName, null));
+            return response;
+        } catch (FioranoException e) {
+            response.setMessage(e.getMessage());
+            response.setStatus(false);
+            return response;
+        }
     }
 
     @PUT
@@ -152,7 +166,13 @@ public class RestServiceImpl implements ApplicationsService {
     public Response synchronizeApplication(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion) {
         ApplicationController controller = getController();
         Response response = new Response();
-        response.setStatus(controller.synchronizeApplication(applicationName, applicationVersion, null));
-        return response;
+        try{
+            response.setStatus(controller.synchronizeApplication(applicationName, applicationVersion, null));
+            return response;
+        } catch (FioranoException e) {
+            response.setMessage(e.getMessage());
+            response.setStatus(false);
+            return response;
+        }
     }
 }

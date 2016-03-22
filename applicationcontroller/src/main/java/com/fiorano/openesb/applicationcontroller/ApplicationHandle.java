@@ -185,4 +185,35 @@ public class ApplicationHandle {
     public void setApplication(Application application) {
         this.application = application;
     }
+
+    public void stopAllMicroServices() throws FioranoException{
+        for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
+            try {
+                handle.stop();
+            } catch (Exception e) {
+                throw new FioranoException(e);
+            }
+        }
+    }
+
+    public void startMicroService(String microServiceName) throws FioranoException {
+        ServiceInstance instance = application.getServiceInstance(microServiceName);
+        MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
+        try {
+            microServiceHandleList.put(microServiceName, service.launch(mslc,instance.getConfiguration()));
+        } catch (Exception e) {
+            throw new FioranoException(e);
+        }
+    }
+
+    public void stopMicroService(String microServiceName) throws FioranoException {
+        if(!microServiceHandleList.containsKey(microServiceName)){
+            throw new FioranoException("micro Service not running");
+        }
+        try {
+            microServiceHandleList.get(microServiceName).stop();
+        } catch (Exception e) {
+            throw new FioranoException(e);
+        }
+    }
 }
