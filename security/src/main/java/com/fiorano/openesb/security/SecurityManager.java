@@ -32,7 +32,7 @@ public class SecurityManager {
     public String login(final String userName, final String password) throws LoginException {
         List usersList = backingEngine.listUsers();
         LoginContext loginContext = new LoginContext("karaf", new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+            public void handle(Callback[] callbacks) {
                 NameCallback nameCallback = (NameCallback) callbacks[0];
                 PasswordCallback passwordCallback = (PasswordCallback) callbacks[1];
                 nameCallback.setName(userName);

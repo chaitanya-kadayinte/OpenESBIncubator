@@ -3,7 +3,11 @@ package com.fiorano.openesb.rmiconnector.impl;
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.DmiObject;
 import com.fiorano.openesb.application.application.*;
+import com.fiorano.openesb.application.aps.ApplicationStateDetails;
+import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
+import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
+import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.utils.Constants;
 import com.fiorano.openesb.utils.FileUtil;
@@ -629,7 +633,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public void restartApplication(String appGUID, float appVersion) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.stopApplication(appGUID, String.valueOf(appVersion), handleId);
+            applicationController.launchApplication(appGUID, String.valueOf(appVersion), handleId);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
@@ -643,32 +652,56 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public Map<String, Boolean> getApplicationChainForShutdown(String appGUID, float version) throws RemoteException, ServiceException {
-        return null;
+        try {
+            return applicationController.getApplicationChainForShutdown(appGUID, version, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public Map<String, Boolean> getApplicationChainForLaunch(String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return null;
+        try {
+            return applicationController.getApplicationChainForLaunch(appGUID, appVersion, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void startServiceInstance(String appGUID, float appVersion, String serviceInstanceName) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.startMicroService(appGUID, String.valueOf(appVersion), serviceInstanceName, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void stopServiceInstance(String appGUID, float appVersion, String serviceInstanceName) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.stopMicroService(appGUID, String.valueOf(appVersion), serviceInstanceName, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void stopAllServiceInstances(String appGUID, float appVersion) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.stopAllMicroServices(appGUID, String.valueOf(appVersion), handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void deleteServiceInstance(String appGUID, float appVersion, String serviceInstanceName) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.deleteMicroService(appGUID, appVersion, serviceInstanceName, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
@@ -882,7 +915,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public void addApplicationListener(IApplicationManagerListener listener, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        dapiEventManager.registerApplicationEventListener(listener,appGUID, appVersion, handleId);
+        dapiEventManager.registerApplicationEventListener(listener, appGUID, appVersion, handleId);
     }
 
     @Override
@@ -915,17 +948,29 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public void synchronizeApplication(String appGUID, float version) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.synchronizeApplication(appGUID, String.valueOf(version), handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void startAllServices(String appGUID, float version) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.startAllMicroServices(appGUID, String.valueOf(version), handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void checkResourcesAndConnectivity(String appGUID, float version) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.checkResourceAndConnectivity(appGUID, version, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
@@ -950,7 +995,61 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public ApplicationStateData getApplicationStateDetails(String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return null;
+        ApplicationStateData eventProcessData = new ApplicationStateData();
+        try {
+            ApplicationStateDetails asd = applicationController.getCurrentStateOfApplication(appGUID, appVersion, handleId);
+            //Add EventProcess ID
+            eventProcessData.setEventProcessID(asd.getAppGUID());
+            //Add Debug Routes If Any..
+            Iterator itr = asd.getDebugRoutes();
+            while (itr.hasNext()) {
+                eventProcessData.addDebugRoute((String) itr.next());
+            }
+            //Set Launch Time
+            eventProcessData.setLaunchTime(asd.getLaunchTime());
+            //Set Kill Time
+            eventProcessData.setKillTime(asd.getKillTime());
+            //Set Application Label
+            eventProcessData.setEventProcessLabel(asd.getApplicationLabel());
+            //For Each Service add the Service State Details and Service Exception traces if any.
+            Enumeration enums = asd.getAllServiceNames();
+            if (enums != null) {
+                while (enums.hasMoreElements()) {
+                    String instName = (String) enums.nextElement();
+                    ServiceStateData servicedata = new ServiceStateData();
+                    //Add Service Instance Name
+                    servicedata.setServiceInstanceName(instName);
+                    ServiceInstanceStateDetails status = asd.getServiceStatus(instName);
+                    //Set Service GUID
+                    servicedata.setServiceGUID(status.getServiceGUID());
+                    //Set GraceFul Kill Variable
+                    servicedata.setGracefulKill(status.isGracefulKill());
+                    //Set Kill Time
+                    servicedata.setKillTime(status.getKillTime());
+                    //Set Launch Time
+                    servicedata.setLaunchTime(status.getLaunchTime());
+                    //Set Running Version
+                    servicedata.setRunningVersion(status.getRunningVersion());
+                    //Set Node Name for Service
+                    servicedata.setServiceNodeName(status.getServiceNodeName());
+                    //Set the Current Status of Service
+                    servicedata.setStatusString(status.getStatusString());
+                    //Set Unique Running Instance ID
+                    servicedata.setUniqueRunningInstID(status.getUniqueRunningInstID());
+                    eventProcessData.addServiceStatus(instName, servicedata);
+                }
+
+                //Add Service Exception traces if any.
+                Enumeration traceEnums = asd.getAllServiceWithExceptions();
+                while (traceEnums.hasMoreElements()) {
+                    String instName = (String) traceEnums.nextElement();
+                    eventProcessData.addServiceExceptionTrace(instName, asd.getServiceExceptionTrace(instName));
+                }
+            }
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return eventProcessData;
     }
 
     @Override
@@ -982,7 +1081,18 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public ApplicationMetadata getApplication(String appGUID, float version) throws RemoteException, ServiceException {
-        return null;
+        ApplicationMetadata epRefernce;
+            ApplicationReference appreference = applicationController.getHeaderOfSavedApplication(appGUID,version,handleId);
+            if(null == appreference){
+                return null;
+            }
+            epRefernce = new ApplicationMetadata(appreference.getGUID(), appreference.getVersion());
+            epRefernce.setCategories(appreference.getCategories());
+            epRefernce.setDisplayName(appreference.getDisplayName());
+            epRefernce.setSchemaVersion(appreference.getSchemaVersion());
+            epRefernce.setShortDescription(appreference.getShortDescription());
+            epRefernce.setLongDescription(appreference.getLongDescription());
+        return epRefernce;
     }
 
     @Override
@@ -1060,34 +1170,249 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         return null;
     }
 
-    @Override
     public Set<String> getReferringRunningApplications(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException {
-        return null;
+        try {
+            return applicationController.getReferringRunningApplications(appGUID, appVersion, servInstName);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
-    @Override
-    public List<String> getAllReferringApplications(String appGUID, float appVersion, String serviceInstName) throws RemoteException, ServiceException {
-        return null;
+    public List<String> getAllReferringApplications(String appGUID,float appVersion,String serviceInstName) throws RemoteException, ServiceException {
+        try {
+            List<String> temp = new ArrayList<String>();
+            Set<String> allReferredApps = applicationController.getAllReferringApplications(appGUID,appVersion,serviceInstName);
+            if( allReferredApps !=null && allReferredApps.size() >0 )
+                temp .addAll(allReferredApps );
+            return temp;
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
-    @Override
-    public boolean isApplicationReferred(String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return false;
+   /* public Hashtable<String, ApplicationData> getAppInfo() throws RemoteException, ServiceException {
+        try {
+            return applicationController.getAppInfo();
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
-    @Override
-    public HashMap getRunningCompUsingNamedConfigs(HashMap<Integer, HashMap<String, String>> configsToChange) throws RemoteException, ServiceException {
-        return null;
+    public ApplicationData getAppInfo(String appGuid, float appVersion) throws RemoteException, ServiceException {
+        try {
+            return applicationController.getAppInfo(appGuid, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }*/
+
+    /**
+     * @param appGUID
+     * @param appVersion
+     * @return true is application is being referred by some other application i.e. if some other application is to have a remote instance of this application's service
+     * @throws RemoteException
+     * @throws ServiceException
+     */
+    public boolean isApplicationReferred(String appGUID, float appVersion)throws RemoteException, ServiceException {
+        try {
+            return applicationController.isApplicationReferred(appGUID, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
-    @Override
-    public String changeNamedConfigurations(HashMap<Integer, HashMap<String, String>> configsToChange) throws RemoteException, ServiceException {
-        return null;
+    private String getRepoCategory(String namedCategory) throws FioranoException{
+        String repoCategory;
+        switch (namedCategory){
+            case Constants.CONNECTION_FACTORY_CAT:
+                repoCategory=Constants.CONNECTION_FACTORY_REPO;
+                break;
+            case Constants.DESTINATION_CAT:
+                repoCategory=Constants.DESTINATION_REPO;
+                break;
+            case Constants.MSG_FILTERS_CAT:
+                repoCategory=Constants.MSG_FILTERS_REPO;
+                break;
+            case Constants.PORT_CAT:
+                repoCategory=Constants.PORT_REPO;
+                break;
+            case Constants.ROUTE_CAT:
+                repoCategory=Constants.ROUTE_REPO;
+                break;
+            case Constants.SELECTOR_CAT:
+                repoCategory=Constants.SELECTOR_REPO;
+                break;
+            case Constants.RUN_ARGS_CAT:
+                repoCategory=Constants.RUN_ARGS_REPO;
+                break;
+            case Constants.SERVICE_CAT:
+                repoCategory=Constants.SERVICE_REPO;
+                break;
+            case Constants.TRANS_CAT:
+                repoCategory=Constants.TRANS_REPO;
+                break;
+            case Constants.WRKFLW_CAT:
+                repoCategory=Constants.WRKFLW_REPO;
+                break;
+            case Constants.RESOURCE_CAT:
+                repoCategory=Constants.RESOURCE_REPO;
+                break;
+            default: throw new FioranoException("Invalid category specified");
+        }
+        return repoCategory;
     }
 
-    @Override
-    public String synchronizeAllRunningEP() throws RemoteException, ServiceException {
-        return null;
+    public HashMap getRunningCompUsingNamedConfigs(HashMap<Integer,HashMap<String,String>> configsToChange) throws ServiceException {
+        try {
+            validateHandleID(handleId,"Get List of Running Components using the named configuration");
+            HashMap<Integer,String> namedConfigRef = new HashMap<>();
+            int i=0;
+            Enumeration<ApplicationReference> apprefs = applicationController.getHeadersOfRunningApplications(handleId);
+            while (apprefs.hasMoreElements())
+            {
+                ApplicationReference currentApp = apprefs.nextElement();
+                Application current = applicationRepository.getApplicationPropertySheet(currentApp.getGUID(), currentApp.getVersion(), handleId, false);
+                List<ServiceInstance> services = current.getServiceInstances();
+                for(ServiceInstance service : services){
+                    Boolean compUsingNamedConfigs=false;
+                    ArrayList<NamedConfigurationProperty> listofConfigs = service.getNamedConfigurations();
+                    for(NamedConfigurationProperty config:listofConfigs){
+                        String configType;
+                        if(config.getConfigurationType().equalsIgnoreCase("component")){
+                            configType="service";
+                        }
+                        else configType=config.getConfigurationType();
+
+                        for (int num : configsToChange.keySet()){
+                            HashMap<String,String> configDetails = configsToChange.get(num);
+                            if(configDetails.get("category").equalsIgnoreCase(configType) && configDetails.get("target").equalsIgnoreCase(config.getConfigurationName()) && current.getLabel().equalsIgnoreCase(configDetails.get("environment"))){
+                                if(configType.equalsIgnoreCase("service")){
+                                    if(service.getGUID().equalsIgnoreCase(configDetails.get("compGUID")) && service.getVersion()==Float.valueOf(configDetails.get("compVersion"))){
+                                        compUsingNamedConfigs=true;
+                                    }
+                                }else{
+                                    compUsingNamedConfigs=true;
+                                }
+                            }
+                        }
+                    }
+                    if(compUsingNamedConfigs){
+                        namedConfigRef.put(i,current.getGUID()+":"+current.getVersion()+":"+service.getName());
+                        i++;
+                    }
+                }
+            }
+            return namedConfigRef;
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public String changeNamedConfigurations(HashMap<Integer,HashMap<String,String>> configsToChange) throws ServiceException{
+        int failure=0;
+        try {
+            String configurationsRepositoryPath = System.getProperty("ESB_USER_DIR")+File.separator+"repository"+File.separator+"configurations";
+            if(Boolean.valueOf(System.getProperty("HA_ENABLED"))){
+                if(System.getProperty("PROFILE_NAME").toLowerCase().contains("secondary")){
+                    configurationsRepositoryPath = System.getProperty("ESB_USER_DIR")+File.separator+"repository_backup"+File.separator+"configurations";
+                }
+            }
+            File configDir = new File(configurationsRepositoryPath);
+            String[] categoryList = configDir.list();
+            ArrayList<String> categoryDir = new ArrayList<>();
+            if(!configDir.isDirectory() || categoryList==null || categoryList.length==0) {
+                System.out.println("Named Configurations repository is empty. Please check configuration details");
+                throw new ServiceException("Named Configurations repository is empty. Please check configuration details");
+            }
+            for(String value:categoryList){
+                categoryDir.add(value);
+            }
+            for(int i=0;i<configsToChange.size();i++){
+                HashMap<String,String> configDetails = configsToChange.get(i);
+                String namedCategory = configDetails.get("category").toLowerCase();
+                String namedEnvironment=configDetails.get("environment");
+                String source=configDetails.get("source");
+                String target=configDetails.get("target");
+                String compGUID=configDetails.get("compGUID");
+                String repoCategory="";
+                String compVersion=configDetails.get("compVersion");
+                String portType=configDetails.get("portType");
+                try{
+                    repoCategory=getRepoCategory(namedCategory);
+                }catch (Exception e){
+                    System.out.println("Named Configurations category " + namedCategory + " does not exist in the repository.");
+                    failure++;
+                    continue;
+                }
+                if(!categoryDir.contains(repoCategory)){
+                    System.out.println("Named Configurations category " + namedCategory + " does not exist in the repository. Please check configuration details");
+                    failure++;
+                    continue;
+                }
+                File sourceFile= NamedConfigurationUtil.getConfigurationFile(configurationsRepositoryPath, repoCategory, namedEnvironment, source);
+                File targetFile= NamedConfigurationUtil.getConfigurationFile(configurationsRepositoryPath, repoCategory, namedEnvironment, target);
+                if(namedCategory.equalsIgnoreCase("service"))
+                {
+                    sourceFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationsRepositoryPath,compGUID,compVersion,namedEnvironment,source);
+                    targetFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationsRepositoryPath,compGUID,compVersion,namedEnvironment,target);
+                }
+                if(namedCategory.equalsIgnoreCase("port"))
+                {
+                    sourceFile = NamedConfigurationUtil.getPortConfigurationFile(configurationsRepositoryPath,portType,namedEnvironment,source);
+                    targetFile = NamedConfigurationUtil.getPortConfigurationFile(configurationsRepositoryPath,portType,namedEnvironment,target);
+                }
+                if(!sourceFile.exists()) {
+                    System.out.println("Source file for configuration type " + namedCategory + ", environment " + namedEnvironment + " with name " + source + " does not exist in the repository, please check configurations details.");
+                    failure++;
+                    continue;
+                }
+                if(!targetFile.exists()) {
+                    System.out.println("Target file for configuration type " + namedCategory + ", environment " + namedEnvironment + " with name " + target + " does not exist in the repository, please check configurations details.");
+                    failure++;
+                    continue;
+                }
+               // rmiLogger.info(Bundle.class, Bundle.START_CHANGE_NAMED_CONFIG,source,target,namedCategory,namedEnvironment);
+                try{
+                    if(!repoCategory.equalsIgnoreCase("transformations"))
+                        FileUtil.copyFileUsingIO(sourceFile,targetFile);
+                    else {
+                        FileUtil.deleteDir(targetFile);
+                        FileUtil.copyDirectory(sourceFile,targetFile);
+                    }
+                    //rmiLogger.info(Bundle.class, Bundle.CHANGE_NAMED_CONFIG_SUCCESSFUL,source,target,namedCategory,namedEnvironment);
+                }catch (Exception e){
+                    //rmiLogger.error(Bundle.class, Bundle.ERROR_CHANGE_NAMED_CONFIG+" source: "+source+" target: "+target+" category: "+namedCategory+" environment: "+namedEnvironment);
+                    failure++;
+                }
+            }
+            return String.valueOf(failure);
+        } catch (Exception e) {
+            //rmiLogger.error(Bundle.class, Bundle.ERROR_CHANGE_NAMED_CONFIG,e);
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public String synchronizeAllRunningEP() throws ServiceException{
+        try{
+            int failure =0;
+            validateHandleID(handleId,"Synchronize All Running Event Processes");
+            Enumeration<ApplicationReference> apprefs = applicationController.getHeadersOfRunningApplications(handleId);
+            ApplicationReference currentApp=null;
+            while (apprefs.hasMoreElements())
+            {   try{
+                currentApp = apprefs.nextElement();
+                synchronizeApplication(currentApp.getGUID(),currentApp.getVersion());
+                Thread.sleep(2000);
+            }catch (Exception e){
+              //  rmiLogger.error(Bundle.class, Bundle.ERROR_SYNCHRONIZE_EVENTPROCESS,currentApp.getGUID(),currentApp.getVersion(),e);
+                failure++;
+            }
+            }
+            return String.valueOf(failure);
+        } catch (Exception e) {
+           // rmiLogger.error(Bundle.class, Bundle.ERROR_SYNC_ALL_RUN_EP,e);
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
