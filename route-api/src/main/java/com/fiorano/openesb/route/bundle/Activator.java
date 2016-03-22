@@ -29,14 +29,6 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     public void start(BundleContext context) throws Exception {
-//        TransportService service = context.getService(context.getServiceReference(TransportService.class));
-//        JMSPortConfiguration portConfiguration = new JMSPortConfiguration();
-//        portConfiguration.setName("TestingRoute");
-//        portConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
-//        Port port = service.enablePort(portConfiguration);
-//        ProducerConfiguration producerConfiguration = new JMSProducerConfiguration();
-//        Producer producer = service.createProducer(port, producerConfiguration);
-//        producer.send(service.createMessage());
         System.out.println("Starting the bundle -" + context.getBundle().getSymbolicName());
     }
 

@@ -31,7 +31,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>route-api</artifactId>
     <packaging>bundle</packaging>
     <name>route-api</name>
@@ -79,10 +78,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>1.0-SNAPSHOT</Bundle-Version>
+                        <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.fiorano.openesb.route.bundle.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb.route*;version=1.0-SNAPSHOT
+                            com.fiorano.openesb.route*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *

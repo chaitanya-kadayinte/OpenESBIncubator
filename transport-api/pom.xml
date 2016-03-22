@@ -52,7 +52,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>1.0.0</Bundle-Version>
+                        <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.fiorano.openesb.transport.bundle.Activator</Bundle-Activator>
                         <Export-Package>
                             com.fiorano.openesb.transport*;version=${project.version}
