@@ -39,9 +39,11 @@ public class ConfigurationLookupHelper {
             //todo log e
         } finally {
             try {
-                inputStream.close();
+                if (inputStream != null) {
+                    inputStream.close();
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                //
             }
         }
     }
