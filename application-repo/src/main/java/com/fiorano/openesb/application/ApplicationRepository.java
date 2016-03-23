@@ -165,7 +165,7 @@ public class ApplicationRepository {
 
                 eventProcessXMLFile = new File(tempAppFolder.getAbsolutePath() + File.separator + ApplicationParser.EVENT_PROCESS_XML);
                 application2.toXMLString(new FileOutputStream(eventProcessXMLFile), false);
-                FileUtil.copyDirectory(applicationFolder, tempAppFolder);
+                FileUtil.copyDirectory(tempAppFolder, applicationFolder);
             } finally {
 
             }

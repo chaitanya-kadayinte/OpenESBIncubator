@@ -6,16 +6,16 @@ import org.apache.karaf.jaas.modules.BackingEngineFactory;
 import org.apache.karaf.jaas.modules.properties.PropertiesBackingEngineFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.apache.karaf.jaas.boot.principal.UserPrincipal;
+import org.apache.karaf.jaas.boot.principal.GroupPrincipal;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 
 import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class SecurityManager {
 
@@ -65,5 +65,71 @@ public class SecurityManager {
            return connectionHandleMap.get(handleID).getUserName();
         }
         return null;
+    }
+
+    public List getUsers(){
+       List<UserPrincipal> list =  backingEngine.listUsers();
+        List<String> usersList = new ArrayList<String>();
+        for(UserPrincipal userPrincipal: list){
+            usersList.add(userPrincipal.getName());
+        }
+        return usersList;
+    }
+
+    public Map getGroups(){
+        Map<GroupPrincipal, String> map =  backingEngine.listGroups();
+        Map<String, String> groupMap = new HashMap<String, String>();
+        for(GroupPrincipal groupPrincipal: map.keySet()){
+            groupMap.put(groupPrincipal.getName(), map.get(groupPrincipal));
+        }
+        return groupMap;
+    }
+
+    public List getRoles(Principal p){
+        List<RolePrincipal> list =  backingEngine.listRoles(p);
+        List<String> rolesList = new ArrayList<String>();
+        for(RolePrincipal userPrincipal: list){
+            rolesList.add(userPrincipal.getName());
+        }
+        return rolesList;
+    }
+
+    public List getGroups(String userName){
+        UserPrincipal p = new UserPrincipal(userName);
+        List<GroupPrincipal> list =  backingEngine.listGroups(p);
+        List<String> groupsList = new ArrayList<String>();
+        for(GroupPrincipal groupPrincipal: list){
+            groupsList.add(groupPrincipal.getName());
+        }
+        return groupsList;
+    }
+
+    public void addUser(String userName, String password){
+        backingEngine.addUser(userName, password);
+    }
+
+    public void addGroup(String userName, String group){
+        backingEngine.addGroup(userName, group);
+    }
+
+    public void deleteGroup(String username, String group) {
+        backingEngine.deleteGroup(username, group);
+    }
+
+    public void deleteRole(String username, String role) {
+        backingEngine.deleteRole(username, role);
+    }
+
+    public void deleteUser(String username) {
+        backingEngine.deleteUser(username);
+    }
+
+    public void deleteGroupRole(String group, String role) {
+        backingEngine.deleteGroupRole(group, role);
+    }
+
+    public void changePassword(String username, String password){
+        backingEngine.deleteUser(username);
+        backingEngine.addUser(username, password);
     }
 }
