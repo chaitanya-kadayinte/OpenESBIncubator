@@ -5,6 +5,7 @@ package com.fiorano.openesb.utils;
  */
 public class Constants {
 
+    public static final int INITIAL_CAPACITY = 5;
     public final static String SYSTEM_ID_PREFIX = "ESBX__SYSTEM";
     public final static String NAME_DELIMITER = "__";
     // The size of the chunk of data that is to be transferred from the RTL

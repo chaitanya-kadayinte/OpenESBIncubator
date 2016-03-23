@@ -50,11 +50,20 @@ public class ApplicationController {
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
         securityManager = context.getService(context.getServiceReference(SecurityManager.class));
+        COMPONENTS_REFERRING_APPS = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
+        REFERRING_APPS_LIST = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
+        DEPEND_APP_LIST = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
         String [] appIds = applicationRepository.getApplicationIds();
         for(String appid:appIds){
            float[] appVersions = applicationRepository.getAppVersions(appid);
             for(float ver : appVersions){
-               savedApplicationMap.put(appid + "__" + ver, applicationRepository.readApplication(appid, String.valueOf(ver)));
+                Application application = applicationRepository.readApplication(appid, String.valueOf(ver));
+               savedApplicationMap.put(appid + "__" + ver, application);
+                if (cyclicDependencyExists(application)) {//for app that are already in the repo before fix 25838
+                   // logger.error(Bundle.class, Bundle.ERROR_CYCLIC_DEPENDENCY_REFERRED_APPS, application.getGUID(), String.valueOf(application.getVersion()));
+                } else {
+                    updateChainLaunchDS(application);
+                }
             }
         }
     }
@@ -289,6 +298,7 @@ public class ApplicationController {
     }
 
     public boolean stopApplication(String appGuid, String version, String handleID) throws Exception {
+        System.out.println("Stopping application: "+appGuid+":"+version);
         Map<String, Boolean> orderedListOfApplications = getApplicationChainForShutdown(appGuid, Float.parseFloat(version), handleID);
         orderedListOfApplications.put( appGuid +  Constants.NAME_DELIMITER + version, isApplicationRunning(appGuid, Float.parseFloat(version), handleID));
         for (String app_version: orderedListOfApplications.keySet()) {
@@ -302,6 +312,7 @@ public class ApplicationController {
                 applicationHandleMap.remove(app_version);
             }
         }
+        System.out.println("Stopped application: "+appGuid+":"+version);
         return true;
     }
 
