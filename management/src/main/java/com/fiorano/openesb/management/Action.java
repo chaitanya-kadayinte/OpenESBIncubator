@@ -10,24 +10,32 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 05-03-2016.
+ * Created by chaitanya on 23-03-2016.
  * <p>
- * Created by chaitanya on 05-03-2016.
+ * Created by chaitanya on 23-03-2016.
+ * <p>
+ * Created by chaitanya on 23-03-2016.
  */
 
 /**
- * Created by chaitanya on 05-03-2016.
+ * Created by chaitanya on 23-03-2016.
  */
 package com.fiorano.openesb.management;
 
+public class Action {
 
-public interface ApplicationsService {
+
+    public Action() {
+    }
+
+    private String action;
 
 
-    Response getApplications();
+    public String getAction() {
+        return action;
+    }
 
-    Response performApplicationAction(String applicationName , String applicationVersion, Action action);
-
-    Response performMicroServiceAction(String appGuid, String version, String microServiceName, Action action);
-
+    public void setAction(String action) {
+        this.action = action;
+    }
 }
