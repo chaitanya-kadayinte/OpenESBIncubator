@@ -22,6 +22,7 @@ import java.security.acl.Acl;
 import java.security.acl.AclEntry;
 import java.security.acl.Group;
 import java.security.acl.Permission;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -46,7 +47,7 @@ public interface IUserSecurityManager extends Remote {
      * @see java.security.acl.Group
      * @since Tifosi2.0
      */
-    public boolean addMembertoGroup(String groupName, String memberName, String handleID) throws RemoteException, ServiceException;
+    public void addMembertoGroup(String groupName, String memberName, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method removes particular member to group and update database argument.
@@ -62,7 +63,7 @@ public interface IUserSecurityManager extends Remote {
      * @see java.security.acl.Group
      * @since Tifosi2.0
      */
-    public boolean removeMemberfromGroup(String groupName, String memberName, String handleID) throws RemoteException, ServiceException;
+    public void removeMemberfromGroup(String groupName, String memberName, String handleID) throws RemoteException, ServiceException;
 
     /**
      * This method returns the group identified by the <code>grpName</code> argument.
@@ -88,7 +89,7 @@ public interface IUserSecurityManager extends Remote {
      * @see java.security.acl.Group
      * @since Tifosi2.0
      */
-    public Vector getGroupNames() throws RemoteException, ServiceException;
+    public Map<String, String> getGroupNames() throws RemoteException, ServiceException;
 
     /**
         * This method returns an List of all the member names of the given group in this particular realm.
@@ -128,7 +129,7 @@ public interface IUserSecurityManager extends Remote {
      * @see java.security.Principal
      * @since Tifosi2.0
      */
-    public Vector getUserNames() throws RemoteException, ServiceException;
+    public List getUserNames() throws RemoteException, ServiceException;
 
     /**
      * This method returns an List of the names of groups
@@ -367,7 +368,7 @@ public interface IUserSecurityManager extends Remote {
      * @throws ServiceException ServiceException
      * @since Tifosi2.0
      */
-    public boolean authenticateUser(String userName, String password) throws RemoteException, ServiceException;
+    public void authenticateUser(String userName, String password) throws RemoteException, ServiceException;
 
     /**
      * This method checks whether the user with userName has permission to clear user events.
@@ -396,7 +397,7 @@ public interface IUserSecurityManager extends Remote {
      *      String)
      * @since Tifosi2.0
      */
-    public boolean changePassword(String userName, String oldPassword, String newPassword) throws RemoteException, ServiceException;
+    public void changePassword(String userName, String oldPassword, String newPassword) throws RemoteException, ServiceException;
 
     /**
      * This method creates a new group with the name specified by the <code>name</code>
@@ -445,7 +446,7 @@ public interface IUserSecurityManager extends Remote {
      * @see java.security.Principal
      * @since Tifosi2.0
      */
-    public Principal createUser(String userName, String passwd) throws RemoteException, ServiceException;
+    public void createUser(String userName, String passwd) throws RemoteException, ServiceException;
 
     /**
      * This method deletes a user identified by the <code>name<code> argument,
@@ -463,7 +464,7 @@ public interface IUserSecurityManager extends Remote {
      *      String)
      * @since Tifosi2.0
      */
-    public boolean deleteUser(String name) throws RemoteException, ServiceException;
+    public void deleteUser(String name) throws RemoteException, ServiceException;
 
     /**
      * This method creates a new ACL with the name specified by the <code>name</code>
