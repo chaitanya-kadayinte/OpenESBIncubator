@@ -1271,7 +1271,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             while (apprefs.hasMoreElements())
             {
                 ApplicationReference currentApp = apprefs.nextElement();
-                Application current = applicationRepository.getApplicationPropertySheet(currentApp.getGUID(), currentApp.getVersion(), handleId, false);
+                Application current = applicationRepository.readApplication(currentApp.getGUID(), String.valueOf(currentApp.getVersion()));
                 List<ServiceInstance> services = current.getServiceInstances();
                 for(ServiceInstance service : services){
                     Boolean compUsingNamedConfigs=false;

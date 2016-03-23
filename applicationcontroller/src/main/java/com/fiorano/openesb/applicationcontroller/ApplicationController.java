@@ -269,21 +269,38 @@ public class ApplicationController {
 
     public boolean launchApplication(String appGuid, String version, String handleID) throws Exception {
         System.out.println("Launching application : " + appGuid + ":" + version);
-        Application application = applicationRepository.readApplication(appGuid, version);
-        ApplicationHandle appHandle = new ApplicationHandle(application, microServiceLauncher, routeService,transport);
-        appHandle.createRoutes();
 
-        appHandle.launchComponents();
-        applicationHandleMap.put(getKey(appGuid,version),appHandle);
-        System.out.println("Launched application: "+appGuid+":"+version);
+        Map<String, Boolean> orderedListOfApplications = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
+        for (String app_version: orderedListOfApplications.keySet()) {
+            String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
+            String currentGUID = current_AppGUIDAndVersion[0];
+            Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
+            Application currentApplication = applicationRepository.readApplication(currentGUID, String.valueOf(currentVersion));
+            if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
+                    ApplicationHandle appHandle = new ApplicationHandle(currentApplication, microServiceLauncher, routeService,transport);
+                    appHandle.createRoutes();
+
+                    appHandle.launchComponents();
+                    applicationHandleMap.put(getKey(appGuid,version),appHandle);
+                    System.out.println("Launched application: "+appGuid+":"+version);
+            }
+        }
         return true;
     }
 
     public boolean stopApplication(String appGuid, String version, String handleID) throws Exception {
-
-        ApplicationHandle applicationHandle = applicationHandleMap.get(getKey(appGuid, version));
-        if(applicationHandle!=null){
-            applicationHandle.stopApplication();
+        Map<String, Boolean> orderedListOfApplications = getApplicationChainForShutdown(appGuid, Float.parseFloat(version), handleID);
+        orderedListOfApplications.put( appGuid +  Constants.NAME_DELIMITER + version, isApplicationRunning(appGuid, Float.parseFloat(version), handleID));
+        for (String app_version: orderedListOfApplications.keySet()) {
+            String[] appGUIDAndVersion = returnAppGUIDAndVersion(app_version);
+            String currentGUID = appGUIDAndVersion[0];
+            Float currentVersion = Float.valueOf(appGUIDAndVersion[1]);
+            if (isApplicationRunning(currentGUID, currentVersion, handleID)) {
+                ApplicationStateDetails asd;
+                ApplicationHandle applicationHandle = getApplicationHandle(currentGUID, currentVersion, handleID);
+                applicationHandle.stopApplication();
+                applicationHandleMap.remove(app_version);
+            }
         }
         return true;
     }

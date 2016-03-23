@@ -5,9 +5,7 @@ import com.fiorano.openesb.application.configuration.data.ObjectCategory;
 import com.fiorano.openesb.events.*;
 import com.fiorano.openesb.namedconfig.ConfigurationRepositoryEventListener;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
-import com.fiorano.openesb.rmiconnector.api.IApplicationManagerListener;
-import com.fiorano.openesb.rmiconnector.api.IConfigurationRepositoryListener;
-import com.fiorano.openesb.rmiconnector.api.IRepoEventListener;
+import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.queue.FioranoQueueImpl;
 import com.fiorano.openesb.utils.queue.IFioranoQueue;
@@ -32,6 +30,14 @@ public class DapiEventManager implements EventListener {
     private final Hashtable<String, IApplicationManagerListener> appEventListeners = new Hashtable<String, IApplicationManagerListener>();
     private Hashtable<String, IRepoEventListener> microServiceRepoEventListeners = new Hashtable<String, IRepoEventListener>();
     private final Hashtable<String, IConfigurationRepositoryListener> configurationRepoEventListeners = new Hashtable<String, IConfigurationRepositoryListener>();
+
+    //Server(FPS) State Event Listeners
+    private final Hashtable<String, IServerStateListener> serverStateEventListeners = new Hashtable<String, IServerStateListener>();
+    //Server Security Event Listeners
+    private final Hashtable<String,Hashtable<String,IUserSecurityManagerListener>> securityEventListeners = new Hashtable<String, Hashtable<String, IUserSecurityManagerListener>>();
+    //Repository Event Listeners
+    private final Hashtable<String, IRepoEventListener> applicationRepoEventListeners = new Hashtable<String, IRepoEventListener>();
+
      private static final String DAPICONSTANT = "$";
 
     private static final String DELIMITER = "__";
@@ -175,6 +181,36 @@ public class DapiEventManager implements EventListener {
     public void unRegisterMicroServiceRepoEventListener(String handleId) {
         if (microServiceRepoEventListeners.containsKey(handleId))
             microServiceRepoEventListeners.remove(handleId);
+    }
+
+    public void registerSecurityEventListener(IUserSecurityManagerListener securityListener, String userName, String handleId) {
+        Hashtable<String , IUserSecurityManagerListener>  handleHash = new Hashtable<String,IUserSecurityManagerListener>();
+        if (securityEventListeners.containsKey(userName)){
+            handleHash = (Hashtable<String,IUserSecurityManagerListener>) securityEventListeners.get(userName);
+            if(handleHash.containsKey(handleId)){
+                handleHash.remove(handleId);
+            }
+            securityEventListeners.remove(userName);
+        }
+        handleHash.put(handleId, securityListener);
+        securityEventListeners.put(userName, handleHash);
+    }
+
+    public void unRegisterSecurityEventListener(IUserSecurityManagerListener listener, String userName, String handleId) {
+        Hashtable<String , IUserSecurityManagerListener>  handleHash = new Hashtable<String,IUserSecurityManagerListener>();
+        if (securityEventListeners.containsKey(userName)){
+            handleHash = (Hashtable<String,IUserSecurityManagerListener>) securityEventListeners.get(userName);
+            if(handleHash.containsKey(handleId)){
+                handleHash.remove(handleId);
+            }
+            if(handleHash.size()!=0){
+                securityEventListeners.remove(userName);
+                securityEventListeners.put(userName,handleHash);
+            } else {
+                securityEventListeners.remove(userName);
+            }
+
+        }
     }
 
     class ReceiverThread extends Thread {
@@ -419,6 +455,21 @@ public class DapiEventManager implements EventListener {
             configurationRepoEventListeners.remove(handleId);
     }
 
+    public void unRegisterApplicationRepoEventListener(String handleId) {
+        if (applicationRepoEventListeners.containsKey(handleId))
+            applicationRepoEventListeners.remove(handleId);
+    }
+
+    public void unRegisterSecurityEventListener(String handleId) {
+        if (securityEventListeners.containsKey(handleId))
+            securityEventListeners.remove(handleId);
+    }
+
+    public void unRegisterServerStateListener(String handleId) {
+        if (serverStateEventListeners.containsKey(handleId))
+            serverStateEventListeners.remove(handleId);
+    }
+
     public void startEventListener() {
         // In customer development scenario, a lot of changes would be made with many events received by eStudio amid frequent pauses.
         // In the default cached thread pool, any pause greater than 60 secs would terminate all threads in the pool leading to
@@ -471,6 +522,11 @@ public class DapiEventManager implements EventListener {
 
     public void unRegisterOldListeners(String handleID) {
         unregisterAllApplicationListeners(handleID);
+        unRegisterConfigurationRepositoryEventListener(handleID);
+        unRegisterServerStateListener(handleID);
+        unRegisterMicroServiceRepoEventListener(handleID);
+        unRegisterApplicationRepoEventListener(handleID);
+        unRegisterSecurityEventListener(handleID);
     }
 
     private class DaemonThreadFactory implements ThreadFactory {
