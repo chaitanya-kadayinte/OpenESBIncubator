@@ -207,13 +207,21 @@ public class ApplicationHandle {
     }
 
     public void stopMicroService(String microServiceName) throws FioranoException {
-        if(!microServiceHandleList.containsKey(microServiceName)){
-            throw new FioranoException("micro Service not running");
+        if(!isMicroserviceRunning(microServiceName)){
+            throw new FioranoException("Microservice is not running");
         }
         try {
             microServiceHandleList.get(microServiceName).stop();
         } catch (Exception e) {
             throw new FioranoException(e);
         }
+    }
+
+    public boolean isMicroserviceRunning(String microServiceName) {
+        return microServiceHandleList.containsKey(microServiceName);
+    }
+
+    public String getLaunchMode(String name) {
+        return microServiceHandleList.get(name).getLaunchMode().name();
     }
 }

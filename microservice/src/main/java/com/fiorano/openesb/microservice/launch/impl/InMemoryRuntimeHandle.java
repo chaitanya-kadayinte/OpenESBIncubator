@@ -74,4 +74,9 @@ public class InMemoryRuntimeHandle implements MicroServiceRuntimeHandle {
         }
     }
 
+    @Override
+    public LaunchConfiguration.LaunchMode getLaunchMode() {
+        return LaunchConfiguration.LaunchMode.IN_MEMORY;
+    }
+
 }

@@ -325,6 +325,15 @@ public class ApplicationController {
         return false;
     }
 
+    public boolean isMicroserviceRunning(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+        String key = appGuid+Constants.NAME_DELIMITER+version;
+        if(applicationHandleMap.containsKey(key)){
+            ApplicationHandle appHandle = applicationHandleMap.get(key);
+            return appHandle.isMicroserviceRunning(microServiceName);
+        }
+        return false;
+    }
+
     public boolean stopMicroService(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){

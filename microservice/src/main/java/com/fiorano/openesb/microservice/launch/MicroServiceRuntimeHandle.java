@@ -31,5 +31,8 @@ public interface MicroServiceRuntimeHandle {
     void kill() throws Exception;
 
     void setLogLevel(Map<String, String> modules) throws Exception;
+
+    LaunchConfiguration.LaunchMode getLaunchMode();
+
 }
 

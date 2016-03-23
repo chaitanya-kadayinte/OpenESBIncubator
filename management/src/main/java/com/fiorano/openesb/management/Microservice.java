@@ -10,37 +10,27 @@
  * it only in accordance with the terms of the license agreement
  * enclosed with this product or entered into with Fiorano.
  * <p>
- * Created by chaitanya on 19-03-2016.
+ * Created by chaitanya on 23-03-2016.
  */
 
 /**
- * Created by chaitanya on 19-03-2016.
+ * Created by chaitanya on 23-03-2016.
  */
 package com.fiorano.openesb.management;
 
-import java.util.List;
-
-public class Application {
-    private String id;
-    private String name;
+public class Microservice {
+    private String guid;
     private String version;
+    private String name;
     private boolean isRunning;
-    private List<Microservice> services;
+    private String launchMode;
 
-    public String getId() {
-        return id;
+    public String getGuid() {
+        return guid;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     public String getVersion() {
@@ -51,19 +41,27 @@ public class Application {
         this.version = version;
     }
 
-    public boolean getIsRunning() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isRunning() {
         return isRunning;
     }
 
-    public void setIsRunning(boolean isRunning) {
-        this.isRunning = isRunning;
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 
-    public List<Microservice> getServices() {
-        return services;
+    public String getLaunchMode() {
+        return launchMode;
     }
 
-    public void setServices(List<Microservice> services) {
-        this.services = services;
+    public void setLaunchMode(String launchMode) {
+        this.launchMode = launchMode;
     }
 }

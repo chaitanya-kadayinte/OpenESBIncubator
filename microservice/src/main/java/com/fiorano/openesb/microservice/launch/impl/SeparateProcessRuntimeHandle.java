@@ -366,7 +366,7 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
         }
     }
 
-    private LaunchConfiguration.LaunchMode getLaunchMode() {
+    public LaunchConfiguration.LaunchMode getLaunchMode() {
         return launchConfiguration.getLaunchMode();
     }
 

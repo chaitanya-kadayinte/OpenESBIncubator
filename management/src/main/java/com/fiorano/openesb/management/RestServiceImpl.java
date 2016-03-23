@@ -17,6 +17,7 @@ import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
+import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.apache.activemq.usage.SystemUsage;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
@@ -26,7 +27,9 @@ import org.osgi.framework.FrameworkUtil;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOriginResourceSharing(
         allowAllOrigins = true,
@@ -61,26 +64,37 @@ public class RestServiceImpl implements ApplicationsService {
 
         return overview;
     }
+
     @Path("/applications/{applicationName}/{applicationVersion}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public com.fiorano.openesb.management.Application getApplicationDetails(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion) {
-        ApplicationRepository controller = getApplicationRepository();
-        com.fiorano.openesb.management.Application response = new com.fiorano.openesb.management.Application();
+    public Object getApplicationDetails(@PathParam("applicationName") String applicationName,
+           @PathParam("applicationVersion") String applicationVersion) {
+        ApplicationRepository applicationRepository = getApplicationRepository();
+        ApplicationHandle applicationHandle = getController().getApplicationHandle(applicationName, Float.parseFloat(applicationVersion),null);
+        com.fiorano.openesb.management.Application application = new com.fiorano.openesb.management.Application();
         try {
-            Application application = controller.readApplication(applicationName, applicationVersion);
-            List<String> services = new ArrayList<>();
-            for (ServiceInstance serviceInstance : application.getServiceInstances()) {
-                services.add(serviceInstance.getName());
+            Application readApplication = applicationRepository.readApplication(applicationName, applicationVersion);
+            List<Microservice> services = new ArrayList<>();
+            for (ServiceInstance serviceInstance : readApplication.getServiceInstances()) {
+                Microservice microservice = new Microservice();
+                microservice.setGuid(serviceInstance.getGUID());
+                microservice.setVersion(String.valueOf(serviceInstance.getVersion()));
+                boolean microserviceRunning = getController().isMicroserviceRunning(applicationName, applicationVersion, serviceInstance.getName(), null);
+                microservice.setRunning(microserviceRunning);
+                microservice.setLaunchMode(applicationHandle.getLaunchMode(serviceInstance.getName()));
+                services.add(microservice);
             }
-            response.setServices(services);
-            response.setId(application.getGUID());
-            response.setName(application.getDisplayName());
-            response.setVersion(applicationVersion);
-            response.setIsRunning(true);
-            return response;
+            application.setServices(services);
+            application.setId(readApplication.getGUID());
+            application.setName(readApplication.getDisplayName());
+            application.setVersion(applicationVersion);
+            application.setIsRunning(getController().isApplicationRunning(applicationName, Float.parseFloat(applicationVersion),null));
+            return application;
         } catch (Exception e) {
-            //todo
+            Response response = new Response();
+            response.setStatus(false);
+            response.setMessage(e.getMessage());
             return response;
         }
     }
