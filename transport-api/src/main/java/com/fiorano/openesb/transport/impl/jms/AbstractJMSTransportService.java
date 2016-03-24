@@ -2,6 +2,7 @@ package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.transport.*;
 import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
+import org.osgi.framework.BundleException;
 
 import javax.jms.*;
 import javax.jms.Message;
@@ -20,18 +21,23 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
     protected AbstractJMSTransportService() throws JMSException {
         ConnectionFactory cf = ((AbstractJMSConnectionProvider) getConnectionProvider()).getConnectionFactory("ConnectionFactory");
         Connection connection;
-        while ((connection = getConnection(cf)) == null) {
+        String connectionRetryCount = ConfigurationLookupHelper.getInstance().getValue("CONNECTION_RETRY_COUNT", "5");
+        int count = Integer.valueOf(connectionRetryCount), i = 0;
+        while ((connection = getConnection(cf))== null && i++ < count) {
             try {
-                Thread.sleep(3000);
+                String connectionRetryInterval = ConfigurationLookupHelper.getInstance().getValue("CONNECTION_LOOKUP_INTERVAL", "2000");
+                Thread.sleep(Long.valueOf(connectionRetryInterval));
             } catch (InterruptedException e1) {
                 //
             }
+        }
+        if(connection == null) {
+            throw new JMSException("Could not connect to JMS server");
         }
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
     }
 
     private Connection getConnection(ConnectionFactory cf) throws JMSException {
-        // TODO: 27-02-2016
         try {
             ConfigurationLookupHelper configurationLookupHelper = ConfigurationLookupHelper.getInstance();
             Connection connection = cf.createConnection(configurationLookupHelper.getValue("userName"),configurationLookupHelper.getValue("password"));

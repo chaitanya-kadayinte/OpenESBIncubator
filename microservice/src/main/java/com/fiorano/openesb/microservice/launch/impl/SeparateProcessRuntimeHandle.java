@@ -56,15 +56,23 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
     }
 
     public boolean isRunning() {
-        return osProcess.isAlive();
+        return isAlive();
     }
 
+    public boolean isAlive() {
+        try {
+            osProcess.exitValue();
+            return false;
+        } catch(IllegalThreadStateException e) {
+            return true;
+        }
+    }
     public void stop() throws Exception {
         killComponent(true, false, "General");
     }
 
     public void kill() {
-        osProcess.destroyForcibly();
+        osProcess.destroy();
     }
 
     @Override

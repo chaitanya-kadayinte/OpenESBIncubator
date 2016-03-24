@@ -22,6 +22,8 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
 
 
     private BrokerViewMBean adminMBean;
+    private JMXConnector connector;
+    private AMQConnectionProvider amqConnectionProvider;
 
     public AMQTransportService() throws Exception {
         super();
@@ -30,7 +32,6 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
                 + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg")) {
             properties.load(inStream);
         }
-
         initializeAdminConnector(properties);
     }
 
@@ -41,7 +42,7 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
         String[] credentials = new String[]{username, password};
         env.put(JMXConnector.CREDENTIALS, credentials);
         String serviceURL = properties.getProperty("jmxURL");
-        JMXConnector connector = JMXConnectorFactory.newJMXConnector(new JMXServiceURL(serviceURL), env);
+        connector = JMXConnectorFactory.newJMXConnector(new JMXServiceURL(serviceURL), env);
         connector.connect();
         MBeanServerConnection connection = connector.getMBeanServerConnection();
         ObjectName activeMQ = new ObjectName("org.apache.activemq:type=Broker,brokerName=amq-broker");
@@ -49,7 +50,8 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
     }
 
     public ConnectionProvider getConnectionProvider() {
-        return new AMQConnectionProvider();
+        amqConnectionProvider = new AMQConnectionProvider();
+        return amqConnectionProvider;
     }
 
     public void disablePort(PortConfiguration portConfiguration) throws Exception {
@@ -60,4 +62,19 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
             adminMBean.removeTopic(jmsPortConfiguration.getName());
         }
     }
-}
+
+    public void stop() {
+        try {
+            if (adminMBean != null) {
+                adminMBean.stop();
+            }
+            if (connector != null) {
+                //this could take time
+                connector.close();
+            }
+        } catch(Exception e){
+                //todo
+                e.printStackTrace();
+            }
+        }
+    }

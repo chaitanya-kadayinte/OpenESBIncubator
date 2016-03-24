@@ -19,7 +19,6 @@ import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
 import com.fiorano.openesb.utils.exception.FioranoException;
-import org.apache.activemq.usage.SystemUsage;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -27,9 +26,7 @@ import org.osgi.framework.FrameworkUtil;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @CrossOriginResourceSharing(
         allowAllOrigins = true,
@@ -69,27 +66,31 @@ public class RestServiceImpl implements ApplicationsService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Object getApplicationDetails(@PathParam("applicationName") String applicationName,
-           @PathParam("applicationVersion") String applicationVersion) {
+                                        @PathParam("applicationVersion") String applicationVersion) {
         ApplicationRepository applicationRepository = getApplicationRepository();
-        ApplicationHandle applicationHandle = getController().getApplicationHandle(applicationName, Float.parseFloat(applicationVersion),null);
         com.fiorano.openesb.management.Application application = new com.fiorano.openesb.management.Application();
         try {
+            boolean applicationRunning = getController().isApplicationRunning(applicationName, Float.parseFloat(applicationVersion), null);
             Application readApplication = applicationRepository.readApplication(applicationName, applicationVersion);
             List<Microservice> services = new ArrayList<>();
             for (ServiceInstance serviceInstance : readApplication.getServiceInstances()) {
                 Microservice microservice = new Microservice();
                 microservice.setGuid(serviceInstance.getGUID());
                 microservice.setVersion(String.valueOf(serviceInstance.getVersion()));
+                microservice.setName(serviceInstance.getName());
                 boolean microserviceRunning = getController().isMicroserviceRunning(applicationName, applicationVersion, serviceInstance.getName(), null);
                 microservice.setRunning(microserviceRunning);
-                microservice.setLaunchMode(applicationHandle.getLaunchMode(serviceInstance.getName()));
+                if (applicationRunning) {
+                    ApplicationHandle applicationHandle = getController().getApplicationHandle(applicationName, Float.parseFloat(applicationVersion), null);
+                    microservice.setLaunchMode(applicationHandle.getLaunchMode(serviceInstance.getName()));
+                }
                 services.add(microservice);
             }
             application.setServices(services);
             application.setId(readApplication.getGUID());
             application.setName(readApplication.getDisplayName());
             application.setVersion(applicationVersion);
-            application.setIsRunning(getController().isApplicationRunning(applicationName, Float.parseFloat(applicationVersion),null));
+            application.setIsRunning(applicationRunning);
             return application;
         } catch (Exception e) {
             Response response = new Response();
@@ -115,7 +116,7 @@ public class RestServiceImpl implements ApplicationsService {
                 controller.stopApplication(applicationName, applicationVersion, null);
                 response.setMessage("Application stopped successfully");
             } else if (actionStr.equalsIgnoreCase("stop")) {
-                controller.synchronizeApplication(applicationName,applicationVersion,null);
+                controller.synchronizeApplication(applicationName, applicationVersion, null);
             }
             response.setStatus(true);
             return response;

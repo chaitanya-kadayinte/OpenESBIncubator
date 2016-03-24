@@ -41,6 +41,5 @@ public abstract class AbstractJMSConnectionProvider implements ConnectionProvide
 
     public void releaseConnectionMD(JMSConnectionConfiguration jmsConnectionConfiguration) {
         ConnectionFactory connectionFactory = connectionFactories.remove(jmsConnectionConfiguration.getClientId());
-
     }
 }

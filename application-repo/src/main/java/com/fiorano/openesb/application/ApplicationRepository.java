@@ -298,9 +298,13 @@ public class ApplicationRepository {
         }
         File[] versionFolders = appFolder.listFiles();
         int i = 0;
-        float[] versionNumbers = new float[versionFolders.length];
-        for (File f : versionFolders) {
-            versionNumbers[i++] = Float.valueOf(f.getName());
+        float[] versionNumbers = new float[0];
+
+        if (versionFolders != null) {
+            versionNumbers = new float[versionFolders.length];
+            for (File f : versionFolders) {
+                versionNumbers[i++] = Float.valueOf(f.getName());
+            }
         }
         return versionNumbers;
     }

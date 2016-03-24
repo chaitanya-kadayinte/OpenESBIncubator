@@ -31,17 +31,19 @@ import java.util.Hashtable;
 public class Activator implements BundleActivator {
 
     private BundleContext bundleContext;
+    private AMQTransportService service;
 
     public void start(BundleContext context) throws Exception {
         System.out.println("Starting the bundle " + context.getBundle().getSymbolicName());
         this.bundleContext = context;
-        TransportService service = new AMQTransportService();
+        service = new AMQTransportService();
         bundleContext.registerService(TransportService.class, service,new Hashtable<String, Object>());
         System.out.println("Started the bundle " + context.getBundle().getSymbolicName());
     }
 
     public void stop(BundleContext context) throws Exception {
         System.out.println("Stopping the bundle " + context.getBundle().getSymbolicName());
+        service.stop();
         System.out.println("Stopped the bundle " + context.getBundle().getSymbolicName());
     }
 
