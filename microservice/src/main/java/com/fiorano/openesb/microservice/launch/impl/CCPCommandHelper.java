@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -179,6 +180,10 @@ public class CCPCommandHelper {
 
     public void unregisterListener(SeparateProcessRuntimeHandle.ComponentLifeCycleWorkflow lifeCycleWorkflow, CCPEventType status) {
         ccpEventManager.unregisterListener(lifeCycleWorkflow);
+    }
+
+    public synchronized void registerListener(SeparateProcessRuntimeHandle.ComponentLifeCycleWorkflow listener, CCPEventType... eventTypes){
+        ccpEventManager.registerListener(listener, eventTypes);
     }
 
 
