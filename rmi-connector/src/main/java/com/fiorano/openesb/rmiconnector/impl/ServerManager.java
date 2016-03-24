@@ -41,6 +41,7 @@ public class ServerManager {
         fesDetails.put("ProcessCount", String.valueOf(stats.getTotalProcessCount()));
         fesDetails.put("ThreadCount", String.valueOf(stats.getTotalThreadCount()));
         fesDetails.put("MemoryUsage", stats.getMemoryUsage());
+        fesDetails.put("CPU Usage", stats.getCpuUtilization());
         SystemInfo sysInfo = ServerInfo.getTESSystemInfo();
         fesDetails.put("OS", sysInfo.getOSName() + " " + sysInfo.getOSVersion());
         fesDetails.put("JRE", sysInfo.getJREImplVendor() + " " + sysInfo.getJREImplVersion());
