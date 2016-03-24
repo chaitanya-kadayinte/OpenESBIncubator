@@ -1,7 +1,10 @@
 package com.fiorano.openesb.applicationcontroller;
 
+import com.fiorano.openesb.application.BreakpointMetaData;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.application.Route;
+import com.fiorano.openesb.application.aps.ApplicationStateDetails;
+import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.jmsroute.impl.JMSRouteConfiguration;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
@@ -11,9 +14,7 @@ import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ApplicationHandle {
 
@@ -23,12 +24,46 @@ public class ApplicationHandle {
     private TransportService transport;
     Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new HashMap<>();
     private Map<String, com.fiorano.openesb.route.Route> routeMap = new HashMap<>();
+    private Map<String, BreakpointMetaData> breakpoints = new HashMap<String, BreakpointMetaData>();
+    private Map<String, BreakpointMetaData> pendingBreakpointsForClouser = new HashMap<String, BreakpointMetaData>();
+    private ApplicationController applicationController;
 
-    public ApplicationHandle(Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService, TransportService transport){
+
+    Vector<String> pendingQueueIDs;
+    //hash table of handle IDs of routes on which debuggers are set.[key -routeID Vs object -handleID]
+    private Hashtable debugHandleIDs = new Hashtable();
+
+    //  Unique AppGUID.
+    private String appGUID;
+
+    //  version.
+    private float version;
+
+    private String environmentLabel;
+
+    //  LaunchTime.
+    private long launchTime;
+
+    //  KillTime.
+    private long killTime = -1;
+
+    // List of RouteGUID's in the application
+    //private Vector<String> debugrouteGUIDS;
+
+    private String passwd;
+
+    private String userName;
+
+    public ApplicationHandle(ApplicationController applicationController, Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService, TransportService transport){
+        this.applicationController = applicationController;
         this.application = application;
         this.service = service;
         this.routeService = routeService;
         this.transport = transport;
+        this.appGUID = application.getGUID();
+        this.version = application.getVersion();
+        this.launchTime = System.currentTimeMillis();
+        this.environmentLabel = application.getLabel();
     }
 
     public Application getApplication(){
@@ -224,4 +259,85 @@ public class ApplicationHandle {
     public String getLaunchMode(String name) {
         return microServiceHandleList.get(name).getLaunchMode().name();
     }
+
+
+    public ApplicationStateDetails getApplicationDetails(String handleID) throws FioranoException {
+
+
+       // logger.debug(Bundle.class, Bundle.EXECUTING_CALL, "getApplicationDetails()");
+
+        ApplicationStateDetails appDetails = new ApplicationStateDetails();
+
+        appDetails.setAppGUID(appGUID);
+        appDetails.setAppVersion(String.valueOf(application.getVersion()));
+        appDetails.setKillTime(killTime);
+        appDetails.setLaunchTime(launchTime);
+        appDetails.setApplicationLabel(environmentLabel);
+
+            for (String serviceName: microServiceHandleList.keySet()) {
+                MicroServiceRuntimeHandle serviceHandle = microServiceHandleList.get(serviceName);
+                if (serviceHandle == null)
+                    continue;
+                String instName = serviceHandle.getServiceInstName();
+                ServiceInstanceStateDetails stateDetails = serviceHandle.getServiceStateDetails();
+                appDetails.addServiceStatus(instName, stateDetails);
+                String exceptionTrace = serviceHandle.getExceptionTrace();
+                if (exceptionTrace != null)
+                    appDetails.addServiceExceptionTrace(instName, exceptionTrace);
+            }
+
+        //  Get the details of External Services too.
+
+        for (Object o : application.getRemoteServiceInstances()) {
+            RemoteServiceInstance extInstance = (RemoteServiceInstance) o;
+            String extAppGUID = extInstance.getApplicationGUID();
+            ApplicationHandle extAppHandle = applicationController.getApplicationHandle(extAppGUID, extInstance.getApplicationVersion(), handleID);
+
+            if (extAppHandle == null) {
+               // logger.error(Bundle.class, Bundle.APPHANDLE_NOT_PRESENT, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(application.getVersion()));
+                continue;
+            }
+
+            // If the External service is actually configured to a application of version different of that
+            // of the one which is running. then do not proceed.
+            if (extAppHandle.getApplication().getVersion() != extInstance.getApplicationVersion())
+                continue;
+
+            String extInstName = extInstance.getRemoteName();
+            MicroServiceRuntimeHandle extServiceHandle = extAppHandle.getMicroServiceHandle(extInstName);
+
+            if (extServiceHandle == null)
+                continue;
+
+            String localInstName = extInstance.getName();
+            ServiceInstanceStateDetails stateDetails = extServiceHandle.getServiceStateDetails();
+
+            appDetails.addServiceStatus(localInstName, stateDetails);
+
+            String exceptionTrace = extServiceHandle.getExceptionTrace();
+
+            if (exceptionTrace != null)
+                appDetails.addServiceExceptionTrace(localInstName, exceptionTrace);
+        }
+
+        // add the routes with breakpoint to app state details
+
+        if (breakpoints != null && breakpoints.size() > 0) {
+            for (String aDebugrouteGUIDS : breakpoints.keySet()) {
+                appDetails.addDebugRoute(aDebugrouteGUIDS);
+            }
+        }
+
+        if (pendingBreakpointsForClouser != null && pendingBreakpointsForClouser.size() > 0) {
+            for (String pendingDebugRouteGUID : pendingBreakpointsForClouser.keySet()) {
+                appDetails.addPendingDebugRoutesForClosure(pendingDebugRouteGUID);
+            }
+        }
+        return appDetails;
+    }
+
+    private MicroServiceRuntimeHandle getMicroServiceHandle(String serviceName){
+        return microServiceHandleList.get(serviceName);
+    }
+
 }

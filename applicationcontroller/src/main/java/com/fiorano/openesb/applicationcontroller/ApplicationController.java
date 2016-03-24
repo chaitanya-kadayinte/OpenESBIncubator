@@ -286,7 +286,7 @@ public class ApplicationController {
             Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
             Application currentApplication = applicationRepository.readApplication(currentGUID, String.valueOf(currentVersion));
             if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
-                    ApplicationHandle appHandle = new ApplicationHandle(currentApplication, microServiceLauncher, routeService,transport);
+                    ApplicationHandle appHandle = new ApplicationHandle(this, currentApplication, microServiceLauncher, routeService,transport);
                     appHandle.createRoutes();
 
                     appHandle.launchComponents();
@@ -467,11 +467,10 @@ public class ApplicationController {
     public ApplicationStateDetails getCurrentStateOfApplication(String appGUID, float appVersion, String handleId) throws FioranoException{
         ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
         if (appHandle == null) {
-           // logger.error(Bundle.class, Bundle.APPHANDLE_NOT_PRESENT, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(appVersion));
-            throw new FioranoException("APPHANDLE_NOT_PRESENT");
+            return new ApplicationStateDetails();
         }
-       // return appHandle.getApplicationDetails();
-        return new ApplicationStateDetails();
+        return appHandle.getApplicationDetails(handleId);
+
     }
 
     public ApplicationReference getHeaderOfSavedApplication(String appGUID, float version, String handleId) {

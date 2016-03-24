@@ -52,7 +52,7 @@ public class Activator implements BundleActivator {
         try {
             int rmiRegisryPort = rmiConnector.getRmiConnectorConfig().getRmiRegistryPort();
             int rmiServerPort = rmiConnector.getRmiConnectorConfig().getRmiServerPort();
-            rmiManager = new RmiManager(context,rmiServerPort , rmiConnector.getCsf(), rmiConnector.getSsf());
+            rmiManager = new RmiManager(context,rmiConnector);
             rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, rmiServerPort, rmiConnector.getCsf(), rmiConnector.getSsf());
             registry = LocateRegistry.getRegistry(rmiRegisryPort);
             try {
