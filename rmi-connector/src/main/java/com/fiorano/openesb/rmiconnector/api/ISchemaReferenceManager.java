@@ -12,7 +12,6 @@
  */
 package com.fiorano.openesb.rmiconnector.api;
 
-import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.application.application.SchemaReference;
 
 import java.rmi.Remote;
@@ -149,7 +148,6 @@ public interface ISchemaReferenceManager extends Remote {
      * Returns zip byte  data holding xml-catalog and all schemas.
      *
      * @return zipped schemas
-     * @throws FioranoException
      * @param index
      */
     public byte[] getAllSchemasPresentInServer(long index) throws RemoteException, ServiceException;

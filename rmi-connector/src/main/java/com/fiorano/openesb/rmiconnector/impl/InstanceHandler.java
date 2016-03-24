@@ -136,7 +136,7 @@ public class InstanceHandler {
             //client proxy instance
             IServiceProviderManager returnObject = (IServiceProviderManager)Proxy.newProxyInstance
                     (
-                            ClassLoader.getSystemClassLoader(),
+                            this.getClass().getClassLoader(),
                             new Class[] {IServiceProviderManager.class, Serializable.class},
                             //client stub & interceptor instance
                             new RemoteClientInterceptor(serverSideProxy)
@@ -156,7 +156,7 @@ public class InstanceHandler {
             //client proxy instance
             IUserSecurityManager returnObject = (IUserSecurityManager) Proxy.newProxyInstance
                     (
-                            ClassLoader.getSystemClassLoader(),
+                            this.getClass().getClassLoader(),
                             new Class[]{IUserSecurityManager.class, Serializable.class},
                             //client stub & interceptor instance
                             new RemoteClientInterceptor(serverSideProxy)
@@ -177,7 +177,7 @@ public class InstanceHandler {
             //client proxy instance
             ISchemaReferenceManager returnObject = (ISchemaReferenceManager) Proxy.newProxyInstance
                     (
-                            ClassLoader.getSystemClassLoader(),
+                            this.getClass().getClassLoader(),
                             new Class[]{ISchemaReferenceManager.class, Serializable.class},
                             //client stub & interceptor instance
                             new RemoteClientInterceptor(serverSideProxy)

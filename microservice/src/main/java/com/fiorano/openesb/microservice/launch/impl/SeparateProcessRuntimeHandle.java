@@ -26,7 +26,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     private ComponentLifeCycleWorkflow lifeCycleWorkflow;
     private IFioranoLogger coreLogger;
     private boolean shutdownOfCCPComponentInProgress;
-    private EventsManager eventManager = (EventsManager) FrameworkUtil.getBundle(EventsManager.class);
+    private EventsManager eventManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     private int numberOfForceShutdownAttempts;
     private volatile boolean isKilling;
     private final Object killSyncObject = new Object();

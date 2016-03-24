@@ -392,6 +392,9 @@ public class ApplicationController {
             throw new FioranoException("Cannot delete running Application. Stop the Application and then delete");
         }
         applicationRepository.deleteApplication(appGUID, version);
+        ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_DELETED, Event.EventCategory.INFORMATION,
+                appGUID, null, version, "Application Deleted Successfully");
+
     }
 
     public ApplicationHandle getApplicationHandle(String appGUID, float appVersion, String handleID) {
