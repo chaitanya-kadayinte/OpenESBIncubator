@@ -19,8 +19,10 @@ public class SeparateProcessLauncher implements Launcher<SeparateProcessRuntimeH
     }
 
     public MicroServiceRuntimeHandle launch(final LaunchConfiguration launchConfiguration, final String configuration) throws Exception {
+        SeparateProcessRuntimeHandle separateProcessRuntimeHandle = new SeparateProcessRuntimeHandle(launchConfiguration,new CCPCommandHelper(ccpEventManager,launchConfiguration));
         Process process = startProcess(launchConfiguration);
-        return new SeparateProcessRuntimeHandle(process,launchConfiguration,new CCPCommandHelper(ccpEventManager,launchConfiguration));
+        separateProcessRuntimeHandle.setProcess(process);
+        return separateProcessRuntimeHandle;
     }
 
     @SuppressWarnings("unchecked")

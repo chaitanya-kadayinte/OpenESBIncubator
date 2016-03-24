@@ -231,7 +231,7 @@ public class RmiManager implements IRmiManager{
 
 
     public void unRegisterOldListeners(String handleId) throws RemoteException, ServiceException {
-
+        dapiEventManager.unRegisterOldListeners(handleId);
     }
 
     public ConnectionHandle getConnectionHandle(String handleId) {

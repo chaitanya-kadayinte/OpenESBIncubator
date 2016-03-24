@@ -38,13 +38,17 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     private ServiceInstanceStateDetails servStateDetails = new ServiceInstanceStateDetails();
 
 
-    public SeparateProcessRuntimeHandle(Process osProcess, LaunchConfiguration launchConfiguration, CCPCommandHelper ccpCommandHelper) throws FioranoException {
+    public SeparateProcessRuntimeHandle(LaunchConfiguration launchConfiguration, CCPCommandHelper ccpCommandHelper) throws FioranoException {
         super(launchConfiguration);
-        this.osProcess = osProcess;
 
         this.ccpCommandHelper = ccpCommandHelper;
-
+        lifeCycleWorkflow = new ComponentLifeCycleWorkflow(serviceInstName, launchConfiguration.getApplicationName(), launchConfiguration.getApplicationVersion());
+        ccpCommandHelper.registerListener(lifeCycleWorkflow, CCPEventType.STATUS);
         coreLogger = new FioranoClientLogger().getLogger("service.launch");
+    }
+
+    public void setProcess(Process process){
+        this.osProcess = process;
     }
 
     public boolean isRunning() {
