@@ -31,14 +31,14 @@
         <module>activemq-transport</module>
         <module>route-api</module>
         <module>jms-route</module>
-        <module>simulate-launch</module>
+        <!--<module>simulate-launch</module>-->
         <module>microservice</module>
         <module>application-repo</module>
         <module>namedconfiguration</module>
         <module>applicationcontroller</module>
         <module>schema-repo</module>
         <module>rmi-connector</module>
-        <module>rmi-client</module>
+        <!--<module>rmi-client</module>-->
         <module>fiorano-feature</module>
         <module>management</module>
     </modules>

@@ -24,6 +24,7 @@ import java.util.HashMap;
  */
 public interface IServiceProviderManager extends Remote {
 
+    public String getJMSProviderURL();
      /**
      * This method restarts the Enterprise Server.
      * @throws RemoteException

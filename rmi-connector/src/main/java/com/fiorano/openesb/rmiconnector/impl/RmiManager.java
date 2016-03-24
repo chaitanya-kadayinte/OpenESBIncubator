@@ -6,6 +6,7 @@ import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
+import com.fiorano.openesb.rmiconnector.connector.RmiConnector;
 import com.fiorano.openesb.schemarepo.SchemaRepository;
 import com.fiorano.openesb.security.ConnectionHandle;
 import com.fiorano.openesb.security.SecurityManager;
@@ -14,10 +15,12 @@ import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import org.osgi.framework.*;
 
 import javax.security.auth.login.LoginException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Janardhan on 1/22/2016.
@@ -34,10 +37,14 @@ public class RmiManager implements IRmiManager{
     private SchemaRepository schemaRepository;
     private RMIServerSocketFactory ssf;
     private RMIClientSocketFactory csf;
-    private int rmiPort;
+    private int rmiServerPort;
     private DapiEventManager dapiEventManager;
+    private ServerManager serverManager;
+    private ServerLogManager logManager;
+    private List ipAliases;
+    private RmiConnector rmiConnector;
 
-    public RmiManager(BundleContext context, int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
+    public RmiManager(BundleContext context, RmiConnector rmiConnector) throws RemoteException {
         org.osgi.framework.ServiceReference[] references = new org.osgi.framework.ServiceReference[0];
         try {
             references = context.getServiceReferences(ApplicationController.class.getName(),null);
@@ -53,27 +60,30 @@ public class RmiManager implements IRmiManager{
             references = context.getServiceReferences(NamedConfigRepository.class.getName(), null);
             namedConfigRepository = (NamedConfigRepository) context.getService(references[0]);
             schemaRepository = context.getService(context.getServiceReference(SchemaRepository.class));
-
+            serverManager = ServerManager.GETINSTANCE(this);
+            logManager = new ServerLogManager();
             dapiEventManager = new DapiEventManager(eventsManager, namedConfigRepository);
             dapiEventManager.startEventListener();
 
         } catch (InvalidSyntaxException e) {
             e.printStackTrace();
         }
-        this.ssf = ssf;
-        this.csf = csf;
-        this.rmiPort = port;
+        this.rmiConnector = rmiConnector;
     }
     public RMIServerSocketFactory getSsf() {
-        return ssf;
+        return rmiConnector.getSsf();
     }
 
     public RMIClientSocketFactory getCsf() {
-        return csf;
+        return rmiConnector.getCsf();
     }
 
-    public int getRmiPort(){
-        return rmiPort;
+    public int getRmiServerPort(){
+        return rmiConnector.getRmiConnectorConfig().getRmiServerPort();
+    }
+
+    public int getRmiRegistryPort(){
+        return rmiConnector.getRmiConnectorConfig().getRmiRegistryPort();
     }
 
     public DapiEventManager getDapiEventsManager() {
@@ -173,7 +183,7 @@ public class RmiManager implements IRmiManager{
 
 
     public IServiceProviderManager getServiceProviderManager(String handleID) throws RemoteException, ServiceException {
-        return null;
+        return handlerMap.get(handleID).getServiceProviderManager();
     }
 
 
@@ -188,7 +198,7 @@ public class RmiManager implements IRmiManager{
 
 
     public IUserSecurityManager getUserSecurityManager(String handleID) throws RemoteException, ServiceException {
-        return null;
+        return handlerMap.get(handleID).getuserSecurityManager();
     }
 
 
@@ -198,7 +208,7 @@ public class RmiManager implements IRmiManager{
 
 
     public ISchemaReferenceManager getSchemaReferenceManager(String handleID) throws RemoteException, ServiceException {
-        return null;
+        return handlerMap.get(handleID).getSchemaReferenceManager();
     }
 
 
@@ -226,5 +236,90 @@ public class RmiManager implements IRmiManager{
 
     public ConnectionHandle getConnectionHandle(String handleId) {
         return securityManager.getConnectionHandle(handleId);
+    }
+
+    public ServerManager getServerManager() {
+        return serverManager;
+    }
+
+    public ServerLogManager getLogManager() {
+        return logManager;
+    }
+
+
+    public void unRegisterApplicationRepoEventListeners(String handleId) {
+        //Unregisters the Application repository Listener for the specific client(Based on handleID)
+        dapiEventManager.unRegisterApplicationRepoEventListener(handleId);
+    }
+
+    public void unRegisterAllApplicationListeners(String handleId) {
+        //Unregisters the Application Event Listenrers for the specific client(Based on handleID)
+        dapiEventManager.unregisterAllApplicationListeners(handleId);
+    }
+
+    public void unRegisterServiceRepoEventListener(String handleId) {
+        //UnRegisters the Service Repository Listener for the specific client(Based on handleID)
+        dapiEventManager.unRegisterMicroServiceRepoEventListener(handleId);
+    }
+
+    public void unRegisterServerStateListener(String handleId) {
+        //unregisters the Peer Server status Listener for the specific client(Based on handleID)
+        dapiEventManager.unRegisterServerStateListener(handleId);
+    }
+
+    public void unRegisterConfigurationRepositoryListener(String handleId) {
+        //unregisters the Peer Server status Listener for the specific client(Based on handleID)
+        dapiEventManager.unRegisterConfigurationRepositoryEventListener(handleId);
+    }
+
+    public synchronized List getIPAliases()
+    {
+        if(ipAliases!=null){
+            return ipAliases;
+        }
+        ipAliases = new ArrayList();
+
+        try
+        {
+            NetworkInterface iface;
+            // changed to include all ip's from all network cards.
+            for(Enumeration ifaces = NetworkInterface.getNetworkInterfaces();ifaces.hasMoreElements();){
+
+                iface = (NetworkInterface)ifaces.nextElement();
+
+                InetAddress ia;
+                for(Enumeration ips =    iface.getInetAddresses();ips.hasMoreElements();)
+                {
+                    ia = (InetAddress)ips.nextElement();
+                    // The check here get all the ip aliases from all the network cards except for
+                    // loopback addresses. we obviously wont want the loop back addresses as the FPS address
+                    // Inet4 address check is to prevent mac addresses from returning.
+                    // - prasanna
+                    if(ia instanceof Inet4Address && !ia.isLoopbackAddress())
+                    {
+                        String address = ia.getHostAddress();
+                        String name = ia.getHostName();
+                        ipAliases.add(name);
+                        ipAliases.add(address);
+                    }
+                }
+            }
+            // in case we launch the component without connected to the network, the only
+            // available address will be loopback addresses. Hence we need to get the hostname
+            // and add it here
+
+            if(ipAliases.isEmpty()){
+                ipAliases.add(InetAddress.getLocalHost().getHostName().toUpperCase());
+                ipAliases.add(InetAddress.getLocalHost().getHostAddress());
+            }
+            String hostname =  rmiConnector.getRmiConnectorConfig().getHostname();
+            if(hostname!=null && !hostname.trim().isEmpty())
+                ipAliases.add((hostname));
+        }
+        catch (Throwable e)
+        {
+            // do not do anything. This won't make lot of difference.
+        }
+        return ipAliases;
     }
 }

@@ -1,5 +1,6 @@
 package com.fiorano.openesb.rmiconnector.impl;
 
+import com.fiorano.openesb.application.application.ApplicationReference;
 import com.fiorano.openesb.application.configuration.data.NamedObject;
 import com.fiorano.openesb.application.configuration.data.ObjectCategory;
 import com.fiorano.openesb.events.*;
@@ -262,7 +263,35 @@ public class DapiEventManager implements EventListener {
                      }
                  }
              }
-         } else if (event instanceof MicroServiceEvent) {
+          synchronized (applicationRepoEventListeners) {
+            Enumeration keys = applicationRepoEventListeners.keys();
+            while (keys.hasMoreElements()) {
+                final String handleId = (String) keys.nextElement();
+                final IRepoEventListener repositoryEventListener = applicationRepoEventListeners.get(handleId);
+                exec.execute(new Runnable() {
+                    public void run() {
+                        try {
+                            // synchronizing access to epDeploymentHandleIds & epDeletionHandleIds as their respective
+                            // events are fired before they can be populated with handleIds
+                            ApplicationEvent.ApplicationEventType eventType = appEvent.getApplicationEventType();
+                            if (eventType.equals(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED)
+                                    || eventType.equals(ApplicationEvent.ApplicationEventType.APPLICATION_UPDATED)|| eventType.equals(ApplicationEvent.ApplicationEventType.APPLICATION_RENAMED)) {
+                                repositoryEventListener.applicationDeployed(appGUID, appVersion, appEvent.getHandleID());
+                            } else if (eventType.equals(ApplicationEvent.ApplicationEventType.APPLICATION_DELETED)) {
+                                repositoryEventListener.applicationDeleted(appGUID, appVersion, appEvent.getHandleID());
+                            }
+
+                        } catch (NoSuchObjectException e) {
+                            //ignore
+                        }
+                        catch (Throwable t) {
+                            //logger.error(Bundle.class, Bundle.ERROR_SEND_APPLICATION_EVENT, clientIPAddresses.get(handleId), appGUID, appEvent.getEventDescription(), t);
+                        }
+                    }
+                });
+            }
+        }
+    } else if (event instanceof MicroServiceEvent) {
              final MicroServiceEvent serviceEvent = (MicroServiceEvent) event;
              final String appGUID = serviceEvent.getApplicationGUID();
              final String appVersion = serviceEvent.getApplicationVersion();

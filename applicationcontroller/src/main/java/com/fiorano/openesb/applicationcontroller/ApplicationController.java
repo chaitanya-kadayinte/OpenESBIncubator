@@ -3,6 +3,9 @@ package com.fiorano.openesb.applicationcontroller;
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
+import com.fiorano.openesb.events.ApplicationEvent;
+import com.fiorano.openesb.events.Event;
+import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.ccp.IEventListener;
 import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
@@ -32,6 +35,7 @@ public class ApplicationController {
     private Map<String, Application> savedApplicationMap = new HashMap<>();
     private RouteService routeService;
     private SecurityManager securityManager;
+    private EventsManager eventsManager;
 
     //To store the list of applications referring particular component(key) and values(Event_Process)
     private HashMap<String, Set<String>> COMPONENTS_REFERRING_APPS;
@@ -46,6 +50,7 @@ public class ApplicationController {
         this.applicationRepository = applicationRepository;
         routeService = context.getService(context.getServiceReference(RouteService.class));
         microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
+        eventsManager = context.getService(context.getServiceReference(EventsManager.class));
         CCPEventManager ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
@@ -128,6 +133,9 @@ public class ApplicationController {
         float version = application.getVersion();
         // boolean applicationExists = applicationRepository.applicationExists(appGuid, version);
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
+        savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
+        ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED, Event.EventCategory.INFORMATION,
+                appGuid, application.getDisplayName(),String.valueOf(version), "Application saved Successfully");
     }
 
     public void saveApplication(Application application, boolean skipManagableProps, String handleID) throws FioranoException {
@@ -235,6 +243,9 @@ public class ApplicationController {
         if (appHandle != null) {
             appHandle.setApplication(application);
         }
+        savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
+        ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED, Event.EventCategory.INFORMATION,
+                application.getGUID(), application.getDisplayName(), String.valueOf(application.getVersion()), "Application saved Successfully");
     }
 
     /**
@@ -286,12 +297,14 @@ public class ApplicationController {
             Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
             Application currentApplication = applicationRepository.readApplication(currentGUID, String.valueOf(currentVersion));
             if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
-                    ApplicationHandle appHandle = new ApplicationHandle(currentApplication, microServiceLauncher, routeService,transport);
+                    ApplicationHandle appHandle = new ApplicationHandle(this, currentApplication, microServiceLauncher, routeService,transport);
                     appHandle.createRoutes();
+                ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_LAUNCHED, Event.EventCategory.INFORMATION,
+                        currentGUID, currentApplication.getDisplayName(), current_AppGUIDAndVersion[1], "Application launched Successfully");
 
-                    appHandle.launchComponents();
-                    applicationHandleMap.put(getKey(appGuid,version),appHandle);
-                    System.out.println("Launched application: "+appGuid+":"+version);
+                appHandle.launchComponents();
+                    applicationHandleMap.put(getKey(currentGUID,current_AppGUIDAndVersion[1]),appHandle);
+                    System.out.println("Launched application: "+currentGUID+":"+current_AppGUIDAndVersion[1]);
             }
         }
         return true;
@@ -310,6 +323,8 @@ public class ApplicationController {
                 ApplicationHandle applicationHandle = getApplicationHandle(currentGUID, currentVersion, handleID);
                 applicationHandle.stopApplication();
                 applicationHandleMap.remove(app_version);
+                ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_STOPPED, Event.EventCategory.INFORMATION,
+                        currentGUID, applicationHandle.getApplication().getDisplayName(), String.valueOf(currentVersion), "Application stopped Successfully");
             }
         }
         System.out.println("Stopped application: "+appGuid+":"+version);
@@ -377,6 +392,9 @@ public class ApplicationController {
             throw new FioranoException("Cannot delete running Application. Stop the Application and then delete");
         }
         applicationRepository.deleteApplication(appGUID, version);
+        ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_DELETED, Event.EventCategory.INFORMATION,
+                appGUID, null, version, "Application Deleted Successfully");
+
     }
 
     public ApplicationHandle getApplicationHandle(String appGUID, float appVersion, String handleID) {
@@ -467,11 +485,10 @@ public class ApplicationController {
     public ApplicationStateDetails getCurrentStateOfApplication(String appGUID, float appVersion, String handleId) throws FioranoException{
         ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
         if (appHandle == null) {
-           // logger.error(Bundle.class, Bundle.APPHANDLE_NOT_PRESENT, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(appVersion));
-            throw new FioranoException("APPHANDLE_NOT_PRESENT");
+            return new ApplicationStateDetails();
         }
-       // return appHandle.getApplicationDetails();
-        return new ApplicationStateDetails();
+        return appHandle.getApplicationDetails(handleId);
+
     }
 
     public ApplicationReference getHeaderOfSavedApplication(String appGUID, float version, String handleId) {

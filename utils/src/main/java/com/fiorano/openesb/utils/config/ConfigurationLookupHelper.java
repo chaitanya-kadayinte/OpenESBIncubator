@@ -55,8 +55,13 @@ public class ConfigurationLookupHelper {
     public String getValue(String key) {
         return properties.getProperty(key);
     }
+
     public String getValue(String key, String defaultValue) {
         String property = properties.getProperty(key);
         return property != null ? property : defaultValue;
+    }
+
+    public Properties getProperties(){
+        return properties;
     }
 }

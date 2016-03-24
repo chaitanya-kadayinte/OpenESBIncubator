@@ -15,18 +15,18 @@ import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.logging.api.FioranoClientLogger;
 import com.fiorano.openesb.utils.logging.api.IFioranoLogger;
+import org.osgi.framework.FrameworkUtil;
 
 import java.util.Map;
 
-public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
+public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
     private Process osProcess;
-    private LaunchConfiguration launchConfiguration;
     private CCPCommandHelper ccpCommandHelper;
     private ComponentLifeCycleWorkflow lifeCycleWorkflow;
     private IFioranoLogger coreLogger;
     private boolean shutdownOfCCPComponentInProgress;
-    private EventsManager eventManager = new EventsManager();
+    private EventsManager eventManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     private int numberOfForceShutdownAttempts;
     private volatile boolean isKilling;
     private final Object killSyncObject = new Object();
@@ -39,20 +39,12 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
 
 
     public SeparateProcessRuntimeHandle(Process osProcess, LaunchConfiguration launchConfiguration, CCPCommandHelper ccpCommandHelper) throws FioranoException {
+        super(launchConfiguration);
         this.osProcess = osProcess;
-        this.launchConfiguration = launchConfiguration;
 
         this.ccpCommandHelper = ccpCommandHelper;
 
         coreLogger = new FioranoClientLogger().getLogger("service.launch");
-    }
-
-    private String getServiceInstName() {
-        return launchConfiguration.getServiceName();
-    }
-
-    private String getAppVersion() {
-        return launchConfiguration.getApplicationVersion();
     }
 
     public boolean isRunning() {
@@ -418,11 +410,6 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
 
     private String getNodeName() {
         return "FPS";
-    }
-
-
-    private String getServiceGUID() {
-        return launchConfiguration.getMicroserviceId();
     }
 
     private String getVersion() {
