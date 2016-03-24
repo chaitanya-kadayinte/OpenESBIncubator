@@ -30,14 +30,13 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class InMemoryRuntimeHandle implements MicroServiceRuntimeHandle {
+public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
 
     private Object service;
     private Class serviceClass;
-    private LaunchConfiguration launchConfiguration;
-    private boolean isRunning;
 
     public InMemoryRuntimeHandle(Object service, Class serviceClass, LaunchConfiguration launchConfiguration) {
+        super(launchConfiguration);
         this.service = service;
         this.serviceClass = serviceClass;
         this.launchConfiguration = launchConfiguration;

@@ -55,4 +55,8 @@ public class ConfigurationLookupHelper {
     public String getValue(String key) {
         return properties.getProperty(key);
     }
+
+    public Properties getProperties(){
+        return properties;
+    }
 }

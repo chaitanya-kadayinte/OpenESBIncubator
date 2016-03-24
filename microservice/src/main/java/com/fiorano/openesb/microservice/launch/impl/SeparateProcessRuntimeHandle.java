@@ -18,10 +18,9 @@ import com.fiorano.openesb.utils.logging.api.IFioranoLogger;
 
 import java.util.Map;
 
-public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
+public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
     private Process osProcess;
-    private LaunchConfiguration launchConfiguration;
     private CCPCommandHelper ccpCommandHelper;
     private ComponentLifeCycleWorkflow lifeCycleWorkflow;
     private IFioranoLogger coreLogger;
@@ -39,20 +38,12 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
 
 
     public SeparateProcessRuntimeHandle(Process osProcess, LaunchConfiguration launchConfiguration, CCPCommandHelper ccpCommandHelper) throws FioranoException {
+        super(launchConfiguration);
         this.osProcess = osProcess;
-        this.launchConfiguration = launchConfiguration;
 
         this.ccpCommandHelper = ccpCommandHelper;
 
         coreLogger = new FioranoClientLogger().getLogger("service.launch");
-    }
-
-    private String getServiceInstName() {
-        return launchConfiguration.getServiceName();
-    }
-
-    private String getAppVersion() {
-        return launchConfiguration.getApplicationVersion();
     }
 
     public boolean isRunning() {
@@ -410,11 +401,6 @@ public class SeparateProcessRuntimeHandle implements MicroServiceRuntimeHandle {
 
     private String getNodeName() {
         return "FPS";
-    }
-
-
-    private String getServiceGUID() {
-        return launchConfiguration.getMicroserviceId();
     }
 
     private String getVersion() {
