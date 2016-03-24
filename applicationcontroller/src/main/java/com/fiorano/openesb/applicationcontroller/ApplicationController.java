@@ -303,7 +303,7 @@ public class ApplicationController {
                         currentGUID, currentApplication.getDisplayName(), current_AppGUIDAndVersion[1], "Application launched Successfully");
 
                 appHandle.launchComponents();
-                    applicationHandleMap.put(getKey(currentGUID,current_AppGUIDAndVersion[1]),appHandle);
+                    applicationHandleMap.put(app_version,appHandle);
                     System.out.println("Launched application: "+currentGUID+":"+current_AppGUIDAndVersion[1]);
             }
         }
