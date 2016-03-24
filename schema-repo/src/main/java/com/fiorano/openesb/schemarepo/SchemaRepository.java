@@ -27,6 +27,11 @@ public class SchemaRepository {
     private com.fiorano.openesb.security.SecurityManager securityManager;
 
     private SchemaRepository() {
+        try {
+            startup();
+        } catch (FioranoException e) {
+            e.printStackTrace();
+        }
     }
 
     // fetch the SingleTon Instance of the schema repository
