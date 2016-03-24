@@ -13,8 +13,6 @@
 
 package com.fiorano.openesb.rmiconnector.api;
 
-import com.fiorano.openesb.utils.exception.FioranoException;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.security.Principal;
@@ -171,7 +169,6 @@ public interface IUserSecurityManager extends Remote {
      * @return boolean - true if action is permitted, false otherwise
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
-     * @see com.fiorano.esb.rtl.TifosiConstants class.
      * @since Tifosi2.0
      */
 
@@ -600,27 +597,27 @@ public interface IUserSecurityManager extends Remote {
      * @param isNegative true if user doesn't have module permissions, false otherwise
      * @param permissions String array of permissions to be added
      * @return boolean - true if module permissions are successfully added, false otherwise
-     * @throws FioranoException FioranoException
+     * @throws ServiceException
      */
-    public boolean addModulePermissions(String principalName, boolean isNegative, String... permissions) throws FioranoException;
+    public boolean addModulePermissions(String principalName, boolean isNegative, String... permissions) throws ServiceException, RemoteException;
 
     /**
      * This method checks if the specified permissions are present for the module
      *
      * @param permissionName Name of the permission to be checked
      * @return boolean - true if permission is present, false otherwise
-     * @throws FioranoException FioranoException
+     * @throws ServiceException
      */
-    public boolean checkModulePermission(String permissionName) throws FioranoException;
+    public boolean checkModulePermission(String permissionName) throws ServiceException, RemoteException;
 
     /**
      * This method returns a Map of permissions for the specified user name
      *
      * @param userName Username of the particular User (the user name is case insensitive)
      * @return Map - Map of permissions for the specified user name
-     * @throws FioranoException FioranoException
+     * @throws ServiceException
      */
-    public Map<String, Boolean> getPermissions(String userName) throws FioranoException;
+    public Map<String, Boolean> getPermissions(String userName) throws ServiceException, RemoteException;
 
     /**
      * This method adds a listener to the changes of IUserSecurityManager's object

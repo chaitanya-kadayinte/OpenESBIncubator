@@ -11,6 +11,7 @@ import org.osgi.framework.FrameworkUtil;
  * Created by Janardhan on 3/24/2016.
  */
 public class ApplicationEventRaiser {
+    static EventsManager eventsManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     public static void generateApplicationEvent(ApplicationEvent.ApplicationEventType eventType, Event.EventCategory category, String appGUID,
                                           String appName, String version, String description)
             throws FioranoException
@@ -24,6 +25,6 @@ public class ApplicationEventRaiser {
         event.setApplicationVersion(version);
         event.setEventDescription(description);
         event.setEventCategory(category);
-        ((EventsManager) FrameworkUtil.getBundle(EventsManager.class)).raiseEvent(event);
+        eventsManager.raiseEvent(event);
     }
 }

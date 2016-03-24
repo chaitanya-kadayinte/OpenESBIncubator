@@ -251,14 +251,14 @@ public class UserSecurityManager extends AbstractRmiManager implements IUserSecu
         return clientProxyInstance;
     }
 
-    public boolean addModulePermissions(String principalName, boolean isNegative, String... permissions) throws FioranoException {
+    public boolean addModulePermissions(String principalName, boolean isNegative, String... permissions) throws RemoteException, ServiceException {
         return false;    }
 
-    public boolean checkModulePermission(String permissionName) throws FioranoException {
+    public boolean checkModulePermission(String permissionName) throws RemoteException, ServiceException {
         return false;
     }
 
-    public Map<String, Boolean> getPermissions(String userName) throws FioranoException {
+    public Map<String, Boolean> getPermissions(String userName) throws RemoteException, ServiceException {
         return null;
     }
 
