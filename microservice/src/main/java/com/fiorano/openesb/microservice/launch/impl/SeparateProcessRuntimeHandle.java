@@ -15,6 +15,7 @@ import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.logging.api.FioranoClientLogger;
 import com.fiorano.openesb.utils.logging.api.IFioranoLogger;
+import org.osgi.framework.FrameworkUtil;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     private ComponentLifeCycleWorkflow lifeCycleWorkflow;
     private IFioranoLogger coreLogger;
     private boolean shutdownOfCCPComponentInProgress;
-    private EventsManager eventManager = new EventsManager();
+    private EventsManager eventManager = (EventsManager) FrameworkUtil.getBundle(EventsManager.class);
     private int numberOfForceShutdownAttempts;
     private volatile boolean isKilling;
     private final Object killSyncObject = new Object();
