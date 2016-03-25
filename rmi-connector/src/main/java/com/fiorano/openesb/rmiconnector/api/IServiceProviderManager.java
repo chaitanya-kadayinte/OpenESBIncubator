@@ -15,6 +15,7 @@ package com.fiorano.openesb.rmiconnector.api;
 import java.rmi.RemoteException;
 import java.rmi.Remote;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This interface provides methods to get various details of the Fiorano Enterprise Server.
@@ -23,6 +24,8 @@ import java.util.HashMap;
  * @version 10
  */
 public interface IServiceProviderManager extends Remote {
+
+    public Map<String, String> getConnectionProperties();
 
     public String getJMSProviderURL();
      /**

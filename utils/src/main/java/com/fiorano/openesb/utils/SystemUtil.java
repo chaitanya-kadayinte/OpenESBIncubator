@@ -1,6 +1,6 @@
 package com.fiorano.openesb.utils;
 
-/*import com.sun.management.OperatingSystemMXBean;*/
+import com.sun.management.OperatingSystemMXBean;
 
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
@@ -12,9 +12,9 @@ public class SystemUtil {
 
     public static Double getProcessCPUUtilization() {
         try {
-           /* OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-            return operatingSystemMXBean.getProcessCpuLoad();*/
-            return -1d;
+            OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+            return operatingSystemMXBean.getProcessCpuLoad();
+            //return -1d;
         } catch (Exception e){
             return -1d;
         }
