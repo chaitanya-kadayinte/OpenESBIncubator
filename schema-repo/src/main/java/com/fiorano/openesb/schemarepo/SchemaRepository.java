@@ -60,6 +60,14 @@ public class SchemaRepository {
             if (!repoFile.exists()){
                 repoFile.mkdirs();
             }
+        META_INF_FILE_NAME = schemaRepositoryFolder + File.separator + SchemaRepoConstants.SCHEMA_USER_REPOSITORY +
+                File.separator + SchemaRepoConstants.SCHEMA_XML_CATALOG_FILE;
+        try {
+            srh = SchemaRepositoryHandler.getInstance(META_INF_FILE_NAME, fiorano_home);
+        } catch (FioranoException e) {
+            //logger.error(Bundle.class, Bundle.FAIL_FETCH_SCHEMA_REPOSITORY_HANDLER_INSTANCE, e);
+            throw new FioranoException(SchemaErrorCodes.FAIL_FETCH_SCHEMA_REPO_HANDLER_INSTANCE, e);
+        }
     }
 
 
