@@ -13,8 +13,6 @@ import java.util.zip.ZipOutputStream;
  */
 public class SchemaRepository {
 
-    private String fiorano_home;
-
     // SingleTon Instance
     private static SchemaRepository m_schemaRepository;
     private static String META_INF_FILE_NAME;
@@ -63,7 +61,7 @@ public class SchemaRepository {
         META_INF_FILE_NAME = schemaRepositoryFolder + File.separator + SchemaRepoConstants.SCHEMA_USER_REPOSITORY +
                 File.separator + SchemaRepoConstants.SCHEMA_XML_CATALOG_FILE;
         try {
-            srh = SchemaRepositoryHandler.getInstance(META_INF_FILE_NAME, fiorano_home);
+            srh = SchemaRepositoryHandler.getInstance(META_INF_FILE_NAME, System.getProperty("karaf.base"));
         } catch (FioranoException e) {
             //logger.error(Bundle.class, Bundle.FAIL_FETCH_SCHEMA_REPOSITORY_HANDLER_INSTANCE, e);
             throw new FioranoException(SchemaErrorCodes.FAIL_FETCH_SCHEMA_REPO_HANDLER_INSTANCE, e);
