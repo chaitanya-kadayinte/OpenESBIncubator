@@ -15,15 +15,15 @@ import java.util.Set;
  */
 public class ApplicationRepository {
 
-    String applicationRepoPath = System.getProperty("karaf.base") + File.separator + "repository" + File.separator + "applications";
+    String applicationRepoPath;
 
     public ApplicationRepository() {
-
+        applicationRepoPath =ServerConfig.getConfig().getRepositoryPath() + File.separator + "applications";
     }
 
     public Application readApplication(String appGuid, String version) {
         try {
-            return ApplicationParser.readApplication(new File(getApplicationRepoPath() + File.separator + appGuid + File.separator + version), false);
+            return ApplicationParser.readApplication(new File(applicationRepoPath + File.separator + appGuid + File.separator + version), false);
         } catch (FioranoException e) {
             e.printStackTrace();
         }
@@ -266,7 +266,7 @@ public class ApplicationRepository {
 
     public List<String> getApplicationIdWithVersions() {
         List<String> applicationIdVersions = new ArrayList<>();
-        File[] applicationFolders = new File(getApplicationRepoPath()).listFiles();
+        File[] applicationFolders = new File(applicationRepoPath).listFiles();
         if (applicationFolders != null) {
             for (File appFolder : applicationFolders) {
                 String applicationGUID = appFolder.getName();
@@ -282,7 +282,7 @@ public class ApplicationRepository {
     }
 
     public String[] getApplicationIds() {
-        File[] appFolders = new File(getApplicationRepoPath()).listFiles();
+        File[] appFolders = new File(applicationRepoPath).listFiles();
         String applicationIds[] = new String[appFolders.length];
         int i = 0;
         for (File f : appFolders) {
@@ -292,7 +292,7 @@ public class ApplicationRepository {
     }
 
     public float[] getAppVersions(String id) throws FioranoException {
-        File appFolder = new File(getApplicationRepoPath() + File.separator + id);
+        File appFolder = new File(applicationRepoPath + File.separator + id);
         if (!appFolder.exists()) {
             throw new FioranoException("application does not exists");
         }

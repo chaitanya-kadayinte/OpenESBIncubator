@@ -67,6 +67,13 @@ public class SecurityManager {
         return null;
     }
 
+    public String getPassword(String handleID) {
+        if(connectionHandleMap.containsKey(handleID)){
+            return connectionHandleMap.get(handleID).getPassword();
+        }
+        return null;
+    }
+
     public List getUsers(){
        List<UserPrincipal> list =  backingEngine.listUsers();
         List<String> usersList = new ArrayList<String>();

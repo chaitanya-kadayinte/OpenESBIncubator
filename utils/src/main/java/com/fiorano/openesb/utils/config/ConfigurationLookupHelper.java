@@ -20,31 +20,81 @@
  */
 package com.fiorano.openesb.utils.config;
 
+import com.fiorano.openesb.utils.ConfigReader;
+
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 public class ConfigurationLookupHelper {
     private static ConfigurationLookupHelper CONFIGURATION_LOOKUP_HELPER = new ConfigurationLookupHelper();
     private Properties properties;
+    private String userName = "karaf";
+    private String password = "karaf";
+    private String brokerURL ="tcp://localhost:61616?wireFormat.maxInactivityDuration=0";
+    private String jmxURL = "service:jmx:rmi:///jndi/rmi://localhost:1099/karaf-root";
+    private String providerURL = "tcp://localhost:61616";
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setuserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setpassword(String password) {
+        this.password = password;
+    }
+
+    public String getBrokerURL() {
+        return brokerURL;
+    }
+
+    public void setbrokerURL(String brokerURL) {
+        this.brokerURL = brokerURL;
+    }
+
+    public String getJmxURL() {
+        return jmxURL;
+    }
+
+    public void setjmxURL(String jmxURL) {
+        this.jmxURL = jmxURL;
+    }
+
+    public String getProviderURL() {
+        return providerURL;
+    }
+
+    public void setproviderURL(String providerURL) {
+        this.providerURL = providerURL;
+    }
 
     private ConfigurationLookupHelper() {
-        InputStream inputStream = null;
+        File configFile = new File(System.getProperty("karaf.base") + File.separator
+                + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg");
+        if (!configFile.exists()) {
+            return;
+        }
         try {
+            ConfigReader.readConfigFromPropertiesFile(configFile, this);
             properties = new Properties();
-            String propFileName = System.getProperty("karaf.base") + File.separator + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg";
-            inputStream = new FileInputStream(propFileName);
-            properties.load(inputStream);
-        } catch (Exception e) {
+            ConfigReader.readPropertiesFromFile(configFile, properties);
+        } catch (IOException e) {
             e.printStackTrace();
-            //todo log e
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                //
-            }
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 

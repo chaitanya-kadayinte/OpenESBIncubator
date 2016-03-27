@@ -1,9 +1,16 @@
 package com.fiorano.openesb.rmiconnector.connector;
 
+import com.fiorano.openesb.utils.ConfigReader;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Created by Janardhan on 3/2/2016.
  */
 public class RmiConnectorConfig {
+    private static RmiConnectorConfig rmiConnectorConfig = new RmiConnectorConfig();
     private int     rmiRegistryPort=2099;
     private String  interceptorClassName="fiorano.jmx.connector.FioranoJMXInterceptor";
     /**Port on which Rmi Registry will export the Mx4J RMIConnector stubs.*/
@@ -68,5 +75,26 @@ public class RmiConnectorConfig {
     public void setRmiServerSocketFactoryClassName(String rmiServerSocketFactoryClassName)
     {
         this.rmiServerSocketFactoryClassName=rmiServerSocketFactoryClassName;
+    }
+
+    private RmiConnectorConfig() {
+            File configFile = new File(System.getProperty("karaf.base") + File.separator
+                    + "etc" + File.separator + "com.fiorano.openesb.rmiconnector.cfg");
+            if (!configFile.exists()) {
+                return;
+            }
+            try {
+                ConfigReader.readConfigFromPropertiesFile(configFile, this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+    }
+
+    public static RmiConnectorConfig getConfig(){
+        return rmiConnectorConfig;
     }
 }

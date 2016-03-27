@@ -22,8 +22,8 @@ public class ApplicationLaunchStopTest implements TestCase{
         rmiManager = rmiClient.getRmiManager();
         String handleid = rmiManager.login("karaf", "karaf");
         eventProcessManager = rmiManager.getApplicationManager(handleid);
-        eventProcessManager.startApplication("SIMPLECHAT", "1.0");
-        eventProcessManager.stopApplication("SIMPLECHAT", "1.0");
+        eventProcessManager.startApplication("EVENT_PROCESS2", "1.0");
+        eventProcessManager.stopApplication("EVENT_PROCESS2", "1.0");
         rmiManager.logout(handleid);
     }
 }

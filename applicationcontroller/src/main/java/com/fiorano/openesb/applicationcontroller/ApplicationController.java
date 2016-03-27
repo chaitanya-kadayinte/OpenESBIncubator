@@ -2,7 +2,9 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.application.*;
+import com.fiorano.openesb.application.aps.ApplicationInfo;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
+import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.events.EventsManager;
@@ -16,7 +18,6 @@ import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.data.Data;
 import com.fiorano.openesb.microservice.ccp.event.common.data.MicroserviceConfiguration;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
-import com.fiorano.openesb.route.RouteConfiguration;
 import com.fiorano.openesb.route.RouteService;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.utils.Constants;
@@ -46,6 +47,9 @@ public class ApplicationController {
     //To store the list of applications GUID__Versions which the 'key' application is depends on
     private HashMap<String, Set<String>> DEPEND_APP_LIST;
 
+    // This will be set to true after the applications are started during the server startup
+    private transient boolean appsRestored;
+
     public ApplicationController(ApplicationRepository applicationRepository, BundleContext context) throws Exception {
         this.applicationRepository = applicationRepository;
         routeService = context.getService(context.getServiceReference(RouteService.class));
@@ -71,6 +75,9 @@ public class ApplicationController {
                 }
             }
         }
+        RestoreAppState restoreAppStateThread= new RestoreAppState(1000);
+        restoreAppStateThread.setPriority(Thread.MAX_PRIORITY);
+        restoreAppStateThread.start();
     }
 
     private void registerConfigRequestListener(final CCPEventManager ccpEventManager) throws Exception {
@@ -297,21 +304,21 @@ public class ApplicationController {
             Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
             Application currentApplication = applicationRepository.readApplication(currentGUID, String.valueOf(currentVersion));
             if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
-                    ApplicationHandle appHandle = new ApplicationHandle(this, currentApplication, microServiceLauncher, routeService,transport);
+                    ApplicationHandle appHandle = new ApplicationHandle(this, currentApplication, microServiceLauncher, routeService,transport, securityManager.getUserName(handleID), securityManager.getPassword(handleID));
                     appHandle.createRoutes();
                 ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_LAUNCHED, Event.EventCategory.INFORMATION,
                         currentGUID, currentApplication.getDisplayName(), current_AppGUIDAndVersion[1], "Application launched Successfully");
 
-                appHandle.launchComponents();
-                    applicationHandleMap.put(app_version,appHandle);
-                    System.out.println("Launched application: "+currentGUID+":"+current_AppGUIDAndVersion[1]);
+                appHandle.startAllMicroServices();
+                    updateApplicationHandleMap(appHandle);
+                    System.out.println("Launched application: " + currentGUID + ":" + current_AppGUIDAndVersion[1]);
             }
         }
         return true;
     }
 
     public boolean stopApplication(String appGuid, String version, String handleID) throws Exception {
-        System.out.println("Stopping application: "+appGuid+":"+version);
+        System.out.println("Stopping application: " + appGuid + ":" + version);
         Map<String, Boolean> orderedListOfApplications = getApplicationChainForShutdown(appGuid, Float.parseFloat(version), handleID);
         orderedListOfApplications.put( appGuid +  Constants.NAME_DELIMITER + version, isApplicationRunning(appGuid, Float.parseFloat(version), handleID));
         for (String app_version: orderedListOfApplications.keySet()) {
@@ -322,10 +329,11 @@ public class ApplicationController {
                 ApplicationStateDetails asd;
                 ApplicationHandle applicationHandle = getApplicationHandle(currentGUID, currentVersion, handleID);
                 applicationHandle.stopApplication();
-                applicationHandleMap.remove(app_version);
+                removeApplicationHandleFromMap(currentGUID, String.valueOf(currentVersion));
                 ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_STOPPED, Event.EventCategory.INFORMATION,
                         currentGUID, applicationHandle.getApplication().getDisplayName(), String.valueOf(currentVersion), "Application stopped Successfully");
             }
+
         }
         System.out.println("Stopped application: "+appGuid+":"+version);
         return true;
@@ -343,7 +351,7 @@ public class ApplicationController {
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
-            appHandle.launchComponents();
+            appHandle.startAllMicroServices();
         }
         return true;
     }
@@ -400,6 +408,11 @@ public class ApplicationController {
     public ApplicationHandle getApplicationHandle(String appGUID, float appVersion, String handleID) {
         return applicationHandleMap.get(appGUID+"__"+appVersion);
     }
+
+    public ApplicationHandle getApplicationHandle(String appGUID, float appVersion) {
+        return applicationHandleMap.get(appGUID+"__"+appVersion);
+    }
+
     public boolean isApplicationRunning(String appGUID, float version, String handleID) throws FioranoException {
         return (getApplicationHandle(appGUID, version, handleID) != null);
     }
@@ -487,7 +500,7 @@ public class ApplicationController {
         if (appHandle == null) {
             return new ApplicationStateDetails();
         }
-        return appHandle.getApplicationDetails(handleId);
+        return appHandle.getApplicationDetails();
 
     }
 
@@ -651,6 +664,133 @@ public class ApplicationController {
         result[0] = app_version.substring(0, lastIndexOfDelim);
         result[1] = app_version.substring(lastIndexOfDelim+2);
         return result;
+    }
+
+    public boolean isAppsRestored() {
+        return appsRestored;
+    }
+
+    public void setAppsRestored(boolean appsRestored) {
+        this.appsRestored = appsRestored;
+    }
+
+     /*----------------------start of [Application Restore Thread]----------------------------------------*/
+
+    private class RestoreAppState extends Thread {
+
+        long waitTime = 1000;
+
+        RestoreAppState(long waitTime) {
+            this.waitTime = waitTime;
+        }
+
+        public void run() {
+            restoreApplicationStates(waitTime);
+        }
+    }
+
+    private void restoreApplicationStates(long waitTime) {
+        try {
+            try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException ex) {
+                //ignore
+            }
+
+            //get the Runinng Application List Backup
+            Hashtable appStates = null;
+            Object obj = NamingManagerImpl.GETINSTANCE().lookup(ApplicationControllerConstants.RUNNING_APPLICATION_LIST);
+            if (obj instanceof Hashtable)
+                appStates = (Hashtable) obj;
+
+            if (appStates == null) {
+                setAppsRestored(true);
+                return;
+            }
+
+            Enumeration appIds = appStates.keys();
+
+            // First all the applications are started
+            while (appIds.hasMoreElements()) {
+                String appGuidAndVersion = (String) appIds.nextElement();
+              //  logger.info(Bundle.class, Bundle.APPLICATION_RESTORED, appGuidAndVersion);
+                ApplicationInfo appInfo = (ApplicationInfo) appStates.get(appGuidAndVersion);
+                ApplicationStateDetails appStateDetails = appInfo.getAppStateDetails();
+                try {
+                    ApplicationHandle applicationHandle = new ApplicationHandle(this, savedApplicationMap.get(appGuidAndVersion),microServiceLauncher, routeService, transport, appInfo.getUserName(), appInfo.getPassword() );
+                    ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_LAUNCHED, Event.EventCategory.INFORMATION,
+                            appStateDetails.getAppGUID(), null, appStateDetails.getAppVersion(), "Application launched Successfully");
+
+                    Enumeration<String> enumeration = appStateDetails.getAllServiceNames();
+                    while(enumeration.hasMoreElements()){
+                        String serviceName = enumeration.nextElement();
+                        ServiceInstanceStateDetails instanceStateDetails = appStateDetails.getServiceStatus(serviceName);
+                        if(!instanceStateDetails.isGracefulKill()){
+                            applicationHandle.startMicroService(serviceName);
+                        }
+                    }
+                    updateApplicationHandleMap(applicationHandle);
+                } catch (FioranoException ex1) {
+                    //logger.error(Bundle.class, Bundle.ERROR_RESTORING_APPLICATION, appGuidAndVersion, ex1);
+                    ex1.printStackTrace();
+                    // Log and continue with other applications
+                }
+            }
+        } catch (Throwable ex) {
+           // logger.error(Bundle.class, Bundle.ERROR_RESTORING_STATES, ex);
+            ex.printStackTrace();
+        }
+        setAppsRestored(true);
+    }
+
+    private void updateApplicationHandleMap(ApplicationHandle applicationHandle) {
+        applicationHandleMap.put(applicationHandle.getAppGUID()+Constants.NAME_DELIMITER+applicationHandle.getVersion(), applicationHandle);
+        persistApplicationState(applicationHandle);
+    }
+
+    public void persistApplicationState(ApplicationHandle appHandle) {
+
+        String appID = appHandle.getApplication().getGUID().toUpperCase() +Constants.NAME_DELIMITER+ appHandle.getApplication().getVersion();
+            try {
+                @SuppressWarnings("unchecked")
+                Hashtable<String, ApplicationInfo> appStates = (Hashtable) NamingManagerImpl.GETINSTANCE().lookup(ApplicationControllerConstants.RUNNING_APPLICATION_LIST);
+                if (appStates == null)
+                    appStates = new Hashtable<String, ApplicationInfo>();
+
+                ApplicationInfo appInfo = new ApplicationInfo();
+
+                appInfo.setAppStateDetails(appHandle.getApplicationDetails());
+                appInfo.setUserName(appHandle.getUserName());
+                appInfo.setPassword(appHandle.getPasswd());
+                appInfo.setAppVersion(String.valueOf(appHandle.getVersion()));
+                appStates.put(appID, appInfo);
+                NamingManagerImpl.GETINSTANCE().rebind(ApplicationControllerConstants.RUNNING_APPLICATION_LIST, appStates, true);
+            } catch (Exception ex) {
+                // there can be a NPE in very special case that while FES HA is failing over
+                // while passing the adminservice=null check and before the lookup can be made
+                // the naming manager is shutdown..
+                if (!(ex instanceof NullPointerException))
+                    ex.printStackTrace();
+                    //logger.error(Bundle.class, Bundle.EXCEPTION_UPDATING_STATE_IN_RUNNING_LIST, ex);
+
+            }
+    }
+
+    private void removeApplicationHandleFromMap(String appGuid, String  version) {
+        applicationHandleMap.remove(appGuid+Constants.NAME_DELIMITER+version);
+        try {
+            // look up the admin object where we store the list of running application.
+            Hashtable appStates = (Hashtable) NamingManagerImpl.GETINSTANCE().lookup(ApplicationControllerConstants.RUNNING_APPLICATION_LIST);
+            if (appStates != null) {
+                appStates.remove(appGuid.toUpperCase() + Constants.NAME_DELIMITER + version);
+                // Admin service will rebind after making the changes.
+                NamingManagerImpl.GETINSTANCE().rebind(ApplicationControllerConstants.RUNNING_APPLICATION_LIST, appStates, true);
+            }
+        } catch (FioranoException ex) {
+            //logger.error(Bundle.class, Bundle.EXCEPTION_WHILE_REMOVING_APPHANDLE, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(appVersion), ex.toString());
+            ex.printStackTrace();
+        }
+
     }
 
 }

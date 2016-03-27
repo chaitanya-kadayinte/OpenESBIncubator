@@ -29,28 +29,13 @@ public class RmiConnector {
     private RMIClientSocketFactory csf;
     FioranoNamingService namingService;
     private JMXConnectorServer connectorServer;
-    private RmiConnectorConfig rmiConnectorConfig;
 
     public RmiConnector(){
-        rmiConnectorConfig = new RmiConnectorConfig();
-        try {
-            File configFile = new File(System.getProperty("karaf.base") + File.separator
-                    + "etc" + File.separator + "com.fiorano.openesb.rmiconnector.cfg");
-            if(!configFile.exists()){
-                return;
-            }
-            ConfigReader.readConfigFromProperties(configFile, rmiConnectorConfig);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public RmiConnectorConfig getRmiConnectorConfig(){
-        return rmiConnectorConfig;
+        return RmiConnectorConfig.getConfig();
     }
 
     public void createService()
@@ -58,7 +43,7 @@ public class RmiConnector {
     {
         try
         {
-            System.setProperty("java.rmi.server.hostname", rmiConnectorConfig.getHostname());
+            System.setProperty("java.rmi.server.hostname", RmiConnectorConfig.getConfig().getHostname());
             //Start Naming Service first.
             FioranoRMIMasterSocketFactory masterfac = FioranoRMIMasterSocketFactory.getInstance();
             List factories = masterfac.getSocketFactories("FioranoRMIServerSocketFactory",
@@ -68,7 +53,7 @@ public class RmiConnector {
             ssf =(RMIServerSocketFactory)factories.get(1);
             setRmiRegistryIpAddress();// ---->do before starting fiorano naming service !
             //namingService = new FioranoNamingService(rmiConnectorConfig.getRmiRegistryPort(),csf,ssf);
-            namingService = new FioranoNamingService(rmiConnectorConfig.getRmiRegistryPort(),csf,ssf);
+            namingService = new FioranoNamingService(RmiConnectorConfig.getConfig().getRmiRegistryPort(),csf,ssf);
             namingService.start();
 
             /*JMXServiceURL address = new JMXServiceURL("rmi", rmiConnectorConfig.getHostname(), rmiConnectorConfig.getRMIServerPort(), "/fiorano");
@@ -117,7 +102,7 @@ public class RmiConnector {
 */
             //connectorServer.start();
 
-            System.out.println("rmi registry listening on " + rmiConnectorConfig.getRmiRegistryPort());
+            System.out.println("rmi registry listening on " + RmiConnectorConfig.getConfig().getRmiRegistryPort());
         }
         catch (Exception ex)
         {

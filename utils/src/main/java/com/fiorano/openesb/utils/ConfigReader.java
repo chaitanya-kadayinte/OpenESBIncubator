@@ -12,13 +12,12 @@ import java.util.Properties;
  * Created by Janardhan on 3/3/2016.
  */
 public class ConfigReader {
-    public static void readConfigFromProperties(File configFile, Object configObject) throws IOException, InvocationTargetException, IllegalAccessException {
+    public static void readConfigFromPropertiesFile(File configFile, Object configObject) throws IOException, InvocationTargetException, IllegalAccessException {
        if(!configFile.exists()){
            return;
        }
         Properties properties = new Properties();
-        try (FileInputStream inStream = new FileInputStream(configFile)){
-            properties.load(inStream);
+        readPropertiesFromFile(configFile, properties);
             Method[] methods = configObject.getClass().getMethods();
             for (Method m : methods) {
                 if (m.getName().startsWith("set") && !m.getName().startsWith("setClass")) {
@@ -28,7 +27,14 @@ public class ConfigReader {
                     }
                 }
             }
-        }
+    }
 
+    public static void readPropertiesFromFile(File configFile, Properties properties) throws IOException, InvocationTargetException, IllegalAccessException {
+        if(!configFile.exists()){
+            return;
+        }
+        try (FileInputStream inStream = new FileInputStream(configFile)){
+            properties.load(inStream);
+        }
     }
 }
