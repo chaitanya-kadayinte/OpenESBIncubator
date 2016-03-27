@@ -54,7 +54,7 @@ public class ApplicationHandle {
 
     private String userName;
 
-    public ApplicationHandle(ApplicationController applicationController, Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService, TransportService transport){
+    public ApplicationHandle(ApplicationController applicationController, Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService, TransportService transport, String userName, String passwd){
         this.applicationController = applicationController;
         this.application = application;
         this.service = service;
@@ -64,10 +64,52 @@ public class ApplicationHandle {
         this.version = application.getVersion();
         this.launchTime = System.currentTimeMillis();
         this.environmentLabel = application.getLabel();
+        this.userName = userName;
+        this.passwd = passwd;
     }
 
     public Application getApplication(){
         return application;
+    }
+
+    public MicroServiceLauncher getService() {
+        return service;
+    }
+
+    public void setService(MicroServiceLauncher service) {
+        this.service = service;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPasswd() {
+        return passwd;
+    }
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
+    }
+
+    public float getVersion() {
+        return version;
+    }
+
+    public void setVersion(float version) {
+        this.version = version;
+    }
+
+    public String getAppGUID() {
+        return appGUID;
+    }
+
+    public void setAppGUID(String appGUID) {
+        this.appGUID = appGUID;
     }
 
     public void createRoutes() throws Exception {
@@ -140,7 +182,7 @@ public class ApplicationHandle {
         return application.getGUID() + "__" + application.getVersion() + "__" + sourceServiceInstance + "__" + portInstance;
     }
 
-    public void launchComponents() {
+    public void startAllMicroServices() {
         for (ServiceInstance instance : application.getServiceInstances()) {
             String instanceName = instance.getName();
             MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
@@ -235,7 +277,7 @@ public class ApplicationHandle {
         ServiceInstance instance = application.getServiceInstance(microServiceName);
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
         try {
-            microServiceHandleList.put(microServiceName, service.launch(mslc,instance.getConfiguration()));
+            microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
         } catch (Exception e) {
             throw new FioranoException(e);
         }
@@ -261,7 +303,7 @@ public class ApplicationHandle {
     }
 
 
-    public ApplicationStateDetails getApplicationDetails(String handleID) throws FioranoException {
+    public ApplicationStateDetails getApplicationDetails() throws FioranoException {
 
 
        // logger.debug(Bundle.class, Bundle.EXECUTING_CALL, "getApplicationDetails()");
@@ -291,7 +333,7 @@ public class ApplicationHandle {
         for (Object o : application.getRemoteServiceInstances()) {
             RemoteServiceInstance extInstance = (RemoteServiceInstance) o;
             String extAppGUID = extInstance.getApplicationGUID();
-            ApplicationHandle extAppHandle = applicationController.getApplicationHandle(extAppGUID, extInstance.getApplicationVersion(), handleID);
+            ApplicationHandle extAppHandle = applicationController.getApplicationHandle(extAppGUID, extInstance.getApplicationVersion());
 
             if (extAppHandle == null) {
                // logger.error(Bundle.class, Bundle.APPHANDLE_NOT_PRESENT, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(application.getVersion()));
@@ -339,5 +381,4 @@ public class ApplicationHandle {
     private MicroServiceRuntimeHandle getMicroServiceHandle(String serviceName){
         return microServiceHandleList.get(serviceName);
     }
-
 }

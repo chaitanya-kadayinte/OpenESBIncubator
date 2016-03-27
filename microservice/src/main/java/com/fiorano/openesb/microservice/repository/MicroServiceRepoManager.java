@@ -22,11 +22,13 @@ package com.fiorano.openesb.microservice.repository;
 
 import com.fiorano.openesb.application.DmiObject;
 import com.fiorano.openesb.application.DmiResourceData;
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.application.sps.ServiceSearchContext;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.events.MicroServiceRepoUpdateEvent;
+import com.fiorano.openesb.microservice.launch.MicroServiceRepoEventRaiser;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.*;
@@ -55,8 +57,7 @@ public class MicroServiceRepoManager {
     }
 
     public String getRepositoryLocation() {
-        File karafBase = new File(System.getProperty("karaf.base"));
-        return karafBase +  File.separator + "repository" + File.separator + "microservices";
+        return ServerConfig.getConfig().getRepositoryPath() + File.separator + "microservices";
     }
 
     /**
@@ -718,7 +719,9 @@ public class MicroServiceRepoManager {
                     moveCompletedResourceFilesToRepository(serviceGUID,version);
                     new File(servicePath+ File.separator+ TEMP_DOWNLOAD_DIR).delete();
                 }
-                generateMicroServiceRepoUpdateEvent(serviceGUID, version, resName, MicroServiceRepoUpdateEvent.RESOURCE_UPLOADED);
+                //generateMicroServiceRepoUpdateEvent(serviceGUID, version, resName, MicroServiceRepoUpdateEvent.RESOURCE_UPLOADED);
+                MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, resName,
+                        MicroServiceRepoUpdateEvent.RESOURCE_UPLOADED, Event.EventCategory.INFORMATION, "");
             }
         }
         catch (Exception e)
@@ -866,13 +869,17 @@ public class MicroServiceRepoManager {
             if(serviceDeleted){
                 // Fix :: Bug ID :: 7300 :: Start
                 // generate service updation event
-                generateMicroServiceRepoUpdateEvent(sps.getGUID(), "" + sps.getVersion(), MicroServiceRepoUpdateEvent.SERVICE_OVERWRITTEN);
+                //generateMicroServiceRepoUpdateEvent(sps.getGUID(), "" + sps.getVersion(), MicroServiceRepoUpdateEvent.SERVICE_OVERWRITTEN);
+                MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
+                        MicroServiceRepoUpdateEvent.SERVICE_OVERWRITTEN, Event.EventCategory.INFORMATION, "");
                 // Fix :: Bug ID :: 7300 :: End
 
             } else{
                 // Fix :: Bug ID :: 7300 :: Start
                 // generate service updation event
-                generateMicroServiceRepoUpdateEvent(sps.getGUID(), "" + sps.getVersion(), MicroServiceRepoUpdateEvent.SERVICE_CREATED);
+                //generateMicroServiceRepoUpdateEvent(sps.getGUID(), "" + sps.getVersion(), MicroServiceRepoUpdateEvent.SERVICE_CREATED);
+                MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
+                        MicroServiceRepoUpdateEvent.SERVICE_CREATED, Event.EventCategory.INFORMATION, "");
                 // Fix :: Bug ID :: 7300 :: End
 
             }
@@ -933,7 +940,9 @@ public class MicroServiceRepoManager {
 
             // Fix :: Bug ID :: 7300 :: Start
             // generate service updation event
-            generateMicroServiceRepoUpdateEvent(serviceGUID, "" + version, MicroServiceRepoUpdateEvent.UNREGISTERED_SERVICE_EDITED);
+           // generateMicroServiceRepoUpdateEvent(serviceGUID, "" + version, MicroServiceRepoUpdateEvent.UNREGISTERED_SERVICE_EDITED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
+                    MicroServiceRepoUpdateEvent.UNREGISTERED_SERVICE_EDITED, Event.EventCategory.INFORMATION, "");
             return new ServiceReference(sps);
         } catch (FioranoException e) {
             throw e;
@@ -1055,7 +1064,9 @@ public class MicroServiceRepoManager {
             // change this info into the hashtable
             m_committedServiceVsProperties.put(getUniqueKey(serviceGUID, version), spsToWrite);
 
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, MicroServiceRepoUpdateEvent.REGISTERED_SERVICE_EDITED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, MicroServiceRepoUpdateEvent.REGISTERED_SERVICE_EDITED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
+                    MicroServiceRepoUpdateEvent.REGISTERED_SERVICE_EDITED, Event.EventCategory.INFORMATION, "");
             return new ServiceReference(spsToWrite);
         } catch (FioranoException e) {
             throw e;
@@ -1157,7 +1168,9 @@ public class MicroServiceRepoManager {
             else
                 m_nonCommittedServiceVsProperties.put(getUniqueKey(serviceGUID, version), sps);
 
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, resrcInfo.getName(), MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, resrcInfo.getName(), MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, resrcInfo.getName(),
+                    MicroServiceRepoUpdateEvent.RESOURCE_CREATED, Event.EventCategory.INFORMATION, "");
         }
         catch (Exception e)
         {
@@ -1199,7 +1212,9 @@ public class MicroServiceRepoManager {
             ComponentRepositoryUtil.writeFileData(icon, iconFileBytes);
 
             // Generate an event.
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, iconFileName,
+                    MicroServiceRepoUpdateEvent.RESOURCE_CREATED, Event.EventCategory.INFORMATION, "");
         }
         catch (Exception e)
         {
@@ -1246,7 +1261,9 @@ public class MicroServiceRepoManager {
             }
 
             // Generate an event.
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, iconFileName,
+                    MicroServiceRepoUpdateEvent.RESOURCE_CREATED, Event.EventCategory.INFORMATION, "");
         }
     }
     /**
@@ -1288,7 +1305,9 @@ public class MicroServiceRepoManager {
             }
 
             // Generate an event.
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, iconFileName,
+                    MicroServiceRepoUpdateEvent.RESOURCE_CREATED, Event.EventCategory.INFORMATION, "");
         }
 
     }
@@ -1324,7 +1343,9 @@ public class MicroServiceRepoManager {
             ComponentRepositoryUtil.writeFileData(icon, iconFileBytes);
 
             // Generate an event.
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, iconFileName, MicroServiceRepoUpdateEvent.RESOURCE_CREATED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, iconFileName,
+                    MicroServiceRepoUpdateEvent.RESOURCE_CREATED, Event.EventCategory.INFORMATION, "");
         }
         catch (Exception e)
         {
@@ -1465,8 +1486,9 @@ public class MicroServiceRepoManager {
             else
                 m_nonCommittedServiceVsProperties.put(getUniqueKey(serviceGUID, version), sps);
 
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version,
-                    resrcInfo.getName(), MicroServiceRepoUpdateEvent.RESOURCE_REMOVED);
+           // generateMicroServiceRepoUpdateEvent(serviceGUID, version, resrcInfo.getName(), MicroServiceRepoUpdateEvent.RESOURCE_REMOVED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, resrcInfo.getName(),
+                    MicroServiceRepoUpdateEvent.RESOURCE_REMOVED, Event.EventCategory.INFORMATION, "");
 
         }
         catch (Exception e)
@@ -1566,7 +1588,9 @@ public class MicroServiceRepoManager {
             new File(tgt, "ServiceDescriptor.xml").delete();
 
 
-            generateMicroServiceRepoUpdateEvent(tgtServiceGUID, strTgtVersion, MicroServiceRepoUpdateEvent.SERVICE_CREATED);
+            //generateMicroServiceRepoUpdateEvent(tgtServiceGUID, strTgtVersion, MicroServiceRepoUpdateEvent.SERVICE_CREATED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(tgtServiceGUID, strTgtVersion, null,
+                    MicroServiceRepoUpdateEvent.SERVICE_CREATED, Event.EventCategory.INFORMATION, "");
             //bug 4193 fix
 
             // Bug# 10774
@@ -1691,7 +1715,9 @@ public class MicroServiceRepoManager {
 
             ServiceReference header = removeServiceVersion(serviceGUID, version);
 
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version, MicroServiceRepoUpdateEvent.SERVICE_REMOVED);
+            //generateMicroServiceRepoUpdateEvent(serviceGUID, version, MicroServiceRepoUpdateEvent.SERVICE_REMOVED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
+                    MicroServiceRepoUpdateEvent.SERVICE_REMOVED, Event.EventCategory.INFORMATION, "");
             return header;
         } catch (FioranoException e) {
             throw e;
@@ -2255,8 +2281,8 @@ public class MicroServiceRepoManager {
             m_nonCommittedServiceVsProperties.remove(getUniqueKey(serviceGUID, version));
             // add it to committed services
             m_committedServiceVsProperties.put(getUniqueKey(serviceGUID, version), sps);
-            generateMicroServiceRepoUpdateEvent(serviceGUID, version,
-                    MicroServiceRepoUpdateEvent.SERVICE_REGISTERED);
+            MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
+                    MicroServiceRepoUpdateEvent.SERVICE_REGISTERED, Event.EventCategory.INFORMATION, "");
             
             return new ServiceReference(sps);
         } catch (FioranoException e) {

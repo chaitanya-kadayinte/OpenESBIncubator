@@ -157,7 +157,7 @@ public class RmiManager implements IRmiManager{
             } catch (ServerNotActiveException e) {
                 //ignore.we will never get it.we will allways be in a remote call.
             }
-            securityManager.addConnectionHandle(handleId, new ConnectionHandle(handleId, userName, agent, clientIP));
+            securityManager.addConnectionHandle(handleId, new ConnectionHandle(handleId, userName, password, agent, clientIP));
         } catch (LoginException e) {
             throw new ServiceException(e.getMessage());
         }

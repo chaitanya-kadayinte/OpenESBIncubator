@@ -1,5 +1,6 @@
 package com.fiorano.openesb.schemarepo;
 
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.SchemaReference;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
@@ -70,8 +71,7 @@ public class SchemaRepository {
 
 
     public String getRepositoryLocation() {
-        File karafBase = new File(System.getProperty("karaf.base"));
-        return karafBase +  File.separator + "repository" + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME;
+        return ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME;
     }
 
     public String getModuleName() {

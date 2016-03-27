@@ -1,5 +1,6 @@
 package com.fiorano.openesb.namedconfig;
 
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.ApplicationParser;
 import com.fiorano.openesb.application.configuration.data.DataObject;
 import com.fiorano.openesb.application.configuration.data.NamedObject;
@@ -37,8 +38,7 @@ public class NamedConfigRepository  {
     }
 
     private String getBaseRepositoryLocation() {
-        File karafBase = new File(System.getProperty("karaf.base"));
-        return karafBase +  File.separator + "repository";
+        return ServerConfig.getConfig().getRepositoryPath();
     }
 
     /**

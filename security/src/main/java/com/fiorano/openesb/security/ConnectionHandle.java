@@ -6,14 +6,24 @@ public class ConnectionHandle implements Serializable
 {
     private String  m_strConnectionID;
     private String  m_strUserName;
+    private String password;
     private String m_strAgent;
     private String m_strIP;
-    public ConnectionHandle(String connectionID, String username, String agent, String clientIP)
+    public ConnectionHandle(String connectionID, String username, String password, String agent, String clientIP)
     {
         m_strConnectionID = connectionID;
         m_strUserName = username;
+        this.password = password;
         m_strAgent = agent;
         m_strIP = clientIP;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getUserName()
