@@ -65,6 +65,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     }
     public void stop() throws Exception {
         killComponent(true, false, "General");
+        gracefulKill = true;
     }
 
     public void kill() {
@@ -379,7 +380,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
         String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUND, getServiceInstName(), getNodeName());
         servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUND);
         generateMicroServiceEvent(EventIds.SERVICE_HANDLE_BOUND, Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_BOUND, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
-
+        strStatus="RUNNING";
     }
 
     private void generateServiceKillFailedEvent(String reason) throws FioranoException {
@@ -407,7 +408,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     private void generateServiceBoundingEvent() throws FioranoException {
         bServiceDestroyed = false;
         String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUNDING, getServiceInstName(), getNodeName());
-        servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUNDING);
+        servStateDetails.setStatusString("STARTING");
         generateMicroServiceEvent(EventIds.SERVICE_HANDLE_BOUNDING, Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_BOUNDING, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
 
     }
@@ -461,7 +462,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
             else
                 message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_UNBOUND1, getServiceInstName(), getNodeName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
 
-            servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
+            servStateDetails.setStatusString("STOPPED");
             generateServiceEvent(EventIds.SERVICE_HANDLE_UNBOUND, isWarning ? Event.EventCategory.WARNING : Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_UNBOUND,
                     getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
         }
