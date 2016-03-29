@@ -10,8 +10,8 @@ import java.lang.reflect.InvocationTargetException;
  * Created by Janardhan on 3/27/2016.
  */
 public class ServerConfig {
-    private String repositoryPath="../esb/server/repository";
-    private String runtimeDataPath="../data";
+    private String repositoryPath="./esb/server/repository";
+    private String runtimeDataPath="./data";
     private long CCPTimeOut=5000;
     private long applicationStateRestoreWaitTime=5000;
 
