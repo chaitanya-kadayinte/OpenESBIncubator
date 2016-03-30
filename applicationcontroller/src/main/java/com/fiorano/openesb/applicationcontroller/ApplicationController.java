@@ -93,6 +93,9 @@ public class ApplicationController {
                             MicroserviceConfiguration microserviceConfiguration = new MicroserviceConfiguration();
                             Application application = applicationRepository.readApplication(getAppName(event), getAppVersion(event));
                             String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
+                            if(configuration==null){
+                                configuration="";
+                            }
                             microserviceConfiguration.setConfiguration(configuration);
                             Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                             data.put(request,microserviceConfiguration);

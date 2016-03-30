@@ -18,7 +18,7 @@ public class MicroServiceEvent extends SystemEvent{
     private String m_strAppVersion;
 
     public enum MicroServiceEventType{
-        SERVICE_LAUNCHED, SERVICE_STOPPED, SERVICE_REGISTERED, SERVICE_DELETED, SERVICE_LAUNCHING;
+        SERVICE_LAUNCHED, SERVICE_STOPPED, SERVICE_LAUNCHING, SERVICE_LAUNCH_FAILED, SERVICE_STOP_FAILED;
     }
 
     private MicroServiceEventType microServiceEventType;
