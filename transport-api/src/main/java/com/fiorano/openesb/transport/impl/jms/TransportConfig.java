@@ -24,6 +24,8 @@ import com.fiorano.openesb.utils.ConfigReader;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class TransportConfig {
@@ -134,5 +136,13 @@ public class TransportConfig {
     }
     public Properties getProperties(){
         return properties;
+    }
+
+    public Map<String, String> getConnectionProperties(){
+        Properties properties = TransportConfig.getInstance().getProperties();
+        Map<String, String> map = new HashMap<>();
+        for (String name: properties.stringPropertyNames())
+            map.put(name, properties.getProperty(name));
+        return map;
     }
 }

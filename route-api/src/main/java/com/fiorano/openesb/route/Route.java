@@ -29,4 +29,6 @@ public interface Route<M extends Message> {
     void changeTargetDestination(PortConfiguration portConfiguration) throws Exception;
     void changeSourceDestination(PortConfiguration portConfiguration) throws Exception;
     void handleMessage(M message) throws Exception;
+    String getSourceDestinationName();
+    String getTargetDestinationName();
 }

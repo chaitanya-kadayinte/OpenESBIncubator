@@ -24,11 +24,14 @@ import com.fiorano.openesb.utils.Constants;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.security.SecurityManager;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
 
 public class ApplicationController {
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
     private TransportService transport;
     private ApplicationRepository applicationRepository;
     private MicroServiceLauncher microServiceLauncher;
@@ -129,14 +132,14 @@ public class ApplicationController {
 
     public void saveApplication(File appFileFolder, String handleID, byte[] zippedContents) throws FioranoException {
         String userName = securityManager.getUserName(handleID);
-        System.out.println("saving Application");
+        logger.info("saving Application");
         Application application = null;
         application = ApplicationParser.readApplication(appFileFolder, Application.Label.none.toString(), false, false);
         try {
             application.validate();
         } catch (FioranoException e3){
             //this would led some corrupted application to enter into the repository, which could be deleted
-            e3.printStackTrace();
+            logger.error("error occured while validating application",e3);
             //we can fail this step if we want
         }
         String appGuid = application.getGUID();
@@ -298,7 +301,7 @@ public class ApplicationController {
     }
 
     public boolean launchApplication(String appGuid, String version, String handleID) throws Exception {
-        System.out.println("Launching application : " + appGuid + ":" + version);
+        logger.info("Launching application : " + appGuid + ":" + version);
 
         Map<String, Boolean> orderedListOfApplications = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
         for (String app_version: orderedListOfApplications.keySet()) {
@@ -314,14 +317,14 @@ public class ApplicationController {
 
                 appHandle.startAllMicroServices();
                     updateApplicationHandleMap(appHandle);
-                    System.out.println("Launched application: " + currentGUID + ":" + current_AppGUIDAndVersion[1]);
+                    logger.info("Launched application: " + currentGUID + ":" + current_AppGUIDAndVersion[1]);
             }
         }
         return true;
     }
 
     public boolean stopApplication(String appGuid, String version, String handleID) throws Exception {
-        System.out.println("Stopping application: " + appGuid + ":" + version);
+        logger.info("Stopping application: " + appGuid + ":" + version);
         Map<String, Boolean> orderedListOfApplications = getApplicationChainForShutdown(appGuid, Float.parseFloat(version), handleID);
         orderedListOfApplications.put( appGuid +  Constants.NAME_DELIMITER + version, isApplicationRunning(appGuid, Float.parseFloat(version), handleID));
         for (String app_version: orderedListOfApplications.keySet()) {
@@ -338,7 +341,7 @@ public class ApplicationController {
             }
 
         }
-        System.out.println("Stopped application: "+appGuid+":"+version);
+        logger.info("Stopped application: " + appGuid + ":" + version);
         return true;
     }
 
@@ -347,7 +350,36 @@ public class ApplicationController {
     }
 
     public boolean synchronizeApplication(String appGuid, String version, String handleID) throws FioranoException{
-        return false;
+        logger.debug("synchronizing Application "+appGuid+":"+version);
+        checkResourceAndConnectivity(appGuid, Float.parseFloat(version), handleID);
+        Map<String, Boolean> orderedList = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
+        for (String app_version : orderedList.keySet()) {
+            String[] appGUIDAndVersion = returnAppGUIDAndVersion(app_version);
+            String currentGUID = appGUIDAndVersion[0];
+            Float currentVersion = Float.valueOf(appGUIDAndVersion[1]);
+            if (!isApplicationRunning(currentGUID, currentVersion, handleID)){
+                try {
+                    launchApplication(currentGUID, String.valueOf(currentVersion), handleID);
+                } catch (Exception e) {
+                    logger.error("APPLICATION_LAUNCH_EXCEPTION", e);
+                }
+            }
+        }
+        String key = appGuid + Constants.NAME_DELIMITER + version;
+        ApplicationHandle applicationHandle = applicationHandleMap.get(key);
+        applicationHandle.synchronizeApplication(savedApplicationMap.get(key));
+        if (REFERRING_APPS_LIST.containsKey(key)){
+            for (String  app_version:REFERRING_APPS_LIST.get(key)){
+                if(!app_version.equals(key)) {
+                    applicationHandle = applicationHandleMap.get(app_version);
+                    if (applicationHandle!=null)
+                        applicationHandle.synchronizeApplication(savedApplicationMap.get(app_version));
+                }
+            }
+        }
+
+        logger.info("APPLICATION_SYNCHRONIZED");
+        return true;
     }
 
     public boolean startAllMicroServices(String appGuid, String version, String handleID) throws FioranoException{
@@ -445,7 +477,7 @@ public class ApplicationController {
             try {
                 toReturn.addElement(new ApplicationReference(appHandle.getApplication()));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("error occured while getting the header of running application", e);
             }
         }
         return toReturn.elements();
@@ -459,7 +491,7 @@ public class ApplicationController {
             try {
                 toReturn.addElement(new ApplicationReference(app));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("error occured while getting the header of saved application", e);
             }
         }
         return toReturn.elements();
@@ -737,13 +769,13 @@ public class ApplicationController {
                     updateApplicationHandleMap(applicationHandle);
                 } catch (FioranoException ex1) {
                     //logger.error(Bundle.class, Bundle.ERROR_RESTORING_APPLICATION, appGuidAndVersion, ex1);
-                    ex1.printStackTrace();
+                    logger.error("", ex1);
                     // Log and continue with other applications
                 }
             }
         } catch (Throwable ex) {
            // logger.error(Bundle.class, Bundle.ERROR_RESTORING_STATES, ex);
-            ex.printStackTrace();
+            logger.error("", ex);
         }
         setAppsRestored(true);
     }
@@ -775,7 +807,7 @@ public class ApplicationController {
                 // while passing the adminservice=null check and before the lookup can be made
                 // the naming manager is shutdown..
                 if (!(ex instanceof NullPointerException))
-                    ex.printStackTrace();
+                    logger.error("", ex);
                     //logger.error(Bundle.class, Bundle.EXCEPTION_UPDATING_STATE_IN_RUNNING_LIST, ex);
 
             }
@@ -793,7 +825,7 @@ public class ApplicationController {
             }
         } catch (FioranoException ex) {
             //logger.error(Bundle.class, Bundle.EXCEPTION_WHILE_REMOVING_APPHANDLE, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(appVersion), ex.toString());
-            ex.printStackTrace();
+            logger.error("", ex);
         }
 
     }
