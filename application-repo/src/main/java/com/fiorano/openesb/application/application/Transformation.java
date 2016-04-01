@@ -36,6 +36,7 @@ public class Transformation extends InflatableDMIObject{
      * Element transformation
      */
     public static final String ELEM_TRANSFORMATION = "transformation";
+    protected String jmsScript;
 
     /**
      * Returns object ID reference of the new transformation
@@ -202,6 +203,14 @@ public class Transformation extends InflatableDMIObject{
     }
 
     /*-------------------------------------------------[ To XML ]---------------------------------------------------*/
+
+    /**
+     * Gets JMS Script which is used in transformation
+     * @return  JMS Script
+     */
+    public String getJMSScript(){
+        return jmsScript;
+    }
 
     /**
      * <transformation factory="string">

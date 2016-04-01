@@ -46,7 +46,7 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
             public void messageReceived(JMSMessage message) {
                 try {
                     handleMessage(message);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     //todo
                     e.printStackTrace();
                 }

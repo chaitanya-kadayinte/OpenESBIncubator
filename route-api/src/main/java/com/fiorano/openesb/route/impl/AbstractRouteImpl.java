@@ -1,8 +1,10 @@
 package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.route.*;
+import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.Message;
-import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,6 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
     public AbstractRouteImpl(List<RouteOperationConfiguration> operationConfigurations) throws Exception {
 
         routeOperationHandlers = new ArrayList<>(operationConfigurations.size());
-        //routeOperationHandlers.add(new CarryForwardContextHandler());
-        //routeOperationHandlers.add(new MessageCreationHandler());
         if (!operationConfigurations.isEmpty()) {
             for (RouteOperationConfiguration configuration : operationConfigurations) {
                 RouteOperationHandler routeOperationHandler = createHandler(configuration);
@@ -28,15 +28,14 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
         if (!routeOperationHandlers.isEmpty()) {
             try {
                 for (RouteOperationHandler handler : routeOperationHandlers) {
+                    LoggerFactory.getLogger(Activator.class).trace("Handling Operation " + handler.toString());
                     handler.handleOperation(message);
                 }
             } catch (FilterMessageException e) {
                 // TODO: 17-01-2016
-                // Message skipped by selector - trace log.
-            } catch (FioranoException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+                LoggerFactory.getLogger(Activator.class).debug("Message skipped by selector : " + e.getMessage());// Message skipped by selector - debug log.
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(Activator.class).error("severe","Exception while applying handlers "+ e.getMessage());
             }
         }
     }

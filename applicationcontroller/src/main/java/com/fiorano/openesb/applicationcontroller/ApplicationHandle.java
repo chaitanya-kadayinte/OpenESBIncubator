@@ -120,6 +120,7 @@ public class ApplicationHandle {
             String sourceServiceInstance = route.getSourceServiceInstance();
             sourceConfiguration.setName(getPortName(sourcePortInstance, sourceServiceInstance));
             OutputPortInstance outputPortInstance = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
+
             int type = outputPortInstance.getDestinationType();
             sourceConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
@@ -134,13 +135,6 @@ public class ApplicationHandle {
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
             JMSRouteConfiguration routeConfiguration = new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration);
 
-            if(route.getApplicationContextSelector() != null) {
-                XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
-                appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
-                appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
-                routeConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
-            }
-            //MessageCreationHandler messageCreationHandler = new MessageCreationHandler(transport);
             MessageCreationConfiguration messageCreationConfiguration = new MessageCreationConfiguration();
             messageCreationConfiguration.setTransportService(transport);
             routeConfiguration.getRouteOperationConfigurations().add(messageCreationConfiguration);
@@ -150,6 +144,29 @@ public class ApplicationHandle {
             carryForwardContextConfiguration.setInputPortInstance(inputPortInstance);
             carryForwardContextConfiguration.setServiceInstanceName(sourceServiceInstance);
             routeConfiguration.getRouteOperationConfigurations().add(carryForwardContextConfiguration);
+
+            Transformation applicationContextTransformation = outputPortInstance.getApplicationContextTransformation();
+            if(applicationContextTransformation != null) {
+                TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                transformationConfiguration.setXsl(applicationContextTransformation.getScript());
+                transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
+                transformationConfiguration.setJmsXsl(applicationContextTransformation.getJMSScript());
+                routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
+            }
+
+            if(route.getSenderSelector()!=null){
+                SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+                senderSelectorConfiguration.setSourceName(route.getSenderSelector());
+                senderSelectorConfiguration.setAppName_version(application.getGUID()+":"+application.getVersion());
+                routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
+            }
+
+            if(route.getApplicationContextSelector() != null) {
+                XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+                appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
+                appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                routeConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
+            }
 
             if(route.getBodySelector() != null) {
                 XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
@@ -165,12 +182,7 @@ public class ApplicationHandle {
                 transformationConfiguration.setJmsXsl(route.getMessageTransformation().getJMSScript());
                 routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
             }
-            if(route.getSenderSelector()!=null){
-                SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
-                senderSelectorConfiguration.setSourceName(route.getSenderSelector());
-                senderSelectorConfiguration.setAppName_version(application.getGUID()+":"+application.getVersion());
-                routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
-            }
+
 
             com.fiorano.openesb.route.Route route1 = routeService.createRoute(routeConfiguration);
             route1.start();
