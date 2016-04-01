@@ -12,12 +12,15 @@ import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.route.impl.*;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
+import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class ApplicationHandle {
-
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
     private Application application;
     private MicroServiceLauncher service;
     private RouteService<RouteConfiguration> routeService;
@@ -234,41 +237,31 @@ public class ApplicationHandle {
         return portConfiguration;
     }
 
-    public void addBreakPoint(String routeName) throws Exception {
+    public BreakpointMetaData addBreakPoint(String routeName) throws Exception {
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
         if(route==null){
             throw new FioranoException("Route with name: "+routeName+" does not exist in the Application: " + application.getGUID());
         }
 
         JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
-        destinationConfiguration.setName(application.getGUID()+"__"+application.getVersion()+routeName+"__BP");
+        //target for this route is source for estudio
+        String destName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
+        destinationConfiguration.setName(destName);
         destinationConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
         route.changeTargetDestination(destinationConfiguration);
+        BreakpointMetaData breakpointMetaData = new BreakpointMetaData();
+        breakpointMetaData.setConnectionProperties(TransportConfig.getInstance().getConnectionProperties());
+        breakpointMetaData.setSourceQName(destName);
+        breakpointMetaData.setTargetQName(route.getTargetDestinationName());
+        breakpoints.put(routeName, breakpointMetaData);
+        return breakpointMetaData;
     }
 
     public void removeBreakPoint(String routeName) throws Exception{
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
-        List<Route> routes = application.getRoutes();
-        Route routeInfo = null;
-        for(Route r:routes){
-            if(r.getName().equals(routeName)){
-                routeInfo = r;
-            }
-        }
-        if(routeInfo==null){
-            throw new FioranoException("Route info with name: "+routeName+" does not exist in the Application: " + application.getGUID());
-        }
-
-        String appKey = application.getGUID() + "__" + application.getVersion() + "__";
-        String destPortInstance = routeInfo.getTargetPortInstance();
-        JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
-        String targetServiceInstance = routeInfo.getTargetServiceInstance();
-        destinationConfiguration.setName(appKey + targetServiceInstance + "__" +destPortInstance);
-        InputPortInstance inputPortInstance = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
-        int inputPortInstanceDestinationType = inputPortInstance.getDestinationType();
-        destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
-                JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-        route.changeTargetDestination(destinationConfiguration);
+        route.stop();
+        route.start();
+        breakpoints.remove(routeName);
     }
 
     public void setApplication(Application application) {
@@ -393,4 +386,93 @@ public class ApplicationHandle {
     private MicroServiceRuntimeHandle getMicroServiceHandle(String serviceName){
         return microServiceHandleList.get(serviceName);
     }
+
+    public void synchronizeApplication(Application newApplication) throws FioranoException {
+        Application oldApplication = this.application;
+
+        // kill service which no longer remain as part of the ep
+        killDiscontinuedServices(newApplication);
+
+        //launch or modify the rest of the services
+        logger.debug("launching the applicaiton with new properties");
+        this.application = newApplication;
+        try {
+            createRoutes();
+        } catch (Exception e) {
+            throw new FioranoException(e);
+        }
+        startAllMicroServices();
+
+        //  Update routes for all remaining services. This should remove extra routes and add new routes and UPDATE existing route configuration.
+        logger.debug("syncing routes");
+
+        /*for (componentHandles.hasMoreElements()) {
+            ComponentHandle handle = componentHandles.nextElement();
+            coreLogger.debug(Bundle.class, Bundle.UPDATE_COMPONENT_ROUTE, handle.getServiceLaunchPacket().getServiceInstName());
+            handle.getRouteManager().synchronizeRoutes();
+        }
+
+
+        // remove the debug routes for components that no longer exist
+        if (oldApplication != null) {
+            appHandle.removeNonExistingRoutes(oldApplication, handleID);
+            // All the debug routes will be updated
+            debugHandler.synchronizeDebugRoutes(appHandle);
+            Map<String, BreakpointMetaData> allPendingBreakpoints = appHandle.getPendingBreakpointsForClouser();
+            List<String> routes = new ArrayList<String>(allPendingBreakpoints.keySet());
+            for (String routeGUID : routes) {
+                String handleId = appHandle.getHandleID(routeGUID);
+                removeBreakpoint(routeGUID, handleId);
+            }
+        }*/
+    }
+
+    /**
+     * kill all the extra services that are running on this TPS but which are
+     * not part of the new ApplicationLaunchPacket
+     *
+     * @param alp new application launch packet
+     * @throws FioranoException If an exception occurs
+     */
+    private void killDiscontinuedServices(Application alp) throws FioranoException {
+        // set this to all running components initially
+        Set<String> toBeKilledComponents = new HashSet<String>();
+        for (String serviecName:microServiceHandleList.keySet()) {
+            toBeKilledComponents.add(serviecName);
+        }
+
+        Set<String> tobeRunningComponents = new HashSet<String>();
+        for (ServiceInstance serv : alp.getServiceInstances()) {
+            tobeRunningComponents.add(serv.getName().toUpperCase());
+        }
+
+        toBeKilledComponents.removeAll(tobeRunningComponents);
+        for (String killcomp : toBeKilledComponents) {
+            MicroServiceRuntimeHandle handle=null;
+            try {
+                handle = microServiceHandleList.get(killcomp);
+                if (handle != null) {
+                    handle.stop();  /*  Bugzilla – Bug 18550 , making call to killComponent() ,which will take care of deleting the route first and then kill component.  */
+                }
+            } catch (Exception e) {
+                logger.error("error occured while stopping the component " + handle.getServiceInstName());
+            }
+        }
+    }
+
+    public BreakpointMetaData getBreakpointMetaData(String routeName) {
+        return breakpoints.get(routeName);
+    }
+
+    public String[] getRoutesWithDebugger() {
+        return breakpoints.keySet().toArray(new String[breakpoints.size()]);
+    }
+
+    public void removeAllBreakpoints() throws Exception {
+        Set<String> routesWithBreakPoint = breakpoints.keySet();
+        for(String routeName: routesWithBreakPoint){
+            removeBreakPoint(routeName);
+        }
+    }
+
 }

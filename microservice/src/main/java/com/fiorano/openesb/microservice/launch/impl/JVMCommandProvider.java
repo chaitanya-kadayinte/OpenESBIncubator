@@ -8,6 +8,8 @@ import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +28,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     private Queue<String> genClassPath;
     private Queue<String> javaLibQueue;
     private Properties systemProps = new Properties();
+    protected Logger logger = LoggerFactory.getLogger(com.fiorano.openesb.microservice.bundle.Activator.class);
 
     public List<String> generateCommand(LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration) throws FioranoException {
         this.launchConfiguration = launchConfiguration;
@@ -55,7 +58,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         command.add(getComponentPS(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
         List<String> commandLineParams = getCommandLineParams(launchConfiguration);
         command.addAll(commandLineParams);
-        System.out.println(command);
+        logger.debug(command.toString());
         return command;
     }
 

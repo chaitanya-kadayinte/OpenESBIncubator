@@ -6,6 +6,7 @@ import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
+import com.fiorano.openesb.rmiconnector.Activator;
 import com.fiorano.openesb.rmiconnector.connector.RmiConnector;
 import com.fiorano.openesb.schemarepo.SchemaRepository;
 import com.fiorano.openesb.security.ConnectionHandle;
@@ -13,6 +14,8 @@ import com.fiorano.openesb.security.SecurityManager;
 import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import org.osgi.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.net.Inet4Address;
@@ -43,8 +46,10 @@ public class RmiManager implements IRmiManager{
     private ServerLogManager logManager;
     private List ipAliases;
     private RmiConnector rmiConnector;
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
 
     public RmiManager(BundleContext context, RmiConnector rmiConnector) throws RemoteException {
+        logger.info("Initializing Rmi Manager");
         org.osgi.framework.ServiceReference[] references = new org.osgi.framework.ServiceReference[0];
         try {
             references = context.getServiceReferences(ApplicationController.class.getName(),null);
@@ -69,6 +74,7 @@ public class RmiManager implements IRmiManager{
             e.printStackTrace();
         }
         this.rmiConnector = rmiConnector;
+        logger.info("Initialized Rmi Manager");
     }
     public RMIServerSocketFactory getSsf() {
         return rmiConnector.getSsf();
@@ -149,8 +155,9 @@ public class RmiManager implements IRmiManager{
     public String login(String userName, String password, String agent) throws RemoteException, ServiceException {
         String handleId = null;
         try {
+            logger.info("User " +userName+" trying to login to the server");
             handleId = securityManager.login(userName, password);
-            System.out.println("User " + userName + " logged in successfully");
+            logger.info("User " + userName + " logged in successfully");
             String clientIP = "UNKNOWN";
             try {
                 clientIP = RemoteServer.getClientHost();
@@ -226,7 +233,7 @@ public class RmiManager implements IRmiManager{
             instanceHandler.removeHandler();
         handlerMap.remove(handleId);
         ConnectionHandle connectionHandle = securityManager.removeConnectionHandle(handleId);
-        System.out.println("User "+connectionHandle.getUserName() + " logged out successfullly");
+        logger.info("User "+connectionHandle.getUserName() + " logged out successfullly");
     }
 
 

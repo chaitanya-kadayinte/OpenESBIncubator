@@ -14,6 +14,7 @@ package com.fiorano.openesb.rmiconnector.api;
 
 import java.rmi.RemoteException;
 import java.rmi.Remote;
+import com.fiorano.openesb.application.BreakpointMetaData;
 
 /**
  * This interface provides methods for adding/removing breakpoints on routes of an event process

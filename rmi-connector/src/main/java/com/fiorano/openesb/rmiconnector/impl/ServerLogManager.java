@@ -17,24 +17,32 @@ import java.util.Properties;
  */
 public class ServerLogManager {
     public String getTESLastOutLogs(int numberOfLines)  throws FioranoException {
-        /*Properties p = new Properties();
+        Properties p = new Properties();
         try {
             ConfigReader.readPropertiesFromFile(new File(System.getProperty("karaf.base") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
-            p.getProperty("log4j.appender.fiorano.file");
+            String path = p.getProperty("log4j.appender.fiorano.file");
+            if(path.contains("${karaf.data}")){
+                path = path.replace("${karaf.data}", System.getProperty("karaf.base")+File.separator+"data");
+            }
+            if(path.contains("${karaf.base}")){
+                path = path.replace("${karaf.base}", System.getProperty("karaf.base"));
+            }
 
+            byte[] encoded = Files.readAllBytes(Paths.get(new File(path).toURI()));
+            return new String(encoded);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        }*/
-        try {
+        }
+        /*try {
             String path = ((FileAppender)Logger.getRootLogger().getAppender("log4j.appender.fiorano")).getFile();
             return new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         return "";
     }
 

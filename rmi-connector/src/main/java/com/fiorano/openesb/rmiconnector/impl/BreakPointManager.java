@@ -2,14 +2,17 @@ package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
-import com.fiorano.openesb.rmiconnector.api.BreakpointMetaData;
+import com.fiorano.openesb.application.BreakpointMetaData;
+import com.fiorano.openesb.rmiconnector.Activator;
 import com.fiorano.openesb.rmiconnector.api.IDebugger;
 import com.fiorano.openesb.rmiconnector.api.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 
 public class BreakPointManager extends AbstractRmiManager implements IDebugger {
-
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
     private ApplicationController applicationController;
 
     private InstanceHandler handler;
@@ -28,12 +31,7 @@ public class BreakPointManager extends AbstractRmiManager implements IDebugger {
             throw new ServiceException("application not running");
         }
         try {
-            appHandle.addBreakPoint(routeName);
-            BreakpointMetaData metaData = new BreakpointMetaData();
-            /*metaData.setSourceQName();
-            metaData.setTargetQName();
-            metaData.setConnectionProperties();*/
-            return metaData;
+            return appHandle.addBreakPoint(routeName);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServiceException(e.getMessage());
@@ -42,32 +40,68 @@ public class BreakPointManager extends AbstractRmiManager implements IDebugger {
 
     @Override
     public BreakpointMetaData getBreakpointMetaData(String appGUID, float appVersion, String routeName) throws RemoteException, ServiceException {
-        return null;
+        ApplicationHandle appHandle = applicationController.getApplicationHandle(appGUID, appVersion, handleId);
+        if(appHandle==null){
+            throw new ServiceException("application not running");
+        }
+        try {
+            return appHandle.getBreakpointMetaData(routeName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public String[] getRoutesWithDebugger(String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return new String[0];
+        ApplicationHandle appHandle = applicationController.getApplicationHandle(appGUID, appVersion, handleId);
+        if(appHandle==null){
+            throw new ServiceException("application not running");
+        }
+        try {
+            return appHandle.getRoutesWithDebugger();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void removeBreakpoint(String appGUID, float appVersion, String routeName) throws RemoteException, ServiceException {
-
+        ApplicationHandle appHandle = applicationController.getApplicationHandle(appGUID, appVersion, handleId);
+        if(appHandle==null){
+            throw new ServiceException("application not running");
+        }
+        try {
+            appHandle.removeBreakPoint(routeName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void removeAllBreakpoints(String appGUID, float appVersion) throws RemoteException, ServiceException {
-
+        ApplicationHandle appHandle = applicationController.getApplicationHandle(appGUID, appVersion, handleId);
+        if(appHandle==null){
+            throw new ServiceException("application not running");
+        }
+        try {
+            appHandle.removeAllBreakpoints();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void messageModifiedonDebugger(String appGUID, float version, String routeGUID, String messageID) throws RemoteException, ServiceException {
-
+        logger.info("message with ID " + messageID+" is modified in the breakpoint present on route " +routeGUID + " of application " +appGUID+":"+version);
     }
 
     @Override
     public void messageDeletedonDebugger(String appGUID, float version, String routeGUID, String messageID) throws RemoteException, ServiceException {
-
+        logger.info("message with ID " + messageID+" is deleted in the breakpoint present on route " +routeGUID + " of application " +appGUID+":"+version);
     }
 
     @Override
