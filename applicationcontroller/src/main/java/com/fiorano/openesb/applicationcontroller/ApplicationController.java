@@ -399,10 +399,12 @@ public class ApplicationController {
     }
 
     public void deleteApplication(String appGUID, String version, String handleID) throws FioranoException {
-        if(applicationHandleMap.containsKey(appGUID+"__"+version)){
+        String key = appGUID+Constants.NAME_DELIMITER+version;
+        if(applicationHandleMap.containsKey(key)){
             throw new FioranoException("Cannot delete running Application. Stop the Application and then delete");
         }
         applicationRepository.deleteApplication(appGUID, version);
+        savedApplicationMap.remove(key);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_DELETED, Event.EventCategory.INFORMATION,
                 appGUID, null, version, "Application Deleted Successfully");
 
