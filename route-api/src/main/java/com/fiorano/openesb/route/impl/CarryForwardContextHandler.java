@@ -7,7 +7,6 @@ import com.fiorano.openesb.application.application.Transformation;
 import com.fiorano.openesb.route.FilterMessageException;
 import com.fiorano.openesb.route.RouteOperationHandler;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
-import com.fiorano.openesb.utils.JmsMessageUtil;
 import com.fiorano.openesb.utils.SourceContext;
 import com.fiorano.openesb.utils.StringUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;

@@ -18,50 +18,16 @@
  */
 package com.fiorano.openesb.management;
 
+import java.util.Map;
+
 public class Overview {
-    private String serverId;
-    private String allocatedMemory;
-    private String usedMemory;
-    private String operatingSystem;
-    private String noOfThreads;
+    private Map<String ,Object> serverDetails ;
 
-    public String getServerId() {
-        return serverId;
+    public Map<String, Object> getServerDetails() {
+        return serverDetails;
     }
 
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
-    }
-
-    public String getAllocatedMemory() {
-        return allocatedMemory;
-    }
-
-    public void setAllocatedMemory(String allocatedMemory) {
-        this.allocatedMemory = allocatedMemory;
-    }
-
-    public String getUsedMemory() {
-        return usedMemory;
-    }
-
-    public void setUsedMemory(String usedMemory) {
-        this.usedMemory = usedMemory;
-    }
-
-    public String getOperatingSystem() {
-        return operatingSystem;
-    }
-
-    public void setOperatingSystem(String operatingSystem) {
-        this.operatingSystem = operatingSystem;
-    }
-
-    public String getNoOfThreads() {
-        return noOfThreads;
-    }
-
-    public void setNoOfThreads(String noOfThreads) {
-        this.noOfThreads = noOfThreads;
+    public void setServerDetails(Map<String, Object> serverDetails) {
+        this.serverDetails = serverDetails;
     }
 }

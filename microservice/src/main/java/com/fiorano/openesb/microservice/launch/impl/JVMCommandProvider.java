@@ -6,7 +6,7 @@ import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.*;
-import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
+import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.File;
@@ -121,7 +121,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
         StringBuilder componentJVMParameters = new StringBuilder();
         componentJVMParameters.append(jvmParams);
-        if (Boolean.getBoolean("isService") && Boolean.valueOf(ConfigurationLookupHelper.getInstance().getValue("WatchForControlEvents")))
+        if (Boolean.getBoolean("isService") && Boolean.valueOf(TransportConfig.getInstance().getValue("WatchForControlEvents")))
             componentJVMParameters.append(" -Xrs");
 
         jvmArguments = componentJVMParameters.toString();
@@ -253,7 +253,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
                 break;
             }
         }
-        String msJavaHome = ConfigurationLookupHelper.getInstance().getValue("MS_JAVA_HOME");
+        String msJavaHome = TransportConfig.getInstance().getValue("MS_JAVA_HOME");
         if (msJavaHome != null) {
             systemProps.setProperty(LaunchConstants.USER_DEFINED_JAVA_HOME, msJavaHome);
         }
@@ -351,7 +351,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         }
 
         String java = Util.isWindows() ? "java.exe" : "java";
-        String userJavaHome = ConfigurationLookupHelper.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME);
+        String userJavaHome = TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME);
         String javaHome = (userJavaHome != null && userJavaHome.trim().length() != 0) ? userJavaHome : System.getProperty("java.home");
         if (isDebug) {
             int index = javaHome.lastIndexOf(File.separator);

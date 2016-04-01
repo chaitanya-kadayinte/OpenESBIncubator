@@ -3,7 +3,6 @@ package com.fiorano.openesb.route.impl;
 import com.fiorano.openesb.route.FilterMessageException;
 import com.fiorano.openesb.route.RouteOperationHandler;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
-import com.fiorano.openesb.utils.JmsMessageUtil;
 import com.fiorano.openesb.utils.SourceContext;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
