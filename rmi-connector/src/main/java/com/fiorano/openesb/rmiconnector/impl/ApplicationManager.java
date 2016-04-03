@@ -1137,12 +1137,21 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public void changeRouteSelector(String appGUID, float appVersion, String routeGUID, HashMap selectors) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.changeRouteSelector(appGUID, appVersion, routeGUID, selectors, handleId);
+        } catch (FioranoException e) {
+            //rmiLogger.error(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_SELECTOR, routeGUID, appGUID, appVersion, "", e);
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void changeRouteSelectorConfiguration(String appGUID, float appVersion, String routeGUID, String configurationName) throws RemoteException, ServiceException {
-
+        try {
+            applicationController.changeRouteSelectorConfiguration(appGUID, appVersion, routeGUID, configurationName, handleId);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
+import com.fiorano.openesb.application.DmiObject;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationInfo;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
+import com.fiorano.openesb.application.constants.ConfigurationRepoConstants;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.events.EventsManager;
@@ -18,19 +20,33 @@ import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.data.Data;
 import com.fiorano.openesb.microservice.ccp.event.common.data.MicroserviceConfiguration;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
+import com.fiorano.openesb.namedconfig.NamedConfigRepository;
+import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
+import com.fiorano.openesb.route.RouteOperationType;
 import com.fiorano.openesb.route.RouteService;
+import com.fiorano.openesb.route.SelectorConfiguration;
+import com.fiorano.openesb.route.impl.SenderSelectorConfiguration;
+import com.fiorano.openesb.route.impl.TransformationConfiguration;
+import com.fiorano.openesb.route.impl.XmlSelectorConfiguration;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.utils.Constants;
+import com.fiorano.openesb.utils.FioranoStaxParser;
+import com.fiorano.openesb.utils.StringUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.security.SecurityManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class ApplicationController {
+    private NamedConfigRepository namedConfigRepository;
     private Logger logger = LoggerFactory.getLogger(Activator.class);
     private TransportService transport;
     private ApplicationRepository applicationRepository;
@@ -59,6 +75,7 @@ public class ApplicationController {
         microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
         eventsManager = context.getService(context.getServiceReference(EventsManager.class));
         CCPEventManager ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
+        namedConfigRepository = context.getService(context.getServiceReference(NamedConfigRepository.class));
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
         securityManager = context.getService(context.getServiceReference(SecurityManager.class));
@@ -350,7 +367,7 @@ public class ApplicationController {
     }
 
     public boolean synchronizeApplication(String appGuid, String version, String handleID) throws FioranoException{
-        logger.debug("synchronizing Application "+appGuid+":"+version);
+        logger.debug("synchronizing Application " + appGuid + ":" + version);
         checkResourceAndConnectivity(appGuid, Float.parseFloat(version), handleID);
         Map<String, Boolean> orderedList = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
         for (String app_version : orderedList.keySet()) {
@@ -454,19 +471,491 @@ public class ApplicationController {
         return (getApplicationHandle(appGUID, version, handleID) != null);
     }
 
-    public void changePortAppContext(String appGUID, float appVersion, String serviceName, String portName, String scriptContent, String jmsScriptContent, String transformerType, String projectContent, String handleId) throws FioranoException{
+    public void changePortAppContext(String appGUID, float appVersion, String serviceName, String portName, String newTransformation, String newJMSTransformation, String transformerType, String transformationProject, String handleId) throws FioranoException{
 
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        ServiceInstance serviceInstance = application.getServiceInstance(serviceName);
+        OutputPortInstance port = serviceInstance.getOutputPortInstance(portName);
+        Transformation transformation = port.getApplicationContextTransformation();
 
+        if (transformation != null) {
+            if (transformation.getTransformationConfigName() != null && (!StringUtil.isEmpty(newTransformation) || !StringUtil.isEmpty(newJMSTransformation)))
+                throw new FioranoException("ERR_APPCONTEXT_TRANSFORMATION_CHANGE_NOT_ALLOWED");
+        }
+
+        Transformation trans = null;
+        // set the new transformation
+        if (StringUtil.isEmpty(newTransformation) && StringUtil.isEmpty(newJMSTransformation))
+            port.setApplicationContextTransformation(null);
+        else {
+            trans = port.getApplicationContextTransformation();
+            if (trans == null) {
+                if (newJMSTransformation != null) {
+                    trans = new MessageTransformation();
+                    ((MessageTransformation) trans).setJMSScript(newJMSTransformation);
+                } else {
+                    trans = new Transformation();
+                }
+            }
+            trans.setScript(newTransformation);
+            trans.setFactory(transformerType);
+            trans.setProject(transformationProject);
+            port.setApplicationContextTransformation(trans);
+        }
+
+        ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
+        if (appHandle != null) {
+            for(final Route route: application.getRoutes()) {
+                if(route.getSourcePortInstance().equals(portName)){
+                    TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                    transformationConfiguration.setXsl(newTransformation);
+                    transformationConfiguration.setTransformerType(transformerType);
+                    transformationConfiguration.setJmsXsl(newJMSTransformation);
+                    transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                    try {
+                        appHandle.changeRouteOperationHandler(route.getName(), transformationConfiguration);
+                    } catch (Exception e) {
+                        logger.error("Error occurred while changing port application context. ",e);
+                    }
+                }
+            }
+        }
     }
 
     public void changePortAppContextConfiguration(String appGUID, float appVersion, String serviceName, String portName, String configurationName, String handleId) throws FioranoException{
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        ServiceInstance serviceInstance = application.getServiceInstance(serviceName);
+        OutputPortInstance port = serviceInstance.getOutputPortInstance(portName);
+        Transformation transformation = port.getApplicationContextTransformation();
 
+        String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath();
+        String transformationDirPath = NamedConfigurationUtil.getConfigurationPath(configurationRepoPath + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR, ConfigurationRepoConstants.TRANSFORMATIONS, application.getLabel() + File.separator + configurationName);
+        if (!new File(transformationDirPath).exists())
+            throw new FioranoException("APPCONTEXT_TRANSFORMATION_CONFIGURATION_NOT_FOUND");
+
+        String metaDataFilePath = NamedConfigurationUtil.getConfigurationPath(configurationRepoPath + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR, ConfigurationRepoConstants.TRANSFORMATIONS, application.getLabel() + File.separator + ConfigurationRepoConstants.METADATA_XML);
+        ApplicationParser.TransformationConfig transformationConfig;
+        try {
+            transformationConfig = ApplicationParser.getTransformationParams(metaDataFilePath, configurationName);
+        } catch (FileNotFoundException e) {
+            throw new FioranoException("METADATA_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND", e);
+        } catch (XMLStreamException e) {
+            throw new FioranoException("ERR_READING_TRANSFORMATION_METADATA_CONFIGURATION", e);
+        }
+
+        boolean hasJMSTransformation=false;
+        try {
+            if (transformationConfig != null) {
+                String scriptFileName = transformationConfig.getScriptFileName();
+                String jmsScriptFileName = transformationConfig.getJmsScriptFileName();
+                String projectFileName = transformationConfig.getProjectFileName();
+
+                if (transformation == null) {
+                    transformation = (jmsScriptFileName != null ? new MessageTransformation() : new Transformation());
+                    transformation.setTransformationConfigName(configurationName);
+                }
+                String factoryName = transformationConfig.getFactoryName();
+                transformation.setFactory(factoryName);
+
+                if (scriptFileName != null) {
+                    File scriptFile = new File(transformationDirPath, scriptFileName);
+                    if (scriptFile.exists()) {
+                        FileInputStream scriptFileStream = new FileInputStream(scriptFile);
+                        try {
+                            String script = DmiObject.getContents(scriptFileStream);
+                            transformation.setScript(script);
+                        } finally {
+                            scriptFileStream.close();
+                        }
+                    } else
+                        throw new FioranoException("SCRIPT_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
+                }
+
+                if (jmsScriptFileName != null) {
+                    hasJMSTransformation = true;
+                    File jmsScriptFile = new File(transformationDirPath, jmsScriptFileName);
+                    if (jmsScriptFile.exists()) {
+                        FileInputStream jmsScriptFileStream = new FileInputStream(jmsScriptFile);
+                        try {
+                            String jmsScript = DmiObject.getContents(jmsScriptFileStream);
+                            ((MessageTransformation) transformation).setJMSScript(jmsScript);
+                        } finally {
+                            jmsScriptFileStream.close();
+                        }
+                    } else
+                        throw new FioranoException("JMS_SCRIPT_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
+                }
+
+                if (projectFileName != null) {
+                    File projectFile = new File(transformationDirPath, projectFileName);
+                    if (projectFile.exists()) {
+                        if (projectFile.isFile()) {
+                            FileInputStream projectFileStream = new FileInputStream(projectFile);
+                            try {
+                                String project = DmiObject.getContents(projectFileStream);
+                                transformation.setProject(project);
+                            } finally {
+                                projectFileStream.close();
+                            }
+                        } else {
+                            String project = ApplicationParser.toXML(projectFile);
+                            transformation.setProject(project);
+                        }
+                    } else
+                        throw new FioranoException("PROJECT_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
+                }
+
+                port.setApplicationContextTransformation(transformation);
+
+                ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
+                if (appHandle != null) {
+                    for(final Route route: application.getRoutes()) {
+                        if(route.getSourcePortInstance().equals(portName)){
+                            TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                            transformationConfiguration.setXsl(transformation.getScript());
+                            transformationConfiguration.setTransformerType(transformation.getFactory());
+                            transformationConfiguration.setJmsXsl(transformation.getJMSScript());
+                            transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                            try {
+                                appHandle.changeRouteOperationHandler(route.getName(), transformationConfiguration);
+                            } catch (Exception e) {
+                                logger.error("Error occurred while changing port application context. ",e);
+                            }
+                        }
+                    }
+                }
+
+//                try {
+//                    // save the application
+//                    appControllerManager.getApplicationRepository().saveApplication(application, userName, handleIDForEstudio);
+//                    int appCount = appControllerManager.getApplicationRepository().getAppCount();
+//                    eventHandler.raiseApplicationRepositoryAuditEvent(userName, AuditEvent.SUCCESS, AuditEvent.EventCategory.INFORMATION, I18NUtil.getMessage(Bundle.class, Bundle.ROUE_TRANSFORMATION_CHANGED, serviceName, application.getGUID()),
+//                            application.getGUID(), application.getVersion(), application.getCategories(), 0, appCount, AuditEventIDs.APPLICATION_UPDATED);
+//                } catch (TifosiException e) {
+//                    int appCount = appControllerManager.getApplicationRepository().getAppCount();
+//                    eventHandler.raiseApplicationRepositoryAuditEvent(userName, AuditEvent.FAILURE, AuditEvent.EventCategory.ERROR, I18NUtil.getMessage(Bundle.class, Bundle.ROUE_TRANSFORMATION_CHANGE_EXCEPTION, serviceName, application.getGUID(), e.getMessage()),
+//                            application.getGUID(), application.getVersion(), application.getCategories(), 0, appCount, AuditEventIDs.APPLICATION_UPDATED);
+//                    throw e;
+//                }
+            } else
+                throw new FioranoException("METADATA_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
+        } catch (IOException e) {
+            throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
+        } catch (XMLStreamException e) {
+            throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
+        }
     }
 
-    public void changeRouteTransformation(String appGUID, float appVersion, String routeGUID, String scriptContent, String jmsScriptContent, String transformerType, String projectContent, String handleId) throws FioranoException{
+    public void changeRouteTransformation(String appGUID, float appVersion, String routeGUID, String newTransformation, String newJMSTransformation, String transformerType, String transformationProject, String handleId) throws FioranoException{
+
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+
+        // get the route. This throws an exception if route is not present
+        Route route = getRoute(routeGUID, application);
+        MessageTransformation transformation = route.getMessageTransformation();
+
+        if (transformation != null) {
+            if (transformation.getTransformationConfigName() != null && (!StringUtil.isEmpty(newTransformation) || !StringUtil.isEmpty(newJMSTransformation)))
+                throw new FioranoException("ERR_ROUTE_TRANSFORMATION_CHANGE_NOT_ALLOWED");
+        }
+
+        // get source service instance and port name for this route
+        String srcPortName = route.getSourcePortInstance();
+        String srcServiceInstName = route.getSourceServiceInstance();
+        ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
+        // set the new route transformation
+        if (StringUtil.isEmpty(newTransformation) && StringUtil.isEmpty(newJMSTransformation))
+            route.setMessageTransformation(null);
+        else {
+            MessageTransformation trans = route.getMessageTransformation();
+            if (trans == null)
+                route.setMessageTransformation(trans = new MessageTransformation());
+            trans.setScript(newTransformation);
+            trans.setFactory(transformerType);
+            trans.setJMSScript(newJMSTransformation);
+            trans.setProject(transformationProject);
+        }
+
+        saveApplication(application, false, handleId);
+        if (appHandle != null) {
+            appHandle.setApplication(application);
+            try {
+                TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                transformationConfiguration.setXsl(newTransformation);
+                transformationConfiguration.setTransformerType(transformerType);
+                transformationConfiguration.setJmsXsl(newJMSTransformation);
+                transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+               appHandle.changeRouteOperationHandler(routeGUID, transformationConfiguration);
+            } catch (Exception e) {
+                throw new FioranoException(e);
+            }
+        }
+
     }
 
     public void changeRouteTransformationConfiguration(String appGUID, float appVersion, String routeGUID, String configurationName, String handleId) throws FioranoException{
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+
+        // get the route. This throws an exception if route is not present
+        Route route = getRoute(routeGUID, application);
+        MessageTransformation transformation = route.getMessageTransformation();
+        String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath();
+
+        if (transformation == null)
+            transformation = new MessageTransformation();
+
+        transformation.setTransformationConfigName(configurationName);
+        route.setMessageTransformation(transformation);
+
+        String transformationDirPath = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR, ConfigurationRepoConstants.TRANSFORMATIONS, application.getLabel(), configurationName).getAbsolutePath();
+        if (!new File(transformationDirPath).exists())
+            throw new FioranoException("ROUTE_TRANSFORMATION_CONFIGURATION_NOT_FOUND");
+
+        String metaDataFilePath = NamedConfigurationUtil.getConfigurationPath(configurationRepoPath + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR, ConfigurationRepoConstants.TRANSFORMATIONS, application.getLabel() + File.separator + ConfigurationRepoConstants.METADATA_XML);
+        ApplicationParser.TransformationConfig transformationConfig;
+        try {
+            transformationConfig = ApplicationParser.getTransformationParams(metaDataFilePath, configurationName);
+        } catch (FileNotFoundException e) {
+            throw new FioranoException("METADATA_FOR_ROUTE_TRANSFORMATION_NOT_FOUND", e);
+        } catch (XMLStreamException e) {
+            throw new FioranoException("ERR_READING_TRANSFORMATION_METADATA_CONFIGURATION", e);
+        }
+
+        try {
+            if (transformationConfig != null) {
+                String scriptFileName = transformationConfig.getScriptFileName();
+                String jmsScriptFileName = transformationConfig.getJmsScriptFileName();
+                String projectFileName = transformationConfig.getProjectFileName();
+
+                String factoryName = transformationConfig.getFactoryName();
+                transformation.setFactory(factoryName);
+
+                if (scriptFileName != null) {
+                    File scriptFile = new File(transformationDirPath, scriptFileName);
+
+                    if (scriptFile.exists()) {
+                        FileInputStream scriptFileStream = new FileInputStream(scriptFile);
+                        try {
+                            String script = DmiObject.getContents(scriptFileStream);
+                            transformation.setScript(script);
+                        } finally {
+                            scriptFileStream.close();
+                        }
+                    } else
+                        throw new FioranoException("SCRIPT_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
+                }
+
+                if (jmsScriptFileName != null) {
+                    File jmsScriptFile = new File(transformationDirPath, jmsScriptFileName);
+
+                    if (jmsScriptFile.exists()) {
+                        FileInputStream jmsScriptFileStream = new FileInputStream(jmsScriptFile);
+                        try {
+                            String jmsScript = DmiObject.getContents(jmsScriptFileStream);
+                            transformation.setJMSScript(jmsScript);
+                        } finally {
+                            jmsScriptFileStream.close();
+                        }
+                    } else
+                        throw new FioranoException("JMS_SCRIPT_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
+                }
+
+                if (projectFileName != null) {
+                    File projectFile = new File(transformationDirPath, projectFileName);
+
+                    if (projectFile.exists()) {
+                        if (projectFile.isFile()) {
+                            FileInputStream projectFileStream = new FileInputStream(projectFile);
+                            try {
+                                String project = DmiObject.getContents(projectFileStream);
+                                transformation.setProject(project);
+                            } finally {
+                                projectFileStream.close();
+                            }
+                        } else {
+                            String project = ApplicationParser.toXML(projectFile);
+                            transformation.setProject(project);
+                        }
+                    } else
+                        throw new FioranoException("PROJECT_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
+                }
+
+                // get source service instance and port name for this route
+                String srcPortName = route.getSourcePortInstance();
+                String srcServiceInstName = route.getSourceServiceInstance();
+                ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
+                if (appHandle != null) {
+                    try {
+                        TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                        transformationConfiguration.setXsl(transformation.getScript());
+                        transformationConfiguration.setTransformerType(transformationConfig.getFactoryName());
+                        transformationConfiguration.setJmsXsl( transformation.getJMSScript());
+                        transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                        appHandle.changeRouteOperationHandler(routeGUID, transformationConfiguration);
+                    } catch (Exception e) {
+                        throw new FioranoException(e);
+                    }
+                }
+
+                saveApplication(application,false, handleId);
+
+            } else
+                throw new FioranoException("METADATA_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
+        } catch (IOException e) {
+            throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
+        } catch (XMLStreamException e) {
+            throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
+        }
+    }
+
+    private Route getRoute(String routeGUID, Application application) throws FioranoException {
+        for (Route o : application.getRoutes()) {
+            if (o.getName().equalsIgnoreCase(routeGUID)) {
+                return o;
+            }
+        }
+        logger.error("ROUTE_NOT_FOUND");
+        throw new FioranoException("ROUTE_NOT_FOUND");
+    }
+
+    public void changeRouteSelector(String appGUID, float appVersion, String routeGUID, HashMap selectors, String handleID) throws FioranoException {
+        Application application = savedApplicationMap.get(appGUID + Constants.NAME_DELIMITER + appVersion);
+
+        // get the route. This throws an exception if route is not present
+        Route route = getRoute(routeGUID, application);
+
+        if (route.getSelectorConfigName() != null && (selectors != null && selectors.size() > 0))
+            throw new FioranoException("ERR_ROUTE_SELECTOR_CHANGE_NOT_ALLOWED");
+
+        // get source service instance and port name for this route
+        String srcPortName = route.getSourcePortInstance();
+        String srcServiceInstName = route.getSourceServiceInstance();
+
+        ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleID);
+        if (appHandle != null) {
+            if(selectors.containsKey(Route.SELECTOR_SENDER)){
+                SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+                senderSelectorConfiguration.setSourceName(route.getSenderSelector());
+                senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
+                try {
+                    appHandle.changeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if(selectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
+                XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+                appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
+                appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
+                try {
+                    appHandle.changeRouteOperationHandler(routeGUID, appContextSelectorConfig);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(selectors.containsKey(Route.SELECTOR_BODY)) {
+                XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
+                bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
+                bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
+                bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
+                try {
+                    appHandle.changeRouteOperationHandler(routeGUID, bodySelectorConfig);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // set the selector type and its value in the route
+        route.setSelectors(selectors);
+        route.setSelectorConfigName(null);
+
+        saveApplication(application, false, handleID);
+    }
+
+    public void changeRouteSelectorConfiguration(String appGUID, float appVersion, String routeGUID, String configurationName, String handleID) throws FioranoException {
+
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+ appVersion);
+
+        // get the route. This throws an exception if route is not present
+        Route route = getRoute(routeGUID, application);
+
+        // get source service instance and port name for this route
+        String srcPortName = route.getSourcePortInstance();
+        String srcServiceInstName = route.getSourceServiceInstance();
+        String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath();
+
+        FileInputStream fis = null;
+        FioranoStaxParser cursor = null;
+        try {
+            File selectorConfigPath = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR, ConfigurationRepoConstants.SELECTORS, application.getLabel(), configurationName);
+            fis = new FileInputStream(selectorConfigPath);
+            cursor = new FioranoStaxParser(fis);
+            route.populateSelectorsConfiguration(cursor);
+            route.setSelectorConfigName(configurationName);
+            ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleID);
+            Map selectors = route.getSelectors();
+            if (appHandle != null) {
+                if (selectors.containsKey(Route.SELECTOR_SENDER)) {
+                    SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+                    senderSelectorConfiguration.setSourceName(route.getSenderSelector());
+                    senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                    senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
+                    try {
+                        appHandle.changeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (selectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
+                    XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+                    appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
+                    appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                    appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
+                    try {
+                        appHandle.changeRouteOperationHandler(routeGUID, appContextSelectorConfig);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (selectors.containsKey(Route.SELECTOR_BODY)) {
+                    XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
+                    bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
+                    bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
+                    bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
+                    try {
+                        appHandle.changeRouteOperationHandler(routeGUID, bodySelectorConfig);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new FioranoException("ROUTE_SELECTOR_TRANSFORMATION_NOT_FOUND", e);
+        } catch (XMLStreamException e) {
+            throw new FioranoException("ERR_READING_SELECTOR_CONFIGURATION", e);
+        } finally {
+            try {
+                if (cursor != null)
+                    cursor.disposeParser();
+            } catch (XMLStreamException ignore) {
+                //Ignore
+            }
+
+            try {
+                if (fis != null)
+                    fis.close();
+            } catch (IOException e) {
+                //Ignore
+            }
+        }
+
+        saveApplication(application, false, handleID);
+
     }
 
     public Enumeration<ApplicationReference> getHeadersOfRunningApplications(String handleId) throws FioranoException{

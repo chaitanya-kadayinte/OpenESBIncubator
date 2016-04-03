@@ -7,7 +7,7 @@ import com.fiorano.openesb.route.RouteOperationConfiguration;
 /**
  * Created by root on 3/4/16.
  */
-public class CarryForwardContextConfiguration implements RouteOperationConfiguration {
+public class CarryForwardContextConfiguration extends RouteOperationConfiguration {
     private Application application;
     private String serviceInstanceName;
     private InputPortInstance inputPortInstance;

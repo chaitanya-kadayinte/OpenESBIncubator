@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class BreakpointMetaData implements Serializable {
      * Default Constructor
      */
     public BreakpointMetaData() {
-        connectionProperties = new Hashtable<String, String>();
+        connectionProperties = new HashMap<String, String>();
     }
 
     /**
@@ -31,7 +32,7 @@ public class BreakpointMetaData implements Serializable {
      * @param sourceQName source queue name
      * @param targetQName target queue name
      */
-    public BreakpointMetaData(Hashtable<String, String> connectionProperties, String connFactoryName, String sourceQName, String targetQName) {
+    public BreakpointMetaData(HashMap<String, String> connectionProperties, String connFactoryName, String sourceQName, String targetQName) {
         this.connectionProperties = connectionProperties;
         this.connFactoryName = connFactoryName;
         this.sourceQName = sourceQName;

@@ -1,9 +1,6 @@
 package com.fiorano.openesb.jmsroute.impl;
 
-import com.fiorano.openesb.route.FilterMessageException;
-import com.fiorano.openesb.route.Route;
-import com.fiorano.openesb.route.RouteConfiguration;
-import com.fiorano.openesb.route.RouteOperationHandler;
+import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.route.impl.AbstractRouteImpl;
 import com.fiorano.openesb.route.impl.CarryForwardContextHandler;
 import com.fiorano.openesb.transport.*;
@@ -28,7 +25,7 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
         this.routeConfiguration = routeConfiguration;
 
 
-        routeOperationHandlers.add(new RouteOperationHandler<JMSMessage>() {
+        routeOperationHandlers.put(RouteOperationType.SEND, new RouteOperationHandler<JMSMessage>() {
             public void handleOperation(JMSMessage message) throws FilterMessageException {
                 try {
                     producer.send(message);

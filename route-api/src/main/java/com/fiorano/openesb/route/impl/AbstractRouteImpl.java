@@ -4,21 +4,19 @@ import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.Message;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
-    protected List<RouteOperationHandler> routeOperationHandlers = new ArrayList<>();
+    protected Map<RouteOperationType, RouteOperationHandler> routeOperationHandlers = new Hashtable<>();
 
     public AbstractRouteImpl(List<RouteOperationConfiguration> operationConfigurations) throws Exception {
 
-        routeOperationHandlers = new ArrayList<>(operationConfigurations.size());
+        routeOperationHandlers = new Hashtable<>(operationConfigurations.size());
         if (!operationConfigurations.isEmpty()) {
             for (RouteOperationConfiguration configuration : operationConfigurations) {
                 RouteOperationHandler routeOperationHandler = createHandler(configuration);
-                routeOperationHandlers.add(routeOperationHandler);
+                routeOperationHandlers.put(configuration.getRouteOperationType(), routeOperationHandler);
             }
 
         }
@@ -27,7 +25,7 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
     public void handleMessage(M message) {
         if (!routeOperationHandlers.isEmpty()) {
             try {
-                for (RouteOperationHandler handler : routeOperationHandlers) {
+                for (RouteOperationHandler handler : routeOperationHandlers.values()) {
                     LoggerFactory.getLogger(Activator.class).trace("Handling Operation " + handler.toString());
                     handler.handleOperation(message);
                 }
@@ -53,6 +51,20 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
             return new SenderSelector((SenderSelectorConfiguration) configuration);
         }
         return null;
+    }
+
+    public void modifyHandler(RouteOperationConfiguration configuration) throws Exception {
+        if (configuration instanceof MessageCreationConfiguration) {
+             routeOperationHandlers.put(configuration.getRouteOperationType(),new MessageCreationHandler((MessageCreationConfiguration) configuration));
+        } else if (configuration instanceof CarryForwardContextConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new CarryForwardContextHandler((CarryForwardContextConfiguration) configuration));
+        } else if (configuration instanceof TransformationConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new TransformationOperationHandler((TransformationConfiguration) configuration));
+        } else if (configuration instanceof SelectorConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new XmlSelectorHandler((XmlSelectorConfiguration) configuration));
+        } else if (configuration instanceof SenderSelectorConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new SenderSelector((SenderSelectorConfiguration) configuration));
+        }
     }
 
 }

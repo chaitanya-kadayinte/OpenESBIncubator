@@ -44,8 +44,8 @@
         <bundle start-level="90">mvn:com.fiorano.openesb/jms-route/0.1.0</bundle>
         <bundle start-level="91">mvn:com.fiorano.openesb/microservice/0.1.0</bundle>
         <bundle start-level='92'>mvn:com.fiorano.openesb/application-repo/0.1.0</bundle>
+        <bundle start-level='92'>mvn:com.fiorano.openesb/namedconfiguration/0.1.0</bundle>
         <bundle start-level='93'>mvn:com.fiorano.openesb/applicationcontroller/0.1.0</bundle>
-        <bundle start-level='94'>mvn:com.fiorano.openesb/namedconfiguration/0.1.0</bundle>
         <bundle start-level='94'>mvn:com.fiorano.openesb/schema-repo/0.1.0</bundle>
         <bundle start-level='88'>mvn:com.fiorano.openesb/events/0.1.0</bundle>
 
