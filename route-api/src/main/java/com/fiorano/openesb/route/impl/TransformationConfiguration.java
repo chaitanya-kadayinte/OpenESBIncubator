@@ -2,7 +2,7 @@ package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.route.RouteOperationConfiguration;
 
-public class TransformationConfiguration implements RouteOperationConfiguration {
+public class TransformationConfiguration extends RouteOperationConfiguration {
     private String xsl;
     private String jmsXsl;
     private String transformerType;

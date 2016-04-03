@@ -2,7 +2,7 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.BreakpointMetaData;
 import com.fiorano.openesb.application.application.*;
-import com.fiorano.openesb.application.application.Route;
+import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.jmsroute.impl.JMSRouteConfiguration;
@@ -26,7 +26,7 @@ public class ApplicationHandle {
     private RouteService<RouteConfiguration> routeService;
     private TransportService transport;
     Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new HashMap<>();
-    private Map<String, com.fiorano.openesb.route.Route> routeMap = new HashMap<>();
+    private Map<String, Route> routeMap = new HashMap<>();
     private Map<String, BreakpointMetaData> breakpoints = new HashMap<String, BreakpointMetaData>();
     private Map<String, BreakpointMetaData> pendingBreakpointsForClouser = new HashMap<String, BreakpointMetaData>();
     private ApplicationController applicationController;
@@ -116,7 +116,7 @@ public class ApplicationHandle {
     }
 
     public void createRoutes() throws Exception {
-        for(final Route route: application.getRoutes()) {
+        for(final com.fiorano.openesb.application.application.Route route: application.getRoutes()) {
 
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
@@ -136,16 +136,18 @@ public class ApplicationHandle {
             int inputPortInstanceDestinationType = inputPortInstance.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-            JMSRouteConfiguration routeConfiguration = new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration);
+            JMSRouteConfiguration routeConfiguration = new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration, route.getJMSSelector());
 
             MessageCreationConfiguration messageCreationConfiguration = new MessageCreationConfiguration();
             messageCreationConfiguration.setTransportService(transport);
+            messageCreationConfiguration.setRouteOperationType(RouteOperationType.MESSAGE_CREATE);
             routeConfiguration.getRouteOperationConfigurations().add(messageCreationConfiguration);
 
             CarryForwardContextConfiguration carryForwardContextConfiguration = new CarryForwardContextConfiguration();
             carryForwardContextConfiguration.setApplication(application);
             carryForwardContextConfiguration.setInputPortInstance(inputPortInstance);
             carryForwardContextConfiguration.setServiceInstanceName(sourceServiceInstance);
+            carryForwardContextConfiguration.setRouteOperationType(RouteOperationType.CARRY_FORWARD_CONTEXT);
             routeConfiguration.getRouteOperationConfigurations().add(carryForwardContextConfiguration);
 
             Transformation applicationContextTransformation = outputPortInstance.getApplicationContextTransformation();
@@ -154,20 +156,22 @@ public class ApplicationHandle {
                 transformationConfiguration.setXsl(applicationContextTransformation.getScript());
                 transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
                 transformationConfiguration.setJmsXsl(applicationContextTransformation.getJMSScript());
+                transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
                 routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
             }
 
             if(route.getSenderSelector()!=null){
                 SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                 senderSelectorConfiguration.setSourceName(route.getSenderSelector());
-                senderSelectorConfiguration.setAppName_version(application.getGUID()+":"+application.getVersion());
+                senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                 routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
             }
-
             if(route.getApplicationContextSelector() != null) {
                 XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
                 appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
                 appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
                 routeConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
             }
 
@@ -175,6 +179,7 @@ public class ApplicationHandle {
                 XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
                 bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
                 bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
+                bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
                 routeConfiguration.getRouteOperationConfigurations().add(bodySelectorConfig);
             }
 
@@ -183,6 +188,7 @@ public class ApplicationHandle {
                 transformationConfiguration.setXsl(route.getMessageTransformation().getScript());
                 transformationConfiguration.setTransformerType(route.getMessageTransformation().getFactory());
                 transformationConfiguration.setJmsXsl(route.getMessageTransformation().getJMSScript());
+                transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
                 routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
             }
 
@@ -405,15 +411,14 @@ public class ApplicationHandle {
 
         //  Update routes for all remaining services. This should remove extra routes and add new routes and UPDATE existing route configuration.
         logger.debug("syncing routes");
-
-        /*for (componentHandles.hasMoreElements()) {
-            ComponentHandle handle = componentHandles.nextElement();
-            coreLogger.debug(Bundle.class, Bundle.UPDATE_COMPONENT_ROUTE, handle.getServiceLaunchPacket().getServiceInstName());
-            handle.getRouteManager().synchronizeRoutes();
+        try {
+            synchronizeRoutes();
+        } catch (Exception e) {
+            throw new FioranoException(e);
         }
 
 
-        // remove the debug routes for components that no longer exist
+       /* // remove the debug routes for components that no longer exist
         if (oldApplication != null) {
             appHandle.removeNonExistingRoutes(oldApplication, handleID);
             // All the debug routes will be updated
@@ -460,6 +465,47 @@ public class ApplicationHandle {
         }
     }
 
+    public void synchronizeRoutes() throws Exception {
+        Collection<Route> toDelete = new ArrayList<Route>();
+        for (Route route : routeMap.values())
+            if (!checkForRouteExistanceAndUpdateRoute(route))
+                toDelete.add(route);
+        for (Route route : toDelete) {
+            route.stop();
+            route.delete();
+        }
+    }
+
+    private boolean checkForRouteExistanceAndUpdateRoute(Route rInfo) {
+        boolean found = false;
+       /* String srcPortName = rInfo.getSrcPortName();
+        String tgtPortName = rInfo.getTrgtPortName();
+        String tgtAppInst = rInfo.getTargetApplicationGUID();
+        String tgtServName = rInfo.getActualTrgtServInst();
+        String tgtNodeName = rInfo.getTrgtNodeName();
+        String tgtRouteGUID = rInfo.getRouteGUID();
+
+        Enumeration routeLaunchPackets = slp.getRouteLPEnumeration();
+        while (routeLaunchPackets.hasMoreElements()) {
+            RouteLaunchPacket rlp = (RouteLaunchPacket) routeLaunchPackets.nextElement();
+            if (rlp.getSrcPortName().equals(srcPortName) && rlp.getTrgtPortName() != null && rlp.getTrgtPortName().equalsIgnoreCase(tgtPortName)
+                    && rlp.getTargetApplicationGUID().equalsIgnoreCase(tgtAppInst) && rlp.getActualTrgtServInst().equalsIgnoreCase(tgtServName)
+                    && rlp.getTrgtNodeName() != null && rlp.getTrgtNodeName().equalsIgnoreCase(tgtNodeName) && rlp.getRouteGUID().equalsIgnoreCase(tgtRouteGUID)) {    // Bugzilla – Bug 18379 , adding null check for rlp.getTrgtNodeName() ,see bugzilla comments for explaination
+                //  Changes made for updating Route Selector and transformation
+                //  on synchronization of an application after making changes
+                //  to Route Selector and transformation.
+                rInfo.setSelectors(rlp.getSelectors());
+                rInfo.setTransformation(rlp.getTransformation());
+                rInfo.setMessageCompression(rlp.isMessageCompressed());
+                rInfo.setMessageEncryption(rlp.isMessageCompressed());
+                rInfo.setIsDebugPointSet(rlp.isDebugPointSet());
+                found = true;
+                break;
+            }
+        }*/
+        return found;
+    }
+
     public BreakpointMetaData getBreakpointMetaData(String routeName) {
         return breakpoints.get(routeName);
     }
@@ -475,4 +521,11 @@ public class ApplicationHandle {
         }
     }
 
+    public void changeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception {
+        com.fiorano.openesb.route.Route route = routeMap.get(routeGUID);
+        if(route==null){
+            throw new FioranoException("route does not exists");
+        }
+        route.modifyHandler(configuration);
+    }
 }

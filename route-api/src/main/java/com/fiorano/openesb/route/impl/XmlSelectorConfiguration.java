@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by root on 2/29/16.
  */
-public class XmlSelectorConfiguration implements SelectorConfiguration {
+public class XmlSelectorConfiguration extends SelectorConfiguration {
 
     private String xpath;
     private Map<String,String> nsPrefixMap = new HashMap<>();
@@ -34,7 +34,6 @@ public class XmlSelectorConfiguration implements SelectorConfiguration {
         this.nsPrefixMap = nsPrefixMap;
     }
 
-    @Override
     public String getTarget() {
         return target;
     }

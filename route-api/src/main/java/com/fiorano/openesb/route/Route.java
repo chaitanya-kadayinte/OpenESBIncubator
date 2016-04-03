@@ -31,4 +31,5 @@ public interface Route<M extends Message> {
     void handleMessage(M message) throws Exception;
     String getSourceDestinationName();
     String getTargetDestinationName();
+    void modifyHandler(RouteOperationConfiguration configuration) throws Exception;
 }

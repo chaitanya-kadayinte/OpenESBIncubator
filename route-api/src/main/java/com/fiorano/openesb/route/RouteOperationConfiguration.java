@@ -1,5 +1,13 @@
 package com.fiorano.openesb.route;
 
-public interface RouteOperationConfiguration {
-    public enum Type {TRANSFORM, SELECT, SEND}
+public abstract class RouteOperationConfiguration {
+    RouteOperationType operationType;
+
+    public RouteOperationType getRouteOperationType() {
+        return operationType;
+    }
+
+    public void setRouteOperationType(RouteOperationType operationType) {
+        this.operationType = operationType;
+    }
 }
