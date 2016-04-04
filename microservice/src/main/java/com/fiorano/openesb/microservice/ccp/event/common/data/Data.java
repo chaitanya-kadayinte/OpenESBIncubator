@@ -57,6 +57,9 @@ public abstract class Data implements Serializable {
         COMPONENT_STATS,
 
         COMPONENT_CONFIGURATION,
+        NAMED_CONFIGURATION,
+        PORT_CONFIGURATION,
+        MANAGEABLE_PROPERTIES,
     }
 
     /**

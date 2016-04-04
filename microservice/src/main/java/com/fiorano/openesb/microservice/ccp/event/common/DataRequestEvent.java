@@ -141,8 +141,10 @@ public class DataRequestEvent extends ControlEvent {
          */
         COMPONENT_STATS,
 
-        COMPONENT_CONFIGURATION
-
+        COMPONENT_CONFIGURATION,
+        NAMED_CONFIGURATION,
+        PORT_CONFIGURATION,
+        MANAGEABLE_PROPERTIES
     }
 
     /**

@@ -482,7 +482,7 @@ public class ApplicationHandle {
     }
 
     private boolean checkForRouteExistanceAndUpdateRoute(Route rInfo) {
-        boolean found = false;
+        boolean found = true;
        /* String srcPortName = rInfo.getSrcPortName();
         String tgtPortName = rInfo.getTrgtPortName();
         String tgtAppInst = rInfo.getTargetApplicationGUID();
