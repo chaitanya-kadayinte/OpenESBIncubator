@@ -25,7 +25,7 @@ import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
-import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
+import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
-        String connectURL = ConfigurationLookupHelper.getInstance().getValue("providerURL");
+        String connectURL = TransportConfig.getInstance().getValue("providerURL");
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
         commandLineArgs.put(LaunchConstants.FES_URL, connectURL);

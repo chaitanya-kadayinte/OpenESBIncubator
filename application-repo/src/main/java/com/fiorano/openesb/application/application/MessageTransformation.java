@@ -39,16 +39,6 @@ public class MessageTransformation extends Transformation{
 
     public static final String ELEM_JMS_SCRIPT = "jms-script";
 
-    private String jmsScript;
-
-    /**
-     * Gets JMS Script which is used in transformation
-     * @return  JMS Script
-     */
-    public String getJMSScript(){
-        return jmsScript;
-    }
-
     /**
      * Sets Jms script which is used in transformation
      * @param jmsScript  script used in transformation

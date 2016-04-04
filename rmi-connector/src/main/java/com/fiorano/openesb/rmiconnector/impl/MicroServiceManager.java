@@ -42,6 +42,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     protected MicroServiceManager(RmiManager rmiManager, InstanceHandler instanceHandler) {
         super(rmiManager);
         this.microServiceRepository = rmiManager.getMicroServiceRepoManager();
+        this.applicationController = rmiManager.getApplicationController();
         this.handler = instanceHandler;
         setHandleID(instanceHandler.getHandleID());
     }

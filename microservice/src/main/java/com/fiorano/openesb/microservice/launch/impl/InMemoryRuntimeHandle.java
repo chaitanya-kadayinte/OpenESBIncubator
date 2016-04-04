@@ -41,6 +41,7 @@ public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
         this.serviceClass = serviceClass;
         this.launchConfiguration = launchConfiguration;
         isRunning = true;
+        strStatus = EventStateConstants.SERVICE_HANDLE_BOUND;
     }
 
     public boolean isRunning() {
@@ -51,6 +52,8 @@ public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
         Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
         shutDownMethod.invoke(service, "Shutdown Microservice");
         isRunning = false;
+        gracefulKill = true;
+        strStatus = EventStateConstants.SERVICE_HANDLE_UNBOUND;
     }
 
     public void kill() throws Exception {

@@ -38,6 +38,7 @@ public abstract class MicroServiceRuntimeHandle {
 
     protected MicroServiceRuntimeHandle(LaunchConfiguration launchConfiguration){
         this.launchConfiguration = launchConfiguration;
+        this.serviceInstName = launchConfiguration.getServiceName();
     }
 
     protected String getAppVersion() {

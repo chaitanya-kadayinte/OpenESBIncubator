@@ -18,16 +18,18 @@
 /**
  * Created by chaitanya on 02-02-2016.
  */
-package com.fiorano.openesb.utils.config;
+package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.utils.ConfigReader;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
-public class ConfigurationLookupHelper {
-    private static ConfigurationLookupHelper CONFIGURATION_LOOKUP_HELPER = new ConfigurationLookupHelper();
+public class TransportConfig {
+    private static TransportConfig CONFIGURATION_LOOKUP_HELPER = new TransportConfig();
     private Properties properties;
     private String userName = "karaf";
     private String password = "karaf";
@@ -79,7 +81,7 @@ public class ConfigurationLookupHelper {
         this.providerURL = providerURL;
     }
 
-    private ConfigurationLookupHelper() {
+    private TransportConfig() {
         File configFile = new File(System.getProperty("karaf.base") + File.separator
                 + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg");
         if (!configFile.exists()) {
@@ -98,7 +100,7 @@ public class ConfigurationLookupHelper {
         }
     }
 
-    public static ConfigurationLookupHelper getInstance() {
+    public static TransportConfig getInstance() {
         return CONFIGURATION_LOOKUP_HELPER;
     }
 
@@ -111,7 +113,36 @@ public class ConfigurationLookupHelper {
         return property != null ? property : defaultValue;
     }
 
+    public void saveConfig(){
+        try {
+            Properties properties = new Properties();
+            properties.setProperty("userName", getUserName());
+            properties.setProperty("password", getPassword());
+            properties.setProperty("brokerURL", getBrokerURL());
+            properties.setProperty("jmxURL", getJmxURL());
+            properties.setProperty("providerURL", getProviderURL());
+
+            File file = new File(System.getProperty("karaf.base") + File.separator
+                    + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg");
+            FileOutputStream fileOut = new FileOutputStream(file);
+            properties.store(fileOut, "Transport Config");
+            fileOut.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     public Properties getProperties(){
         return properties;
+    }
+
+    public Map<String, String> getConnectionProperties(){
+        Properties properties = TransportConfig.getInstance().getProperties();
+        Map<String, String> map = new HashMap<>();
+        for (String name: properties.stringPropertyNames())
+            map.put(name, properties.getProperty(name));
+        return map;
     }
 }

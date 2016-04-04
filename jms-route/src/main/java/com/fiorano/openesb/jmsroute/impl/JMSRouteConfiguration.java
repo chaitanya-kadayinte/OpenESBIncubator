@@ -12,8 +12,9 @@ public class JMSRouteConfiguration extends AbstractRouteConfiguration implements
     private JMSPortConfiguration sourceConfiguration;
 
     private JMSPortConfiguration destinationConfiguration;
+    private String jmsSelector;
 
-    public JMSRouteConfiguration(JMSPortConfiguration sourceConfiguration, JMSPortConfiguration destinationConfiguration) {
+    public JMSRouteConfiguration(JMSPortConfiguration sourceConfiguration, JMSPortConfiguration destinationConfiguration, String jmsSelector) {
         this.sourceConfiguration = sourceConfiguration;
         this.destinationConfiguration = destinationConfiguration;
     }
@@ -27,7 +28,7 @@ public class JMSRouteConfiguration extends AbstractRouteConfiguration implements
     }
 
     public JMSConsumerConfiguration getConsumerConfiguration() {
-        return new JMSConsumerConfiguration(null);
+        return new JMSConsumerConfiguration(jmsSelector);
     }
 
 }

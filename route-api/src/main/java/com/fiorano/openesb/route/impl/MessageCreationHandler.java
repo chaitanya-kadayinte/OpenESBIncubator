@@ -1,11 +1,14 @@
 package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.route.RouteOperationHandler;
+import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.Message;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
 import com.fiorano.openesb.transport.impl.jms.JMSMessageConfiguration;
 import com.fiorano.openesb.transport.impl.jms.JMSPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import javax.jms.JMSException;
@@ -18,8 +21,10 @@ import java.util.Enumeration;
 public class MessageCreationHandler implements RouteOperationHandler<Message<javax.jms.Message>> {
 
     private TransportService<JMSPort,JMSMessage> transportService;
+    private Logger logger ;
 
     public MessageCreationHandler(MessageCreationConfiguration  messageCreationConfiguration) {
+        this.logger = LoggerFactory.getLogger(Activator.class);
         this.transportService = messageCreationConfiguration.getTransportService();
     }
 
@@ -63,7 +68,7 @@ public class MessageCreationHandler implements RouteOperationHandler<Message<jav
             }
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            logger.error(" Unable to clone message " + e.getMessage());
         }
     }
 

@@ -8,7 +8,7 @@ import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import com.fiorano.openesb.rmiconnector.api.SystemInfoReference;
 import com.fiorano.openesb.utils.Constants;
 import com.fiorano.openesb.utils.FileUtil;
-import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
+import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.BufferedInputStream;
@@ -39,7 +39,7 @@ public class ServiceProviderManager extends AbstractRmiManager implements IServi
 
     @Override
     public String getJMSProviderURL() {
-       return ConfigurationLookupHelper.getInstance().getValue("providerURL");
+       return TransportConfig.getInstance().getValue("providerURL");
     }
 
     public void restartServer() throws RemoteException, ServiceException {
@@ -299,11 +299,7 @@ public class ServiceProviderManager extends AbstractRmiManager implements IServi
     }
 
     public Map<String, String> getConnectionProperties(){
-        Properties properties = ConfigurationLookupHelper.getInstance().getProperties();
-        Map<String, String> map = new HashMap<>();
-        for (String name: properties.stringPropertyNames())
-            map.put(name, properties.getProperty(name));
-        return map;
+        return TransportConfig.getInstance().getConnectionProperties();
     }
 
     public void unreferenced() {

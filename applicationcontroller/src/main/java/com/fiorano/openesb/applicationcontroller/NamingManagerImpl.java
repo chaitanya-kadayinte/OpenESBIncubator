@@ -53,6 +53,12 @@ public class NamingManagerImpl {
         //
         persistentAdminObjectsTable = new Hashtable();
         npAdminObjectsTable = new Hashtable();
+        try {
+            _configure();
+            startService();
+        } catch (FioranoException e) {
+            e.printStackTrace();
+        }
     }
 
     public static NamingManagerImpl GETINSTANCE(){

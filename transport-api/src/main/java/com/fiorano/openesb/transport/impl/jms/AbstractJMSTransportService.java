@@ -1,18 +1,9 @@
 package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.transport.*;
-import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
-import org.osgi.framework.BundleException;
 
 import javax.jms.*;
 import javax.jms.Message;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public abstract class AbstractJMSTransportService implements TransportService<JMSPort, JMSMessage> {
 
@@ -21,11 +12,11 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
     protected AbstractJMSTransportService() throws JMSException {
         ConnectionFactory cf = ((AbstractJMSConnectionProvider) getConnectionProvider()).getConnectionFactory("ConnectionFactory");
         Connection connection;
-        String connectionRetryCount = ConfigurationLookupHelper.getInstance().getValue("CONNECTION_RETRY_COUNT", "5");
+        String connectionRetryCount = TransportConfig.getInstance().getValue("CONNECTION_RETRY_COUNT", "5");
         int count = Integer.valueOf(connectionRetryCount), i = 0;
         while ((connection = getConnection(cf))== null && i++ < count) {
             try {
-                String connectionRetryInterval = ConfigurationLookupHelper.getInstance().getValue("CONNECTION_LOOKUP_INTERVAL", "2000");
+                String connectionRetryInterval = TransportConfig.getInstance().getValue("CONNECTION_LOOKUP_INTERVAL", "2000");
                 Thread.sleep(Long.valueOf(connectionRetryInterval));
             } catch (InterruptedException e1) {
                 //
@@ -39,8 +30,8 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
 
     private Connection getConnection(ConnectionFactory cf) throws JMSException {
         try {
-            ConfigurationLookupHelper configurationLookupHelper = ConfigurationLookupHelper.getInstance();
-            Connection connection = cf.createConnection(configurationLookupHelper.getValue("userName"),configurationLookupHelper.getValue("password"));
+            TransportConfig JMSPRoviderConfig = TransportConfig.getInstance();
+            Connection connection = cf.createConnection(JMSPRoviderConfig.getValue("userName"), JMSPRoviderConfig.getValue("password"));
             connection.start();
             return connection;
         } catch (JMSException e) {

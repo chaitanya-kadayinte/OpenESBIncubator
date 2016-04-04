@@ -1,17 +1,19 @@
 package com.fiorano.openesb.application;
 
 import com.fiorano.openesb.utils.ConfigReader;
-
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Properties;
 
 /**
  * Created by Janardhan on 3/27/2016.
  */
 public class ServerConfig {
-    private String repositoryPath="../esb/server/repository";
-    private String runtimeDataPath="../data";
+    private String repositoryPath="./esb/server/repository";
+    private String runtimeDataPath="./data";
     private long CCPTimeOut=5000;
     private long applicationStateRestoreWaitTime=5000;
 
@@ -76,6 +78,26 @@ public class ServerConfig {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+    public void saveConfig(){
+        try {
+            Properties properties = new Properties();
+            properties.setProperty("repositoryPath", getRepositoryPath());
+            properties.setProperty("runtimeDataPath", getRuntimeDataPath());
+            properties.setProperty("CCPTimeOut", String.valueOf(getCCPTimeOut()));
+            properties.setProperty("applicationStateRestoreWaitTime", String.valueOf(getApplicationStateRestoreWaitTime()));
+
+            File file = new File(System.getProperty("karaf.base") + File.separator
+                    + "etc" + File.separator + "com.fiorano.openesb.server.cfg");
+            FileOutputStream fileOut = new FileOutputStream(file);
+            properties.store(fileOut, "Server Config");
+            fileOut.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static ServerConfig getConfig(){

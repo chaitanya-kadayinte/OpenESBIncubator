@@ -6,11 +6,13 @@ import com.fiorano.openesb.application.application.PortInstance;
 import com.fiorano.openesb.application.application.Transformation;
 import com.fiorano.openesb.route.FilterMessageException;
 import com.fiorano.openesb.route.RouteOperationHandler;
+import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
-import com.fiorano.openesb.utils.JmsMessageUtil;
 import com.fiorano.openesb.utils.SourceContext;
 import com.fiorano.openesb.utils.StringUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -30,6 +32,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
     private PortInstance port;
     private String serviceInstName;
     private Application application;
+    private Logger logger;
 
 
     private final String APPLICATION_CONTEXT = "APPLICATION_CONTEXT";
@@ -39,7 +42,8 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
 
         this.application = carryForwardContextConfiguration.getApplication();
         this.serviceInstName = carryForwardContextConfiguration.getServiceInstanceName();
-        this.port = carryForwardContextConfiguration.getInputPortInstance();
+        this.port = carryForwardContextConfiguration.getPortInstance();
+        this.logger = LoggerFactory.getLogger(Activator.class);
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.fiorano.openesb.jmsroute.impl;
 
-import com.fiorano.openesb.route.FilterMessageException;
-import com.fiorano.openesb.route.Route;
-import com.fiorano.openesb.route.RouteConfiguration;
-import com.fiorano.openesb.route.RouteOperationHandler;
+import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.route.impl.AbstractRouteImpl;
 import com.fiorano.openesb.route.impl.CarryForwardContextHandler;
 import com.fiorano.openesb.transport.*;
@@ -19,6 +16,8 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     private TransportService<JMSPort, JMSMessage> transportService;
     private RouteConfiguration routeConfiguration;
     private Consumer<JMSMessage> messageConsumer;
+    private String sourceDestintaion;
+    private String targetDestination;
 
     public JMSRouteImpl(final TransportService<JMSPort, JMSMessage> transportService, final RouteConfiguration routeConfiguration) throws Exception {
         super(routeConfiguration.getRouteOperationConfigurations());
@@ -26,7 +25,7 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
         this.routeConfiguration = routeConfiguration;
 
 
-        routeOperationHandlers.add(new RouteOperationHandler<JMSMessage>() {
+        routeOperationHandlers.put(RouteOperationType.SEND, new RouteOperationHandler<JMSMessage>() {
             public void handleOperation(JMSMessage message) throws FilterMessageException {
                 try {
                     producer.send(message);
@@ -41,12 +40,13 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     public void start() throws Exception {
         producer = transportService.createProducer(transportService.enablePort(routeConfiguration.getDestinationConfiguration()), new JMSProducerConfiguration());
         messageConsumer = transportService.createConsumer(sourcePort, routeConfiguration.getConsumerConfiguration());
-
+        this.sourceDestintaion = routeConfiguration.getSourceConfiguration().getName();
+        this.targetDestination = routeConfiguration.getDestinationConfiguration().getName();
         messageConsumer.attachMessageListener(new MessageListener<JMSMessage>() {
             public void messageReceived(JMSMessage message) {
                 try {
                     handleMessage(message);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     //todo
                     e.printStackTrace();
                 }
@@ -67,13 +67,14 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
         producer.close();
         producer = null;
         producer = transportService.createProducer(transportService.enablePort(portConfiguration), new JMSProducerConfiguration());
+        this.targetDestination = portConfiguration.getName();
 
     }
 
     public void changeSourceDestination(PortConfiguration portConfiguration) throws Exception{
         messageConsumer.close();
         messageConsumer = transportService.createConsumer(sourcePort, routeConfiguration.getConsumerConfiguration());
-
+        this.sourceDestintaion = portConfiguration.getName();
         messageConsumer.attachMessageListener(new MessageListener<JMSMessage>() {
             public void messageReceived(JMSMessage message) {
                 try {
@@ -85,6 +86,14 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
             }
         });
 
+    }
+
+    public String getSourceDestinationName(){
+        return sourceDestintaion;
+    }
+
+    public String getTargetDestinationName(){
+        return targetDestination;
     }
 
 }

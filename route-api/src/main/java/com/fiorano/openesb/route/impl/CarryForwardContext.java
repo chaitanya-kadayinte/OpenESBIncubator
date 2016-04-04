@@ -39,6 +39,22 @@ public class CarryForwardContext implements Serializable {
 
     Hashtable hashCarryFwdProps;
 
+    public ArrayList<SourceContext> getVecOfContextsCarriedFwd() {
+        return new ArrayList<SourceContext>(vecOfContextsCarriedFwd);
+    }
+
+    public void setVecOfContextsCarriedFwd(ArrayList<SourceContext> vecOfContextsCarriedFwd) {
+        this.vecOfContextsCarriedFwd =  new Vector(vecOfContextsCarriedFwd);
+    }
+
+    public Hashtable getHashCarryFwdProps() {
+        return hashCarryFwdProps;
+    }
+
+    public void setHashCarryFwdProps(Hashtable hashCarryFwdProps) {
+        this.hashCarryFwdProps = hashCarryFwdProps;
+    }
+
     private String appContext;
 
     public CarryForwardContext() {

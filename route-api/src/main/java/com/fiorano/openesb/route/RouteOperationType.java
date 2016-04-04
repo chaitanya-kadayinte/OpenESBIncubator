@@ -1,0 +1,9 @@
+package com.fiorano.openesb.route;
+
+/**
+ * Created by Janardhan on 4/2/2016.
+ */
+public enum RouteOperationType {
+    SRC_CARRY_FORWARD_CONTEXT, APP_CONTEXT_TRANSFORM, ROUTE_TRANSFORM, SENDER_SELECTOR, APP_CONTEXT_XML_SELECTOR, BODY_XML_SELECTOR,MESSAGE_CREATE,  TGT_CARRY_FORWARD_CONTEXT, SEND
+
+}

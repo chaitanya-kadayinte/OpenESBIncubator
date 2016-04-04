@@ -16,6 +16,7 @@
  */
 package com.fiorano.openesb.microservice.ccp;
 
+import com.fiorano.openesb.microservice.bundle.Activator;
 import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
 import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
 import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
@@ -23,6 +24,8 @@ import com.fiorano.openesb.microservice.ccp.event.EventFactory;
 import com.fiorano.openesb.transport.*;
 import com.fiorano.openesb.transport.impl.jms.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.BytesMessage;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 public class CCPEventManager implements MessageListener<Message> {
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
     private Map<CCPEventType, Map<String, IEventListener>> eventListeners;
     private Map<Long, CCPResponseCallback> pendingResponses;
     private Map<Long, Integer> trackResponseCount;
@@ -159,10 +163,9 @@ public class CCPEventManager implements MessageListener<Message> {
                 event.toMessage(message);
                 StringBuilder target = new StringBuilder();
                 for (String instance : componentIdentifiers) {
-                    System.out.println(instance);
                     target.append(instance).append(";");
                 }
-                System.out.println("Sending event from server -" + event + "Component - " + target);
+                logger.info("Sending event from server -" + event + "Component - " + target);
 
                 if (target.toString().length() == 0)
                     throw new FioranoException("NO_TARGET_COMPONENT_FOR_CCP_EVENT" + event.getEventId());

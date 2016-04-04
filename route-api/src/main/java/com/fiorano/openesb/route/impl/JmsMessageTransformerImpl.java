@@ -24,7 +24,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.fiorano.openesb.route.JMSMessageTransformer;
-import com.fiorano.openesb.utils.JmsMessageUtil;
 import org.xml.sax.InputSource;
 import com.fiorano.openesb.utils.SAXUtil;
 import com.fiorano.openesb.utils.TransformerUtil;

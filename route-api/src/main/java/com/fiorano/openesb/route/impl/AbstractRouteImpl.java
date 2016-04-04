@@ -1,24 +1,22 @@
 package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.route.*;
+import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.Message;
-import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
-    protected List<RouteOperationHandler> routeOperationHandlers = new ArrayList<>();
+    protected Map<RouteOperationType, RouteOperationHandler> routeOperationHandlers = new Hashtable<>();
 
     public AbstractRouteImpl(List<RouteOperationConfiguration> operationConfigurations) throws Exception {
 
-        routeOperationHandlers = new ArrayList<>(operationConfigurations.size());
-        //routeOperationHandlers.add(new CarryForwardContextHandler());
-        //routeOperationHandlers.add(new MessageCreationHandler());
+        routeOperationHandlers = new Hashtable<>(operationConfigurations.size());
         if (!operationConfigurations.isEmpty()) {
             for (RouteOperationConfiguration configuration : operationConfigurations) {
                 RouteOperationHandler routeOperationHandler = createHandler(configuration);
-                routeOperationHandlers.add(routeOperationHandler);
+                routeOperationHandlers.put(configuration.getRouteOperationType(), routeOperationHandler);
             }
 
         }
@@ -27,16 +25,15 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
     public void handleMessage(M message) {
         if (!routeOperationHandlers.isEmpty()) {
             try {
-                for (RouteOperationHandler handler : routeOperationHandlers) {
+                for (RouteOperationHandler handler : routeOperationHandlers.values()) {
+                    LoggerFactory.getLogger(Activator.class).trace("Handling Operation " + handler.toString());
                     handler.handleOperation(message);
                 }
             } catch (FilterMessageException e) {
                 // TODO: 17-01-2016
-                // Message skipped by selector - trace log.
-            } catch (FioranoException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+                LoggerFactory.getLogger(Activator.class).debug("Message skipped by selector : " + e.getMessage());// Message skipped by selector - debug log.
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(Activator.class).error("Severe","Exception while applying handlers "+ e.getMessage());
             }
         }
     }
@@ -54,6 +51,20 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
             return new SenderSelector((SenderSelectorConfiguration) configuration);
         }
         return null;
+    }
+
+    public void modifyHandler(RouteOperationConfiguration configuration) throws Exception {
+        if (configuration instanceof MessageCreationConfiguration) {
+             routeOperationHandlers.put(configuration.getRouteOperationType(),new MessageCreationHandler((MessageCreationConfiguration) configuration));
+        } else if (configuration instanceof CarryForwardContextConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new CarryForwardContextHandler((CarryForwardContextConfiguration) configuration));
+        } else if (configuration instanceof TransformationConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new TransformationOperationHandler((TransformationConfiguration) configuration));
+        } else if (configuration instanceof SelectorConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new XmlSelectorHandler((XmlSelectorConfiguration) configuration));
+        } else if (configuration instanceof SenderSelectorConfiguration) {
+            routeOperationHandlers.put(configuration.getRouteOperationType(),new SenderSelector((SenderSelectorConfiguration) configuration));
+        }
     }
 
 }

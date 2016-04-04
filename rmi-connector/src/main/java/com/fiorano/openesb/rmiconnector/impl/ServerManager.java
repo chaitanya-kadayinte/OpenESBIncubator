@@ -2,15 +2,10 @@ package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.application.SystemInfo;
 import com.fiorano.openesb.application.TESPerformanceStats;
-import com.fiorano.openesb.utils.config.ConfigurationLookupHelper;
+import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * Created by Janardhan on 3/23/2016.
@@ -34,7 +29,7 @@ public class ServerManager {
 
     public HashMap getServerDetails() throws FioranoException {
         HashMap fesDetails = new HashMap();
-        fesDetails.put("JMS URL", ConfigurationLookupHelper.getInstance().getValue("providerURL"));
+        fesDetails.put("JMS URL", TransportConfig.getInstance().getValue("providerURL"));
         fesDetails.put("Server IP", rmiManager.getIPAliases().get(rmiManager.getIPAliases().size()));
         fesDetails.put("Rmi Registry Port", rmiManager.getRmiRegistryPort());
         TESPerformanceStats stats = ServerInfo.getTESPerformanceStats();

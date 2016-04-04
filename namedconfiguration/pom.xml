@@ -56,11 +56,6 @@
         </dependency>
         <dependency>
             <groupId>com.fiorano.openesb</groupId>
-            <artifactId>applicationcontroller</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fiorano.openesb</groupId>
             <artifactId>utils</artifactId>
             <version>${project.version}</version>
         </dependency>
