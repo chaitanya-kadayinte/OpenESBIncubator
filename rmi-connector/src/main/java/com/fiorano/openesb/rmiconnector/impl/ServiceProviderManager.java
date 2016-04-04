@@ -299,11 +299,7 @@ public class ServiceProviderManager extends AbstractRmiManager implements IServi
     }
 
     public Map<String, String> getConnectionProperties(){
-        Properties properties = TransportConfig.getInstance().getProperties();
-        Map<String, String> map = new HashMap<>();
-        for (String name: properties.stringPropertyNames())
-            map.put(name, properties.getProperty(name));
-        return map;
+        return TransportConfig.getInstance().getConnectionProperties();
     }
 
     public void unreferenced() {
