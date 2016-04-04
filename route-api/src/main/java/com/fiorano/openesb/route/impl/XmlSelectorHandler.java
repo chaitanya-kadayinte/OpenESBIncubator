@@ -27,7 +27,7 @@ public class XmlSelectorHandler implements RouteOperationHandler<JMSMessage> {
     public void handleOperation(JMSMessage message) throws FilterMessageException, FioranoException {
         try {
             String content= selectorConfiguration.getTarget().equalsIgnoreCase("Body") ?
-                    message.getBody() : message.getApplicationContext();
+                    message.getBody() : JmsMessageUtil.getApplicationContext(message.getMessage());
             if (!selector.isMessageSelected(content)) {
                 throw new FilterMessageException();
             }

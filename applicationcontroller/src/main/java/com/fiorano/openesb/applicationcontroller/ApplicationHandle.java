@@ -167,6 +167,7 @@ public class ApplicationHandle {
                 senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                 routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
             }
+
             if(route.getApplicationContextSelector() != null) {
                 XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
                 appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());

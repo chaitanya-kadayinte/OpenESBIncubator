@@ -52,7 +52,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
 
         CarryForwardContext carryForwardContext = null;
         try {
-            carryForwardContext = (CarryForwardContext) JmsMessageUtil.getCarryForwardContext(jmsMessage);
+            carryForwardContext = JmsMessageUtil.getCarryForwardContext(jmsMessage);
         } catch (Exception e) {
             throw new FioranoException(e);
         }
@@ -119,7 +119,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
                 e.printStackTrace();
             }
             try {
-                carryForwardContext = (CarryForwardContext) JmsMessageUtil.getCarryForwardContext(jmsMessage);
+                carryForwardContext = JmsMessageUtil.getCarryForwardContext(jmsMessage);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
@@ -129,10 +129,10 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
 
                 carryForwardContext = new CarryForwardContext();
                 SourceContext sourceContext = new SourceContext();
-                sourceContext.setAppInstName("");
-                sourceContext.setAppInstVersion("");
-                sourceContext.setSrvInstName("");
-                sourceContext.setNodeName("");
+                sourceContext.setAppInstName(application.getDisplayName());
+                sourceContext.setAppInstVersion(String.valueOf(application.getVersion()));
+                sourceContext.setSrvInstName(serviceInstName);
+                sourceContext.setNodeName("fps1");
                 carryForwardContext.addContext(sourceContext);
 
                 try {
@@ -174,7 +174,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
             JmsMessageUtil.setCompInstName(jmsMessage,application.getServiceInstance(serviceInstName).getGUID());
             JmsMessageUtil.setEventProcessName(jmsMessage, application.getGUID());
             JmsMessageUtil.setEventProcessVersion(jmsMessage, application.getSchemaVersion());
-           // JmsMessageUtil.setSourceFPSName(msg, handle.slp.getNodeName());
+           //JmsMessageUtil.setSourceFPSName(msg, handle.slp.getNodeName());
         } catch (Exception e){
 
         }

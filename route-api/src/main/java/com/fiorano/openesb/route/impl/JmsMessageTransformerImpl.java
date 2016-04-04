@@ -191,16 +191,8 @@ public class JmsMessageTransformerImpl implements JMSMessageTransformer {
             }
         }
 
-        //  Get Application Context
-        String appContext = null;
+        String appContext = JmsMessageUtil.getApplicationContext(msg);
 
-        CarryForwardContext carryFwdCtx = (CarryForwardContext)
-                JmsMessageUtil.getCarryForwardContext(msg);
-
-        if (carryFwdCtx != null)
-            appContext = carryFwdCtx.getAppContext();
-
-        // if the message doesnt come with a app context, then use the default app context.
         if (appContext == null && defaultAppContext != null)
             appContext = defaultAppContext;
 
@@ -227,16 +219,7 @@ public class JmsMessageTransformerImpl implements JMSMessageTransformer {
     }
 
     private boolean equals(String source, String target) {
-        if ((source == null) && (target == null))
-            return true;
-
-        if ((source == null) || (target == null))
-            return false;
-
-        if (source.equals(target))
-            return true;
-
-        return false;
+        return (source == null) && (target == null) || !((source == null) || (target == null)) && source.equals(target);
     }
 }
 

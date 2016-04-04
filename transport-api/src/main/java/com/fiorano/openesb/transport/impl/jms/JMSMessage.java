@@ -31,11 +31,6 @@ public class JMSMessage implements Message<javax.jms.Message> {
     }
 
     @Override
-    public String getApplicationContext() throws JMSException {
-        return message.getStringProperty("ESBX__SYSTEM__APPLICATION_CONTEXT");
-    }
-
-    @Override
     public void setInternalMessage(javax.jms.Message message) {
         this.message = message;
     }

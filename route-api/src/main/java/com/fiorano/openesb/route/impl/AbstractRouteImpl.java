@@ -8,17 +8,16 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
-    protected Map<RouteOperationType, RouteOperationHandler> routeOperationHandlers = new Hashtable<>();
+    protected Map<RouteOperationType, RouteOperationHandler> routeOperationHandlers;
 
     public AbstractRouteImpl(List<RouteOperationConfiguration> operationConfigurations) throws Exception {
 
-        routeOperationHandlers = new Hashtable<>(operationConfigurations.size());
+        routeOperationHandlers = Collections.synchronizedMap(new LinkedHashMap<RouteOperationType, RouteOperationHandler>(operationConfigurations.size()));
         if (!operationConfigurations.isEmpty()) {
             for (RouteOperationConfiguration configuration : operationConfigurations) {
                 RouteOperationHandler routeOperationHandler = createHandler(configuration);
                 routeOperationHandlers.put(configuration.getRouteOperationType(), routeOperationHandler);
             }
-
         }
     }
 
@@ -30,10 +29,9 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
                     handler.handleOperation(message);
                 }
             } catch (FilterMessageException e) {
-                // TODO: 17-01-2016
                 LoggerFactory.getLogger(Activator.class).debug("Message skipped by selector : " + e.getMessage());// Message skipped by selector - debug log.
             } catch (Throwable e) {
-                LoggerFactory.getLogger(Activator.class).error("Severe","Exception while applying handlers "+ e.getMessage());
+                LoggerFactory.getLogger(Activator.class).error("Exception while applying handlers "+ e.getMessage() + " Trace " + Arrays.toString(e.getStackTrace()));
             }
         }
     }

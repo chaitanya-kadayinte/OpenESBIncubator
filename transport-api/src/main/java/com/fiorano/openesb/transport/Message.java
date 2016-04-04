@@ -24,7 +24,6 @@ public interface Message<M> {
 
     String getBody() throws Exception;
 
-    String getApplicationContext() throws Exception;
 
     void setInternalMessage(M message);
 

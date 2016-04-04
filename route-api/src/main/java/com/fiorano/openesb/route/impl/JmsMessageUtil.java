@@ -81,7 +81,7 @@ public class JmsMessageUtil {
 
     //  Carry forward context
     //
-    public final static String CARRY_FORWARD_CONTEXT_DEF = null;
+    public final static CarryForwardContext CARRY_FORWARD_CONTEXT_DEF = new CarryForwardContext();
 
     //  Bytes Data
     //
@@ -307,25 +307,27 @@ public class JmsMessageUtil {
     }
 
 
-    public static Object getCarryForwardContext(Message message)
+    public static CarryForwardContext getCarryForwardContext(Message message)
             throws
             JMSException {
         if (!message.propertyExists(MessagePropertyNames.CARRY_FORWARD_CONTEXT)) {
             return CARRY_FORWARD_CONTEXT_DEF;
         }
         String carryForwardContextJson = message.getStringProperty(MessagePropertyNames.CARRY_FORWARD_CONTEXT);
-        //return message.getObjectProperty(MessagePropertyNames.CARRY_FORWARD_CONTEXT);
-        Genson genson = new Genson();
-        CarryForwardContext carryForwardContext = genson.deserialize(carryForwardContextJson,CarryForwardContext.class);
-        return carryForwardContext;
-        /*try {
-            return fioranoJsonUtil.deserialize(carryForwardContextJson ,new CarryForwardContext());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }*/
+        if(!StringUtil.isEmpty(carryForwardContextJson)) {
+            Genson genson = new Genson();
+            CarryForwardContext carryForwardContext = genson.deserialize(carryForwardContextJson, CarryForwardContext.class);
+            return carryForwardContext;
+        }
+        return null;
     }
 
+    public static String getApplicationContext(Message message)
+            throws
+            JMSException {
+        CarryForwardContext carryForwardContext = getCarryForwardContext(message);
+        return carryForwardContext != null ? carryForwardContext.getAppContext() : null;
+    }
 
     public static byte[] getBytesData(Message message)
             throws

@@ -40,7 +40,7 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
             return false;
 
         try {
-            CarryForwardContext carryForwardContext = (CarryForwardContext) JmsMessageUtil.getCarryForwardContext(message.getMessage());
+            CarryForwardContext carryForwardContext = JmsMessageUtil.getCarryForwardContext(message.getMessage());
 
             if (carryForwardContext == null)
                 return false;
@@ -65,31 +65,28 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
                     continue;
 
                 String[] multipleSources = sourceName.split(",");
-                if (multipleSources != null) {
-                    for (String multipleSource : multipleSources) {
-                        multipleSource = multipleSource.trim();
-                        if (sourceContext.getSrvInstName().equalsIgnoreCase(multipleSource)) {
-                            if (sourceContext.getAppInstName().equalsIgnoreCase(appDetails[0])) {
-                                if (sourceContext.getAppInstVersion().equalsIgnoreCase(appDetails[1])) {
-                                    return true;
-                                }
+                for (String multipleSource : multipleSources) {
+                    multipleSource = multipleSource.trim();
+                    if (sourceContext.getSrvInstName().equalsIgnoreCase(multipleSource)) {
+                        if (sourceContext.getAppInstName().equalsIgnoreCase(appDetails[0])) {
+                            if (sourceContext.getAppInstVersion().equalsIgnoreCase(appDetails[1])) {
+                                return true;
                             }
-
                         }
-                        String[] app_version_serv = multipleSource.split("\\.");
-                        if (app_version_serv.length > 1) {
-                            String[] app_version = app_version_serv[0].split(":");
-                            if (app_version.length > 1) {
-                                if (app_version[0] == null)
-                                    continue;                                // missing application name information in details set by user, move to next comma separated source value
-                                if (app_version[1] == null)
-                                    continue;                                // missing version number information in details set by user, move to next comma separated source value
-                                if (app_version_serv[1] == null)
-                                    continue;                                // missing service instance name information in details set by user, move to next comma separated source value
-                                app_version[1] = app_version[1].replace("_", ".");
-                                if ((sourceContext.getAppInstName().equalsIgnoreCase(app_version[0])) && (sourceContext.getAppInstVersion().equalsIgnoreCase(app_version[1])) && (sourceContext.getSrvInstName().equalsIgnoreCase(app_version_serv[1])))
-                                    return true;                  // all categories match returning true value to send message across.
-                            }
+                    }
+                    String[] app_version_serv = multipleSource.split("\\.");
+                    if (app_version_serv.length > 1) {
+                        String[] app_version = app_version_serv[0].split(":");
+                        if (app_version.length > 1) {
+                            if (app_version[0] == null)
+                                continue;                                // missing application name information in details set by user, move to next comma separated source value
+                            if (app_version[1] == null)
+                                continue;                                // missing version number information in details set by user, move to next comma separated source value
+                            if (app_version_serv[1] == null)
+                                continue;                                // missing service instance name information in details set by user, move to next comma separated source value
+                            app_version[1] = app_version[1].replace("_", ".");
+                            if ((sourceContext.getAppInstName().equalsIgnoreCase(app_version[0])) && (sourceContext.getAppInstVersion().equalsIgnoreCase(app_version[1])) && (sourceContext.getSrvInstName().equalsIgnoreCase(app_version_serv[1])))
+                                return true;                  // all categories match returning true value to send message across.
                         }
                     }
                 }
