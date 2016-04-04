@@ -143,12 +143,12 @@ public class ApplicationHandle {
             messageCreationConfiguration.setRouteOperationType(RouteOperationType.MESSAGE_CREATE);
             routeConfiguration.getRouteOperationConfigurations().add(messageCreationConfiguration);
 
-            CarryForwardContextConfiguration carryForwardContextConfiguration = new CarryForwardContextConfiguration();
-            carryForwardContextConfiguration.setApplication(application);
-            carryForwardContextConfiguration.setPortInstance(sourcePort);
-            carryForwardContextConfiguration.setServiceInstanceName(sourceServiceInstance);
-            carryForwardContextConfiguration.setRouteOperationType(RouteOperationType.CARRY_FORWARD_CONTEXT);
-            routeConfiguration.getRouteOperationConfigurations().add(carryForwardContextConfiguration);
+            CarryForwardContextConfiguration srcCFC = new CarryForwardContextConfiguration();
+            srcCFC.setApplication(application);
+            srcCFC.setPortInstance(sourcePort);
+            srcCFC.setServiceInstanceName(sourceServiceInstance);
+            srcCFC.setRouteOperationType(RouteOperationType.SRC_CARRY_FORWARD_CONTEXT);
+            routeConfiguration.getRouteOperationConfigurations().add(srcCFC);
 
             Transformation applicationContextTransformation = sourcePort.getApplicationContextTransformation();
             if(applicationContextTransformation != null) {
@@ -196,6 +196,7 @@ public class ApplicationHandle {
             targetCFC.setApplication(application);
             targetCFC.setPortInstance(targetPort);
             targetCFC.setServiceInstanceName(targetServiceInstance);
+            targetCFC.setRouteOperationType(RouteOperationType.TGT_CARRY_FORWARD_CONTEXT);
             routeConfiguration.getRouteOperationConfigurations().add(targetCFC);
 
             com.fiorano.openesb.route.Route route1 = routeService.createRoute(routeConfiguration);
@@ -462,7 +463,7 @@ public class ApplicationHandle {
             try {
                 handle = microServiceHandleList.get(killcomp);
                 if (handle != null) {
-                    handle.stop();  /*  Bugzilla – Bug 18550 , making call to killComponent() ,which will take care of deleting the route first and then kill component.  */
+                    handle.stop();  /*  Bugzilla ï¿½ Bug 18550 , making call to killComponent() ,which will take care of deleting the route first and then kill component.  */
                 }
             } catch (Exception e) {
                 logger.error("error occured while stopping the component " + handle.getServiceInstName());
@@ -495,7 +496,7 @@ public class ApplicationHandle {
             RouteLaunchPacket rlp = (RouteLaunchPacket) routeLaunchPackets.nextElement();
             if (rlp.getSrcPortName().equals(srcPortName) && rlp.getTrgtPortName() != null && rlp.getTrgtPortName().equalsIgnoreCase(tgtPortName)
                     && rlp.getTargetApplicationGUID().equalsIgnoreCase(tgtAppInst) && rlp.getActualTrgtServInst().equalsIgnoreCase(tgtServName)
-                    && rlp.getTrgtNodeName() != null && rlp.getTrgtNodeName().equalsIgnoreCase(tgtNodeName) && rlp.getRouteGUID().equalsIgnoreCase(tgtRouteGUID)) {    // Bugzilla – Bug 18379 , adding null check for rlp.getTrgtNodeName() ,see bugzilla comments for explaination
+                    && rlp.getTrgtNodeName() != null && rlp.getTrgtNodeName().equalsIgnoreCase(tgtNodeName) && rlp.getRouteGUID().equalsIgnoreCase(tgtRouteGUID)) {    // Bugzilla ï¿½ Bug 18379 , adding null check for rlp.getTrgtNodeName() ,see bugzilla comments for explaination
                 //  Changes made for updating Route Selector and transformation
                 //  on synchronization of an application after making changes
                 //  to Route Selector and transformation.
