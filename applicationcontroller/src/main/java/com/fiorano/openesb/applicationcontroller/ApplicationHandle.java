@@ -255,6 +255,7 @@ public class ApplicationHandle {
         }
 
         JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
+        String targetDestination = route.getTargetDestinationName();
         //target for this route is source for estudio
         String destName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
         destinationConfiguration.setName(destName);
@@ -263,7 +264,7 @@ public class ApplicationHandle {
         BreakpointMetaData breakpointMetaData = new BreakpointMetaData();
         breakpointMetaData.setConnectionProperties(TransportConfig.getInstance().getConnectionProperties());
         breakpointMetaData.setSourceQName(destName);
-        breakpointMetaData.setTargetQName(route.getTargetDestinationName());
+        breakpointMetaData.setTargetQName(targetDestination);
         breakpoints.put(routeName, breakpointMetaData);
         return breakpointMetaData;
     }
