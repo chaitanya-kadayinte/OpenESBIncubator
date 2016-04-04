@@ -2,9 +2,12 @@ package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.route.FilterMessageException;
 import com.fiorano.openesb.route.RouteOperationHandler;
+import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
 import com.fiorano.openesb.utils.SourceContext;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -16,10 +19,12 @@ import java.util.Enumeration;
 public class SenderSelector implements RouteOperationHandler<JMSMessage> {
     private String sourceName;
     private String appName_version;
+    private Logger logger;
 
     public SenderSelector(SenderSelectorConfiguration configuration) {
         this.sourceName = configuration.getSourceName();
         this.appName_version = configuration.getAppName_version();
+        this.logger = LoggerFactory.getLogger(Activator.class);
     }
 
     @Override
@@ -37,8 +42,6 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
         try {
             CarryForwardContext carryForwardContext = (CarryForwardContext) JmsMessageUtil.getCarryForwardContext(message.getMessage());
 
-            //System.out.println("RouteSourceSelector:: carryForwardContext = " + carryForwardContext);
-
             if (carryForwardContext == null)
                 return false;
 
@@ -50,7 +53,6 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
                 if (appDetails[1] == null)                                 // if current application version is absent then send back a false as route selector cant decide whether to send the message forward or not
                     return false;
             }
-
 
             while (sourceContexts.hasMoreElements()) {
                 SourceContext sourceContext = (SourceContext) sourceContexts.nextElement();
@@ -95,6 +97,7 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
             }
             return false;
         } catch (JMSException exp) {
+            logger.error("Exception occured in message selector " + exp.getMessage());
             return false;
         }
     }

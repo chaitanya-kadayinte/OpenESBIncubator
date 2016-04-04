@@ -35,7 +35,7 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
                 // TODO: 17-01-2016
                 LoggerFactory.getLogger(Activator.class).debug("Message skipped by selector : " + e.getMessage());// Message skipped by selector - debug log.
             } catch (Throwable e) {
-                LoggerFactory.getLogger(Activator.class).error("severe","Exception while applying handlers "+ e.getMessage());
+                LoggerFactory.getLogger(Activator.class).error("Severe","Exception while applying handlers "+ e.getMessage());
             }
         }
     }

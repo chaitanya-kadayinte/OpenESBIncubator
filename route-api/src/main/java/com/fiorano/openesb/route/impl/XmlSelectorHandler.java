@@ -1,21 +1,25 @@
 package com.fiorano.openesb.route.impl;
 
-import com.fiorano.openesb.route.*;
+import com.fiorano.openesb.route.FilterMessageException;
+import com.fiorano.openesb.route.RouteOperationHandler;
+import com.fiorano.openesb.route.Selector;
+import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
-import com.fiorano.openesb.utils.JmsMessageUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
 
 public class XmlSelectorHandler implements RouteOperationHandler<JMSMessage> {
     private Selector selector;
     private XmlSelectorConfiguration selectorConfiguration;
+    private Logger logger;
 
     public XmlSelectorHandler(XmlSelectorConfiguration selectorConfiguration) {
         this.selectorConfiguration = selectorConfiguration;
         this.selector = new XMLContentSelector(selectorConfiguration);
+        this.logger = LoggerFactory.getLogger(Activator.class);
 
     }
 
@@ -28,7 +32,7 @@ public class XmlSelectorHandler implements RouteOperationHandler<JMSMessage> {
                 throw new FilterMessageException();
             }
         } catch (JMSException e) {
-            throw new FioranoException(e);
+            logger.error("Exception occured in message selector : " + e.getMessage() + e.getStackTrace());
         }
     }
 }

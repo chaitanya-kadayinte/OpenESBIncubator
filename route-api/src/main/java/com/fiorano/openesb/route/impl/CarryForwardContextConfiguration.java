@@ -2,6 +2,7 @@ package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.application.application.InputPortInstance;
+import com.fiorano.openesb.application.application.PortInstance;
 import com.fiorano.openesb.route.RouteOperationConfiguration;
 
 /**
@@ -10,7 +11,7 @@ import com.fiorano.openesb.route.RouteOperationConfiguration;
 public class CarryForwardContextConfiguration implements RouteOperationConfiguration {
     private Application application;
     private String serviceInstanceName;
-    private InputPortInstance inputPortInstance;
+    private PortInstance portInstance;
 
     public Application getApplication() {
         return application;
@@ -28,11 +29,11 @@ public class CarryForwardContextConfiguration implements RouteOperationConfigura
         this.serviceInstanceName = serviceInstanceName;
     }
 
-    public InputPortInstance getInputPortInstance() {
-        return inputPortInstance;
+    public PortInstance getPortInstance() {
+        return portInstance;
     }
 
-    public void setInputPortInstance(InputPortInstance inputPortInstance) {
-        this.inputPortInstance = inputPortInstance;
+    public void setPortInstance(PortInstance portInstance) {
+        this.portInstance = portInstance;
     }
 }

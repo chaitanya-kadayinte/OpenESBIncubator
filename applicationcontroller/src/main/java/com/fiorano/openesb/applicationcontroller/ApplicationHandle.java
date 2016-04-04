@@ -119,9 +119,9 @@ public class ApplicationHandle {
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
             String sourceServiceInstance = route.getSourceServiceInstance();
             sourceConfiguration.setName(getPortName(sourcePortInstance, sourceServiceInstance));
-            OutputPortInstance outputPortInstance = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
+            OutputPortInstance sourcePort = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
 
-            int type = outputPortInstance.getDestinationType();
+            int type = sourcePort.getDestinationType();
             sourceConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
 
@@ -129,8 +129,8 @@ public class ApplicationHandle {
             JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
             String targetServiceInstance = route.getTargetServiceInstance();
             destinationConfiguration.setName(getPortName(destPortInstance, targetServiceInstance));
-            InputPortInstance inputPortInstance = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
-            int inputPortInstanceDestinationType = inputPortInstance.getDestinationType();
+            InputPortInstance targetPort = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
+            int inputPortInstanceDestinationType = targetPort.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
             JMSRouteConfiguration routeConfiguration = new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration);
@@ -141,11 +141,11 @@ public class ApplicationHandle {
 
             CarryForwardContextConfiguration carryForwardContextConfiguration = new CarryForwardContextConfiguration();
             carryForwardContextConfiguration.setApplication(application);
-            carryForwardContextConfiguration.setInputPortInstance(inputPortInstance);
+            carryForwardContextConfiguration.setPortInstance(sourcePort);
             carryForwardContextConfiguration.setServiceInstanceName(sourceServiceInstance);
             routeConfiguration.getRouteOperationConfigurations().add(carryForwardContextConfiguration);
 
-            Transformation applicationContextTransformation = outputPortInstance.getApplicationContextTransformation();
+            Transformation applicationContextTransformation = sourcePort.getApplicationContextTransformation();
             if(applicationContextTransformation != null) {
                 TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
                 transformationConfiguration.setXsl(applicationContextTransformation.getScript());
@@ -183,6 +183,11 @@ public class ApplicationHandle {
                 routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
             }
 
+            CarryForwardContextConfiguration targetCFC = new CarryForwardContextConfiguration();
+            targetCFC.setApplication(application);
+            targetCFC.setPortInstance(targetPort);
+            targetCFC.setServiceInstanceName(targetServiceInstance);
+            routeConfiguration.getRouteOperationConfigurations().add(targetCFC);
 
             com.fiorano.openesb.route.Route route1 = routeService.createRoute(routeConfiguration);
             route1.start();
