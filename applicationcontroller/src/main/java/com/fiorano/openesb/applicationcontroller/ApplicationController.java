@@ -6,6 +6,8 @@ import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationInfo;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
+import com.fiorano.openesb.application.configuration.data.ObjectCategory;
+import com.fiorano.openesb.application.configuration.data.ResourceConfigurationNamedObject;
 import com.fiorano.openesb.application.constants.ConfigurationRepoConstants;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
@@ -23,14 +25,12 @@ import com.fiorano.openesb.namedconfig.NamedConfigRepository;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.route.RouteOperationType;
 import com.fiorano.openesb.route.RouteService;
-import com.fiorano.openesb.route.SelectorConfiguration;
 import com.fiorano.openesb.route.impl.SenderSelectorConfiguration;
 import com.fiorano.openesb.route.impl.TransformationConfiguration;
 import com.fiorano.openesb.route.impl.XmlSelectorConfiguration;
 import com.fiorano.openesb.transport.TransportService;
-import com.fiorano.openesb.utils.Constants;
-import com.fiorano.openesb.utils.FioranoStaxParser;
-import com.fiorano.openesb.utils.StringUtil;
+import com.fiorano.openesb.utils.*;
+import com.fiorano.openesb.utils.crypto.CommonConstants;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.security.SecurityManager;
 import org.osgi.framework.BundleContext;
@@ -125,9 +125,8 @@ public class ApplicationController {
                         if(request == DataRequestEvent.DataIdentifier.NAMED_CONFIGURATION) {
                             DataEvent dataEvent = new DataEvent();
                             NamedConfiguration namedConfiguration = new NamedConfiguration();
-                            Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
-                            String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
-                            namedConfiguration.setConfiguration(new HashMap());
+                            HashMap<String, String> map = resolveNamedConfigurations(getAppName(event), getAppVersion(event), getInstanceName(event));
+                            namedConfiguration.setConfiguration(map);
                             Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                             data.put(request,namedConfiguration);
                             dataEvent.setData(data);
@@ -156,11 +155,9 @@ public class ApplicationController {
                             DataEvent dataEvent = new DataEvent();
                             ManageableProperties manageableProperties = new ManageableProperties();
                             Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
-                            String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
-                            if(configuration==null){
-                                configuration="";
-                            }
-                            manageableProperties.setConfiguration(configuration);
+                            ServiceInstance serviceInstance = application.getServiceInstance(getInstanceName(event));
+
+                            manageableProperties.setManageableProperties(getManageablePropertiesToBind(serviceInstance.getManageableProperties()));
                             Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                             data.put(request,manageableProperties);
                             dataEvent.setData(data);
@@ -178,6 +175,143 @@ public class ApplicationController {
         }, CCPEventType.DATA_REQUEST);
     }
 
+    private HashMap<String, ConfigurationProperty> getManageablePropertiesToBind(List manageablePropertiesList) {
+        HashMap<String, ConfigurationProperty> configurationProps = new HashMap<String, ConfigurationProperty>();
+        if (manageablePropertiesList != null) {
+            for (Object aManageablePropertiesList : manageablePropertiesList) {
+                ManageableProperty prop = (ManageableProperty) aManageablePropertiesList;
+                configurationProps.put(prop.getName(),  new ConfigurationProperty(prop.getName(), prop.getValue(), prop.isEncrypted(), prop.getPropertyType(), prop.getConfigurationType()));
+            }
+        }
+        return configurationProps;
+    }
+
+    public HashMap<String, String> resolveNamedConfigurations(String appGuid, String version, String servInstance) throws FioranoException {
+        ApplicationHandle applicationHandle = applicationHandleMap.get(appGuid + Constants.NAME_DELIMITER + version);
+        Application application = applicationHandle.getApplication();
+        ServiceInstance serviceInstance = application.getServiceInstance(servInstance);
+        ArrayList<NamedConfigurationProperty> namedConfigurations = serviceInstance.getNamedConfigurations();
+        HashMap<String, String> resolvedConfigurations = new HashMap<String, String>();
+
+        if (namedConfigurations != null && namedConfigurations.size() > 0) {
+            for(NamedConfigurationProperty configurationProperty : namedConfigurations){
+                String configurationName = configurationProperty.getConfigurationName();
+                String configurationType = configurationProperty.getConfigurationType();
+                String configurationData = getConfigurationData(configurationName, configurationType, servInstance, serviceInstance.getVersion(), application.getLabel());
+
+                if(configurationData != null)
+                    resolvedConfigurations.put(configurationType + "__" + configurationName, configurationData);
+            }
+        }
+        try {
+            addDefaultConfigs(resolvedConfigurations, CommonConstants.KEY_STORE_CONFIG, CommonConstants.KEY_STORE_RESOURCE_TYPE, servInstance, serviceInstance.getVersion(), application.getLabel());
+            addDefaultConfigs(resolvedConfigurations, CommonConstants.MSG_ENCRYPTION_CONFIG, CommonConstants.MSG_ENCRYPTION_CONFIG_TYPE, servInstance, serviceInstance.getVersion(), application.getLabel());
+        } catch (FioranoException e) {
+            throw new FioranoException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resolvedConfigurations;
+    }
+
+    private void addDefaultConfigs(HashMap<String, String> resolvedConfigurations, String configName, String resourceType,String serviceInstance, float servInstVersion, String label) throws IOException, FioranoException {
+        ResourceConfigurationNamedObject namedObject = new ResourceConfigurationNamedObject();
+        namedObject.setName(configName);
+        namedObject.setResourceType(resourceType);
+        ArrayList configList = namedConfigRepository.getConfigurations(namedObject, true, null);
+        if (configList!=null && !configList.isEmpty()) {
+            resolvedConfigurations.put("resource" + "__" + configName, getConfigurationData(configName, "resource", serviceInstance, servInstVersion, label));
+        }
+    }
+
+    private String getConfigurationData(String configurationName, String configurationType, String servInstanceGuid, float servVersion, String label) throws FioranoException {
+        if (configurationType != null) {
+            String configurationRepoPath = namedConfigRepository + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR;
+
+            ObjectCategory objectCategory = ObjectCategory.getObjectCategory(configurationType);
+            final String environmentLabel = label;
+            switch (objectCategory) {
+                case SERVICE_CONFIGURATION:
+                    File serviceConfigurationFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationRepoPath, servInstanceGuid, String.valueOf(servVersion), environmentLabel, configurationName);
+                    return getConfigurationContents(serviceConfigurationFile, configurationName, configurationType);
+                case MISCELLANEOUS:
+                    File miscConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.MISC,
+                            environmentLabel, configurationName);
+                    return getConfigurationContents(miscConfigurationFile, configurationName, configurationType);
+                case RESOURCE_CONFIGURATION:
+                    File resourceConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.RESOURCES,
+                            environmentLabel, configurationName);
+                    return getConfigurationContents(resourceConfigurationFile, configurationName, configurationType);
+                case ROUTE:
+                    File routeConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.ROUTES, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(routeConfigurationFile, configurationName, configurationType);
+                case SELECTOR:
+                    File selectorConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.SELECTORS, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(selectorConfigurationFile, configurationName, configurationType);
+                case TRANSFORMATION:
+                    File transformationConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.TRANSFORMATIONS, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(transformationConfigurationFile, configurationName, configurationType);
+                case WORKFLOW:
+                    File workflowConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.WORKFLOWS, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(workflowConfigurationFile, configurationName, configurationType);
+                case MESSAGEFILTERS:
+                    File messageFilterConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.MESSAGEFILTERS, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(messageFilterConfigurationFile, configurationName, configurationType);
+                case RUNTIME_ARG_CONFIGURATION:
+                    File runtimeConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.RUNTIME_ARGS, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(runtimeConfigurationFile, configurationName, configurationType);
+                case CONNECTION_FACTORY_CONFIGURATION:
+                    File connectionFactoryConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.CONNECTION_FACTORY, environmentLabel,
+                            configurationName);
+                    return getConfigurationContents(connectionFactoryConfigurationFile, configurationName, configurationType);
+                case PORT_CONFIGURATION:
+                    throw new FioranoException(ComponentErrorCodes.PORT_CONFIGURATION_TYPE_NOT_SUPPORTED);
+                case DESTINATION:
+                    throw new FioranoException(ComponentErrorCodes.DESTINATION_CONFIGURATION_TYPE_NOT_SUPPORTED);
+                default:
+                    throw new FioranoException(ComponentErrorCodes.CONFIGURATION_TYPE_INVALID);
+            }
+        } else
+            throw new FioranoException(ComponentErrorCodes.CONFIGURATION_TYPE_INVALID);
+    }
+
+    private String getConfigurationContents(File file, String configurationName, String configurationType) throws FioranoException {
+        if (!file.exists())
+            throw new FioranoException(ComponentErrorCodes.CONFIGURATION_NOT_PRESENT);
+
+        if (file.isFile()) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(file);
+
+                    return DmiObject.getContents(fis);
+
+            } catch (IOException e) {
+                throw new FioranoException(ComponentErrorCodes.CONFIGURATION_READ_ERROR, e);
+            } finally {
+                try {
+                    if (fis != null)
+                        fis.close();
+                } catch (IOException e) {
+                    //Ignore
+                }
+            }
+        } else {
+            try {
+                return ApplicationParser.toXML(file);
+            } catch (Exception e) {
+                throw new FioranoException(ComponentErrorCodes.CONFIGURATION_READ_ERROR, e);
+            }
+        }
+    }
+
+
     private String getAppName(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
         return componentId.substring(0, componentId.indexOf("__"));
@@ -189,7 +323,7 @@ public class ApplicationController {
     private String getInstanceName(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
         String version = componentId.substring(componentId.indexOf("__") + 2);
-        String instance = version.substring(version.indexOf("__"+2));
+        String instance = version.substring(version.indexOf("__")+2);
         if(instance.contains("__")){
             return instance.substring(0, instance.indexOf("__"));
         }
@@ -199,7 +333,7 @@ public class ApplicationController {
     private String getPortSuffix(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
         String version = componentId.substring(componentId.indexOf("__") + 2);
-        String instance = version.substring(version.indexOf("__" + 2));
+        String instance = version.substring(version.indexOf("__") + 2);
         String portSuffix = instance.substring(instance.indexOf("__"));
         return portSuffix;
     }
@@ -689,7 +823,7 @@ public class ApplicationController {
 //                    int appCount = appControllerManager.getApplicationRepository().getAppCount();
 //                    eventHandler.raiseApplicationRepositoryAuditEvent(userName, AuditEvent.SUCCESS, AuditEvent.EventCategory.INFORMATION, I18NUtil.getMessage(Bundle.class, Bundle.ROUE_TRANSFORMATION_CHANGED, serviceName, application.getGUID()),
 //                            application.getGUID(), application.getVersion(), application.getCategories(), 0, appCount, AuditEventIDs.APPLICATION_UPDATED);
-//                } catch (TifosiException e) {
+//                } catch (FioranoException e) {
 //                    int appCount = appControllerManager.getApplicationRepository().getAppCount();
 //                    eventHandler.raiseApplicationRepositoryAuditEvent(userName, AuditEvent.FAILURE, AuditEvent.EventCategory.ERROR, I18NUtil.getMessage(Bundle.class, Bundle.ROUE_TRANSFORMATION_CHANGE_EXCEPTION, serviceName, application.getGUID(), e.getMessage()),
 //                            application.getGUID(), application.getVersion(), application.getCategories(), 0, appCount, AuditEventIDs.APPLICATION_UPDATED);

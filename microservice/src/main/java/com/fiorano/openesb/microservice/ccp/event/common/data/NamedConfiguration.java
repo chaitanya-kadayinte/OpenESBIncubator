@@ -18,7 +18,7 @@ public class NamedConfiguration extends Data {
 
     @Override
     public DataType getDataType() {
-        return DataType.COMPONENT_CONFIGURATION;
+        return DataType.NAMED_CONFIGURATION;
     }
 
     @Override
