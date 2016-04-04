@@ -17,8 +17,7 @@ import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
 import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
-import com.fiorano.openesb.microservice.ccp.event.common.data.Data;
-import com.fiorano.openesb.microservice.ccp.event.common.data.MicroserviceConfiguration;
+import com.fiorano.openesb.microservice.ccp.event.common.data.*;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
@@ -123,6 +122,51 @@ public class ApplicationController {
                             ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
                             break;
                         }
+                        if(request == DataRequestEvent.DataIdentifier.NAMED_CONFIGURATION) {
+                            DataEvent dataEvent = new DataEvent();
+                            NamedConfiguration namedConfiguration = new NamedConfiguration();
+                            Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
+                            String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
+                            namedConfiguration.setConfiguration(new HashMap());
+                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
+                            data.put(request,namedConfiguration);
+                            dataEvent.setData(data);
+                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
+                            break;
+                        }
+                        if(request == DataRequestEvent.DataIdentifier.PORT_CONFIGURATION) {
+                            DataEvent dataEvent = new DataEvent();
+                            PortConfiguration portConfiguration = new PortConfiguration();
+                            Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
+                            ArrayList<PortInstance> portInstances = new ArrayList<PortInstance>();
+                            if(getPortSuffix(event).equals("INPUT_PORTS")){
+                                portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
+                               portConfiguration.setPortInstances(portInstances);
+                            }else{
+                                portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getOutputPortInstances());
+                                portConfiguration.setPortInstances(portInstances);
+                            }
+                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
+                            data.put(request,portConfiguration);
+                            dataEvent.setData(data);
+                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
+                            break;
+                        }
+                        if(request == DataRequestEvent.DataIdentifier.MANAGEABLE_PROPERTIES) {
+                            DataEvent dataEvent = new DataEvent();
+                            ManageableProperties manageableProperties = new ManageableProperties();
+                            Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
+                            String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
+                            if(configuration==null){
+                                configuration="";
+                            }
+                            manageableProperties.setConfiguration(configuration);
+                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
+                            data.put(request,manageableProperties);
+                            dataEvent.setData(data);
+                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
+                            break;
+                        }
                     }
                 }
             }
@@ -144,8 +188,22 @@ public class ApplicationController {
     }
     private String getInstanceName(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
-        return componentId.substring(componentId.lastIndexOf("__") + 2);
+        String version = componentId.substring(componentId.indexOf("__") + 2);
+        String instance = version.substring(version.indexOf("__"+2));
+        if(instance.contains("__")){
+            return instance.substring(0, instance.indexOf("__"));
+        }
+        return instance;
     }
+
+    private String getPortSuffix(ComponentCCPEvent event) {
+        String componentId = event.getComponentId();
+        String version = componentId.substring(componentId.indexOf("__") + 2);
+        String instance = version.substring(version.indexOf("__" + 2));
+        String portSuffix = instance.substring(instance.indexOf("__"));
+        return portSuffix;
+    }
+
 
     public void saveApplication(File appFileFolder, String handleID, byte[] zippedContents) throws FioranoException {
         String userName = securityManager.getUserName(handleID);
