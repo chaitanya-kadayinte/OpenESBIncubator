@@ -41,9 +41,13 @@ public class Activator implements BundleActivator {
         System.out.println("Started the bundle " + context.getBundle().getSymbolicName());
     }
 
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         System.out.println("Stopping the bundle " + context.getBundle().getSymbolicName());
-        service.stop();
+        try {
+            service.stop();
+        } catch (Exception e) {
+
+        }
         System.out.println("Stopped the bundle " + context.getBundle().getSymbolicName());
     }
 

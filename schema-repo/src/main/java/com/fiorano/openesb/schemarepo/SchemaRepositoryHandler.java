@@ -5,7 +5,6 @@ import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.sax.XMLCreator;
 import com.fiorano.openesb.utils.xml.sax.XSDTargetNameSpaceFinder;
 import com.fiorano.openesb.utils.xml.stax.FioranoStaxParser;
-import com.fiorano.openesb.utils.sax.SAXUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.sax.NoMoreSAXParsingException;
 import org.custommonkey.xmlunit.Diff;

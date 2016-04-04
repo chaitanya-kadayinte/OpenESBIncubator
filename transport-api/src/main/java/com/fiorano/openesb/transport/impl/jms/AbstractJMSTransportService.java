@@ -44,7 +44,7 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
             connection.start();
             return connection;
         } catch (JMSException e) {
-            if (e.getMessage().toUpperCase().contains("CONNECT")) {
+            if (e.getMessage().toUpperCase().contains("CONNECT ")) {
                 return null;
             } else {
                 throw e;

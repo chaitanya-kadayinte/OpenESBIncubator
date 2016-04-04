@@ -20,11 +20,9 @@
 
     <feature name='${project.artifactId}' description='${project.name}' version='${project.version}'>
         <details>${project.description}</details>
-        <bundle start-level='85'>wrap:mvn:xerces/xercesImpl/2.11.0</bundle>
         <bundle start-level='85'>mvn:org.slf4j/slf4j-log4j12/1.6.6</bundle>
         <bundle start-level='85'>mvn:org.slf4j/slf4j-api/1.6.6</bundle>
-        <bundle start-level='85'>wrap:mvn:net.sf.saxon/saxon/8.7</bundle>
-        <bundle start-level='85'>wrap:mvn:net.sf.saxon/saxon-dom/8.7</bundle>
+        <bundle start-level='85'>wrap:mvn:net.sf.saxon/Saxon-HE/9.7.0-4</bundle>
         <bundle start-level='85'>mvn:log4j/log4j/1.2.17</bundle>
         <bundle start-level='85'>mvn:org.apache.commons/commons-lang3/3.4</bundle>
         <bundle start-level='85'>wrap:mvn:xml-resolver/xml-resolver/1.2</bundle>
@@ -48,7 +46,6 @@
         <bundle start-level='94'>mvn:com.fiorano.openesb/schema-repo/0.1.0</bundle>
         <bundle start-level='88'>mvn:com.fiorano.openesb/events/0.1.0</bundle>
 
-        <!--<bundle start-level="96">mvn:com.fiorano.openesb/simulate-launch/0.1.0</bundle>-->
         <bundle start-level='96'>mvn:com.fiorano.openesb/rmi-connector/0.1.0</bundle>
         <bundle start-level="96">mvn:com.fiorano.openesb/management/0.1.0</bundle>
         <bundle start-level='96'>mvn:org.apache.cxf/cxf-rt-rs-security-cors/3.1.5</bundle>

@@ -68,10 +68,10 @@ public final class SAXUtil {
         String catalogFiles[] = (String[]) catalogManager.getCatalogFiles().toArray(new String[0]);
         catalogResolver = new CustomXMLCatalogResolver(catalogFiles, catalogManager.getPreferPublic());
         catalogTimeStamps.clear();
-        for (int i = 0; i < catalogFiles.length; i++) {
+        for (String catalogFile : catalogFiles) {
             try {
-                File file = new File(new URL(catalogFiles[i]).getPath());
-                catalogTimeStamps.put(file, new Long(file.lastModified()));
+                File file = new File(new URL(catalogFile).getPath());
+                catalogTimeStamps.put(file, file.lastModified());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

@@ -3,11 +3,10 @@ package com.fiorano.openesb.amq;
 import com.fiorano.openesb.transport.*;
 import com.fiorano.openesb.transport.impl.jms.*;
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+import javax.management.*;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -66,7 +65,12 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
     public void stop() {
         try {
             if (adminMBean != null) {
-                adminMBean.stop();
+                try {
+                    adminMBean.stop();
+                } catch (InstanceNotFoundException e) {
+                    Logger myLogger = LoggerFactory.getLogger(Activator.class);
+                    myLogger.trace("Error stopping Admin MBean " + e.getMessage());
+                }
             }
             if (connector != null) {
                 //this could take time

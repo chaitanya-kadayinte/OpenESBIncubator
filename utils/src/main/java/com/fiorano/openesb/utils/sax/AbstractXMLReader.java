@@ -19,6 +19,7 @@ package com.fiorano.openesb.utils.sax;
 
 import com.fiorano.openesb.utils.ClarkName;
 import com.fiorano.openesb.utils.NamespaceSupportReader;
+import com.fiorano.openesb.utils.SAXUtil;
 import com.fiorano.openesb.utils.XNamespaceSupport;
 import org.xml.sax.*;
 import org.xml.sax.ext.DeclHandler;
