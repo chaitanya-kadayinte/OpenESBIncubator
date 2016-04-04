@@ -2,6 +2,8 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.BreakpointMetaData;
 import com.fiorano.openesb.application.application.*;
+import com.fiorano.openesb.events.ApplicationEvent;
+import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
@@ -268,6 +270,7 @@ public class ApplicationHandle {
         breakpointMetaData.setSourceQName(destName);
         breakpointMetaData.setTargetQName(targetDestination);
         breakpoints.put(routeName, breakpointMetaData);
+        ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_ADDED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully added breakpoint to the Route");
         return breakpointMetaData;
     }
 
@@ -276,6 +279,7 @@ public class ApplicationHandle {
         route.stop();
         route.start();
         breakpoints.remove(routeName);
+        ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully removed breakpoint to the Route");
     }
 
     public void setApplication(Application application) {
