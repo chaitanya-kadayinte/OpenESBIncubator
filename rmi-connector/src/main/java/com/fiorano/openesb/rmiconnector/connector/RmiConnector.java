@@ -55,54 +55,7 @@ public class RmiConnector {
             //namingService = new FioranoNamingService(rmiConnectorConfig.getRmiRegistryPort(),csf,ssf);
             namingService = new FioranoNamingService(RmiConnectorConfig.getConfig().getRmiRegistryPort(),csf,ssf);
             namingService.start();
-
-            /*JMXServiceURL address = new JMXServiceURL("rmi", rmiConnectorConfig.getHostname(), rmiConnectorConfig.getRMIServerPort(), "/fiorano");
-
-            Map environment = new HashMap();
-
-            environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory");
-            environment.put(Context.PROVIDER_URL, "rmi://"+rmiConnectorConfig.getHostname()+":"+rmiConnectorConfig.getRMIServerPort());
-            environment.put(RMIConnectorServer.RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE, csf);
-            environment.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);*/
-            /*JMXAuthenticator auth = JMXAuthenticatorFactory.createAuthenticator("fiorano.jms.jmx.authenticator.FMQJmxAuthenticator");
-            Method method = auth.getClass().getMethod("setRealmManager", new Class[]{Object.class});
-
-            method.invoke(auth, new Object[]{realmManager});
-            ////////////////////////////////////////////////////////
-
-            environment.put(JMXConnectorServer.AUTHENTICATOR, auth);*/
-
-           // connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(address, environment, MBeanServerFactory.createMBeanServer("Fiorano"));
-            /*listener = new JMXConnectionListener();
-            listener.setLogger(m_loggerRuntime);
-            connectorServer.addNotificationListener(listener, null, null);*/
-
-          /*  String interceptorClassName = config.getInterceptorClassName();
-            MBeanServerForwarder interceptor = null;
-
-            try
-            {
-                if (interceptorClassName != null && !interceptorClassName.equalsIgnoreCase(""))
-                {
-                    Class c = Class.forName(interceptorClassName);
-
-                    interceptor = (MBeanServerForwarder) c.newInstance();
-                    interceptor.setMBeanServer(m_mBeanServer);
-
-                    if (interceptor instanceof FioranoJMXInterceptor)
-                        ((FioranoJMXInterceptor) interceptor).setLoggerFactory(m_logFactory);
-
-                    connectorServer.setMBeanServerForwarder(interceptor);
-                }
-            }
-            catch (Throwable t)
-            {
-                System.out.println(FMQI18Nutil.getL10NMsg(this.getClass(), "warning.unable.to.set.interceptor.for.jmx.calls"));
-            }
-*/
-            //connectorServer.start();
-
-            System.out.println("rmi registry listening on " + RmiConnectorConfig.getConfig().getRmiRegistryPort());
+            System.out.println("RMI registry listening on " + RmiConnectorConfig.getConfig().getRmiRegistryPort());
         }
         catch (Exception ex)
         {

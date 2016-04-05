@@ -25,6 +25,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
@@ -36,44 +38,35 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class Activator implements BundleActivator {
 
+    private Logger logger;
+
     public void start(BundleContext context) {
-        System.out.println("Starting the bundle- RMI Connector");
+        logger = LoggerFactory.getLogger(getClass());
+        logger.trace("Starting RMI bundle.");
         Thread.currentThread().setContextClassLoader(
                 this.getClass().getClassLoader());
         RmiConnector rmiConnector = new RmiConnector();
         try {
             rmiConnector.createService();
-        } catch (FioranoException e) {
-            e.printStackTrace();
-        }
-        IRmiManager rmiManagerStub = null;
-        Registry registry;
-        IRmiManager rmiManager = null;
-        try {
             int rmiRegisryPort = rmiConnector.getRmiConnectorConfig().getRmiRegistryPort();
             int rmiServerPort = rmiConnector.getRmiConnectorConfig().getRmiServerPort();
-            rmiManager = new RmiManager(context,rmiConnector);
-            rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, rmiServerPort, rmiConnector.getCsf(), rmiConnector.getSsf());
-            registry = LocateRegistry.getRegistry(rmiRegisryPort);
+            IRmiManager rmiManager = new RmiManager(context, rmiConnector);
+            IRmiManager rmiManagerStub = (IRmiManager) UnicastRemoteObject.exportObject(rmiManager, rmiServerPort, rmiConnector.getCsf(), rmiConnector.getSsf());
+            Registry registry = LocateRegistry.getRegistry(rmiRegisryPort);
             try {
                 registry.unbind("rmi");
-            } catch (NotBoundException |  RemoteException ignored) {
+            } catch (NotBoundException | RemoteException ignored) {
 
             }
-            try {
-                registry.bind("rmi", rmiManagerStub);
-            } catch (AlreadyBoundException | RemoteException e) {
-                e.printStackTrace();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            registry.bind("rmi", rmiManagerStub);
+        } catch (Exception e) {
+            logger.error("Errors occurred while activating RMI modules", e);
         }
-
-
+        logger.trace("Started RMI bundle.");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle- Rmi Connector");
+        logger.trace("Stopped RMI bundle.");
     }
 
 }

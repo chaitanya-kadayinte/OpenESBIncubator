@@ -18,15 +18,20 @@ package com.fiorano.openesb.utils;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 
+    private Logger logger;
+
     public void start(BundleContext context) {
-        System.out.println("Starting the bundle- utils");
+        logger = LoggerFactory.getLogger(getClass());
+        logger.trace("Started utilities bundle.");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle- utils");
+        logger.trace("Stopped utilities bundle.");
     }
 
 }

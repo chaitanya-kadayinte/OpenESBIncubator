@@ -23,6 +23,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.util.Collection;
@@ -32,39 +34,28 @@ public class Activator implements BundleActivator {
 
     private BundleContext bundleContext;
     private AMQTransportService service;
+    private Logger logger;
+
+    public Activator() {
+        logger = LoggerFactory.getLogger(getClass());
+    }
 
     public void start(BundleContext context) throws Exception {
-        System.out.println("Starting the bundle " + context.getBundle().getSymbolicName());
+        System.out.println("Activating Active MQ Transport");
         this.bundleContext = context;
         service = new AMQTransportService();
-        bundleContext.registerService(TransportService.class, service,new Hashtable<String, Object>());
-        System.out.println("Started the bundle " + context.getBundle().getSymbolicName());
+        bundleContext.registerService(TransportService.class, service, new Hashtable<String, Object>());
+        System.out.println("Activated Active MQ Transport");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle " + context.getBundle().getSymbolicName());
+        System.out.println("Stopping Active MQ Transport");
         try {
             service.stop();
         } catch (Exception e) {
-
+            logger.debug("Error stopping Active MQ Transport " + e.getMessage());
         }
-        System.out.println("Stopped the bundle " + context.getBundle().getSymbolicName());
+        System.out.println("Stopped Active MQ Transport");
     }
 
-    private ServiceReference<ConnectionFactory> lookupConnectionFactory(String name) {
-        Collection<ServiceReference<ConnectionFactory>> references;
-        try {
-            references = bundleContext.getServiceReferences(ConnectionFactory.class,
-                    "(|(osgi.jndi.service.name=" + name + ")(name=" + name + ")(service.id=" + name + "))");
-        } catch (InvalidSyntaxException e) {
-            throw new RuntimeException("Error finding connection factory service " + name, e);
-        }
-        if (references == null || references.size() == 0) {
-            throw new IllegalArgumentException("No JMS connection factory found for " + name);
-        }
-        if (references.size() > 1) {
-            throw new IllegalArgumentException("Multiple JMS connection factories found for " + name);
-        }
-        return references.iterator().next();
-    }
 }

@@ -20,12 +20,18 @@ import com.fiorano.openesb.application.ApplicationRepository;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 
+    private Logger logger;
+
     @SuppressWarnings("unchecked")
     public void start(BundleContext context) throws Exception {
-        System.out.println("Starting bundle - " + context.getBundle().getSymbolicName());
+        logger = LoggerFactory.getLogger(getClass());
+        logger.trace("Starting Application Repository bundle.");
+        System.out.println("Activating Application Controller");
         ServiceReference<ApplicationRepository> applicationRepositoryRef = context.getServiceReference(ApplicationRepository.class);
         if (applicationRepositoryRef != null) {
             ApplicationRepository applicationRepository = context.getService(applicationRepositoryRef);
@@ -36,12 +42,14 @@ public class Activator implements BundleActivator {
             //applicationController.launchApplication("TRANSFORMATION","1.0");
             //applicationController.launchApplication("SENDERSELECTOR","1.0",null);
         }
-        System.out.println("Started bundle - " + context.getBundle().getSymbolicName());
+        System.out.println("Activated Application Controller");
+        logger.trace("Started Application Repository bundle.");
 
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle - " + context.getBundle().getSymbolicName());
+        System.out.println("Stopping Application Repository");
+        logger.trace("Stopped Application Repository bundle.");
     }
 
 }

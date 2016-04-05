@@ -22,14 +22,19 @@ import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 
+    private Logger logger;
+
     @SuppressWarnings("unchecked")
     public void start(BundleContext context) throws Exception {
-        System.out.println("Starting the bundle - " + context.getBundle().getSymbolicName());
+        logger = LoggerFactory.getLogger(getClass());
+        logger.trace("Starting Microservice bundle.");
         TransportService service = context.getService(context.getServiceReference(TransportService.class));
         CCPEventManager ccpEventManager = new CCPEventManager(service);
         MicroServiceLauncher microServiceLauncher = new MicroServiceLauncher(ccpEventManager);
@@ -37,11 +42,11 @@ public class Activator implements BundleActivator {
         context.registerService(CCPEventManager.class,ccpEventManager,new Hashtable<String, Object>());
         context.registerService(MicroServiceLauncher.class, microServiceLauncher, new Hashtable<String, Object>());
         context.registerService(MicroServiceRepoManager.class, microServiceRepoManager, new Hashtable<String, Object>());
-        System.out.println("Started the bundle - " + context.getBundle().getSymbolicName());
+        logger.debug("Started Microservice bundle.");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle - " + context.getBundle().getSymbolicName());
+        logger.trace("Stopped Microservice bundle.");
     }
 
 }
