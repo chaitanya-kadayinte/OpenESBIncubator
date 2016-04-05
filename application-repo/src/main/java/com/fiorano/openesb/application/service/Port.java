@@ -289,14 +289,22 @@ public class Port extends InflatableDMIObject  implements NamedObject{
         bytesMessage.writeUTF(name);
         bytesMessage.writeUTF(description);
         bytesMessage.writeBoolean(requestReply);
-        schema.toMessage(bytesMessage);
+        if(schema==null){
+            bytesMessage.writeBoolean(false);
+            return;
+        }else{
+            bytesMessage.writeBoolean(true);
+            schema.toMessage(bytesMessage);
+        }
     }
 
     public void fromMessage(BytesMessage bytesMessage) throws JMSException {
         name=bytesMessage.readUTF();
         description=bytesMessage.readUTF();
         requestReply=bytesMessage.readBoolean();
-        schema=new Schema();
-        schema.fromMessage(bytesMessage);
+        if(bytesMessage.readBoolean()){
+            schema=new Schema();
+            schema.fromMessage(bytesMessage);
+        }
     }
 }
