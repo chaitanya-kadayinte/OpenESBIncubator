@@ -131,7 +131,7 @@ public class ApplicationController {
                             List<PortInstance> inPortInstanceList = new ArrayList();
                             inPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
                             List<PortInstance> outPortInstanceList = new ArrayList();
-                            outPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
+                            outPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getOutputPortInstances());
                             portInstances.put("IN_PORTS",inPortInstanceList);
                             portInstances.put("OUT_PORTS", outPortInstanceList);
                             portConfiguration.setPortInstances(portInstances);

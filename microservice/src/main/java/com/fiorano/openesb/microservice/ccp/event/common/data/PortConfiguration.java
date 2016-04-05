@@ -6,9 +6,7 @@ import com.fiorano.openesb.application.application.PortInstance;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +27,21 @@ public class PortConfiguration extends Data {
 
     @Override
     public void fromMessage(BytesMessage bytesMessage) throws JMSException {
-        int numConfigs = bytesMessage.readInt();
+        byte[] bytes = new byte[bytesMessage.readInt()];
+        bytesMessage.readBytes(bytes);
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        ObjectInputStream is = null;
+        try {
+            is = new ObjectInputStream(in);
+            portInstances = (Map<String, List<PortInstance>>) is.readObject();
+        } catch (IOException e) {
+            throw new JMSException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new JMSException(e.getMessage());
+        }
+
+
+       /* int numConfigs = bytesMessage.readInt();
         if(numConfigs < 1)
             return;
 
@@ -52,12 +64,36 @@ public class PortConfiguration extends Data {
                 }
             }
             portInstances.put(key, list);
-        }
+        }*/
     }
 
     @Override
     public void toMessage(BytesMessage bytesMessage) throws JMSException {
-        if(portInstances == null){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(portInstances);
+            byte[] bytes = bos.toByteArray();
+            bytesMessage.writeInt(bytes.length);
+            bytesMessage.writeBytes(bytes);
+        } catch (IOException e) {
+            throw new JMSException(e.getMessage());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+            try {
+                bos.close();
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
+        /*if(portInstances == null){
             bytesMessage.writeInt(-1);
             return;
         }
@@ -69,7 +105,7 @@ public class PortConfiguration extends Data {
             for(PortInstance portInstance : list){
                 portInstance.toMessage(bytesMessage);
             }
-        }
+        }*/
     }
 
     @Override
