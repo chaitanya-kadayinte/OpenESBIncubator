@@ -127,9 +127,13 @@ public class ApplicationController {
                         }
                         if(request == DataRequestEvent.DataIdentifier.PORT_CONFIGURATION) {
                             PortConfiguration portConfiguration = new PortConfiguration();
-                            ArrayList<PortInstance> portInstances = new ArrayList<PortInstance>();
-                            portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
-                            portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getOutputPortInstances());
+                            Map<String, List<PortInstance>> portInstances = new HashMap();
+                            List<PortInstance> inPortInstanceList = new ArrayList();
+                            inPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
+                            List<PortInstance> outPortInstanceList = new ArrayList();
+                            outPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
+                            portInstances.put("IN_PORTS",inPortInstanceList);
+                            portInstances.put("OUT_PORTS", outPortInstanceList);
                             portConfiguration.setPortInstances(portInstances);
                             data.put(request,portConfiguration);
                         }

@@ -21,6 +21,8 @@ import com.fiorano.openesb.application.service.Port;
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.*;
@@ -1107,5 +1109,64 @@ public class PortInstance extends Port{
             throw new FioranoException("DESTINATION_NAME_UNSPECIFIED");
         if(proxyUsed && StringUtils.isEmpty(proxyURL))
             throw new FioranoException("PROXY_URL_UNSPECIFIED");
+    }
+
+    public void toMessage(BytesMessage bytesMessage) throws JMSException {
+        super.toMessage(bytesMessage);
+        bytesMessage.writeUTF(appContextAction);
+        bytesMessage.writeUTF(clientID);
+        bytesMessage.writeInt(destinationType);
+        bytesMessage.writeUTF(destination);
+        bytesMessage.writeUTF(destinationConfigName);
+        bytesMessage.writeUTF(encryptionAlgorithm);
+        bytesMessage.writeUTF(encryptionKey);
+        bytesMessage.writeUTF(initializationVector);
+        bytesMessage.writeBoolean(isMessageFilterSet);
+        bytesMessage.writeUTF(messageFilterConfigName);
+        if(messageFilters == null){
+            bytesMessage.writeInt(-1);
+        }else{
+            bytesMessage.writeInt(messageFilters.size());
+            for(Object configKey : messageFilters.keySet()){
+                bytesMessage.writeUTF((String) configKey);
+                bytesMessage.writeUTF((String) messageFilters.get(configKey));
+            }
+        }
+        bytesMessage.writeUTF(password);
+        bytesMessage.writeUTF(user);
+        bytesMessage.writeUTF(proxyPassword);
+        bytesMessage.writeUTF(proxyURL);
+        bytesMessage.writeUTF(proxyUser);
+        bytesMessage.writeUTF(securityManager);
+    }
+
+    public void fromMessage(BytesMessage bytesMessage) throws JMSException {
+        super.fromMessage(bytesMessage);
+        appContextAction=bytesMessage.readUTF();
+        clientID=bytesMessage.readUTF();
+        destinationType=bytesMessage.readInt();
+        destination=bytesMessage.readUTF();
+        destinationConfigName= bytesMessage.readUTF();
+        encryptionAlgorithm= bytesMessage.readUTF();
+        encryptionKey= bytesMessage.readUTF();
+        initializationVector= bytesMessage.readUTF();
+        isMessageFilterSet= bytesMessage.readBoolean();
+        messageFilterConfigName= bytesMessage.readUTF();
+
+        int numConfigs = bytesMessage.readInt();
+        if(numConfigs >0 ){
+            messageFilters = new HashMap<>();
+            for(int i = 0; i < numConfigs; i++){
+                String key = bytesMessage.readUTF();
+                String config = bytesMessage.readUTF();
+                messageFilters.put(key, config);
+            }
+        }
+        password= bytesMessage.readUTF();
+        user= bytesMessage.readUTF();
+        proxyPassword= bytesMessage.readUTF();
+        proxyURL= bytesMessage.readUTF();
+        proxyUser= bytesMessage.readUTF();
+        securityManager= bytesMessage.readUTF();
     }
 }
