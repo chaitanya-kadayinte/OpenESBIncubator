@@ -119,6 +119,12 @@ public abstract class Data implements Serializable {
                 return new ComponentStats();
             case COMPONENT_CONFIGURATION:
                 return new MicroserviceConfiguration();
+            case NAMED_CONFIGURATION:
+                return new NamedConfiguration();
+            case MANAGEABLE_PROPERTIES:
+                return new ManageableProperties();
+            case PORT_CONFIGURATION:
+                return new PortConfiguration();
         }
         throw new IllegalArgumentException("INVALID_DATA_TYPE - " + dataType.name());
     }

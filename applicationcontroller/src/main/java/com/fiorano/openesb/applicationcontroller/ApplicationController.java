@@ -106,65 +106,43 @@ public class ApplicationController {
                 ControlEvent controlEvent = event.getControlEvent();
 
                 if(controlEvent instanceof DataRequestEvent && controlEvent.isReplyNeeded()) {
+                    Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
+                    DataEvent dataEvent = new DataEvent();
+                    Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                     for(DataRequestEvent.DataIdentifier request: ((DataRequestEvent) controlEvent).getDataIdentifiers()) {
                         if(request == DataRequestEvent.DataIdentifier.COMPONENT_CONFIGURATION) {
-                            DataEvent dataEvent = new DataEvent();
                             MicroserviceConfiguration microserviceConfiguration = new MicroserviceConfiguration();
-                            Application application = applicationRepository.readApplication(getAppName(event), getAppVersion(event));
                             String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
                             if(configuration==null){
                                 configuration="";
                             }
                             microserviceConfiguration.setConfiguration(configuration);
-                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
-                            data.put(request,microserviceConfiguration);
-                            dataEvent.setData(data);
-                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
-                            break;
+                            data.put(request, microserviceConfiguration);
                         }
                         if(request == DataRequestEvent.DataIdentifier.NAMED_CONFIGURATION) {
-                            DataEvent dataEvent = new DataEvent();
                             NamedConfiguration namedConfiguration = new NamedConfiguration();
                             HashMap<String, String> map = resolveNamedConfigurations(getAppName(event), getAppVersion(event), getInstanceName(event));
                             namedConfiguration.setConfiguration(map);
-                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                             data.put(request,namedConfiguration);
-                            dataEvent.setData(data);
-                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
-                            break;
                         }
                         if(request == DataRequestEvent.DataIdentifier.PORT_CONFIGURATION) {
-                            DataEvent dataEvent = new DataEvent();
                             PortConfiguration portConfiguration = new PortConfiguration();
-                            Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
                             ArrayList<PortInstance> portInstances = new ArrayList<PortInstance>();
-                            if(getPortSuffix(event).equals("INPUT_PORTS")){
-                                portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
-                               portConfiguration.setPortInstances(portInstances);
-                            }else{
-                                portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getOutputPortInstances());
-                                portConfiguration.setPortInstances(portInstances);
-                            }
-                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
+                            portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
+                            portInstances.addAll(application.getServiceInstance(getInstanceName(event)).getOutputPortInstances());
+                            portConfiguration.setPortInstances(portInstances);
                             data.put(request,portConfiguration);
-                            dataEvent.setData(data);
-                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
-                            break;
                         }
                         if(request == DataRequestEvent.DataIdentifier.MANAGEABLE_PROPERTIES) {
-                            DataEvent dataEvent = new DataEvent();
                             ManageableProperties manageableProperties = new ManageableProperties();
-                            Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
                             ServiceInstance serviceInstance = application.getServiceInstance(getInstanceName(event));
 
                             manageableProperties.setManageableProperties(getManageablePropertiesToBind(serviceInstance.getManageableProperties()));
-                            Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                             data.put(request,manageableProperties);
-                            dataEvent.setData(data);
-                            ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
-                            break;
                         }
                     }
+                    dataEvent.setData(data);
+                    ccpEventManager.getCcpEventGenerator().sendEvent(dataEvent,event.getComponentId());
                 }
             }
 
