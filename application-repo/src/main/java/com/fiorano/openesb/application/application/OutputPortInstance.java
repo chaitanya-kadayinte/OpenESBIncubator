@@ -19,6 +19,8 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -319,5 +321,21 @@ public class OutputPortInstance extends PortInstance{
         priority = 4;
         applicationContextTransformation = null;
         publisherConfigName = null;
+    }
+    public void toMessage(BytesMessage bytesMessage) throws JMSException {
+        super.toMessage(bytesMessage);
+        bytesMessage.writeInt(priority);
+        bytesMessage.writeUTF(publisherConfigName);
+        bytesMessage.writeLong(timeToLive);
+        applicationContextTransformation.toMessage(bytesMessage);
+    }
+
+    public void fromMessage(BytesMessage bytesMessage) throws JMSException {
+        super.fromMessage(bytesMessage);
+        priority=bytesMessage.readInt();
+        publisherConfigName=bytesMessage.readUTF();
+        timeToLive=bytesMessage.readLong();
+        applicationContextTransformation=new Transformation();
+        applicationContextTransformation.fromMessage(bytesMessage);
     }
 }

@@ -19,6 +19,8 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import com.fiorano.openesb.utils.StringUtil;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -348,6 +350,26 @@ public class Transformation extends InflatableDMIObject{
     protected void validateScript() throws FioranoException{
         if(StringUtil.isEmpty(script))
             throw new FioranoException("SCRIPT_UNSPECIFIED");
+    }
+
+    public void toMessage(BytesMessage bytesMessage) throws JMSException {
+        bytesMessage.writeUTF(factory);
+        bytesMessage.writeUTF(jmsScript);
+        bytesMessage.writeUTF(project);
+        bytesMessage.writeUTF(projectFile);
+        bytesMessage.writeUTF(script);
+        bytesMessage.writeUTF(scriptFile);
+        bytesMessage.writeUTF(transformationConfigName);
+    }
+
+    public void fromMessage(BytesMessage bytesMessage) throws JMSException {
+        factory=bytesMessage.readUTF();
+        jmsScript=bytesMessage.readUTF();
+        project=bytesMessage.readUTF();
+        projectFile=bytesMessage.readUTF();
+        script=bytesMessage.readUTF();
+        scriptFile=bytesMessage.readUTF();
+        transformationConfigName=bytesMessage.readUTF();
     }
 }
 

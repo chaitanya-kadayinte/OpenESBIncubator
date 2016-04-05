@@ -18,6 +18,8 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -402,5 +404,25 @@ public class InputPortInstance extends PortInstance{
 
         if(durableSubscription && StringUtils.isEmpty(subscriptionName))
             throw new FioranoException("EMPTY_SUBSCRIPTION_NAME");
+    }
+
+    public void toMessage(BytesMessage bytesMessage) throws JMSException {
+        super.toMessage(bytesMessage);
+        bytesMessage.writeInt(acknowledgementMode);
+        bytesMessage.writeUTF(messageSelector);
+        bytesMessage.writeInt(sessionCount);
+        bytesMessage.writeUTF(subscriberConfigName);
+        bytesMessage.writeUTF(subscriptionName);
+        bytesMessage.writeInt(transactionSize);
+    }
+
+    public void fromMessage(BytesMessage bytesMessage) throws JMSException {
+        super.fromMessage(bytesMessage);
+        acknowledgementMode=bytesMessage.readInt();
+        messageSelector=bytesMessage.readUTF();
+        sessionCount=bytesMessage.readInt();
+        subscriberConfigName=bytesMessage.readUTF();
+        subscriptionName= bytesMessage.readUTF();
+        transactionSize= bytesMessage.readInt();
     }
 }
