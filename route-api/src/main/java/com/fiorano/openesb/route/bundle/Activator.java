@@ -16,24 +16,22 @@
  */
 package com.fiorano.openesb.route.bundle;
 
-import com.fiorano.openesb.transport.Port;
-import com.fiorano.openesb.transport.Producer;
-import com.fiorano.openesb.transport.ProducerConfiguration;
-import com.fiorano.openesb.transport.impl.jms.JMSMessage;
-import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
-import com.fiorano.openesb.transport.TransportService;
-import com.fiorano.openesb.transport.impl.jms.JMSProducerConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 
+    private Logger logger;
+
     public void start(BundleContext context) throws Exception {
-        System.out.println("Starting the bundle -" + context.getBundle().getSymbolicName());
+        logger = LoggerFactory.getLogger(getClass());
+        logger.trace("Starting route api bundle.");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping the bundle"+ context.getBundle().getSymbolicName());
+        logger.trace("Stopping route api bundle.");
     }
 
 }
