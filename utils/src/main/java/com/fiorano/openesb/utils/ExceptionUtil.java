@@ -197,13 +197,13 @@ public final class ExceptionUtil {
         if(className!=null){
             if(message.length()>0)
                 message.append('\n');
-            message.append(I18N.getMessage(ExceptionUtil.class, "EXC_MissingResourceException_class_name", className));
+            message.append(RBUtil.getMessage(ExceptionUtil.class, "EXC_MissingResourceException_class_name", className));
         }
         String key = mre.getKey();
         if(key!=null){
             if(message.length()>0)
                 message.append('\n');
-            message.append(I18N.getMessage(ExceptionUtil.class, "EXC_MissingResourceException_key", key));
+            message.append(RBUtil.getMessage(ExceptionUtil.class, "EXC_MissingResourceException_key", key));
         }
         String msg = mre.getMessage();
         if(msg!=null){
@@ -231,7 +231,7 @@ public final class ExceptionUtil {
         if(pubid!=null || sysid!=null){
             if(message.length()>0)
                 message.append('\n');
-            message.append(I18N.getMessage(ExceptionUtil.class, "EXC_sax_parse", String.valueOf(pubid), String.valueOf(sysid)));
+            message.append(RBUtil.getMessage(ExceptionUtil.class, "EXC_sax_parse", String.valueOf(pubid), String.valueOf(sysid)));
         }
 
         int col = spe.getColumnNumber();
@@ -239,7 +239,7 @@ public final class ExceptionUtil {
         if(col!=-1 || line!=-1){
             if(message.length()>0)
                 message.append('\n');
-            message.append(I18N.getMessage(ExceptionUtil.class, "EXC_sax_parse_col_line", new Object[]{new Integer(col), new Integer(line)}));
+            message.append(RBUtil.getMessage(ExceptionUtil.class, "EXC_sax_parse_col_line", new Object[]{new Integer(col), new Integer(line)}));
         }
 
         String msg = spe.getMessage();

@@ -27,12 +27,12 @@ public class FileUtil{
         File[] files = file.listFiles();
         if(files==null)
             return file.delete();
-        for(int i = 0; i<files.length; i++){
-            if(files[i].isDirectory())
-                success &= deleteDir(files[i]);
+        for (File file1 : files) {
+            if (file1.isDirectory())
+                success &= deleteDir(file1);
             else
-                success &= files[i].delete();
-            if(!success)
+                success &= file1.delete();
+            if (!success)
                 return false;
         }
         return file.delete();

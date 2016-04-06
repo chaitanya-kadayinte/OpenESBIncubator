@@ -537,7 +537,7 @@ public class FioranoCatalogResolver
      * the behaviour of this catalog resolver.
      */
     private void init (String [] catalogs, boolean preferPublic) {
-        fCatalogsList = (catalogs != null) ? (String[]) catalogs.clone() : null;
+        fCatalogsList = (catalogs != null) ? catalogs.clone() : null;
         fPreferPublic = preferPublic;
         fResolverCatalogManager = new CatalogManager();
         fResolverCatalogManager.setAllowOasisXMLCatalogPI(false);

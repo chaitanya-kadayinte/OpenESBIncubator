@@ -26,8 +26,8 @@ public final class I18NUtil {
         while(true){
             try{
                 return params==null
-                        ? I18N.getMessage(clazz, key)
-                        : I18N.getMessage(clazz, key, params);
+                        ? RBUtil.getMessage(clazz, key)
+                        : RBUtil.getMessage(clazz, key, params);
             } catch(MissingResourceException ex){
                 clazz = clazz.getSuperclass();
                 if(clazz==null || clazz==Object.class){
@@ -37,8 +37,8 @@ public final class I18NUtil {
                         while(true){
                             try{
                                 return params==null
-                                        ? I18N.getMessage(interfaces[i], key)
-                                        : I18N.getMessage(interfaces[i], key, params);
+                                        ? RBUtil.getMessage(interfaces[i], key)
+                                        : RBUtil.getMessage(interfaces[i], key, params);
                             } catch(MissingResourceException ex1){
                                 interfaces[i] = interfaces[i].getSuperclass();
                                 if(interfaces[i]==null)
@@ -57,7 +57,7 @@ public final class I18NUtil {
         while(true){
             try{
                 String clazzName = ClassUtil.getShortClassName(clazz);
-                return I18N.getMessage(clazz, clazzName+"."+name);
+                return RBUtil.getMessage(clazz, clazzName+"."+name);
             } catch(MissingResourceException ex){
                 clazz = clazz.getSuperclass();
                 if(clazz==null || clazz==Object.class)
@@ -71,7 +71,7 @@ public final class I18NUtil {
     public static String getFullyQualifiedMessage(Class clazz, String name){
         while(true){
             try{
-                return I18N.getMessage(clazz, clazz.getName()+"."+name);
+                return RBUtil.getMessage(clazz, clazz.getName()+"."+name);
             } catch(MissingResourceException ex){
                 clazz = clazz.getSuperclass();
                 if(clazz==null || clazz==Object.class)

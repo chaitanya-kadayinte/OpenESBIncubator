@@ -166,7 +166,7 @@ public class RestServiceImpl implements ApplicationsService {
                 microservice.setVersion(String.valueOf(serviceInstance.getVersion()));
                 boolean microserviceRunning = getController().isMicroserviceRunning(applicationName, applicationVersion, serviceInstance.getName(), null);
                 microservice.setRunning(microserviceRunning);
-                microservice.setLaunchMode(applicationHandle.getLaunchMode(serviceInstance.getName()));
+                microservice.setLaunchMode(applicationHandle != null ? applicationHandle.getLaunchMode(serviceInstance.getName()) : "NA");
                 services.add(microservice);
             }
             application.setServices(services);
