@@ -23,6 +23,8 @@ import com.fiorano.openesb.application.sps.OutPort;
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import com.fiorano.openesb.utils.StringUtil;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -281,5 +283,28 @@ public class Port extends InflatableDMIObject  implements NamedObject{
      */
     public String getKey(){
         return getName();
+    }
+
+    public void toMessage(BytesMessage bytesMessage) throws JMSException {
+        bytesMessage.writeUTF(name);
+        bytesMessage.writeUTF(description);
+        bytesMessage.writeBoolean(requestReply);
+        if(schema==null){
+            bytesMessage.writeBoolean(false);
+            return;
+        }else{
+            bytesMessage.writeBoolean(true);
+            schema.toMessage(bytesMessage);
+        }
+    }
+
+    public void fromMessage(BytesMessage bytesMessage) throws JMSException {
+        name=bytesMessage.readUTF();
+        description=bytesMessage.readUTF();
+        requestReply=bytesMessage.readBoolean();
+        if(bytesMessage.readBoolean()){
+            schema=new Schema();
+            schema.fromMessage(bytesMessage);
+        }
     }
 }

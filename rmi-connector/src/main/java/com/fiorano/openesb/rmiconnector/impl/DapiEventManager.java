@@ -476,6 +476,12 @@ public class DapiEventManager implements EventListener {
             appEventListeners.remove(key);
         appEventListeners.put(key, appEventListener);
     }
+    public void registerApplicationRepoEventListener(IRepoEventListener listener, String handleId) {
+        String key = handleId;
+        if (applicationRepoEventListeners.containsKey(key))
+            applicationRepoEventListeners.remove(key);
+        applicationRepoEventListeners.put(key, listener);
+    }
 
     public void unRegisterApplicationEventListener(IApplicationManagerListener appEventListener, String appGUID, float appVersion, String handleId) {
         String key = handleId + DAPICONSTANT + appGUID +DELIMITER+ appVersion;

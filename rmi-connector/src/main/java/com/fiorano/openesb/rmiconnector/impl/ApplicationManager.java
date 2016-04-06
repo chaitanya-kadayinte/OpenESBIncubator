@@ -925,12 +925,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public void addRepositoryEventListener(IRepoEventListener listener) throws RemoteException, ServiceException {
-        dapiEventManager.registerMicroServiceRepoEventListener(listener, handleId);
+        dapiEventManager.registerApplicationRepoEventListener(listener, handleId);
     }
 
     @Override
     public void removeRepositoryEventListener() throws RemoteException, ServiceException {
-        dapiEventManager.unRegisterMicroServiceRepoEventListener(handleId);
+        dapiEventManager.unRegisterApplicationRepoEventListener(handleId);
     }
 
     @Override
