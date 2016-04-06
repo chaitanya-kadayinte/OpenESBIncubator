@@ -319,7 +319,7 @@ public class JmsMessageUtil {
             CarryForwardContext carryForwardContext = genson.deserialize(carryForwardContextJson, CarryForwardContext.class);
             return carryForwardContext;
         }
-        return null;
+        return CARRY_FORWARD_CONTEXT_DEF;
     }
 
     public static String getApplicationContext(Message message)
