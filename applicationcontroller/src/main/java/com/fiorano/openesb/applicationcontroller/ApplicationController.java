@@ -578,6 +578,7 @@ public class ApplicationController {
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
             appHandle.startAllMicroServices();
+            persistApplicationState(appHandle);
         }
         return true;
     }
@@ -587,6 +588,7 @@ public class ApplicationController {
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
             appHandle.stopAllMicroServices();
+            persistApplicationState(appHandle);
             return true;
         }
         return false;
@@ -597,6 +599,7 @@ public class ApplicationController {
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
             appHandle.startMicroService(microServiceName);
+            persistApplicationState(appHandle);
             return true;
         }
         return false;
@@ -616,6 +619,7 @@ public class ApplicationController {
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
             appHandle.stopMicroService(microServiceName);
+            persistApplicationState(appHandle);
             return true;
         }
         return false;

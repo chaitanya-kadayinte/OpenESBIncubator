@@ -2,8 +2,10 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.BreakpointMetaData;
 import com.fiorano.openesb.application.application.*;
+import com.fiorano.openesb.application.aps.ServiceInstances;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
+import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
 import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
@@ -312,6 +314,7 @@ public class ApplicationHandle {
         }
         try {
             microServiceHandleList.get(microServiceName).stop();
+            microServiceHandleList.remove(microServiceName);
         } catch (Exception e) {
             throw new FioranoException(e);
         }
@@ -339,16 +342,24 @@ public class ApplicationHandle {
         appDetails.setLaunchTime(launchTime);
         appDetails.setApplicationLabel(environmentLabel);
 
-            for (String serviceName: microServiceHandleList.keySet()) {
+        List<ServiceInstance> serviceInstances = application.getServiceInstances();
+            for (ServiceInstance serviceInstance: serviceInstances) {
+                String serviceName = serviceInstance.getName();
+                ServiceInstanceStateDetails stateDetails;
                 MicroServiceRuntimeHandle serviceHandle = microServiceHandleList.get(serviceName);
-                if (serviceHandle == null)
-                    continue;
-                String instName = serviceHandle.getServiceInstName();
-                ServiceInstanceStateDetails stateDetails = serviceHandle.getServiceStateDetails();
-                appDetails.addServiceStatus(instName, stateDetails);
-                String exceptionTrace = serviceHandle.getExceptionTrace();
-                if (exceptionTrace != null)
-                    appDetails.addServiceExceptionTrace(instName, exceptionTrace);
+                if (serviceHandle == null){
+                    stateDetails = new ServiceInstanceStateDetails();
+                    stateDetails.setServiceGUID(serviceInstance.getGUID());
+                    stateDetails.setServiceInstanceName(serviceName);
+                    stateDetails.setRunningVersion(String.valueOf(serviceInstance.getVersion()));
+                    stateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
+                }else{
+                    stateDetails = serviceHandle.getServiceStateDetails();
+                    String exceptionTrace = serviceHandle.getExceptionTrace();
+                    if (exceptionTrace != null)
+                        appDetails.addServiceExceptionTrace(serviceName, exceptionTrace);
+                }
+                appDetails.addServiceStatus(serviceName, stateDetails);
             }
 
         //  Get the details of External Services too.
