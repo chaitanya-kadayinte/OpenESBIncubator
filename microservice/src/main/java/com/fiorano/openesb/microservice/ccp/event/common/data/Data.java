@@ -57,6 +57,9 @@ public abstract class Data implements Serializable {
         COMPONENT_STATS,
 
         COMPONENT_CONFIGURATION,
+        NAMED_CONFIGURATION,
+        PORT_CONFIGURATION,
+        MANAGEABLE_PROPERTIES,
     }
 
     /**
@@ -116,6 +119,12 @@ public abstract class Data implements Serializable {
                 return new ComponentStats();
             case COMPONENT_CONFIGURATION:
                 return new MicroserviceConfiguration();
+            case NAMED_CONFIGURATION:
+                return new NamedConfiguration();
+            case MANAGEABLE_PROPERTIES:
+                return new ManageableProperties();
+            case PORT_CONFIGURATION:
+                return new PortConfiguration();
         }
         throw new IllegalArgumentException("INVALID_DATA_TYPE - " + dataType.name());
     }

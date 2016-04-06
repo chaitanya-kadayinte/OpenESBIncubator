@@ -252,6 +252,10 @@ public class DapiEventManager implements EventListener {
                                          appEventListener.applicationStarting(appVersion);
                                      else if (appEvent.getApplicationEventType() == ApplicationEvent.ApplicationEventType.APPLICATION_STOPPED)
                                          appEventListener.applicationStopped(appVersion);
+                                     else if (appEvent.getApplicationEventType() == ApplicationEvent.ApplicationEventType.ROUTE_BP_ADDED)
+                                         appEventListener.routeBreakPointAdded(((RouteEvent) appEvent).getRouteGUID());
+                                     else if (appEvent.getApplicationEventType() == ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED)
+                                         appEventListener.routeBreakPointRemoved(((RouteEvent) appEvent).getRouteGUID());
                                  } catch (NoSuchObjectException e) {
                                      //ignore
                                      // Dont want to log unnecessarily

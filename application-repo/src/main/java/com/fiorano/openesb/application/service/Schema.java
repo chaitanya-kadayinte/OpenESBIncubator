@@ -27,6 +27,8 @@ import com.fiorano.openesb.utils.CollectionUtil;
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import com.fiorano.openesb.utils.StringUtil;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -577,6 +579,80 @@ public class Schema extends InflatableDMIObject{
                 throw new FioranoException("SCHEMA_REF_URI_UNSPECIFIED");
             if(StringUtil.isEmpty((String)entry.getValue()))
                 throw new FioranoException("SCHEMA_REF_CONTENT_UNSPECIFIED");
+        }
+    }
+
+    public void toMessage(BytesMessage bytesMessage) throws JMSException {
+        bytesMessage.writeUTF(file);
+        bytesMessage.writeUTF(configName);
+        bytesMessage.writeUTF(content);
+        //schema ref configs
+        if(schemaRefConfigs == null){
+            bytesMessage.writeInt(-1);
+        }else{
+            bytesMessage.writeInt(schemaRefConfigs.size());
+            for(String configKey : schemaRefConfigs.keySet()){
+                bytesMessage.writeUTF(configKey);
+                bytesMessage.writeUTF(schemaRefConfigs.get(configKey));
+            }
+        }
+
+        //schema ref files
+        if(schemaRefFiles == null){
+            bytesMessage.writeInt(-1);
+        }else{
+            bytesMessage.writeInt(schemaRefFiles.size());
+            for(Object configKey : schemaRefFiles.keySet()){
+                bytesMessage.writeUTF((String) configKey);
+                bytesMessage.writeUTF((String) schemaRefFiles.get(configKey));
+            }
+        }
+
+        //schema refs
+        if(schemaRefs == null){
+            bytesMessage.writeInt(-1);
+        }else {
+            bytesMessage.writeInt(schemaRefs.size());
+            for(Object configKey : schemaRefs.keySet()){
+                bytesMessage.writeUTF((String) configKey);
+                bytesMessage.writeUTF((String) schemaRefs.get(configKey));
+            }
+        }
+
+
+    }
+
+    public void fromMessage(BytesMessage bytesMessage) throws JMSException {
+        file=bytesMessage.readUTF();
+        configName=bytesMessage.readUTF();
+        content=bytesMessage.readUTF();
+
+        int numConfigs = bytesMessage.readInt();
+        if(numConfigs >0 ){
+            schemaRefConfigs = new HashMap<>();
+            for(int i = 0; i < numConfigs; i++){
+                String key = bytesMessage.readUTF();
+                String config = bytesMessage.readUTF();
+                schemaRefConfigs.put(key, config);
+            }
+        }
+        numConfigs = bytesMessage.readInt();
+        if(numConfigs >0 ){
+            schemaRefFiles = new HashMap<>();
+            for(int i = 0; i < numConfigs; i++){
+                String key = bytesMessage.readUTF();
+                String config = bytesMessage.readUTF();
+                schemaRefFiles.put(key, config);
+            }
+        }
+        numConfigs = bytesMessage.readInt();
+        if(numConfigs >0 ){
+            schemaRefs = new HashMap<>();
+            for(int i = 0; i < numConfigs; i++){
+                String key = bytesMessage.readUTF();
+                String config = bytesMessage.readUTF();
+                schemaRefs.put(key, config);
+            }
         }
     }
 }

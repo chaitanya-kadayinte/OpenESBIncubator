@@ -2,6 +2,8 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.BreakpointMetaData;
 import com.fiorano.openesb.application.application.*;
+import com.fiorano.openesb.events.ApplicationEvent;
+import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
@@ -257,6 +259,7 @@ public class ApplicationHandle {
         }
 
         JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
+        String targetDestination = route.getTargetDestinationName();
         //target for this route is source for estudio
         String destName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
         destinationConfiguration.setName(destName);
@@ -265,8 +268,9 @@ public class ApplicationHandle {
         BreakpointMetaData breakpointMetaData = new BreakpointMetaData();
         breakpointMetaData.setConnectionProperties(TransportConfig.getInstance().getConnectionProperties());
         breakpointMetaData.setSourceQName(destName);
-        breakpointMetaData.setTargetQName(route.getTargetDestinationName());
+        breakpointMetaData.setTargetQName(targetDestination);
         breakpoints.put(routeName, breakpointMetaData);
+        ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_ADDED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully added breakpoint to the Route");
         return breakpointMetaData;
     }
 
@@ -275,6 +279,7 @@ public class ApplicationHandle {
         route.stop();
         route.start();
         breakpoints.remove(routeName);
+        ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully removed breakpoint to the Route");
     }
 
     public void setApplication(Application application) {
@@ -484,7 +489,7 @@ public class ApplicationHandle {
     }
 
     private boolean checkForRouteExistanceAndUpdateRoute(Route rInfo) {
-        boolean found = false;
+        boolean found = true;
        /* String srcPortName = rInfo.getSrcPortName();
         String tgtPortName = rInfo.getTrgtPortName();
         String tgtAppInst = rInfo.getTargetApplicationGUID();

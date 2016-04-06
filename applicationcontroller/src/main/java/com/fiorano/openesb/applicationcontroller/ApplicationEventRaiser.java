@@ -1,9 +1,6 @@
 package com.fiorano.openesb.applicationcontroller;
 
-import com.fiorano.openesb.events.ApplicationEvent;
-import com.fiorano.openesb.events.Event;
-import com.fiorano.openesb.events.EventType;
-import com.fiorano.openesb.events.EventsManager;
+import com.fiorano.openesb.events.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.osgi.framework.FrameworkUtil;
 
@@ -17,6 +14,23 @@ public class ApplicationEventRaiser {
             throws FioranoException
     {
         ApplicationEvent event = new ApplicationEvent();
+        event.setApplicationEventType(eventType);
+        event.setSource("openESB");
+        event.setEventGenerationDate(System.currentTimeMillis());
+        event.setApplicationGUID(appGUID);
+        event.setApplicationName(appName);
+        event.setApplicationVersion(version);
+        event.setEventDescription(description);
+        event.setEventCategory(category);
+        eventsManager.raiseEvent(event);
+    }
+
+    public static void generateRouteEvent(ApplicationEvent.ApplicationEventType eventType, Event.EventCategory category, String appGUID,
+                                                String appName, String version, String routeGuid, String description)
+            throws FioranoException
+    {
+        RouteEvent event = new RouteEvent();
+        event.setRouteGUID(routeGuid);
         event.setApplicationEventType(eventType);
         event.setSource("openESB");
         event.setEventGenerationDate(System.currentTimeMillis());
