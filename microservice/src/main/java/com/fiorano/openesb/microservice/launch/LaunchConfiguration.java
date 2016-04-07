@@ -19,6 +19,7 @@
 package com.fiorano.openesb.microservice.launch;
 
 
+import com.fiorano.openesb.application.application.LogManager;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.ServiceRef;
 
@@ -45,4 +46,5 @@ public interface LaunchConfiguration<A extends AdditionalConfiguration> {
     String getApplicationName();
     String getApplicationVersion();
     A getAdditionalConfiguration();
+    LogManager getLogManager();
 }

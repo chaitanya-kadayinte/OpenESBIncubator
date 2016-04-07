@@ -19,6 +19,8 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.application.DmiObject;
+import com.fiorano.openesb.application.application.LogManager;
+import com.fiorano.openesb.application.service.LogModule;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
@@ -28,10 +30,7 @@ import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
@@ -58,6 +57,28 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroServiceRepoManager.getInstance().getRepositoryLocation());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
+        List logmodules = launchConfiguration.getLogModules();
+        StringBuilder sb = new StringBuilder();
+        for(Object object:logmodules){
+            LogModule logModule = (LogModule) object;
+            sb.append(logModule.getName() + "=");
+            sb.append(logModule.getTraceLevelAsString()+":");
+        }
+        commandLineArgs.put(LaunchConstants.LOG_HANDLERS,  sb.toString());
+        LogManager logManager = launchConfiguration.getLogManager();
+        sb = new StringBuilder();
+        sb.append("loggerClass=");
+        sb.append(logManager.getLoggerClass());
+        sb.append(":");
+        for (Map.Entry<Object, Object> objectObjectEntry : logManager.getProps().entrySet()) {
+            String name = (String) objectObjectEntry.getKey();
+            String value = (String) objectObjectEntry.getValue();
+            sb.append(name);
+            sb.append("=");
+            sb.append(value);
+            sb.append(":");
+        }
+        commandLineArgs.put(LaunchConstants.LOG_MANAGER, sb.toString());
 
         RuntimeArgument arg = (RuntimeArgument) DmiObject.findNamedObject(launchConfiguration.getRuntimeArgs(), LaunchConstants.JCA_INTERACTION_SPEC);
         if (arg != null)
