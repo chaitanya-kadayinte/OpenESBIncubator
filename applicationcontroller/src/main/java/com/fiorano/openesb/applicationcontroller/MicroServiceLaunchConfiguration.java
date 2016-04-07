@@ -1,5 +1,6 @@
 package com.fiorano.openesb.applicationcontroller;
 
+import com.fiorano.openesb.application.application.LogManager;
 import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.ServiceRef;
@@ -26,6 +27,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
     private AdditionalConfiguration additionalConfiguration;
     private LaunchMode launchMode;
     private List logModules;
+    private LogManager logManager;
     private Vector<ServiceRef> runtimeDependencies;
 
     MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, final ServiceInstance si){
@@ -46,6 +48,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
             this.launchMode = LaunchMode.DOCKER;
         }
         this.logModules = si.getLogModules();
+        this.logManager = si.getLogManager();
         for (ServiceRef runtimeDependency : (si.getServiceRefs())) {
             addRuntimeDependency(runtimeDependency);
         }
@@ -129,5 +132,9 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
 
     public AdditionalConfiguration getAdditionalConfiguration() {
         return additionalConfiguration;
+    }
+
+    public LogManager getLogManager() {
+        return logManager;
     }
 }
