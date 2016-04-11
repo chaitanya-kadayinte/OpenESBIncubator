@@ -1,6 +1,7 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.application.ServiceInstance;
+import com.fiorano.openesb.application.service.Execution;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.ServiceRef;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
@@ -10,6 +11,9 @@ import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
+
+import static com.fiorano.openesb.microservice.launch.LaunchConfiguration.LaunchMode.*;
+import static com.fiorano.openesb.microservice.launch.LaunchConfiguration.LaunchMode.NONE;
 
 public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
 
@@ -28,7 +32,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
     private List logModules;
     private Vector<ServiceRef> runtimeDependencies;
 
-    MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, final ServiceInstance si){
+    MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, final ServiceInstance si) {
         this.userName = userName;
         this.password = password;
         this.runtimeArgs = si.getRuntimeArguments();
@@ -37,14 +41,8 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
         this.microserviceVersion = String.valueOf(si.getVersion());
         this.applicationName = appGuid;
         this.applicationVersion = appVersion;
-        int i = si.getLaunchType();
-        if(i==1){
-            this.launchMode = LaunchMode.SEPARATE_PROCESS;
-        }else if (i==2){
-            this.launchMode = LaunchMode.IN_MEMORY;
-        }else if (i==3){
-            this.launchMode = LaunchMode.DOCKER;
-        }
+        this.launchMode = ConfigurationConversionHelper.convertLaunchMode(si.getLaunchType());
+
         this.logModules = si.getLogModules();
         for (ServiceRef runtimeDependency : (si.getServiceRefs())) {
             addRuntimeDependency(runtimeDependency);
@@ -55,6 +53,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
             public boolean isDebugMode() {
                 return si.isDebugMode();
             }
+
             @Override
             public int getDebugPort() {
                 return si.getDebugPort();
@@ -62,10 +61,9 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
         };
 
     }
-    public void addRuntimeDependency(ServiceRef servDependencyInfo)
-    {
-        if (runtimeDependencies == null)
-        {
+
+    public void addRuntimeDependency(ServiceRef servDependencyInfo) {
+        if (runtimeDependencies == null) {
             runtimeDependencies = new Vector<>();
         }
         if (!runtimeDependencies.contains(servDependencyInfo))
@@ -89,7 +87,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
     }
 
     public Enumeration<ServiceRef> getRuntimeDependencies() {
-        if(runtimeDependencies!=null){
+        if (runtimeDependencies != null) {
             return runtimeDependencies.elements();
         }
         return null;
@@ -129,5 +127,22 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
 
     public AdditionalConfiguration getAdditionalConfiguration() {
         return additionalConfiguration;
+    }
+
+    public static class ConfigurationConversionHelper {
+        public static LaunchConfiguration.LaunchMode convertLaunchMode(int launchType) {
+            switch (launchType) {
+                case Execution.LAUNCH_TYPE_SEPARATE_PROCESS:
+                    return SEPARATE_PROCESS;
+                case Execution.LAUNCH_TYPE_IN_MEMORY:
+                    return IN_MEMORY;
+                case Execution.LAUNCH_TYPE_NONE:
+                    return NONE;
+                case Execution.LAUNCH_TYPE_MANUAL:
+                    return MANUAL;
+            }
+            return NONE;
+        }
+
     }
 }

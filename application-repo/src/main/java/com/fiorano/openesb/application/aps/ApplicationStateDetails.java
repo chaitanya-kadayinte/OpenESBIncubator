@@ -23,6 +23,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -65,7 +66,8 @@ public class ApplicationStateDetails extends DmiObject {
 
     private String launchException;
 
-    private ArrayList m_previousSyncPeers;
+    private List<String> m_previousSyncPeers;
+    private String displayName;
 
     /**
      * This is the constructor of the <code>ApplicationStateDetails</code> class.
@@ -77,8 +79,9 @@ public class ApplicationStateDetails extends DmiObject {
         m_serviceExceptionTraces = new Hashtable();
         m_debugRoutes = new ArrayList();
         m_pendingDebugRoutesForClosure = new ArrayList();
-        m_previousSyncPeers = new ArrayList();
+        m_previousSyncPeers = new ArrayList<>();
         m_strAppGUID = "";
+        displayName = "";
         m_strAppVersion = "";
         applicationLabel = "";
         m_launchTime = -1;
@@ -631,5 +634,13 @@ public class ApplicationStateDetails extends DmiObject {
 
     public void setLaunchException(String launchException) {
         this.launchException = launchException;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 }
