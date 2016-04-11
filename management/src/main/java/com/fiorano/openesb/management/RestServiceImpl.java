@@ -14,16 +14,10 @@
 package com.fiorano.openesb.management;
 
 import com.fiorano.openesb.application.ApplicationRepository;
-import com.fiorano.openesb.application.application.Application;
-import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
-import com.fiorano.openesb.application.service.Execution;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
-import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
 import com.fiorano.openesb.applicationcontroller.MicroServiceLaunchConfiguration;
-import com.fiorano.openesb.applicationcontroller.MicroServiceLaunchConfiguration.ConfigurationConversionHelper;
-import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
@@ -35,8 +29,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
-import static com.fiorano.openesb.microservice.launch.LaunchConfiguration.LaunchMode.*;
 
 @CrossOriginResourceSharing(
         allowAllOrigins = true,
@@ -175,7 +167,7 @@ public class RestServiceImpl implements ApplicationsService {
                 microservice.setVersion(String.valueOf(serviceInstance.getRunningVersion()));
                 boolean microserviceRunning = getController().isMicroserviceRunning(applicationName, applicationVersion, serviceInstance.getServiceInstanceName(), null);
                 microservice.setRunning(microserviceRunning);
-                microservice.setLaunchMode(ConfigurationConversionHelper.convertLaunchMode(serviceInstance.getLaunchType()).name());
+                microservice.setLaunchMode(String.valueOf(serviceInstance.getLaunchType()));
                 services.add(microservice);
             }
             application.setServices(services);
