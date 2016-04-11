@@ -50,6 +50,8 @@ public class LaunchConstants {
     public final static String COMPONENT_REPO_PATH = "-componentrepopath";
     public final static String COMPONENT_GUID = "-serviceGUID";
     public final static String COMPONENT_VERSION = "-serviceversion";
+    public static final String LOG_HANDLERS = "-loggers";
+    public static final String LOG_MANAGER = "-logManager";
     public final static String NODE_NAME = "-nodename";
     public final static String CCP_ENABLED = "-ccpEnabled";
     public final static String IS_IN_MEMORY = "-isinmemory";
