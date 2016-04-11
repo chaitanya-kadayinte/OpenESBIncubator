@@ -61,22 +61,22 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         StringBuilder sb = new StringBuilder();
         for(Object object:logmodules){
             LogModule logModule = (LogModule) object;
-            sb.append(logModule.getName() + "=");
-            sb.append(logModule.getTraceLevelAsString()+":");
+            sb.append(logModule.getName());
+            sb.append("=");
+            sb.append(logModule.getTraceLevelAsString());
+            sb.append(",");
         }
         commandLineArgs.put(LaunchConstants.LOG_HANDLERS,  sb.toString());
         LogManager logManager = launchConfiguration.getLogManager();
         sb = new StringBuilder();
         sb.append("loggerClass=");
         sb.append(logManager.getLoggerClass());
-        sb.append(":");
+        sb.append(",");
         for (Map.Entry<Object, Object> objectObjectEntry : logManager.getProps().entrySet()) {
-            String name = (String) objectObjectEntry.getKey();
-            String value = (String) objectObjectEntry.getValue();
-            sb.append(name);
+            sb.append((String) objectObjectEntry.getKey());
             sb.append("=");
-            sb.append(value);
-            sb.append(":");
+            sb.append((String) objectObjectEntry.getValue());
+            sb.append(",");
         }
         commandLineArgs.put(LaunchConstants.LOG_MANAGER, sb.toString());
 
