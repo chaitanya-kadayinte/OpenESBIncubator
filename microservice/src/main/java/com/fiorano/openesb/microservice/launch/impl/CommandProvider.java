@@ -19,6 +19,7 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.application.DmiObject;
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.LogManager;
 import com.fiorano.openesb.application.service.LogModule;
 import com.fiorano.openesb.application.service.RuntimeArgument;
@@ -57,6 +58,8 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroServiceRepoManager.getInstance().getRepositoryLocation());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
+        commandLineArgs.put(LaunchConstants.JETTY_URL, ServerConfig.getConfig().getJettyUrl());
+        commandLineArgs.put(LaunchConstants.JETTY_URL_SSL, ServerConfig.getConfig().getJettySSLUrl());
         List logmodules = launchConfiguration.getLogModules();
         StringBuilder sb = new StringBuilder();
         for(Object object:logmodules){

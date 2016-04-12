@@ -16,6 +16,8 @@ public class ServerConfig {
     private String runtimeDataPath="./data";
     private long CCPTimeOut=5000;
     private long applicationStateRestoreWaitTime=5000;
+    private String jettyUrl="http://localhost:8181";
+    private String jettySSLUrl="https://localhost:8443";
 
     public String getRepositoryPath() {
         File file = new File(repositoryPath);
@@ -86,6 +88,8 @@ public class ServerConfig {
             properties.setProperty("runtimeDataPath", getRuntimeDataPath());
             properties.setProperty("CCPTimeOut", String.valueOf(getCCPTimeOut()));
             properties.setProperty("applicationStateRestoreWaitTime", String.valueOf(getApplicationStateRestoreWaitTime()));
+            properties.setProperty("jettyUrl", getJettyUrl());
+            properties.setProperty("jettySSLUrl", getJettySSLUrl());
 
             File file = new File(System.getProperty("karaf.base") + File.separator
                     + "etc" + File.separator + "com.fiorano.openesb.server.cfg");
@@ -103,4 +107,22 @@ public class ServerConfig {
     public static ServerConfig getConfig(){
         return serverConfig;
     }
+
+    public String getJettyUrl() {
+        return jettyUrl;
+    }
+
+    public void setJettyUrl(String jettyUrl) {
+        this.jettyUrl = jettyUrl;
+    }
+
+    public String getJettySSLUrl() {
+        return jettySSLUrl;
+    }
+
+    public void setJettySSLUrl(String jettySSLUrl) {
+        this.jettySSLUrl = jettySSLUrl;
+    }
+
+
 }

@@ -189,6 +189,8 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     protected void addDefaults(Queue<String> cPathQueue) {
         String catalogs = fioranoHomeDir + File.separator + "Schemas";
         cPathQueue.add(catalogs);
+        String licenses = fioranoHomeDir + File.separator + "licenses";
+        cPathQueue.add(licenses);
     }
 
     private String convertToPath(Queue<String> pathQueue) {
