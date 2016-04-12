@@ -659,6 +659,11 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         return filecontents;
     }
 
+    @Override
+    public String getServiceRepositoryPath() throws RemoteException, ServiceException {
+       return microServiceRepository.COMPONENTS_REPOSITORY_FOLDER;
+    }
+
     //adds service Descriptor file to outputStream without CDData Content.
     private void addServiceDescripterFile(OutputStream os, String id, String versionString) throws FioranoException {
         Service service = microServiceRepository.getServiceInfo(id, versionString);

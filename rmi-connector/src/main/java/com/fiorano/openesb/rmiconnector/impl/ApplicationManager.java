@@ -7,6 +7,7 @@ import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
+import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.utils.Constants;
@@ -1097,27 +1098,27 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return null;
+        return applicationController.getLastOutTrace(numberOfLines, serviceName, appGUID, appVersion);
     }
 
     @Override
     public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return null;
+        return applicationController.getLastErrTrace(numberOfLines, serviceName, appGUID, appVersion);
     }
 
     @Override
     public void clearServiceOutLogs(String serviceInst, String appGUID, float appVersion) throws RemoteException, ServiceException {
-
+        applicationController.clearServiceOutLogs(serviceInst, appGUID, appVersion);
     }
 
     @Override
     public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) throws RemoteException, ServiceException {
-
+        applicationController.clearServiceErrLogs(serviceInst, appGUID, appVersion);
     }
 
     @Override
     public void clearApplicationLogs(String appGUID, float appVersion) throws RemoteException, ServiceException {
-
+        applicationController.clearApplicationLogs(appGUID, appVersion);
     }
 
     @Override
@@ -1442,6 +1443,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public boolean isDeleteDestinationSetAtApp(String appGUID, float appVersion) throws RemoteException, ServiceException {
         return false;
+    }
+
+    @Override
+    public boolean isServiceRunning(String eventProcessName, float appVersion, String servInstanceName) {
+        return applicationController.isServiceRunning(eventProcessName, appVersion, servInstanceName);
     }
 
     public void unreferenced() {

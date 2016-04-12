@@ -2,6 +2,7 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.DmiObject;
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationInfo;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
@@ -40,10 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class ApplicationController {
@@ -1226,7 +1224,7 @@ public class ApplicationController {
     }
 
     public ApplicationReference getHeaderOfSavedApplication(String appGUID, float version, String handleId) {
-        return savedApplicationMap.get(appGUID+"__"+version);
+        return savedApplicationMap.get(appGUID + "__" + version);
     }
 
     public Set<String> getReferringRunningApplications(String appGUID, float appVersion, String servInstName) throws FioranoException{
@@ -1393,6 +1391,93 @@ public class ApplicationController {
 
     public void setAppsRestored(boolean appsRestored) {
         this.appsRestored = appsRestored;
+    }
+
+    public boolean isServiceRunning(String eventProcessName, float appVersion, String servInstanceName) {
+        ApplicationHandle applicationHandle = applicationHandleMap.get(eventProcessName+Constants.NAME_DELIMITER+appVersion);
+
+        if(applicationHandle!=null){
+            applicationHandle.isMicroserviceRunning(servInstanceName);
+        }
+        return false;
+    }
+
+    public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) {
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        ServiceInstance si = application.getServiceInstance(serviceName);
+        float serviceVersion = si.getVersion();
+        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.pathSeparator+"logs"+File.pathSeparator+appGUID.toUpperCase()
+                +File.pathSeparator+appVersion+File.separator+serviceName+File.separator+serviceVersion;
+        File f = new File(path);
+        File[] logfiles = f.listFiles();
+        StringBuilder sb = new StringBuilder();
+        int lineCount=0;
+        for(File file:logfiles){
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                    sb.append("\n");
+                    lineCount++;
+                    if(lineCount==numberOfLines){
+                        return sb.toString();
+                    }
+                }
+                if(lineCount==numberOfLines){
+                    return sb.toString();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) {
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        ServiceInstance si = application.getServiceInstance(serviceName);
+        float serviceVersion = si.getVersion();
+        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.pathSeparator+"logs"+File.pathSeparator+appGUID.toUpperCase()
+                +File.pathSeparator+appVersion+File.separator+serviceName+File.separator+serviceVersion;
+        File f = new File(path);
+        File[] logfiles = f.listFiles();
+        StringBuilder sb = new StringBuilder();
+        int lineCount=0;
+        for(File file:logfiles){
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                    sb.append("\n");
+                    lineCount++;
+                    if(lineCount==numberOfLines){
+                        return sb.toString();
+                    }
+                }
+                if(lineCount==numberOfLines){
+                    return sb.toString();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
+    }
+
+    public void clearServiceOutLogs(String serviceInst, String appGUID, float appVersion) {
+
+    }
+
+    public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) {
+
+    }
+
+    public void clearApplicationLogs(String appGUID, float appVersion) {
+
     }
 
      /*----------------------start of [Application Restore Thread]----------------------------------------*/
