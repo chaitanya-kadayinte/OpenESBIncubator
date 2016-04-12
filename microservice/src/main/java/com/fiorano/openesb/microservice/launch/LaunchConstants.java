@@ -56,6 +56,9 @@ public class LaunchConstants {
     public final static String CCP_ENABLED = "-ccpEnabled";
     public final static String IS_IN_MEMORY = "-isinmemory";
 
+    public final static String JETTY_URL = "-jettyurl";
+    public final static String JETTY_URL_SSL = "-jettyurlssl";
+
     public final static String USERNAME_DEF = "anonymous";
     public final static String PASSWORD_DEF = "anonymous";
     public final static String URL_DEF = "http://localhost:1856";
