@@ -28,7 +28,7 @@ public class LaunchConstants {
     public final static String BACKUP_URL = "-backupurl";
 
     public final static String FES_URL = "-fesurl";
-
+    public final static String PRODUCT_NAME = "-productname";
     public final static String USERNAME = "-username";
     public final static String PASSWORD = "-password";
     public final static String CONN_FACTORY = "-connfactory";

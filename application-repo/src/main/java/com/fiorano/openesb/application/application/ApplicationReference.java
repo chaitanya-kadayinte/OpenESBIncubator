@@ -52,7 +52,8 @@ public class ApplicationReference extends InflatableDMIObject{
      */
     public ApplicationReference(){
         super();
-        serverVersion = "11";
+        serverVersion = "0.1.0";
+        serverCategory = "openESB";
         buildNo = "1";
     }
     public enum APP_CORE_CONFIG_FLAG {Yes,No,Fetch_From_FES;
@@ -74,6 +75,7 @@ public class ApplicationReference extends InflatableDMIObject{
         this.creationDate = application.getCreationDate();
         this.displayName = application.getDisplayName();
         this.serverVersion = "11";
+        this.serverCategory="os";
         this.buildNo = "1";
         this.shortDescription = application.getShortDescription();
         this.longDescription = application.getLongDescription();
@@ -94,6 +96,8 @@ public class ApplicationReference extends InflatableDMIObject{
     private String guid;
 
     private  String serverVersion;
+
+    private String serverCategory;
 
     private String buildNo;
 
@@ -141,6 +145,8 @@ public class ApplicationReference extends InflatableDMIObject{
 
     public static final String ATTR_SERVER_VERSION = "productVersion";
 
+    public static final String ATTR_SERVER_CATEGORY = "productCategory";
+
     public static final String ATTR_BUILD_NO = "buildNo";
 
     public static final String ATTR_USER_NAME = "createdBy";
@@ -151,6 +157,14 @@ public class ApplicationReference extends InflatableDMIObject{
      */
     public String getServerVersion(){
         return serverVersion;
+    }
+
+    /**
+     * Returns product version
+     * @return float
+     */
+    public String getServerCategory(){
+        return serverCategory;
     }
 
     /*-------------------------------------------------[ creationDate ]---------------------------------------------------*/
@@ -744,6 +758,7 @@ public class ApplicationReference extends InflatableDMIObject{
             writer.writeStartElement(ELEM_SERVER_VERSION);
             {
                 writer.writeAttribute(ATTR_SERVER_VERSION, serverVersion);
+                writer.writeAttribute(ATTR_SERVER_CATEGORY, serverCategory );
                 writer.writeAttribute(ATTR_BUILD_NO, buildNo);
                 writer.writeAttribute(ATTR_USER_NAME, userName);
             }

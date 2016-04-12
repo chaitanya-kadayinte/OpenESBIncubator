@@ -41,6 +41,7 @@
         <!--<module>rmi-client</module>-->
         <module>fiorano-feature</module>
         <module>management</module>
+        <module>tools</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

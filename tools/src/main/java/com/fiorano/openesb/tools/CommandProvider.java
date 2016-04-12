@@ -1,22 +1,4 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2014, Fiorano Software Pte. Ltd. and affiliates.
- * <p>
- * All rights reserved.
- * <p>
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- * <p>
- * Created by chaitanya on 26-01-2016.
- */
-
-/**
- * Created by chaitanya on 26-01-2016.
- */
-package com.fiorano.openesb.microservice.launch.impl;
+package com.fiorano.openesb.tools;
 
 import com.fiorano.openesb.application.DmiObject;
 import com.fiorano.openesb.application.application.LogManager;
@@ -26,19 +8,24 @@ import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
-import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public abstract class CommandProvider<J extends AdditionalConfiguration> {
+/**
+ * Created by Janardhan on 4/12/2016.
+ */
+public abstract class CommandProvider<J extends AdditionalConfiguration>{
 
     protected abstract List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception;
 
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
-        String connectURL = TransportConfig.getInstance().getValue("providerURL");
+        String connectURL = "tcp://localhost:61616";
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
         commandLineArgs.put(LaunchConstants.FES_URL, connectURL);
@@ -54,7 +41,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, launchConfiguration.getLaunchMode() == LaunchConfiguration.
                 LaunchMode.IN_MEMORY ? "true" : "false");
         commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
-        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroServiceRepoManager.getInstance().getRepositoryLocation());
+        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, System.getProperty("COMP_REPOSITORY_PATH"));
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
         List logmodules = launchConfiguration.getLogModules();
@@ -91,7 +78,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
                 commandLineArgs.put(runtimeArg.getName(), runtimeArg.getValueAsString());
         }
 
-        List<String> commandLineParams = new ArrayList<>();
+        List<String> commandLineParams = new ArrayList();
         for(Map.Entry<String, String> entry:commandLineArgs.entrySet()){
             commandLineParams.add(entry.getKey());
             commandLineParams.add(entry.getValue());
@@ -104,11 +91,13 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
     }
 
     protected String getExecutionDir(LaunchConfiguration launchConfiguration) {
-        return MicroServiceRepoManager.getInstance().getMicroServiceBase(launchConfiguration.getMicroserviceId(),
-                launchConfiguration.getMicroserviceVersion());
+        return System.getProperty("COMP_REPOSITORY_PATH") + launchConfiguration.getMicroserviceId()+ File.separator+
+                launchConfiguration.getMicroserviceVersion();
     }
 
     protected Service getComponentPS(String componentGUID, String componentVersion) throws FioranoException {
-        return MicroServiceRepoManager.getInstance().readMicroService(componentGUID, componentVersion);
+       // return MicroServiceRepoManager.getInstance().readMicroService(componentGUID, componentVersion);
+        return null;
     }
 }
+

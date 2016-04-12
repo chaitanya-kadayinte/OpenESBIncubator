@@ -856,4 +856,5 @@ public interface IApplicationManager extends Remote{
      */
     boolean isDeleteDestinationSetAtApp(String appGUID, float appVersion) throws RemoteException, ServiceException;
 
+    boolean isServiceRunning(String eventProcessName, float appVersion, String servInstanceName) throws RemoteException, ServiceException;
 }
