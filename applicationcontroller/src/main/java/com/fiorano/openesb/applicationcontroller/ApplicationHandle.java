@@ -325,7 +325,7 @@ public class ApplicationHandle {
     }
 
     public String getLaunchMode(String name) {
-        return microServiceHandleList.get(name).getLaunchMode().name();
+        return isMicroserviceRunning(name) ? microServiceHandleList.get(name).getLaunchMode().name() : "Not Running";
     }
 
 

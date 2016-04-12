@@ -92,7 +92,6 @@ public class RestServiceImpl implements ApplicationsService {
             response.setStatus(false);
             return response;
         }
-
     }
 
     @POST
@@ -163,6 +162,7 @@ public class RestServiceImpl implements ApplicationsService {
             for (ServiceInstance serviceInstance : readApplication.getServiceInstances()) {
                 Microservice microservice = new Microservice();
                 microservice.setGuid(serviceInstance.getGUID());
+                microservice.setName(serviceInstance.getName());
                 microservice.setVersion(String.valueOf(serviceInstance.getVersion()));
                 boolean microserviceRunning = getController().isMicroserviceRunning(applicationName, applicationVersion, serviceInstance.getName(), null);
                 microservice.setRunning(microserviceRunning);
@@ -227,7 +227,11 @@ public class RestServiceImpl implements ApplicationsService {
         ApplicationController controller = getController();
         Response response = new Response();
         try {
-            response.setStatus(controller.startMicroService(applicationName, applicationVersion, microServiceName, null));
+            if(action.getAction().equalsIgnoreCase("start")) {
+                response.setStatus(controller.startMicroService(applicationName, applicationVersion, microServiceName, null));
+            } else if(action.getAction().equalsIgnoreCase("stop")) {
+                response.setStatus(controller.stopMicroService(applicationName, applicationVersion, microServiceName, null));
+            }
             return response;
         } catch (FioranoException e) {
             response.setMessage(e.getMessage());
@@ -236,21 +240,5 @@ public class RestServiceImpl implements ApplicationsService {
         }
 
     }
-
-    @PUT
-    @Path("/applications/{applicationName}/{applicationVersion}/{microServiceName}")
-    public Response stopMicroService(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion, @PathParam("microServiceName") String microServiceName) {
-        ApplicationController controller = getController();
-        Response response = new Response();
-        try {
-            response.setStatus(controller.stopMicroService(applicationName, applicationVersion, microServiceName, null));
-            return response;
-        } catch (FioranoException e) {
-            response.setMessage(e.getMessage());
-            response.setStatus(false);
-            return response;
-        }
-    }
-
 
 }
