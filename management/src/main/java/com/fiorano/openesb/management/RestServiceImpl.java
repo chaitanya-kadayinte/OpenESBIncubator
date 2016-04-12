@@ -14,11 +14,9 @@
 package com.fiorano.openesb.management;
 
 import com.fiorano.openesb.application.ApplicationRepository;
-import com.fiorano.openesb.application.application.Application;
-import com.fiorano.openesb.application.application.ServiceInstance;
+import com.fiorano.openesb.application.aps.ApplicationStateDetails;
+import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
-import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
-import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.osgi.framework.BundleContext;
@@ -27,6 +25,7 @@ import org.osgi.framework.FrameworkUtil;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 @CrossOriginResourceSharing(
@@ -59,7 +58,6 @@ public class RestServiceImpl implements ApplicationsService {
     @Produces(MediaType.APPLICATION_JSON)
     public Object getApplicationDetails(@PathParam("applicationName") String applicationName,
                                         @PathParam("applicationVersion") String applicationVersion) {
-        ApplicationRepository applicationRepository = getApplicationRepository();
         try {
             ApplicationStateDetails stateOfApplication = getController().getCurrentStateOfApplication(applicationName, Float.parseFloat(applicationVersion), null);
             com.fiorano.openesb.management.Application application = new com.fiorano.openesb.management.Application();
