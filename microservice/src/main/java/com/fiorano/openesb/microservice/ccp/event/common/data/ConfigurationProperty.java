@@ -10,7 +10,7 @@ public class ConfigurationProperty implements Serializable{
     private String value;
     private boolean isEncrypted;
     private String type;
-    private String configurationType;
+    private String configurationType="";
 
     public ConfigurationProperty(){
 

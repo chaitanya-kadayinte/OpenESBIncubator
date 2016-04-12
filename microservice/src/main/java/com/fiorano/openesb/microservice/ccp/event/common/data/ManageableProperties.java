@@ -57,7 +57,7 @@ public class ManageableProperties extends Data {
             bytesMessage.writeUTF(property.getValue());
             bytesMessage.writeBoolean(property.isEncrypted());
             bytesMessage.writeUTF(property.getType());
-            bytesMessage.writeUTF(property.getConfigurationType());
+            bytesMessage.writeUTF(property.getConfigurationType() == null ? "" : property.getConfigurationType());
         }
     }
 

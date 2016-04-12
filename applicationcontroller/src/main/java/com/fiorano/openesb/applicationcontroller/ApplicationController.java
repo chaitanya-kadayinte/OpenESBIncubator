@@ -6,6 +6,7 @@ import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationInfo;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
+import com.fiorano.openesb.application.aps.ServiceInstances;
 import com.fiorano.openesb.application.configuration.data.ObjectCategory;
 import com.fiorano.openesb.application.configuration.data.ResourceConfigurationNamedObject;
 import com.fiorano.openesb.application.constants.ConfigurationRepoConstants;
@@ -20,6 +21,7 @@ import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.data.*;
+import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
@@ -1202,10 +1204,25 @@ public class ApplicationController {
     public ApplicationStateDetails getCurrentStateOfApplication(String appGUID, float appVersion, String handleId) throws FioranoException{
         ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
         if (appHandle == null) {
-            return new ApplicationStateDetails();
+            ApplicationStateDetails apsd = new ApplicationStateDetails();
+            Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+            apsd.setAppGUID(appGUID);
+            apsd.setAppVersion(String.valueOf(application.getVersion()));
+            apsd.setDisplayName(application.getDisplayName());
+            List<ServiceInstance> sis = application.getServiceInstances();
+            for(ServiceInstance si:sis){
+                ServiceInstanceStateDetails sisd = new ServiceInstanceStateDetails();
+                sisd.setServiceInstanceName(si.getName());
+                sisd.setServiceGUID(si.getGUID());
+                sisd.setRunningVersion(String.valueOf(si.getVersion()));
+                sisd.setLaunchType(si.getLaunchType());
+                sisd.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
+                apsd.addServiceStatus(si.getName(), sisd);
+            }
+            return apsd;
+        } else {
+            return appHandle.getApplicationDetails();
         }
-        return appHandle.getApplicationDetails();
-
     }
 
     public ApplicationReference getHeaderOfSavedApplication(String appGUID, float version, String handleId) {

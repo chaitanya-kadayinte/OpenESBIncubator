@@ -52,6 +52,7 @@ public class ServiceInstanceStateDetails extends DmiObject
 
     private String  m_strUniqueRunningInstID;
     private boolean m_gracefulKill=true;   /* bug#14718 , gracefullKill should be true by default*/
+    private int launchType;
 
     /**
      *  This is the constructor of the <code>ServiceInstanceStateDetails</code>
@@ -539,4 +540,11 @@ public class ServiceInstanceStateDetails extends DmiObject
     }
 
 
+    public void setLaunchType(int launchType) {
+        this.launchType = launchType;
+    }
+
+    public int getLaunchType() {
+        return launchType;
+    }
 }
