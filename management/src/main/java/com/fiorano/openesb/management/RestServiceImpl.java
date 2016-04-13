@@ -24,9 +24,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 @CrossOriginResourceSharing(
         allowAllOrigins = true,
@@ -47,7 +45,20 @@ public class RestServiceImpl implements ApplicationsService {
         BundleContext bundleContext = FrameworkUtil.getBundle(ApplicationsService.class).getBundleContext();
         ApplicationRepository controller = bundleContext.getService(bundleContext.getServiceReference(ApplicationRepository.class));
         Response response = new Response();
-        response.setApplications(controller.getApplicationIdWithVersions());
+        Map<String,ApplicationHeader> applicationDetails = new HashMap<>();
+        for(String appName : controller.getApplicationIdWithVersions()){
+            try {
+                ApplicationHeader applicationHeader = new ApplicationHeader();
+                applicationHeader.setRunning(getController().isApplicationRunning(appName.substring(0, appName.indexOf(':')),Float.valueOf(appName.substring(appName.indexOf(':') + 1)),null));
+                applicationDetails.put(appName,applicationHeader);
+            } catch (FioranoException e) {
+                response.setMessage(e.getMessage());
+                response.setStatus(false);
+                return response;
+            }
+
+        }
+        response.setApplications(applicationDetails);
         response.setStatus(true);
         return response;
     }

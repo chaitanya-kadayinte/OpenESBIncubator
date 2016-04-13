@@ -1,12 +1,12 @@
 package com.fiorano.openesb.management;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by root on 3/14/16.
  */
 public class Response {
-    private List<String> applications;
+    private Map<String,ApplicationHeader> applications;
 
     private String message ;
 
@@ -28,11 +28,11 @@ public class Response {
         this.status = status;
     }
 
-    public List<String> getApplications() {
+    public Map<String, ApplicationHeader> getApplications() {
         return applications;
     }
 
-    public void setApplications(List<String> applications) {
+    public void setApplications(Map<String, ApplicationHeader> applications) {
         this.applications = applications;
     }
 }
