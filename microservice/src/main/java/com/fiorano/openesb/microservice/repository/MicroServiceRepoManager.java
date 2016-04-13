@@ -99,7 +99,7 @@ public class MicroServiceRepoManager {
 
     private static final Map favorites = Collections.singletonMap("FIORANO_HOME", System.getProperty("karaf.base"));
 
-    private static String COMPONENTS_REPOSITORY_FOLDER;// = System.getProperty(IMQConstants.FIORANO_HOME)+"/esb/fes/repository/components";
+    public static String COMPONENTS_REPOSITORY_FOLDER;// = System.getProperty(IMQConstants.FIORANO_HOME)+"/esb/fes/repository/components";
     private boolean componentrepoinsync = false;
     private Object waitObject;
 

@@ -217,6 +217,9 @@ public class ApplicationHandle {
     public void startAllMicroServices() {
         for (ServiceInstance instance : application.getServiceInstances()) {
             String instanceName = instance.getName();
+            if(microServiceHandleList.containsKey(instanceName)){
+                continue;
+            }
             MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
             try {
                 microServiceHandleList.put(instanceName, service.launch(mslc,instance.getConfiguration()));
@@ -279,6 +282,11 @@ public class ApplicationHandle {
     public void removeBreakPoint(String routeName) throws Exception{
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
         route.stop();
+        JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
+        String destName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
+        destinationConfiguration.setName(destName);
+        destinationConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
+        transport.disablePort(destinationConfiguration);
         route.start();
         breakpoints.remove(routeName);
         ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully removed breakpoint to the Route");
@@ -296,10 +304,14 @@ public class ApplicationHandle {
                 throw new FioranoException(e);
             }
         }
+        microServiceHandleList = new HashMap<>();
     }
 
     public void startMicroService(String microServiceName) throws FioranoException {
         ServiceInstance instance = application.getServiceInstance(microServiceName);
+        if(microServiceHandleList.containsKey(instance)){
+            return;
+        }
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));

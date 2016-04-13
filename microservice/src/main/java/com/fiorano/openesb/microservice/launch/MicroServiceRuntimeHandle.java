@@ -117,7 +117,7 @@ public abstract class MicroServiceRuntimeHandle {
         this.launchConfiguration = launchConfiguration;
     }
 
-    protected abstract boolean isRunning();
+    public abstract boolean isRunning();
 
     public abstract void stop() throws Exception;
 

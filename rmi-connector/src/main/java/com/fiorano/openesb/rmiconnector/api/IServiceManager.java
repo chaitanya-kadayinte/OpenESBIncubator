@@ -169,4 +169,5 @@ public interface IServiceManager extends Remote {
      */
     public byte[] fetchResourceForService(String id, float version, String resName, long index) throws RemoteException, ServiceException;
 
+    String getServiceRepositoryPath() throws RemoteException, ServiceException;
 }

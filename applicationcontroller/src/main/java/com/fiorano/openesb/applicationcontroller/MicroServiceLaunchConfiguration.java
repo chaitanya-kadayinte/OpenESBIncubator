@@ -46,6 +46,8 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
             this.launchMode = LaunchMode.IN_MEMORY;
         }else if (i==3){
             this.launchMode = LaunchMode.DOCKER;
+        }else if (i==4){
+            this.launchMode = LaunchMode.MANUAL;
         }
         this.logModules = si.getLogModules();
         this.logManager = si.getLogManager();

@@ -28,7 +28,7 @@ public class LaunchConstants {
     public final static String BACKUP_URL = "-backupurl";
 
     public final static String FES_URL = "-fesurl";
-
+    public final static String PRODUCT_NAME = "-productname";
     public final static String USERNAME = "-username";
     public final static String PASSWORD = "-password";
     public final static String CONN_FACTORY = "-connfactory";
@@ -55,6 +55,9 @@ public class LaunchConstants {
     public final static String NODE_NAME = "-nodename";
     public final static String CCP_ENABLED = "-ccpEnabled";
     public final static String IS_IN_MEMORY = "-isinmemory";
+
+    public final static String JETTY_URL = "-jettyurl";
+    public final static String JETTY_URL_SSL = "-jettyurlssl";
 
     public final static String USERNAME_DEF = "anonymous";
     public final static String PASSWORD_DEF = "anonymous";
