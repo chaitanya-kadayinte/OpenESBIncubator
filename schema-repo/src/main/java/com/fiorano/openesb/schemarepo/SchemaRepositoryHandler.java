@@ -680,6 +680,7 @@ public class SchemaRepositoryHandler {
             result = new StreamResult(userCatalogPath);
             XMLCreator xml = new XMLCreator(result, true, false);
             xml.setOuputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//OASIS//DTD XML Catalogs V1.0//EN"); //NOI18N
+            xml.setOuputProperty(OutputKeys.VERSION, "1.1");
             xml.setOuputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd"); //NOI18N
             xml.startDocument();
             xml.addAttribute("prefer", "public"); //NOI18N
