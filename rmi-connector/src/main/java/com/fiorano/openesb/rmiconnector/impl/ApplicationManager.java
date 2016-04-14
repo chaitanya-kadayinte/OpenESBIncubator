@@ -9,12 +9,12 @@ import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
+import com.fiorano.openesb.rmiconnector.Activator;
 import com.fiorano.openesb.rmiconnector.api.*;
-import com.fiorano.openesb.utils.Constants;
-import com.fiorano.openesb.utils.FileUtil;
-import com.fiorano.openesb.utils.LookUpUtil;
-import com.fiorano.openesb.utils.ZipUtil;
+import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
@@ -36,6 +36,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     private InstanceHandler handler;
 
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
+
     void setClientProxyInstance(IApplicationManager clientProxyInstance) {
         this.clientProxyInstance = clientProxyInstance;
     }
@@ -46,10 +48,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     ApplicationManager(RmiManager rmiManager, InstanceHandler instanceHandler){
         super(rmiManager);
+        logger.trace("initializing Appliaction Manager");
         this.applicationController = rmiManager.getApplicationController();
         this.applicationRepository = rmiManager.getApplicationRepository();
         this.handler = instanceHandler;
         setHandleID(instanceHandler.getHandleID());
+        logger.trace("initialized Appliaction Manager");
     }
 
     @Override
@@ -73,8 +77,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             return applicationRepository.getAppVersions(id);
         } catch (FioranoException e) {
-            e.printStackTrace();
-            throw new ServiceException();
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GET_VERSIONS_OF_EVENTPROCESS, id), e);
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -98,8 +102,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             outstream.write(zippedContents);
         } catch (IOException ioe) {
             successfulzip = false;
-            ioe.printStackTrace();
-            throw new ServiceException(ioe.getMessage());
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APP_ZIPFILE), ioe);
+            throw new ServiceException(Bundle.UNABLE_TO_CREATE_APP_ZIPFILE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APP_ZIPFILE));
+
         }
         finally {
             try {
@@ -116,7 +121,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         if (!completed) {
             return;
         }
-
+        logger.trace("Received Application from client.");
         //extract contents.
         boolean successfulextract = true;
         try {
@@ -127,8 +132,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         } catch (Exception e) {
             successfulextract = false;
 //            LogHelper.log("Unable to save event flow process::Error occured while extracting zipped contents.", e);
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS), e);
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS));
         }
         finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
@@ -143,7 +148,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.saveApplication(appFileTempFolder, handleId, getBytesFromFile(tempZipFile));
         } catch (FioranoException e) {
-            e.printStackTrace();
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DEPLOY_EVENT_FLOW_PROCESS, ""), e);
             throw new ServiceException(e.getMessage());
         }
         finally {
@@ -177,7 +182,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             outstream.write(appContextBytes);
         } catch (IOException ioe) {
             successfulzip = false;
-            throw new ServiceException("UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE, portName, serviceName, appGUID, appVersion), ioe);
+            throw new ServiceException(Bundle.UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE, portName, serviceName, appGUID, appVersion));
         }
         finally {
             try {
@@ -258,7 +264,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             try {
                 application = applicationController.getApplicationHandle(appGUID, appVersion, handleId).getApplication();
             } catch (Exception e) {
-                throw new ServiceException("ERROR_APP_HANDLE");
+                throw new ServiceException(Bundle.ERROR_APP_HANDLE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_APP_HANDLE, appGUID, appVersion, e.getMessage()));
             }
             for (ServiceInstance serviceInstance : application.getServiceInstances()) {
                 if (!serviceInstance.getName().equals(serviceName))
@@ -286,7 +292,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             try {
                 applicationController.changePortAppContext(appGUID, appVersion, serviceName, portName, scriptContent, jmsScriptContent, transformerType, projectContent, handleId);
             } catch (FioranoException e) {
-                //rmiLogger.error(Bundle.class, Bundle.ERROR_CHANGE_APPCONTEXT_TRANSFORMATION3, portName, serviceName, appGUID, appVersion, e);
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_APPCONTEXT_TRANSFORMATION3, portName, serviceName, appGUID, appVersion), e);
                 throw new ServiceException(e.getMessage());
             } finally {
                 if (key != null)
@@ -299,12 +305,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
         } catch (IOException e) {
             successfulextract = false;
-           // rmiLogger.error(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion, e);
-            throw new ServiceException("ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion), e);
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion));
         } catch (XMLStreamException e) {
             successfulextract = false;
-           // rmiLogger.error(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion, e);
-            throw new ServiceException("ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion), e);
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion));
         }
         finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
@@ -328,8 +334,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.changePortAppContext(appGUID, appVersion, serviceName, portName, null, null, null, null, handleId);
         } catch (FioranoException e) {
-           // rmiLogger.error(Bundle.class, Bundle.ERROR_CLEAR_APPCONTEXT_TRANS, portName, serviceName, appGUID, appVersion, "", e);
-            throw new ServiceException("ERROR_CLEAR_APPCONTEXT_TRANS");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CLEAR_APPCONTEXT_TRANS, portName, serviceName, appGUID, appVersion, ""), e);
+            throw new ServiceException(Bundle.ERROR_CLEAR_APPCONTEXT_TRANS.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CLEAR_APPCONTEXT_TRANS, portName, serviceName, appGUID, appVersion, e.getMessage()));
         }
     }
 
@@ -337,7 +343,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             throws ServiceException, RemoteException {
 
         if (!isRunning(appGUID, appVersion)) {
-            throw new ServiceException("EVENT_PROCESS_NOT_IN_RUNNING_STATE");
+            throw new ServiceException(Bundle.EVENT_PROCESS_NOT_IN_RUNNING_STATE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.EVENT_PROCESS_NOT_IN_RUNNING_STATE, appGUID, appVersion));
         }
         String key;
         File tempZipFile;
@@ -357,8 +363,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             outstream.write(transformationProjectBytes);
         } catch (IOException ioe) {
             successfulzip = false;
-           // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE, routeGUID, appGUID, appVersion, ioe);
-            throw new ServiceException("UNABLE_TO_CREATE_TRANS_ZIPFILE");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE, routeGUID, appGUID, appVersion), ioe);
+            throw new ServiceException(Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE, routeGUID, appGUID, appVersion));
         }
         finally {
             try {
@@ -397,9 +403,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
             //checks for existence of file resources.
             if (projectDirName != null && !projDirFile.exists())
-                throw new ServiceException("ERROR_CHANGE_ROUTE_TRANS3");
+                throw new ServiceException(Bundle.ERROR_CHANGE_ROUTE_TRANS3.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS3, routeGUID, appGUID, appVersion));
             if ((scriptFile != null && !scriptFile.exists()) || (jmsScriptFile != null && !jmsScriptFile.exists()))
-                throw new ServiceException("ERROR_CHANGE_ROUTE_TRANS3");
+                throw new ServiceException(Bundle.ERROR_CHANGE_ROUTE_TRANS2.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS2, routeGUID, appGUID, appVersion));
 
             //read the temp folder for the project content
             String projectContent = null;
@@ -469,7 +475,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             try {
                 applicationController.changeRouteTransformation(appGUID, appVersion, routeGUID, scriptContent, jmsScriptContent, transformerType, projectContent, handleId);
             } catch (FioranoException e) {
-              //  rmiLogger.error(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS, routeGUID, appGUID, appVersion, "", e);
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS, routeGUID, appGUID, appVersion, ""), e);
                 throw new ServiceException( e.getMessage());
             }finally {
                 if(key!=null)
@@ -482,12 +488,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
         } catch (IOException e) {
             successfulextract = false;
-          //  rmiLogger.error(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion, e);
-            throw new ServiceException("ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion), e);
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
         } catch (XMLStreamException e) {
             successfulextract = false;
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion, e);
-            throw new ServiceException("ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion), e);
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
         }
         finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
@@ -511,8 +517,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.changeRouteTransformation(appGUID, appVersion, routeGUID, null, null, null, null, handleId);
         } catch (FioranoException e) {
-          //  rmiLogger.error(Bundle.class,Bundle.ERROR_CLEAR_ROUTE_TRANS,routeGUID,appGUID,appVersion,"",e);
-            throw new ServiceException("ERROR_CLEAR_ROUTE_TRANS");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES), e);
+            throw new ServiceException(Bundle.ERROR_GET_RUNNING_EVENTPROCESSES.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES));
         }
 
     }
@@ -551,8 +557,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 tempFileNameMap.put(eventProcessKey, tempZipFile);
             } catch (Exception e) {
                 completed = true;
-                //rmiLogger.error(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version, e);
-                throw new ServiceException("ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY");
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version), e);
+                throw new ServiceException(Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version));
             }
             finally {
                 try {
@@ -589,8 +595,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             System.arraycopy(tempContents, 0, contents, 0, readCount);
         } catch (IOException e) {
             completed = true;
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE, appGUID, version, e);
-            throw new ServiceException("ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE, appGUID, version), e);
+            throw new ServiceException(Bundle.ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_SENDING_CONTENTS_OF_APP_ZIPFILE, appGUID, version));
         } finally {
             try {
                 if (bis != null) {
@@ -613,7 +619,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.deleteApplication(appGUID, version, handleId);
         } catch (FioranoException e) {
-            e.printStackTrace();
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DELETE_EVENTPROCESS, appGUID, version), e);
             throw new ServiceException(e.getMessage());
         }
     }
@@ -628,7 +634,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.launchApplication(appGUID, version, handleId);
         } catch (Exception e) {
-            throw new ServiceException(e.getMessage(),e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_START_EVENTPROCESS, appGUID, version, ""), e);
+            throw new ServiceException( e.getMessage());
         }
     }
 
@@ -638,7 +645,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             applicationController.stopApplication(appGUID, String.valueOf(appVersion), handleId);
             applicationController.launchApplication(appGUID, String.valueOf(appVersion), handleId);
         } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_RESTART_EVENTPROCESS, appGUID,appVersion), e);
+            throw new ServiceException( e.getMessage());
         }
     }
 
@@ -647,7 +655,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.stopApplication(appGUID,version, handleId);
         } catch (Exception e) {
-            throw new ServiceException(e.getMessage(),e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_STOP_EVENTPROCESS, appGUID, version, ""), e);
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -656,6 +665,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             return applicationController.getApplicationChainForShutdown(appGUID, version, handleId);
         } catch (FioranoException e) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GETTING_SHUTDOWN_CHAIN, appGUID, version), e.getMessage());
             throw new ServiceException(e.getMessage());
         }
     }
@@ -665,7 +675,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             return applicationController.getApplicationChainForLaunch(appGUID, appVersion, handleId);
         } catch (FioranoException e) {
-            throw new ServiceException(e.getMessage());
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GETTING_LAUNCH_CHAIN, appGUID, appVersion), e.getMessage());
+            throw new ServiceException( e.getMessage());
         }
     }
 
@@ -674,7 +685,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.startMicroService(appGUID, String.valueOf(appVersion), serviceInstanceName, handleId);
         } catch (FioranoException e) {
-            throw new ServiceException(e.getMessage());
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_START_SERVICEINSTANCE, serviceInstanceName, appGUID, appVersion), e);
+            throw new ServiceException( e.getMessage());
         }
     }
 
@@ -683,6 +695,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.stopMicroService(appGUID, String.valueOf(appVersion), serviceInstanceName, handleId);
         } catch (FioranoException e) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_STOP_SERVICEINSTANCE, serviceInstanceName, appGUID, appVersion), e);
             throw new ServiceException(e.getMessage());
         }
     }
@@ -692,6 +705,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             applicationController.stopAllMicroServices(appGUID, String.valueOf(appVersion), handleId);
         } catch (FioranoException e) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_STOP_ALL_SERVICEINSTANCES, appGUID, appVersion), e);
             throw new ServiceException(e.getMessage());
         }
     }

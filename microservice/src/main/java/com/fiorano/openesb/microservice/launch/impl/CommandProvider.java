@@ -29,6 +29,7 @@ import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
+import com.fiorano.openesb.utils.LookUpUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.util.*;
@@ -46,7 +47,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.USERNAME, launchConfiguration.getUserName());
         commandLineArgs.put(LaunchConstants.PASSWORD, launchConfiguration.getPassword());
         commandLineArgs.put(LaunchConstants.CONN_FACTORY,"ConnectionFactory");
-        commandLineArgs.put(LaunchConstants.CLIENT_ID, getServiceInstanceLookupName(launchConfiguration.getApplicationName(),
+        commandLineArgs.put(LaunchConstants.CLIENT_ID, LookUpUtil.getServiceInstanceLookupName(launchConfiguration.getApplicationName(),
                 launchConfiguration.getApplicationVersion(), launchConfiguration.getServiceName()));
         commandLineArgs.put(LaunchConstants.EVENT_PROC_NAME, launchConfiguration.getApplicationName());
         commandLineArgs.put(LaunchConstants.EVENT_PROC_VERSION, launchConfiguration.getApplicationVersion());
@@ -100,10 +101,6 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
             commandLineParams.add(entry.getValue());
         }
         return commandLineParams;
-    }
-
-    private String getServiceInstanceLookupName(String applicationName, String applicationVersion, String name) {
-        return applicationName + "__" + applicationVersion + "__" + name;
     }
 
     protected String getExecutionDir(LaunchConfiguration launchConfiguration) {

@@ -13,6 +13,8 @@ import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import com.fiorano.openesb.rmiconnector.api.ServiceReference;
 import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -25,7 +27,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class MicroServiceManager extends AbstractRmiManager implements IServiceManager {
     MicroServiceRepoManager microServiceRepository;
-
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
     public static final Map FAVORITES = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("karaf.base")));
 
     //maintains a hashmap of the file reference to service zip files that are being created when executing operations getService, deployService, fetchResource
@@ -57,8 +59,9 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
             }
 
         } catch (FioranoException e) {
-            e.printStackTrace();
-            throw new ServiceException("ERROR_GET_ALL_SERVICE_IDS");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GET_ALL_SERVICE_IDS, e));
+            throw new ServiceException(Bundle.ERROR_GET_ALL_SERVICE_IDS.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_GET_ALL_SERVICE_IDS));
+
         }
         return serviceIds.toArray(new String[serviceIds.size()]);
     }
@@ -99,8 +102,9 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
 
             return serviceReferenceList.toArray(new ServiceReference[serviceReferenceList.size()]);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceException("ERROR_GET_SERVICE_REFERENCES");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GET_SERVICE_REFERENCES, e));
+            throw new ServiceException(Bundle.ERROR_GET_SERVICE_REFERENCES.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_GET_SERVICE_REFERENCES));
+
         }
     }
 
@@ -115,8 +119,8 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                 versionStrings.add(serviceReference.getVersion());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceException("ERROR_GET_ALL_VERSIONS_SERVICE");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GET_ALL_VERSIONS_SERVICE, id, e));
+            throw new ServiceException(Bundle.ERROR_GET_ALL_VERSIONS_SERVICE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_GET_ALL_VERSIONS_SERVICE, id));
         }
 
         float versions[] = new float[versionStrings.size()];
@@ -143,8 +147,6 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     public void deployService(byte[] zippedContents, boolean completed, boolean resync, boolean retainOldResources, List servicesToImport) throws ServiceException {
 
         validateHandleID(handleId, "deploy Service");
-        System.out.println("deploying service");
-
         File tempZipFile = null;
         FileOutputStream outstream = null;
         File extractedFolder = null;
@@ -164,8 +166,9 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         } catch (IOException ioe) {
             //if any exception occures in between this will ensures that temporary files get deleted
             successfulzip = false;
-            ioe.printStackTrace();
-            throw new ServiceException("UNABLE_TO_CREATE_SERVICE_ZIPFILE");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_SERVICE_ZIPFILE_IP, ioe));
+            throw new ServiceException(Bundle.UNABLE_TO_CREATE_SERVICE_ZIPFILE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_SERVICE_ZIPFILE_IP));
+
         }
         finally {
             try {
@@ -191,8 +194,9 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         } catch (Exception e) {
             //if any exception occurs in between this will ensure that temporary files get deleted
             successfulextract = false;
-            e.printStackTrace();
-            throw new ServiceException("ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE");
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE_IP, e));
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE_IP));
+
         }
         finally {
             //Removing the temporary zip entry in hashmap. and deleting the file
@@ -240,7 +244,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                                     if(resFile.exists()) //delete unsuccessful resource file
                                         resFile.delete();
                                     //just logging if any error occurs while copying old resources
-                                   // //rmiLogger.warn(Bundle.class, Bundle.ERROR_WHILE_RETAINING_OLD_SPECIFIC_RESOURCES, service.getGUID(), service.getVersion(),res.getName(), e);
+                                   // //rmi1.warn(Bundle.class, Bundle.ERROR_WHILE_RETAINING_OLD_SPECIFIC_RESOURCES, service.getGUID(), service.getVersion(),res.getName(), e);
                                 } finally {
                                     if(writer != null)
                                         writer.close();
@@ -248,8 +252,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                             }
                         } catch (Exception e){
                             //just logging if any error occurs while copying old resources
-                            //rmiLogger.warn(Bundle.class, Bundle.ERROR_WHILE_RETAINING_OLD_RESOURCES, service.getGUID(), service.getVersion(), e);
-                            e.printStackTrace();
+                            logger.warn(RBUtil.getMessage(Bundle.class, Bundle.ERROR_WHILE_RETAINING_OLD_RESOURCES, service.getGUID(), service.getVersion(), e));
                         }
                     }
                     //if(serviceExists)
@@ -257,7 +260,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
 
                     service.getDeployment().setResources(new ArrayList());
 
-                    //rmiLogger.info(Bundle.class,Bundle.SAVE_SERVICE_TO_REPO,getUserName(handleId),getAgentName(handleId),getClientIP(handleId));
+                    logger.info(RBUtil.getMessage(Bundle.class, Bundle.SAVE_SERVICE_TO_REPO));
                     //saving the service
                     microServiceRepository.saveService(service, true, resync, handleId);
 
@@ -293,12 +296,12 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                     //Finally commit the service
                     microServiceRepository.publishService(service.getGUID(), StringUtil.toString(service.getVersion()), service.getDeployment().getLabel(), handleId);
                     servicesImported.add(service.getGUID() + "__" + service.getVersion());
-                   // //rmiLogger.info(Bundle.class, Bundle.DEPLOY_SERVICE_SUCCESSFUL_IP, service.getGUID(),getUserName(handleId),getAgentName(handleId),getClientIP(handleId));
+                    logger.info(RBUtil.getMessage(Bundle.class, Bundle.DEPLOY_SERVICE_SUCCESSFUL_IP, service.getGUID()));
                     count++;
                 } catch (Exception e) {
                     String serviceGUID = (service != null) ?
                             service.getGUID()+":"+service.getVersion() : servDir.getParentFile().getName()+":"+servDir.getName();
-                    //rmiLogger.error(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE_IP,getUserName(handleId),getAgentName(handleId),getClientIP(handleId),e);
+                    logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE,e));
                     //delete the service completely if failed to import service
                     try{
                         if(service != null)
@@ -318,20 +321,20 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                     try {
                         synchroniseAllDependentApplications(appVersionArray[0], appVersionArray[1]);
                     } catch (FioranoException e) {
-                        //rmiLogger.error(Bundle.class, Bundle.ERROR_SYNCHRONIZING_DEPENDENT_APPLICATION_IP, getUserName(handleId), getAgentName(handleId), getClientIP(handleId), e);
+                        logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_SYNCHRONIZING_DEPENDENT_APPLICATION, e));
                         errorServices.add(appVersion);
                     }
                 }
             }
             if(allServiceDescriptors.size() == 0){
-                //rmiLogger.error(Bundle.class,Bundle.SERVICE_DESCRIPTOR_NOT_FOUND);
+                logger.error(RBUtil.getMessage(Bundle.class,Bundle.SERVICE_DESCRIPTOR_NOT_FOUND));
                 throw new ServiceException("SERVICE_DESCRIPTOR_NOT_FOUND");
             }
             if(count == 0){
-                //rmiLogger.error(Bundle.class,Bundle.FAILED_TO_IMPORT_SERVICE);
+                logger.error(RBUtil.getMessage(Bundle.class,Bundle.FAILED_TO_IMPORT_SERVICE));
                 throw new ServiceException("FAILED_TO_IMPORT_SERVICE");
             } else if(errorServices.size() > 0 ){
-                //rmiLogger.error(Bundle.class, Bundle.ERROR_DEPLOY_SERVICE_IP, errorServices.toString(),getUserName(handleId),getAgentName(handleId),getClientIP(handleId));
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DEPLOY_SERVICE_IP, errorServices.toString()));
                 throw new ServiceException("ERROR_DEPLOY_SERVICE");
             }
         }
@@ -458,7 +461,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                         zipStream.putNextEntry(entry);
                         addResourceToStream(zipStream, id, versionString, res.getName());
                     }
-                    //rmiLogger.info(Bundle.class,Bundle.EXPORT_SERVICE_SUCCESSFUL_MULTIPLE_IP,id+":"+versionString,getUserName(handleId),getAgentName(handleId),getClientIP(handleId));
+                    logger.info(RBUtil.getMessage(Bundle.class,Bundle.EXPORT_SERVICE_SUCCESSFUL_MULTIPLE_IP,id+":"+versionString));
                 }
                 //when creating zip file completes, add the zip file reference to hashmap with key as services_ID_Version
                 SERVICEMAP.put(servicekey, tempZipFile);
@@ -475,7 +478,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
             if (readCount < 0) {
                 //when there is nothing to read notify the client that it is completed.
                 completed = true;
-                //rmiLogger.info(Bundle.class, Bundle.EXPORT_SERVICE_SUCCESSFUL_IP, serviceNames,getUserName(handleId),getAgentName(handleId),getClientIP(handleId));
+                logger.info(RBUtil.getMessage(Bundle.class, Bundle.EXPORT_SERVICE_SUCCESSFUL_IP, serviceNames));
                 return null;
             }
 
@@ -485,7 +488,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         } catch (Exception e) {
             //if any exception occurs in between this will ensures that temporary files get deleted
             completed = true;
-            //rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_CREATE_ZIPFILE_GET_SERVICE_IP, serviceNames, getUserName(handleId),getAgentName(handleId),getClientIP(handleId),e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_ZIPFILE_GET_SERVICE_IP, serviceNames,e));
             throw new ServiceException("UNABLE_TO_CREATE_ZIPFILE_GET_SERVICE",e.getMessage());
         }
         finally {
@@ -520,7 +523,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                 dependencyMap.put(serviceRef.getGUID(), serviceRef.getVersion());
             }
         } catch (FioranoException e) {
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_GETTING_SERVICE_DEPENDENCIES, id, version, e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GETTING_SERVICE_DEPENDENCIES, id, version, e));
             throw new ServiceException("ERROR_GETTING_SERVICE_DEPENDENCIES", e);
         }
         return dependencyMap;
@@ -539,13 +542,13 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     public void delete(String id, float version, boolean killRunningInstances) throws ServiceException {
         validateHandleID(handleId, "deleteService :" + id);
         try {
-            //rmiLogger.info(Bundle.class,Bundle.DELETE_SERVICE_INIT,id,getUserName(handleId),getAgentName(handleId),getClientIP(handleId));
+            logger.info(RBUtil.getMessage(Bundle.class, Bundle.DELETE_SERVICE_INIT, id));
             String versionString = String.valueOf(version);
             microServiceRepository.removeService(id, versionString, killRunningInstances, handleId);
             this.killRunningInstances = killRunningInstances;
-            //rmiLogger.info(Bundle.class, Bundle.DELETE_SERVICE_SUCCESSFUL_IP, id, getUserName(handleId), getAgentName(handleId), getClientIP(handleId));
+            logger.info(RBUtil.getMessage(Bundle.class, Bundle.DELETE_SERVICE_SUCCESSFUL_IP, id ));
         } catch (FioranoException e) {
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_DELETE_SERVICE_IP, id,getUserName(handleId), getAgentName(handleId), getClientIP(handleId), e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DELETE_SERVICE_IP, id), e);
             throw new ServiceException("ERROR_DELETE_SERVICE_IP");
         }
     }
@@ -560,7 +563,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                 }
             }
         } catch (ServiceException e) {
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_DEPENDENCIES_EXISTS, e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DEPENDENCIES_EXISTS), e);
             throw new ServiceException("ERROR_DEPENDENCIES_EXISTS", e);
         }
         return exists;
@@ -603,7 +606,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
             } catch (Exception e) {
                 //If Any Exception this Marking the file usage as complete and Deleting it
                 completed = true;
-                //rmiLogger.error(Bundle.class, Bundle.ERROR_FETCHING_RESOURCE_FROM_SERVICE, id, e);
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_FETCHING_RESOURCE_FROM_SERVICE, id), e);
                 throw new ServiceException("ERROR_FETCHING_RESOURCE_FROM_SERVICE");
             } finally {
                 try {
@@ -641,7 +644,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         } catch (IOException e) {
             //If Any Exception this Marking the file usage as complete and Deleting it
             completed = true;
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_READING_BYTES_FROM_RESOURCEFILE, id, e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_READING_BYTES_FROM_RESOURCEFILE, id), e);
             throw new ServiceException("ERROR_READING_BYTES_FROM_RESOURCEFILE");
         } finally {
             try {
@@ -727,7 +730,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
             }
         }
         catch (IOException e) {
-            //rmiLogger.error(Bundle.class, Bundle.ERROR_UPLOAD_RESOURCE, resName, serviceGUID, e);
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_UPLOAD_RESOURCE, resName, serviceGUID), e);
             throw new FioranoException("ERROR_UPLOAD_RESOURCE");
         }
         finally {

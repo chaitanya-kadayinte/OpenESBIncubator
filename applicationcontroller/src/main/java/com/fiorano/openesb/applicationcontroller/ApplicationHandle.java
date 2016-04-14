@@ -17,6 +17,8 @@ import com.fiorano.openesb.route.impl.*;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
+import com.fiorano.openesb.utils.Constants;
+import com.fiorano.openesb.utils.LookUpUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ public class ApplicationHandle {
     private TransportService transport;
     Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new HashMap<>();
     private Map<String, Route> routeMap = new HashMap<>();
+    private Map<String, Route> breakPointRoutes = new HashMap<>();
     private Map<String, BreakpointMetaData> breakpoints = new HashMap<String, BreakpointMetaData>();
     private Map<String, BreakpointMetaData> pendingBreakpointsForClouser = new HashMap<String, BreakpointMetaData>();
     private ApplicationController applicationController;
@@ -121,7 +124,9 @@ public class ApplicationHandle {
 
     public void createRoutes() throws Exception {
         for(final com.fiorano.openesb.application.application.Route route: application.getRoutes()) {
-
+            if(routeMap.containsKey(route.getName())){
+                continue;
+            }
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
             String sourceServiceInstance = route.getSourceServiceInstance();
@@ -211,19 +216,14 @@ public class ApplicationHandle {
     }
 
     private String getPortName(String portInstance, String sourceServiceInstance) {
-        return application.getGUID() + "__" + application.getVersion() + "__" + sourceServiceInstance + "__" + portInstance;
+        return LookUpUtil.getServiceInstanceLookupName(appGUID, version, sourceServiceInstance) + Constants.NAME_DELIMITER + portInstance;
     }
 
     public void startAllMicroServices() {
         for (ServiceInstance instance : application.getServiceInstances()) {
-            String instanceName = instance.getName();
-            if(microServiceHandleList.containsKey(instanceName)){
-                continue;
-            }
-            MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
             try {
-                microServiceHandleList.put(instanceName, service.launch(mslc,instance.getConfiguration()));
-            } catch (Exception e) {
+                startMicroService(instance.getName());
+            } catch (FioranoException e) {
                 e.printStackTrace();
             }
         }
@@ -262,18 +262,119 @@ public class ApplicationHandle {
         if(route==null){
             throw new FioranoException("Route with name: "+routeName+" does not exist in the Application: " + application.getGUID());
         }
+        String bpSourceDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
+        String bpTargetdDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__D";
+        com.fiorano.openesb.application.application.Route routePS=null;
+        for(final com.fiorano.openesb.application.application.Route rPS: application.getRoutes()) {
+            if(rPS.getName().equals(routeName)){
+                routePS = rPS;
+                break;
+            }
+        }
 
-        JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
-        String targetDestination = route.getTargetDestinationName();
-        //target for this route is source for estudio
-        String destName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
-        destinationConfiguration.setName(destName);
-        destinationConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
-        route.changeTargetDestination(destinationConfiguration);
+        //create route from Outport to C and start
+        JMSPortConfiguration outPortConfiguration = new JMSPortConfiguration();
+        String outPortName = routePS.getSourcePortInstance();
+        outPortConfiguration.setName((outPortName));
+        OutputPortInstance outPortInstnace = application.getServiceInstance(routePS.getSourceServiceInstance()).getOutputPortInstance(outPortName);
+        int portType = outPortInstnace.getDestinationType();
+        outPortConfiguration.setPortType(portType == PortInstance.DESTINATION_TYPE_QUEUE ?
+                JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
+
+        JMSPortConfiguration tgtCConfiguration = new JMSPortConfiguration();
+        tgtCConfiguration.setName(bpSourceDestName);
+        tgtCConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
+
+        JMSRouteConfiguration routeToCConfiguration = new JMSRouteConfiguration(outPortConfiguration, tgtCConfiguration, routePS.getJMSSelector());
+
+        MessageCreationConfiguration messageCreationConfiguration = new MessageCreationConfiguration();
+        messageCreationConfiguration.setTransportService(transport);
+        messageCreationConfiguration.setRouteOperationType(RouteOperationType.MESSAGE_CREATE);
+        routeToCConfiguration.getRouteOperationConfigurations().add(messageCreationConfiguration);
+
+        CarryForwardContextConfiguration srcCFC = new CarryForwardContextConfiguration();
+        srcCFC.setApplication(application);
+        srcCFC.setPortInstance(outPortInstnace);
+        srcCFC.setServiceInstanceName(outPortName);
+        srcCFC.setRouteOperationType(RouteOperationType.SRC_CARRY_FORWARD_CONTEXT);
+        routeToCConfiguration.getRouteOperationConfigurations().add(srcCFC);
+
+        Transformation applicationContextTransformation = outPortInstnace.getApplicationContextTransformation();
+        if(applicationContextTransformation != null) {
+            TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+            transformationConfiguration.setXsl(applicationContextTransformation.getScript());
+            transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
+            transformationConfiguration.setJmsXsl(applicationContextTransformation.getJMSScript());
+            transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
+            routeToCConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
+        }
+
+        if(routePS.getSenderSelector()!=null){
+            SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+            senderSelectorConfiguration.setSourceName(routePS.getSenderSelector());
+            senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+            senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
+            routeToCConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
+        }
+
+        if(routePS.getApplicationContextSelector() != null) {
+            XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+            appContextSelectorConfig.setXpath(routePS.getApplicationContextSelector().getXPath());
+            appContextSelectorConfig.setNsPrefixMap(routePS.getApplicationContextSelector().getNamespaces());
+            appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
+            routeToCConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
+        }
+
+        if(routePS.getBodySelector() != null) {
+            XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
+            bodySelectorConfig.setXpath(routePS.getBodySelector().getXPath());
+            bodySelectorConfig.setNsPrefixMap(routePS.getBodySelector().getNamespaces());
+            bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
+            routeToCConfiguration.getRouteOperationConfigurations().add(bodySelectorConfig);
+        }
+
+        if(routePS.getMessageTransformation()!=null) {
+            TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+            transformationConfiguration.setXsl(routePS.getMessageTransformation().getScript());
+            transformationConfiguration.setTransformerType(routePS.getMessageTransformation().getFactory());
+            transformationConfiguration.setJmsXsl(routePS.getMessageTransformation().getJMSScript());
+            transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+            routeToCConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
+        }
+
+        com.fiorano.openesb.route.Route routeToC = routeService.createRoute(routeToCConfiguration);
+        routeToC.start();
+        breakPointRoutes.put(bpSourceDestName, routeToC);
+        //create route from D to inport and start
+        JMSPortConfiguration inPortConfiguration = new JMSPortConfiguration();
+        String inPortName = routePS.getTargetPortInstance();
+        inPortConfiguration.setName(inPortName);
+        InputPortInstance inPortInstnace = application.getServiceInstance(routePS.getTargetServiceInstance()).getInputPortInstance(inPortName);
+        int inPortType = inPortInstnace.getDestinationType();
+        inPortConfiguration.setPortType(inPortType == PortInstance.DESTINATION_TYPE_QUEUE ?
+                JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
+
+        JMSPortConfiguration srcDConfiguration = new JMSPortConfiguration();
+        tgtCConfiguration.setName(bpTargetdDestName);
+        tgtCConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
+
+        JMSRouteConfiguration routeFromDConfiguration = new JMSRouteConfiguration(srcDConfiguration, inPortConfiguration, null);
+        CarryForwardContextConfiguration targetCFC = new CarryForwardContextConfiguration();
+        targetCFC.setApplication(application);
+        targetCFC.setPortInstance(inPortInstnace);
+        targetCFC.setServiceInstanceName(routePS.getTargetServiceInstance());
+        targetCFC.setRouteOperationType(RouteOperationType.TGT_CARRY_FORWARD_CONTEXT);
+        routeFromDConfiguration.getRouteOperationConfigurations().add(targetCFC);
+        com.fiorano.openesb.route.Route routeFromD = routeService.createRoute(routeToCConfiguration);
+        routeFromD.start();
+        breakPointRoutes.put(bpTargetdDestName, routeFromD);
+        //stop original route
+        route.stop();
+
         BreakpointMetaData breakpointMetaData = new BreakpointMetaData();
         breakpointMetaData.setConnectionProperties(TransportConfig.getInstance().getConnectionProperties());
-        breakpointMetaData.setSourceQName(destName);
-        breakpointMetaData.setTargetQName(targetDestination);
+        breakpointMetaData.setSourceQName(bpSourceDestName);
+        breakpointMetaData.setTargetQName(bpTargetdDestName);
         breakpoints.put(routeName, breakpointMetaData);
         ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_ADDED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully added breakpoint to the Route");
         return breakpointMetaData;
@@ -281,14 +382,14 @@ public class ApplicationHandle {
 
     public void removeBreakPoint(String routeName) throws Exception{
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
-        route.stop();
-        JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
-        String destName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
-        destinationConfiguration.setName(destName);
-        destinationConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
-        transport.disablePort(destinationConfiguration);
         route.start();
-        breakpoints.remove(routeName);
+        //remove breakpoint routes C and D
+        String bpSourceDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
+        String bpTargetdDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__D";
+        Route routeToC = breakPointRoutes.remove(bpSourceDestName);
+        routeToC.stop();
+        Route routeFromD = breakPointRoutes.remove(bpTargetdDestName);
+        routeFromD.stop();
         ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully removed breakpoint to the Route");
     }
 
@@ -309,7 +410,7 @@ public class ApplicationHandle {
 
     public void startMicroService(String microServiceName) throws FioranoException {
         ServiceInstance instance = application.getServiceInstance(microServiceName);
-        if(microServiceHandleList.containsKey(instance)){
+        if(microServiceHandleList.containsKey(instance.getName())){
             return;
         }
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
@@ -483,7 +584,7 @@ public class ApplicationHandle {
 
         Set<String> tobeRunningComponents = new HashSet<String>();
         for (ServiceInstance serv : alp.getServiceInstances()) {
-            tobeRunningComponents.add(serv.getName().toUpperCase());
+            tobeRunningComponents.add(serv.getName());
         }
 
         toBeKilledComponents.removeAll(tobeRunningComponents);
@@ -512,32 +613,18 @@ public class ApplicationHandle {
     }
 
     private boolean checkForRouteExistanceAndUpdateRoute(Route rInfo) {
-        boolean found = true;
-       /* String srcPortName = rInfo.getSrcPortName();
-        String tgtPortName = rInfo.getTrgtPortName();
-        String tgtAppInst = rInfo.getTargetApplicationGUID();
-        String tgtServName = rInfo.getActualTrgtServInst();
-        String tgtNodeName = rInfo.getTrgtNodeName();
-        String tgtRouteGUID = rInfo.getRouteGUID();
+        boolean found = false;
+        String srcPortName = rInfo.getSourceDestinationName();
+        String tgtPortName = rInfo.getTargetDestinationName();
 
-        Enumeration routeLaunchPackets = slp.getRouteLPEnumeration();
-        while (routeLaunchPackets.hasMoreElements()) {
-            RouteLaunchPacket rlp = (RouteLaunchPacket) routeLaunchPackets.nextElement();
-            if (rlp.getSrcPortName().equals(srcPortName) && rlp.getTrgtPortName() != null && rlp.getTrgtPortName().equalsIgnoreCase(tgtPortName)
-                    && rlp.getTargetApplicationGUID().equalsIgnoreCase(tgtAppInst) && rlp.getActualTrgtServInst().equalsIgnoreCase(tgtServName)
-                    && rlp.getTrgtNodeName() != null && rlp.getTrgtNodeName().equalsIgnoreCase(tgtNodeName) && rlp.getRouteGUID().equalsIgnoreCase(tgtRouteGUID)) {    // Bugzilla � Bug 18379 , adding null check for rlp.getTrgtNodeName() ,see bugzilla comments for explaination
-                //  Changes made for updating Route Selector and transformation
-                //  on synchronization of an application after making changes
-                //  to Route Selector and transformation.
-                rInfo.setSelectors(rlp.getSelectors());
-                rInfo.setTransformation(rlp.getTransformation());
-                rInfo.setMessageCompression(rlp.isMessageCompressed());
-                rInfo.setMessageEncryption(rlp.isMessageCompressed());
-                rInfo.setIsDebugPointSet(rlp.isDebugPointSet());
+        List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
+        for (com.fiorano.openesb.application.application.Route route : routes) {
+            if(rInfo.getSourceDestinationName().equals(route.getSourcePortInstance())
+                    && rInfo.getTargetDestinationName().equals(route.getTargetPortInstance())){
                 found = true;
                 break;
             }
-        }*/
+        }
         return found;
     }
 

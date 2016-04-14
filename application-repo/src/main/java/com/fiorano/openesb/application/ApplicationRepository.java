@@ -3,6 +3,8 @@ package com.fiorano.openesb.application;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +18,8 @@ import java.util.Set;
 public class ApplicationRepository {
 
     String applicationRepoPath;
+
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
 
     public ApplicationRepository() {
         applicationRepoPath =ServerConfig.getConfig().getRepositoryPath() + File.separator + "applications";
@@ -282,6 +286,7 @@ public class ApplicationRepository {
     }
 
     public String[] getApplicationIds() {
+        logger.trace("getting Applicationids");
         File[] appFolders = new File(applicationRepoPath).listFiles();
         String applicationIds[] = new String[appFolders.length];
         int i = 0;
