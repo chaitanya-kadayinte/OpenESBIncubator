@@ -218,7 +218,7 @@ public class ApplicationController {
 
     private String getConfigurationData(String configurationName, String configurationType, String servInstanceGuid, float servVersion, String label) throws FioranoException {
         if (configurationType != null) {
-            String configurationRepoPath = namedConfigRepository + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR;
+            String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath() + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR;
 
             ObjectCategory objectCategory = ObjectCategory.getObjectCategory(configurationType);
             final String environmentLabel = label;
