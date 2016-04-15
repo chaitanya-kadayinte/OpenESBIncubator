@@ -2,8 +2,13 @@ package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.application.SystemInfo;
 import com.fiorano.openesb.application.TESPerformanceStats;
+import com.fiorano.openesb.rmiconnector.Activator;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
@@ -14,17 +19,30 @@ public class ServerManager {
 
     private static ServerManager serverManager;
     private RmiManager rmiManager;
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
 
     private ServerManager(RmiManager rmiManager){
         this.rmiManager = rmiManager;
     }
 
     public void restart() throws FioranoException {
-        
+        System.setProperty("karaf.restart", "true");
+        try {
+            FrameworkUtil.getBundle(Activator.class).stop();
+        } catch (BundleException e) {
+            logger.error("Error occured while restarting the server.", e);
+            throw new FioranoException(e);
+        }
     }
 
     public void shutdown() throws FioranoException {
-        
+        System.setProperty("karaf.shutdown", "true");
+        try {
+            FrameworkUtil.getBundle(Activator.class).stop();
+        } catch (BundleException e) {
+            logger.error("Error occured while shutting down the server.", e);
+            throw new FioranoException(e);
+        }
     }
 
     public HashMap getServerDetails() throws FioranoException {
