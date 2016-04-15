@@ -1277,7 +1277,6 @@ public class ApplicationHeader extends DmiObject
         }
 
         //adding labels
-        //bug ID :: 7616
 
         //create label object
         node = XMLDmiUtil.getNodeObject("Label", m_strProfile, document);

@@ -940,9 +940,7 @@ public abstract class PortInst extends DmiObject implements LSResourceResolver{
                 String nodeName = child.getNodeName();
 
                 if(nodeName.equalsIgnoreCase(PortInstConstants.PORT_NAME)){
-                    // Bug :: Fix :: 4236 :: START
                     m_strPortName = XMLUtils.getNodeValueAsString(child).toUpperCase();
-                    // Bug :: Fix :: 4236 :: END
                 }
 
                 if(nodeName.equalsIgnoreCase(PortInstConstants.PORT_DESCRIPTION)){

@@ -173,7 +173,7 @@ public class NamingManagerImpl {
          * Note : An additional Check has been added for not allowing the name as empty
          * strings, there is no specific reasons for doing this , just to maintain the
          * consistency with the nm-ldap & nm-rdbms impls, since in both nm-ldap & nm-rdbms
-         * allowing an empty string to bind is not possible...Bug 1985
+         * allowing an empty string to bind is not possible...
          */
         //if (adminInfo == null && !name.equalsIgnoreCase(" "))
 
@@ -520,7 +520,6 @@ public class NamingManagerImpl {
             //doing delete only if the admin Object exists. otherwise no issues.
             //if (info == null)
             //throw new FioranoException(NamingManagerImpl.class, NmErrorCodes.ERR_INVALID_ARGUMENTS_ERROR, "Destroy.call.Non-exist");
-            //Bug 1994 return false;
         }
 
         if (info != null) {
@@ -691,16 +690,13 @@ public class NamingManagerImpl {
 
                 /*// Added to get the version number mentioned in the Admin.dat file
                 // To use to differentiate between the build older than MQ2006
-                // Fix for Bug No. 10901 -Pallav
                 String version = new String(buff, 2, 4);
 
                 // Made a check as the installers of previous version numbers had
                 // Constants value starting from '0' instead of starting from
                 // '100'. This check has been placed to provide backword compatibility
                 // to the previous installers, when they are shifting to MQ2006 or greater.
-                // Fix for Bug No. 10901 -Pallav
                 if (Integer.parseInt(version) > 4000) {*/         // Commented as throwing NumberFormatException
-                // for ESB server, Bug No -  10949
 
                 switch (type) {
                    /* case IMQConstants.NAMED_QUEUE:

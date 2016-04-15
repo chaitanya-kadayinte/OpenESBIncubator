@@ -64,18 +64,6 @@ public class ServerInfo
      */
     public static TESPerformanceStats getTESPerformanceStats()
     {
-        //  Run GC to give true memory consumption by TES
-        //Bug 17336 - [USCG] Peer Server taking 100% CPU consistently
-        /*try
-        {
-            Runtime.getRuntime().gc();
-        }
-        catch (Throwable thr)
-        {
-            //  Unable to perform GC. No problem.. Let's get the
-            //  current memory usage anyway.
-        }*/
-
         // in Kb
         long freeMemory = (Runtime.getRuntime().freeMemory()) / 1024;
         // in Kb

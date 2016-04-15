@@ -19,13 +19,11 @@ public interface MetaDataConstants {
     //Name of the Allow Durable Connections field in the ConnectionFactory Metadata
     final static String ALLOW_DURABLE_CONNECTIONS = "AllowDurableConnections";
 
-    // Fix for Bug: 12217
     // Added new flag ENABLE_AUTO_REVALIDATION, whenever this flag is true in
     // server.cfg, It provides revalidation without CSP.
     //Name of the Enable Auto Revalidation field in the ConnectionFactory Metadata
     final static String ENABLE_AUTO_REVALIDATION = "EnableAutoRevalidation";
 
-    // Support for Bug 16315
     // Added new flag ENABLE_MODIFY_PRINCIPAL_STORE_FROM_RTL, whenever this flag is disabled in
     // server.cfg, modification of principal store will not be allowed.
     // Name of the Enable Modify Principal Store field in the ConnectionFactory Metadata

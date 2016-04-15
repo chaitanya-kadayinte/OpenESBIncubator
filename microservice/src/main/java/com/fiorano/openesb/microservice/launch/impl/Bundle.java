@@ -914,7 +914,7 @@ public interface Bundle
     /**
      * @msg.message msg="JMX Queue: {0} & Component were destroyed simultaneously."
      */
-    String SIMULTANEOUS_DESTROY="simultaneous_destroy";//added for bug 17754 juggad fix
+    String SIMULTANEOUS_DESTROY="simultaneous_destroy";
 
     /**
      * @msg.message msg="Not overriding the user specified custom endorsed libraries. Specified JVM Params : {0}"

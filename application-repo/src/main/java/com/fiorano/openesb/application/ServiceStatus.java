@@ -68,7 +68,6 @@ public class ServiceStatus extends DmiObject
      */
     public boolean getIsApplicationRunning()
     {
-        //added for bug 4269 fix
         return m_isApplicationRunning;
     }
 
@@ -93,7 +92,6 @@ public class ServiceStatus extends DmiObject
         return m_strAppInstName + " :: " + m_strServInstName;
     }
 
-    //bug 4269 fix
 
     /**
      *  Sets the service instance name for which the service status is to be set
@@ -134,7 +132,6 @@ public class ServiceStatus extends DmiObject
      */
     public void setIsApplicationRunning(boolean applicationState)
     {
-        //added for bug 4269 fix
         m_isApplicationRunning = applicationState;
     }
 

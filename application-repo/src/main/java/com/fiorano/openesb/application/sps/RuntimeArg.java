@@ -253,8 +253,6 @@ public class RuntimeArg extends DmiObject
             m_strType = arg.getAttribute("type");
             m_bIsRequired = XMLDmiUtil.getAttributeAsBoolean(arg, "isRequired");
 
-            // Bug Fix: 10188 : This is to support the cases when the Service Descriptor doesn't have this attribute.
-            // JUGAAD: Is required to support the jugaad fix done for Bug 12113
            if ( m_strArgName.equalsIgnoreCase("JVM_PARAMS")){
                 m_isInMemorySupported = false;
            }

@@ -450,14 +450,14 @@ public class ServiceLaunchPacket extends DmiObject
      * @return List
      */
     public List getInputPorts(){
-        return (List)((ArrayList)inputPorts).clone();   //return clone to prevent modification of original list  bug 18345
+        return (List)((ArrayList)inputPorts).clone();   //return clone to prevent modification of original list
     }
     /**
      * Returns a list of the OutPut Ports. A clone of the original list is returned.
      * @return List
      */
     public List getOutputPorts(){
-        return (List)((ArrayList)outputPorts).clone(); //return clone to prevent modification of original list  bug 18345
+        return (List)((ArrayList)outputPorts).clone(); //return clone to prevent modification of original list
     }
 
     public PortInstance getPort(String name){

@@ -19,7 +19,7 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
         while ((connection = getConnection(cf))== null && i++ < count) {
             try {
                 String connectionRetryInterval = TransportConfig.getInstance().getValue("CONNECTION_LOOKUP_INTERVAL", "2000");
-                System.out.println("Waiting for JMS provider to activate. Attempt - " + i);
+                System.out.println("Waiting for connection with JMS provider. Attempt - " + i);
                 Thread.sleep(Long.valueOf(connectionRetryInterval));
             } catch (InterruptedException e1) {
                 //

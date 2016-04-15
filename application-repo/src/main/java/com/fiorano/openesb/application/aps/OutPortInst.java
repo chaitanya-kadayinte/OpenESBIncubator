@@ -197,13 +197,10 @@ public class OutPortInst extends PortInst
 
                 if (nodeName.equalsIgnoreCase("Name"))
                 {
-                    // Bug :: Fix :: 4236 :: START
                     if (child != null)
                     {
                         m_strPortName = XMLUtils.getNodeValueAsString(child).toUpperCase();
                     }
-                    ;
-                    // Bug :: Fix :: 4236 :: END
                 }
 
                 if (nodeName.equalsIgnoreCase("Description"))

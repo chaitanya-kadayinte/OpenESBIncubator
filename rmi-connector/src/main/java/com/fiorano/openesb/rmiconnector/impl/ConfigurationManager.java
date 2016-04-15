@@ -114,7 +114,7 @@ public class ConfigurationManager extends AbstractRmiManager implements IConfigu
             File applicationDir = applicationRepository.getAppDir(appGUID, appVersion);
             Application application;
             try {
-                application = ApplicationParser.readApplication(applicationDir, true, true);           //bug no 21213
+                application = ApplicationParser.readApplication(applicationDir, true, true);
             } catch (Exception e) {
                 throw new ServiceException("ERR_READING_EVENT_PROCESS", e);
             }

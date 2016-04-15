@@ -339,7 +339,6 @@ public class ServicePropertySheet extends DmiObject
             m_execution = new Execution();
             m_execution.setFieldValues(execElement);
 
-            //Fix for Bug 12113
             if (m_execution.getExecType().equalsIgnoreCase("java"))
             {
                 RuntimeArg arg = new RuntimeArg();
@@ -651,7 +650,6 @@ public class ServicePropertySheet extends DmiObject
             m_execution = new Execution();
             m_execution.fromStream(is, versionNo);
 
-            //Fix for Bug 12113
             if (m_execution.getExecType().equalsIgnoreCase("java"))
             {
                 RuntimeArg arg = new RuntimeArg();

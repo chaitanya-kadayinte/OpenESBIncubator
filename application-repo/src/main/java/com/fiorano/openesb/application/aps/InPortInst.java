@@ -177,12 +177,7 @@ public class InPortInst extends PortInst
 
                 if (nodeName.equalsIgnoreCase("Name"))
                 {
-                    // Bug :: Fix :: 4236 :: START
-                    if (child != null)
-                    {
-                        m_strPortName = XMLUtils.getNodeValueAsString(child).toUpperCase();
-                    }
-                    // Bug :: Fix :: 4236 :: END
+                    m_strPortName = XMLUtils.getNodeValueAsString(child).toUpperCase();
                 }
 
                 if (nodeName.equalsIgnoreCase("Description"))

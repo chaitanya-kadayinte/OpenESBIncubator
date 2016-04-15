@@ -597,7 +597,6 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                 bos = new BufferedOutputStream(new FileOutputStream(tempFile));
                 //Add Resource to the File and Add it to the resource Map
                 if (resName.equals(Constants.SD_XML_FILE_NAME)) {
-                    //Bug : 17054. 15855
                     addServiceDescripterFile(bos, id, versionString);
                 } else {
                     addResourceToStream(bos, id, versionString, resName);

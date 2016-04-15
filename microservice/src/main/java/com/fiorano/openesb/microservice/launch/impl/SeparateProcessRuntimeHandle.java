@@ -230,7 +230,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                 if (count == 0 || confirmProcessExit()) {
                     coreLogger.info(RBUtil.getMessage(Bundle.class, Bundle.FORCE_SHUTDOWN_ATTEMPT, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), count + 1));
 
-                    // Bug 19848 - Certain In-Memory components like Sender and other scheduler components which shutdown
+                    // Certain In-Memory components like Sender and other scheduler components which shutdown
                     // themselves after processing should not be shutdown in a separate thread as it leads to a dead-lock like situation (See Stacktrace in the Bug).
                     // The flag cleanConnections can be used to indicate this scenario as component connection is already closed by
                     // the component and thus cleanConnection boolean is set as false. In other cases, where component is shutdown

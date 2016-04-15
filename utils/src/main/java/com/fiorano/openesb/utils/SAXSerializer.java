@@ -121,7 +121,7 @@ public class SAXSerializer extends DefaultHandler
                 String aURI = attrs.getURI(i);
                 if("".equals(aName))
                     aName = attrs.getQName(i);
-                if(aURI!=null && nsmap.get(aURI)!=null) //Bugzilla Bug 12788
+                if(aURI!=null && nsmap.get(aURI)!=null)
                 {
                     aName = nsmap.get(aURI) + ":" + aName;
                 }

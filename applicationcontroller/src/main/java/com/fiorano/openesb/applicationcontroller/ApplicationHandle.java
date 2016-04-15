@@ -2,7 +2,6 @@ package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.BreakpointMetaData;
 import com.fiorano.openesb.application.application.*;
-import com.fiorano.openesb.application.aps.ServiceInstances;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
@@ -555,7 +554,7 @@ public class ApplicationHandle {
         Application oldApplication = this.application;
 
         // kill service which no longer remain as part of the ep
-        killDiscontinuedServices(newApplication);
+        killExcludedServices(newApplication);
 
         //launch or modify the rest of the services
         logger.debug("launching the applicaiton with new properties");
@@ -597,14 +596,14 @@ public class ApplicationHandle {
      * @param alp new application launch packet
      * @throws FioranoException If an exception occurs
      */
-    private void killDiscontinuedServices(Application alp) throws FioranoException {
+    private void killExcludedServices(Application alp) throws FioranoException {
         // set this to all running components initially
-        Set<String> toBeKilledComponents = new HashSet<String>();
+        Set<String> toBeKilledComponents = new HashSet<>();
         for (String serviecName:microServiceHandleList.keySet()) {
             toBeKilledComponents.add(serviecName);
         }
 
-        Set<String> tobeRunningComponents = new HashSet<String>();
+        Set<String> tobeRunningComponents = new HashSet<>();
         for (ServiceInstance serv : alp.getServiceInstances()) {
             tobeRunningComponents.add(serv.getName());
         }
@@ -615,7 +614,7 @@ public class ApplicationHandle {
             try {
                 handle = microServiceHandleList.get(killcomp);
                 if (handle != null) {
-                    handle.stop();  /*  Bugzilla � Bug 18550 , making call to killComponent() ,which will take care of deleting the route first and then kill component.  */
+                    handle.stop();
                 }
             } catch (Exception e) {
                 logger.error("error occured while stopping the component " + handle.getServiceInstName());

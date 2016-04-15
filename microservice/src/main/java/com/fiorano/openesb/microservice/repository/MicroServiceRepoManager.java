@@ -867,20 +867,16 @@ public class MicroServiceRepoManager {
             // add the sps info into the in memory table
             m_nonCommittedServiceVsProperties.put(getUniqueKey(sps.getGUID(), sps.getVersion() + ""), sps);
             if(serviceDeleted){
-                // Fix :: Bug ID :: 7300 :: Start
                 // generate service updation event
                 //generateMicroServiceRepoUpdateEvent(sps.getGUID(), "" + sps.getVersion(), MicroServiceRepoUpdateEvent.SERVICE_OVERWRITTEN);
                 MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
                         MicroServiceRepoUpdateEvent.SERVICE_OVERWRITTEN, Event.EventCategory.INFORMATION, "");
-                // Fix :: Bug ID :: 7300 :: End
 
             } else{
-                // Fix :: Bug ID :: 7300 :: Start
                 // generate service updation event
                 //generateMicroServiceRepoUpdateEvent(sps.getGUID(), "" + sps.getVersion(), MicroServiceRepoUpdateEvent.SERVICE_CREATED);
                 MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
                         MicroServiceRepoUpdateEvent.SERVICE_CREATED, Event.EventCategory.INFORMATION, "");
-                // Fix :: Bug ID :: 7300 :: End
 
             }
 
@@ -938,7 +934,6 @@ public class MicroServiceRepoManager {
             // change this info into the hashtable
             m_nonCommittedServiceVsProperties.put(getUniqueKey(serviceGUID, version), sps);
 
-            // Fix :: Bug ID :: 7300 :: Start
             // generate service updation event
            // generateMicroServiceRepoUpdateEvent(serviceGUID, "" + version, MicroServiceRepoUpdateEvent.UNREGISTERED_SERVICE_EDITED);
             MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(serviceGUID, version, null,
@@ -1117,7 +1112,7 @@ public class MicroServiceRepoManager {
                         //LogHelper.log(ILogModule.SERVICE_REPOSITORY, 0);
                         deployment.removeResource(res);
                         deployment.addResource(resrcInfo);
-                        sps.setDeployment(deployment);//Bug Fix No.8393...Uday.K
+                        sps.setDeployment(deployment);
                         return;
                         // not updating the XML as there is no need as the resouce information is already the same.
                     }
@@ -1464,7 +1459,7 @@ public class MicroServiceRepoManager {
             //getServicePropertySheet loads the updated sps from repository which will no longer have de resource to b deleted.
             sps = getServicePropertySheet(serviceGUID, version);
 
-            Deployment deployment = existingSPS.getDeployment();//Bug 18643.Use sps got from committed services VS Properties data structure.=> its the old one which contains the resource.
+            Deployment deployment = existingSPS.getDeployment();
 
             Resource actualResource = (Resource) DmiObject.findNamedObject(deployment.getResources(), resrcInfo.getName());
             if(actualResource==null)
@@ -1591,9 +1586,6 @@ public class MicroServiceRepoManager {
             //generateMicroServiceRepoUpdateEvent(tgtServiceGUID, strTgtVersion, MicroServiceRepoUpdateEvent.SERVICE_CREATED);
             MicroServiceRepoEventRaiser.generateServiceRepositoryEvent(tgtServiceGUID, strTgtVersion, null,
                     MicroServiceRepoUpdateEvent.SERVICE_CREATED, Event.EventCategory.INFORMATION, "");
-            //bug 4193 fix
-
-            // Bug# 10774
             // return saveService(sps, null);
             return saveService(sps, false,false, handleID);
         }
@@ -2373,7 +2365,6 @@ public class MicroServiceRepoManager {
         //Update Meta-INF Whenever the service is updated
         boolean toDelete = serviceStatus.equalsIgnoreCase(MicroServiceRepoUpdateEvent.SERVICE_REMOVED);
 
-        //bug 4193 fix
         MicroServiceRepoUpdateEvent event = new MicroServiceRepoUpdateEvent();
 
         event.setServiceGUID(serviceGUID);

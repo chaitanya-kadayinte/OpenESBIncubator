@@ -93,8 +93,6 @@ public class ServiceHeader extends DmiObject
     //Due to Internationalization issues, old m_dateFormat cannot be used.
     private SimpleDateFormat m_dateFormat2 =
         new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-    //  Service Label, Bug ID :: 7616
-    //
     private String  m_strLabel;
 
     // specifies whether it has any native component.
@@ -1022,7 +1020,6 @@ public class ServiceHeader extends DmiObject
             out.writeLong(-1);
 
         //  write label
-        //  bug ID :: 7616
         UTFReaderWriter.writeUTF(out, m_strLabel);
         out.writeBoolean(m_bLaunchCPSinProcess);
     }
@@ -1069,7 +1066,6 @@ public class ServiceHeader extends DmiObject
             m_lastUpdatedDate = new Date(date);
 
         //  Read Label
-        //  Bug ID :: 7616
         m_strLabel = UTFReaderWriter.readUTF(is);
         //Karthik - moved the launchCPS writing part to the end
         try
@@ -1196,16 +1192,12 @@ public class ServiceHeader extends DmiObject
         }
 
         //adding labels
-        //bug ID :: 7616
-
         //create label object
         child = XMLDmiUtil.getNodeObject("Label", m_strLabel, document);
         if (child != null)
         {
             root0.appendChild(child);
         }
-
-        //bug ID :: 7616 end, label addition over
 
         // adding compatibility versions
         XMLDmiUtil.addVectorValues("CompatibleWith", m_strCompatibleWith, document, root0);

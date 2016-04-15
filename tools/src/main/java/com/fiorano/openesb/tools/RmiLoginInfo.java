@@ -73,8 +73,6 @@ public class RmiLoginInfo
                     System.err.println("Password failed to decrypt. Please provide correct encrypted password");
                     System.exit(0);
                 }
-            //END Bug 22915
-
                 if (st.hasMoreTokens()){
                     String flag = st.nextToken();
                     if (flag.equalsIgnoreCase("true"))

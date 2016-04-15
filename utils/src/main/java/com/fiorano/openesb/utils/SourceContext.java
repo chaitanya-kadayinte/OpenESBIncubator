@@ -244,7 +244,7 @@ public class SourceContext implements Serializable
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        //bug no 23511: [Dashboard]Source Context not showing properly for migrated sbw documents.
+        //[Dashboard]Source Context not showing properly for migrated sbw documents.
         //As we have added a new field m_strSrcAppInstVersion for multiple app version implementation, there is a problem while reading the old
         //sbw documents which do not contain this filed. So adding a check to know if the documents are prior to app version implementation.
         out.writeObject(APP_VER_FLAG);

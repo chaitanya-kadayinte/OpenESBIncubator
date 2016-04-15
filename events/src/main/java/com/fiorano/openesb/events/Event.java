@@ -27,8 +27,7 @@ public abstract class Event extends DmiObject
      * an "alert"
      * Default is false ( => represents an event).
      */
-    private boolean m_isAlert = false;//bug 4992 fix
-
+    private boolean m_isAlert = false;
     private int m_dEventID;
     private String m_dEventStatus;
 
@@ -719,7 +718,6 @@ public abstract class Event extends DmiObject
      */
     public boolean getIsAlert()
     {
-        //method added for bug 4992 fix
         return m_isAlert;
     }
 
@@ -729,7 +727,6 @@ public abstract class Event extends DmiObject
      */
     public void setIsAlert(boolean isAlert)
     {
-        //method added for bug 4992 fix
         m_isAlert = isAlert;
     }
 

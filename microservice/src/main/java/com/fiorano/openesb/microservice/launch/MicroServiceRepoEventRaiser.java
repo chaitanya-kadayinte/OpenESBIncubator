@@ -16,7 +16,6 @@ public class MicroServiceRepoEventRaiser {
                                                       String resourceName,
                                                       String serviceStatus, Event.EventCategory category, String description) throws FioranoException{
 
-        //bug 4193 fix
         MicroServiceRepoUpdateEvent event = new MicroServiceRepoUpdateEvent();
 
         event.setServiceGUID(serviceGUID);

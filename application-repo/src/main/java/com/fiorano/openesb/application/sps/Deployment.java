@@ -240,8 +240,6 @@ public class Deployment extends DmiObject
 
             m_strDeploymentStage = depElement.getAttribute("deploymentStage");
 
-            //To Support backward Compatability. Bugzilla Bug:10433 "Unable to Import The Services Exported in SP2."
-            //The Lable PRODUCT has been changed to PRODUCTION. So Services Exported prior to this will have PRODUCT as lable
             if(m_strDeploymentStage.equalsIgnoreCase(PRODUCT_OLD))
                 m_strDeploymentStage = PRODUCT;
 

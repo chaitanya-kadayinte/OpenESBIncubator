@@ -418,11 +418,9 @@ public class ApplicationController {
                 }
             }
 
-            //Bug 16340
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
-            //Fix for bug 20434
             if (!deletedComponents.isEmpty()) {
                 deleteInPort(oldApp, deletedConfigComponents);
             }

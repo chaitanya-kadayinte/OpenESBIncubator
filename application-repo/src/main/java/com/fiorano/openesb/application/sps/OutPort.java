@@ -420,10 +420,7 @@ public class OutPort extends DmiObject
 
                 if (nodeName.equalsIgnoreCase("Name"))
                 {
-                    // Bug :: Fix :: 4236 :: START
                     m_strPortName = XMLUtils.getNodeValueAsString(child).toUpperCase();
-                    ;
-                    // Bug :: Fix :: 4236 :: END
                 }
 
                 if (nodeName.equalsIgnoreCase("Description"))
