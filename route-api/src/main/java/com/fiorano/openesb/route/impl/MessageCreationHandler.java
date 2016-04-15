@@ -11,13 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
+import javax.jms.*;
 import java.util.Enumeration;
 
-/**
- * Created by root on 3/7/16.
- */
 public class MessageCreationHandler implements RouteOperationHandler<Message<javax.jms.Message>> {
 
     private TransportService<JMSPort,JMSMessage> transportService;
@@ -73,9 +69,16 @@ public class MessageCreationHandler implements RouteOperationHandler<Message<jav
     }
 
     private JMSMessageConfiguration.MessageType getJmsType(Message<javax.jms.Message> message) throws JMSException {
-        if(message.getMessage().getJMSType()==null){
+        javax.jms.Message jmsMessage = message.getMessage();
+        if(jmsMessage instanceof TextMessage){
             return JMSMessageConfiguration.MessageType.Text;
+        } else if(jmsMessage instanceof BytesMessage) {
+            return JMSMessageConfiguration.MessageType.Bytes;
+        } else if(jmsMessage instanceof ObjectMessage) {
+            return JMSMessageConfiguration.MessageType.Object;
+        } else if(jmsMessage instanceof StreamMessage) {
+            return JMSMessageConfiguration.MessageType.Stream;
         }
-        return JMSMessageConfiguration.MessageType.valueOf(message.getMessage().getJMSType());
+        return JMSMessageConfiguration.MessageType.Text;
     }
 }

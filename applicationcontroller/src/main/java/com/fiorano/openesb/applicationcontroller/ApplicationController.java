@@ -979,9 +979,7 @@ public class ApplicationController {
 
             } else
                 throw new FioranoException("METADATA_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
-        } catch (IOException e) {
-            throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
-        } catch (XMLStreamException e) {
+        } catch (IOException | XMLStreamException e) {
             throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
         }
     }

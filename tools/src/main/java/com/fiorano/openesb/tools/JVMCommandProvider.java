@@ -1,5 +1,6 @@
 package com.fiorano.openesb.tools;
 
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
@@ -352,7 +353,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         }
 
         String java = Util.isWindows() ? "java.exe" : "java";
-        String userJavaHome = null;// TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME);
+        String userJavaHome =  ServerConfig.getConfig().getJavaHome();
         String javaHome = (userJavaHome != null && userJavaHome.trim().length() != 0) ? userJavaHome : System.getProperty("java.home");
         if (isDebug) {
             int index = javaHome.lastIndexOf(File.separator);
@@ -362,6 +363,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
             }
         }
         String wrapper = Util.isWindows() ? "\"" : "";
+        javaHome = Util.isWindows() && (javaHome.startsWith("/") || javaHome.startsWith("\\")) ? javaHome.substring(1) : javaHome;
         return wrapper + javaHome + File.separator + "bin" + File.separator + java +
                 wrapper;
     }

@@ -41,11 +41,16 @@ public class Activator implements BundleActivator {
     }
 
     public void start(BundleContext context) throws Exception {
-        System.out.println("Activating Active MQ Transport");
+        System.out.println("Starting Active MQ Transport");
         this.bundleContext = context;
-        service = new AMQTransportService();
+        try {
+            service = new AMQTransportService();
+        } catch (JMSException e) {
+            System.out.println("Could not connect to MQ Server.");
+            context.getBundle(0).stop();
+        }
         bundleContext.registerService(TransportService.class, service, new Hashtable<String, Object>());
-        System.out.println("Activated Active MQ Transport");
+        System.out.println("Started Active MQ Transport");
     }
 
     public void stop(BundleContext context) {

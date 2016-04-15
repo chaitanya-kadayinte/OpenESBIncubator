@@ -12,6 +12,7 @@ import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.rmiconnector.Activator;
 import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.utils.*;
+import com.fiorano.openesb.utils.config.ServiceConfigurationParser;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * Created by Janardhan on 1/22/2016.
  */
-public class ApplicationManager extends AbstractRmiManager implements IApplicationManager  {
+public class ApplicationManager extends AbstractRmiManager implements IApplicationManager {
     private ApplicationController applicationController;
 
     private ApplicationRepository applicationRepository;
@@ -46,7 +47,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         return clientProxyInstance;
     }
 
-    ApplicationManager(RmiManager rmiManager, InstanceHandler instanceHandler){
+    ApplicationManager(RmiManager rmiManager, InstanceHandler instanceHandler) {
         super(rmiManager);
         logger.trace("initializing Appliaction Manager");
         this.applicationController = rmiManager.getApplicationController();
@@ -65,9 +66,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     public boolean exists(String id, float version) throws RemoteException, ServiceException {
         boolean exists = false;
         try {
-           applicationRepository.applicationExists(id, version);
+            applicationRepository.applicationExists(id, version);
         } catch (FioranoException e) {
-            throw new ServiceException( e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
         return exists;
     }
@@ -103,10 +104,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         } catch (IOException ioe) {
             successfulzip = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APP_ZIPFILE), ioe);
-            throw new ServiceException(Bundle.UNABLE_TO_CREATE_APP_ZIPFILE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APP_ZIPFILE));
+            throw new ServiceException(Bundle.UNABLE_TO_CREATE_APP_ZIPFILE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APP_ZIPFILE));
 
-        }
-        finally {
+        } finally {
             try {
                 if (outstream != null) {
                     outstream.close();
@@ -133,9 +133,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             successfulextract = false;
 //            LogHelper.log("Unable to save event flow process::Error occured while extracting zipped contents.", e);
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS), e);
-            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS));
-        }
-        finally {
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_EVENT_FLOW_PROCESS));
+        } finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
             if (!successfulextract && appFileTempFolder != null) {
                 FileUtil.deleteDir(appFileTempFolder);
@@ -150,8 +149,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         } catch (FioranoException e) {
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DEPLOY_EVENT_FLOW_PROCESS, ""), e);
             throw new ServiceException(e.getMessage());
-        }
-        finally {
+        } finally {
             // Temporaray application Folder is being deleted in Application Repository Code
 //            FileUtil.deleteDir(appFileTempFolder);
             tempFileNameMap.remove(key);
@@ -184,8 +182,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             successfulzip = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE, portName, serviceName, appGUID, appVersion), ioe);
             throw new ServiceException(Bundle.UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_APPCONTEXT_ZIPFILE, portName, serviceName, appGUID, appVersion));
-        }
-        finally {
+        } finally {
             try {
                 if (outstream != null) {
                     outstream.close();
@@ -271,9 +268,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                     continue;
                 Transformation transformation = serviceInstance.getOutputPortInstance(portName).getApplicationContextTransformation();
                 if (transformation == null && (scriptFileName != null || projectDirName != null)) {
-                    if (jmsScriptFileName!=null) {
+                    if (jmsScriptFileName != null) {
                         transformation = new MessageTransformation();
-                        ((MessageTransformation)transformation).setJMSScriptFile(jmsScriptFileName);
+                        ((MessageTransformation) transformation).setJMSScriptFile(jmsScriptFileName);
                     } else {
                         transformation = new Transformation();
                     }
@@ -311,8 +308,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             successfulextract = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion), e);
             throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion));
-        }
-        finally {
+        } finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
             if (!successfulextract && appContextFileTempFolder != null) {
                 FileUtil.deleteDir(appContextFileTempFolder);
@@ -339,11 +335,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    public void changeRouteTransformation(String appGUID, float appVersion, String routeGUID,String transformerType,byte[] transformationProjectBytes, boolean completed,String scriptFileName,String jmsScriptFileName,String projectDirName)
+    public void changeRouteTransformation(String appGUID, float appVersion, String routeGUID, String transformerType, byte[] transformationProjectBytes, boolean completed, String scriptFileName, String jmsScriptFileName, String projectDirName)
             throws ServiceException, RemoteException {
 
         if (!isRunning(appGUID, appVersion)) {
-            throw new ServiceException(Bundle.EVENT_PROCESS_NOT_IN_RUNNING_STATE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.EVENT_PROCESS_NOT_IN_RUNNING_STATE, appGUID, appVersion));
+            throw new ServiceException(Bundle.EVENT_PROCESS_NOT_IN_RUNNING_STATE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.EVENT_PROCESS_NOT_IN_RUNNING_STATE, appGUID, appVersion));
         }
         String key;
         File tempZipFile;
@@ -364,9 +360,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         } catch (IOException ioe) {
             successfulzip = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE, routeGUID, appGUID, appVersion), ioe);
-            throw new ServiceException(Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE, routeGUID, appGUID, appVersion));
-        }
-        finally {
+            throw new ServiceException(Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.UNABLE_TO_CREATE_TRANS_ZIPFILE, routeGUID, appGUID, appVersion));
+        } finally {
             try {
                 if (outstream != null) {
                     outstream.close();
@@ -403,9 +398,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
             //checks for existence of file resources.
             if (projectDirName != null && !projDirFile.exists())
-                throw new ServiceException(Bundle.ERROR_CHANGE_ROUTE_TRANS3.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS3, routeGUID, appGUID, appVersion));
+                throw new ServiceException(Bundle.ERROR_CHANGE_ROUTE_TRANS3.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS3, routeGUID, appGUID, appVersion));
             if ((scriptFile != null && !scriptFile.exists()) || (jmsScriptFile != null && !jmsScriptFile.exists()))
-                throw new ServiceException(Bundle.ERROR_CHANGE_ROUTE_TRANS2.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS2, routeGUID, appGUID, appVersion));
+                throw new ServiceException(Bundle.ERROR_CHANGE_ROUTE_TRANS2.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS2, routeGUID, appGUID, appVersion));
 
             //read the temp folder for the project content
             String projectContent = null;
@@ -463,7 +458,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                         transformation.setProjectFile(projectDirName);
                         route.setMessageTransformation(transformation);
                         break;
-                    }else if(transformation!=null){
+                    } else if (transformation != null) {
                         transformation.setJMSScriptFile(jmsScriptFileName);
                         transformation.setScriptFile(scriptFileName);
                         transformation.setProjectFile(projectDirName);
@@ -476,26 +471,25 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 applicationController.changeRouteTransformation(appGUID, appVersion, routeGUID, scriptContent, jmsScriptContent, transformerType, projectContent, handleId);
             } catch (FioranoException e) {
                 logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS, routeGUID, appGUID, appVersion, ""), e);
-                throw new ServiceException( e.getMessage());
-            }finally {
-                if(key!=null)
+                throw new ServiceException(e.getMessage());
+            } finally {
+                if (key != null)
                     tempFileNameMap.remove(key);
-                if(tempZipFile!=null)
+                if (tempZipFile != null)
                     tempZipFile.delete();
-                if(routeFileTempFolder!=null)
+                if (routeFileTempFolder != null)
                     FileUtil.deleteDir(routeFileTempFolder);
             }
 
         } catch (IOException e) {
             successfulextract = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion), e);
-            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
         } catch (XMLStreamException e) {
             successfulextract = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion), e);
-            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
-        }
-        finally {
+            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
+        } finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
             if (!successfulextract && routeFileTempFolder != null) {
                 FileUtil.deleteDir(routeFileTempFolder);
@@ -518,7 +512,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             applicationController.changeRouteTransformation(appGUID, appVersion, routeGUID, null, null, null, null, handleId);
         } catch (FioranoException e) {
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES), e);
-            throw new ServiceException(Bundle.ERROR_GET_RUNNING_EVENTPROCESSES.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES));
+            throw new ServiceException(Bundle.ERROR_GET_RUNNING_EVENTPROCESSES.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES));
         }
 
     }
@@ -558,9 +552,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             } catch (Exception e) {
                 completed = true;
                 logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version), e);
-                throw new ServiceException(Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version));
-            }
-            finally {
+                throw new ServiceException(Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_FETCHING_EVENT_PROCESS_FROM_REPOSITORY, appGUID, version));
+            } finally {
                 try {
                     if (zipStream != null)
                         zipStream.close();
@@ -635,7 +628,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             applicationController.launchApplication(appGUID, version, handleId);
         } catch (Exception e) {
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_START_EVENTPROCESS, appGUID, version, ""), e);
-            throw new ServiceException( e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -645,15 +638,15 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             applicationController.stopApplication(appGUID, String.valueOf(appVersion), handleId);
             applicationController.launchApplication(appGUID, String.valueOf(appVersion), handleId);
         } catch (Exception e) {
-            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_RESTART_EVENTPROCESS, appGUID,appVersion), e);
-            throw new ServiceException( e.getMessage());
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_RESTART_EVENTPROCESS, appGUID, appVersion), e);
+            throw new ServiceException(e.getMessage());
         }
     }
 
     @Override
     public void stopApplication(String appGUID, String version) throws RemoteException, ServiceException {
         try {
-            applicationController.stopApplication(appGUID,version, handleId);
+            applicationController.stopApplication(appGUID, version, handleId);
         } catch (Exception e) {
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_STOP_EVENTPROCESS, appGUID, version, ""), e);
             throw new ServiceException(e.getMessage());
@@ -676,7 +669,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             return applicationController.getApplicationChainForLaunch(appGUID, appVersion, handleId);
         } catch (FioranoException e) {
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_GETTING_LAUNCH_CHAIN, appGUID, appVersion), e.getMessage());
-            throw new ServiceException( e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -686,7 +679,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             applicationController.startMicroService(appGUID, String.valueOf(appVersion), serviceInstanceName, handleId);
         } catch (FioranoException e) {
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_START_SERVICEINSTANCE, serviceInstanceName, appGUID, appVersion), e);
-            throw new ServiceException( e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -736,7 +729,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 runningEventProcesses.add(epRefernce);
             }
         } catch (FioranoException e) {
-           // rmiLogger.error(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES, e);
+            // rmiLogger.error(Bundle.class, Bundle.ERROR_GET_RUNNING_EVENTPROCESSES, e);
             throw new ServiceException("ERROR_GET_RUNNING_EVENTPROCESSES");
         }
         return runningEventProcesses.toArray(new ApplicationMetadata[runningEventProcesses.size()]);
@@ -772,32 +765,31 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                     String remoteInstanceName = remoteSerInst.getRemoteName();
                     float remoteAppVersion = remoteSerInst.getApplicationVersion();
                     try {
-                            application = applicationRepository.readApplication(remoteAppGUID, String.valueOf(remoteAppVersion));
-                            serInst = application.getServiceInstance(remoteInstanceName);
-                            if (serInst != null) {
-                                List<PortInstance> portInst = new ArrayList<PortInstance>();
-                                portInst.addAll(serInst.getInputPortInstances());
-                                portInst.addAll(serInst.getOutputPortInstances());
+                        application = applicationRepository.readApplication(remoteAppGUID, String.valueOf(remoteAppVersion));
+                        serInst = application.getServiceInstance(remoteInstanceName);
+                        if (serInst != null) {
+                            List<PortInstance> portInst = new ArrayList<PortInstance>();
+                            portInst.addAll(serInst.getInputPortInstances());
+                            portInst.addAll(serInst.getOutputPortInstances());
 
-                                for (PortInstance portInstance : portInst) {
-                                    String destination = (LookUpUtil.getServiceInstanceLookupName(application.getGUID(), application.getVersion(), serInst.getName()) + "__" + portInstance.getName()).toUpperCase();
-                                    if (portInstance.getDestinationType() == PortInstance.DESTINATION_TYPE_QUEUE) {
-                                        if (portInstance.isSpecifiedDestinationUsed())
-                                            portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), portInstance.getDestination(), PortInstanceMetaData.DestinationType.QUEUE, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
-                                        else
-                                            portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), destination, PortInstanceMetaData.DestinationType.QUEUE, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
-                                    } else {
-                                        if (portInstance.isSpecifiedDestinationUsed())
-                                            portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), portInstance.getDestination(), PortInstanceMetaData.DestinationType.TOPIC, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
-                                        else
-                                            portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), destination, PortInstanceMetaData.DestinationType.TOPIC, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
-                                    }
+                            for (PortInstance portInstance : portInst) {
+                                String destination = (LookUpUtil.getServiceInstanceLookupName(application.getGUID(), application.getVersion(), serInst.getName()) + "__" + portInstance.getName()).toUpperCase();
+                                if (portInstance.getDestinationType() == PortInstance.DESTINATION_TYPE_QUEUE) {
+                                    if (portInstance.isSpecifiedDestinationUsed())
+                                        portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), portInstance.getDestination(), PortInstanceMetaData.DestinationType.QUEUE, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
+                                    else
+                                        portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), destination, PortInstanceMetaData.DestinationType.QUEUE, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
+                                } else {
+                                    if (portInstance.isSpecifiedDestinationUsed())
+                                        portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), portInstance.getDestination(), PortInstanceMetaData.DestinationType.TOPIC, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
+                                    else
+                                        portInstMetaData.add(new PortInstanceMetaData(serInst.getName(), portInstance.getName(), destination, PortInstanceMetaData.DestinationType.TOPIC, portInstance.isDestinationEncrypted(), portInstance.getEncryptionKey(), portInstance.getEncryptionAlgorithm(), portInstance.isAllowPaddingToKey(), portInstance.getInitializationVector()));
                                 }
                             }
-
                         }
-                    catch (Exception e) {
-                       // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_PORTS_FOR_SERVICE_INSTANCE, serviceInstName, remoteAppGUID, remoteAppVersion, e.getMessage(), e);
+
+                    } catch (Exception e) {
+                        // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_PORTS_FOR_SERVICE_INSTANCE, serviceInstName, remoteAppGUID, remoteAppVersion, e.getMessage(), e);
                         throw new ServiceException(e.getMessage());
                     }
                 }
@@ -810,32 +802,32 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     public List<RouteMetaData> getRoutesOfApplications(String appGUID, float version) throws RemoteException, ServiceException {
         List<RouteMetaData> routes = new ArrayList<RouteMetaData>();
         try {
-                ApplicationController applicationControllerManager = (applicationController);
-                Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
-                List<Route> dmiRoutes = application.getRoutes();
+            ApplicationController applicationControllerManager = (applicationController);
+            Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
+            List<Route> dmiRoutes = application.getRoutes();
 
-                for (Route dmiRoute : dmiRoutes) {
-                    PortInstanceMetaData sourcePortMetaData = null;
-                    PortInstanceMetaData targetPortMetaData = null;
+            for (Route dmiRoute : dmiRoutes) {
+                PortInstanceMetaData sourcePortMetaData = null;
+                PortInstanceMetaData targetPortMetaData = null;
 
-                    List<PortInstanceMetaData> sourcePorts = getPortsForService(application, dmiRoute.getSourceServiceInstance());
-                    List<PortInstanceMetaData> targetPorts = getPortsForService(application, dmiRoute.getTargetServiceInstance());
+                List<PortInstanceMetaData> sourcePorts = getPortsForService(application, dmiRoute.getSourceServiceInstance());
+                List<PortInstanceMetaData> targetPorts = getPortsForService(application, dmiRoute.getTargetServiceInstance());
 
-                    for (PortInstanceMetaData portInstanceMetaData : sourcePorts) {
-                        if (portInstanceMetaData.getDisplayName().equals(dmiRoute.getSourcePortInstance())) {
-                            sourcePortMetaData = portInstanceMetaData;
-                            break;
-                        }
+                for (PortInstanceMetaData portInstanceMetaData : sourcePorts) {
+                    if (portInstanceMetaData.getDisplayName().equals(dmiRoute.getSourcePortInstance())) {
+                        sourcePortMetaData = portInstanceMetaData;
+                        break;
                     }
-
-                    for (PortInstanceMetaData portInstanceMetaData : targetPorts) {
-                        if (portInstanceMetaData.getDisplayName().equals(dmiRoute.getTargetPortInstance())) {
-                            targetPortMetaData = portInstanceMetaData;
-                            break;
-                        }
-                    }
-                    routes.add(new RouteMetaData(dmiRoute.getName(), dmiRoute.getSourceServiceInstance(), dmiRoute.getTargetServiceInstance(), sourcePortMetaData, targetPortMetaData));
                 }
+
+                for (PortInstanceMetaData portInstanceMetaData : targetPorts) {
+                    if (portInstanceMetaData.getDisplayName().equals(dmiRoute.getTargetPortInstance())) {
+                        targetPortMetaData = portInstanceMetaData;
+                        break;
+                    }
+                }
+                routes.add(new RouteMetaData(dmiRoute.getName(), dmiRoute.getSourceServiceInstance(), dmiRoute.getTargetServiceInstance(), sourcePortMetaData, targetPortMetaData));
+            }
         } catch (Exception e) {
             //rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_ROUTES_FOR_APPLICATION, appGUID, version, e.getMessage(), e);
             throw new ServiceException(e.getMessage());
@@ -848,23 +840,23 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
         List<PortInstanceMetaData> portInstMetaData = new ArrayList<PortInstanceMetaData>();
         try {
-                ApplicationController applicationControllerManager = (applicationController);
-                Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
-                if (application != null) {
-                    for (ServiceInstance serInst : application.getServiceInstances()) {
-                        if (serInst != null) {
-                            portInstMetaData.addAll(getPortsForService(application, serInst.getName()));
-                        }
-                    }
-                    for (Object o : application.getRemoteServiceInstances()) {
-                        RemoteServiceInstance remoteserInst = (RemoteServiceInstance) o;
-                        if (remoteserInst != null) {
-                            portInstMetaData.addAll(getPortsForService(application, remoteserInst.getName()));
-                        }
+            ApplicationController applicationControllerManager = (applicationController);
+            Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
+            if (application != null) {
+                for (ServiceInstance serInst : application.getServiceInstances()) {
+                    if (serInst != null) {
+                        portInstMetaData.addAll(getPortsForService(application, serInst.getName()));
                     }
                 }
+                for (Object o : application.getRemoteServiceInstances()) {
+                    RemoteServiceInstance remoteserInst = (RemoteServiceInstance) o;
+                    if (remoteserInst != null) {
+                        portInstMetaData.addAll(getPortsForService(application, remoteserInst.getName()));
+                    }
+                }
+            }
         } catch (Exception e) {
-           // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_PORTS_FOR_APPLICATION, appGUID, version, e);
+            // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_PORTS_FOR_APPLICATION, appGUID, version, e);
             throw new ServiceException(e.getMessage());
         }
         return portInstMetaData;
@@ -873,18 +865,18 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     public List<PortInstanceMetaData> getPortsForService(String appGUID, float version, String serviceInstName) throws RemoteException, ServiceException {
         List<PortInstanceMetaData> portInstMetaData = new ArrayList<PortInstanceMetaData>();
         try {
-                ApplicationController applicationControllerManager = (applicationController);
-                Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
-                ServiceInstance serviceInst = application.getServiceInstance(serviceInstName);
-                if (serviceInst != null) {
-                    portInstMetaData = getPortsForService(application, serviceInstName);
-                } else {
-                    RemoteServiceInstance remoteserInst = application.getRemoteServiceInstance(serviceInstName);
-                    if (remoteserInst != null)
-                        portInstMetaData = getPortsForService(application, remoteserInst.getName());
-                }
+            ApplicationController applicationControllerManager = (applicationController);
+            Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
+            ServiceInstance serviceInst = application.getServiceInstance(serviceInstName);
+            if (serviceInst != null) {
+                portInstMetaData = getPortsForService(application, serviceInstName);
+            } else {
+                RemoteServiceInstance remoteserInst = application.getRemoteServiceInstance(serviceInstName);
+                if (remoteserInst != null)
+                    portInstMetaData = getPortsForService(application, remoteserInst.getName());
+            }
         } catch (Exception e) {
-           // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_PORTS_FOR_SERVICE_INSTANCE, serviceInstName, appGUID, version, e.getMessage(), e);
+            // rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_PORTS_FOR_SERVICE_INSTANCE, serviceInstName, appGUID, version, e.getMessage(), e);
             throw new ServiceException(e.getMessage());
         }
         return portInstMetaData;
@@ -895,35 +887,35 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     public List<ServiceInstanceMetaData> getServiceInstancesOfApp(String appGUID, float version) throws RemoteException, ServiceException {
         List<ServiceInstanceMetaData> serviceInstances = new ArrayList<ServiceInstanceMetaData>();
         try {
-                ApplicationController applicationControllerManager =  (applicationController);
-                Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
-                if (application != null) {
-                    List<ServiceInstance> services = application.getServiceInstances();
-                    for (ServiceInstance serviceInstance : services) {
-                        serviceInstances.add(new ServiceInstanceMetaData(serviceInstance.getName(), serviceInstance.getGUID(), serviceInstance.getVersion(), serviceInstance.getShortDescription(), serviceInstance.getLongDescription(), serviceInstance.getNodes(), serviceInstance.getLaunchType()));
-                    }
+            ApplicationController applicationControllerManager = (applicationController);
+            Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
+            if (application != null) {
+                List<ServiceInstance> services = application.getServiceInstances();
+                for (ServiceInstance serviceInstance : services) {
+                    serviceInstances.add(new ServiceInstanceMetaData(serviceInstance.getName(), serviceInstance.getGUID(), serviceInstance.getVersion(), serviceInstance.getShortDescription(), serviceInstance.getLongDescription(), serviceInstance.getNodes(), serviceInstance.getLaunchType()));
+                }
 
-                    @SuppressWarnings("unchecked")
-                    List<ServiceInstance> remoteServices = application.getRemoteServiceInstances();
-                    if (remoteServices != null) {
-                        for (Object o : application.getRemoteServiceInstances()) {
-                            RemoteServiceInstance remoteserInst = (RemoteServiceInstance) o;
-                            if (remoteserInst != null) {
-                                String remoteAppGUID = remoteserInst.getApplicationGUID();
-                                String remoteInstanceName = remoteserInst.getRemoteName();
-                                application = applicationRepository.readApplication(remoteAppGUID, String.valueOf(remoteserInst.getApplicationVersion()));
-                                if(application == null) {
-                                    throw new FioranoException("ERROR_APP_DOESNT_EXIST");
-                                }
-                                ServiceInstance actualservice = application.getServiceInstance(remoteInstanceName);
-                                serviceInstances.add(new RemoteServiceInstanceMetaData(appGUID, remoteAppGUID, remoteInstanceName, actualservice.getName(), actualservice.getGUID(), actualservice.getVersion(), actualservice.getShortDescription(), actualservice.getLongDescription(), actualservice.getNodes(), actualservice.getLaunchType()));
+                @SuppressWarnings("unchecked")
+                List<ServiceInstance> remoteServices = application.getRemoteServiceInstances();
+                if (remoteServices != null) {
+                    for (Object o : application.getRemoteServiceInstances()) {
+                        RemoteServiceInstance remoteserInst = (RemoteServiceInstance) o;
+                        if (remoteserInst != null) {
+                            String remoteAppGUID = remoteserInst.getApplicationGUID();
+                            String remoteInstanceName = remoteserInst.getRemoteName();
+                            application = applicationRepository.readApplication(remoteAppGUID, String.valueOf(remoteserInst.getApplicationVersion()));
+                            if (application == null) {
+                                throw new FioranoException("ERROR_APP_DOESNT_EXIST");
                             }
+                            ServiceInstance actualservice = application.getServiceInstance(remoteInstanceName);
+                            serviceInstances.add(new RemoteServiceInstanceMetaData(appGUID, remoteAppGUID, remoteInstanceName, actualservice.getName(), actualservice.getGUID(), actualservice.getVersion(), actualservice.getShortDescription(), actualservice.getLongDescription(), actualservice.getNodes(), actualservice.getLaunchType()));
                         }
                     }
                 }
+            }
         } catch (FioranoException e) {
             //rmiLogger.error(Bundle.class, Bundle.UNABLE_TO_GET_SERVICE_INSTANCES_FOR_APPLICATION, appGUID, version, e.getMessage(), e);
-            throw new ServiceException( e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
         return serviceInstances;
     }
@@ -1088,7 +1080,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
         } catch (FioranoException e) {
             e.printStackTrace();
-            throw new ServiceException( e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
 
         return savedEventProcesses.toArray(new ApplicationMetadata[savedEventProcesses.size()]);
@@ -1097,16 +1089,16 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public ApplicationMetadata getApplication(String appGUID, float version) throws RemoteException, ServiceException {
         ApplicationMetadata epRefernce;
-            ApplicationReference appreference = applicationController.getHeaderOfSavedApplication(appGUID,version,handleId);
-            if(null == appreference){
-                return null;
-            }
-            epRefernce = new ApplicationMetadata(appreference.getGUID(), appreference.getVersion());
-            epRefernce.setCategories(appreference.getCategories());
-            epRefernce.setDisplayName(appreference.getDisplayName());
-            epRefernce.setSchemaVersion(appreference.getSchemaVersion());
-            epRefernce.setShortDescription(appreference.getShortDescription());
-            epRefernce.setLongDescription(appreference.getLongDescription());
+        ApplicationReference appreference = applicationController.getHeaderOfSavedApplication(appGUID, version, handleId);
+        if (null == appreference) {
+            return null;
+        }
+        epRefernce = new ApplicationMetadata(appreference.getGUID(), appreference.getVersion());
+        epRefernce.setCategories(appreference.getCategories());
+        epRefernce.setDisplayName(appreference.getDisplayName());
+        epRefernce.setSchemaVersion(appreference.getSchemaVersion());
+        epRefernce.setShortDescription(appreference.getShortDescription());
+        epRefernce.setLongDescription(appreference.getLongDescription());
         return epRefernce;
     }
 
@@ -1191,7 +1183,21 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public String getWADLURL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException {
-        return null;
+        ApplicationHandle applicationHandle = applicationController.getApplicationHandle(appGUID, appVersion);
+        if (applicationHandle == null) {
+            throw new ServiceException("Application " + appGUID + ":" + appVersion + " is not running.");
+        }
+        ServiceInstance serviceInstance = applicationHandle.getApplication().getServiceInstance(servInstName);
+        if (!serviceInstance.getGUID().equalsIgnoreCase("RESTStub")) {
+            throw new ServiceException("Service " + servInstName + " in application " + appGUID + ":" + appVersion + " is not a RESTStub");
+        }
+        String configuration = serviceInstance.getConfiguration();
+        try {
+            Hashtable<String, Object> stubProperties = ServiceConfigurationParser.INSTANCE().parseRESTStubConfiguration(configuration);
+            return "http://localhost:8181" + "/restgateway/" + "AdminService/wadls/" + stubProperties.get(ServiceConfigurationParser.ConfigurationMarkups.RESTFUL_SERVICE_NAME);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     public Set<String> getReferringRunningApplications(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException {
@@ -1202,12 +1208,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    public List<String> getAllReferringApplications(String appGUID,float appVersion,String serviceInstName) throws RemoteException, ServiceException {
+    public List<String> getAllReferringApplications(String appGUID, float appVersion, String serviceInstName) throws RemoteException, ServiceException {
         try {
             List<String> temp = new ArrayList<String>();
-            Set<String> allReferredApps = applicationController.getAllReferringApplications(appGUID,appVersion,serviceInstName);
-            if( allReferredApps !=null && allReferredApps.size() >0 )
-                temp .addAll(allReferredApps );
+            Set<String> allReferredApps = applicationController.getAllReferringApplications(appGUID, appVersion, serviceInstName);
+            if (allReferredApps != null && allReferredApps.size() > 0)
+                temp.addAll(allReferredApps);
             return temp;
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
@@ -1237,7 +1243,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
      * @throws RemoteException
      * @throws ServiceException
      */
-    public boolean isApplicationReferred(String appGUID, float appVersion)throws RemoteException, ServiceException {
+    public boolean isApplicationReferred(String appGUID, float appVersion) throws RemoteException, ServiceException {
         try {
             return applicationController.isApplicationReferred(appGUID, appVersion);
         } catch (FioranoException e) {
@@ -1245,83 +1251,82 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    private String getRepoCategory(String namedCategory) throws FioranoException{
+    private String getRepoCategory(String namedCategory) throws FioranoException {
         String repoCategory;
-        switch (namedCategory){
+        switch (namedCategory) {
             case Constants.CONNECTION_FACTORY_CAT:
-                repoCategory=Constants.CONNECTION_FACTORY_REPO;
+                repoCategory = Constants.CONNECTION_FACTORY_REPO;
                 break;
             case Constants.DESTINATION_CAT:
-                repoCategory=Constants.DESTINATION_REPO;
+                repoCategory = Constants.DESTINATION_REPO;
                 break;
             case Constants.MSG_FILTERS_CAT:
-                repoCategory=Constants.MSG_FILTERS_REPO;
+                repoCategory = Constants.MSG_FILTERS_REPO;
                 break;
             case Constants.PORT_CAT:
-                repoCategory=Constants.PORT_REPO;
+                repoCategory = Constants.PORT_REPO;
                 break;
             case Constants.ROUTE_CAT:
-                repoCategory=Constants.ROUTE_REPO;
+                repoCategory = Constants.ROUTE_REPO;
                 break;
             case Constants.SELECTOR_CAT:
-                repoCategory=Constants.SELECTOR_REPO;
+                repoCategory = Constants.SELECTOR_REPO;
                 break;
             case Constants.RUN_ARGS_CAT:
-                repoCategory=Constants.RUN_ARGS_REPO;
+                repoCategory = Constants.RUN_ARGS_REPO;
                 break;
             case Constants.SERVICE_CAT:
-                repoCategory=Constants.SERVICE_REPO;
+                repoCategory = Constants.SERVICE_REPO;
                 break;
             case Constants.TRANS_CAT:
-                repoCategory=Constants.TRANS_REPO;
+                repoCategory = Constants.TRANS_REPO;
                 break;
             case Constants.WRKFLW_CAT:
-                repoCategory=Constants.WRKFLW_REPO;
+                repoCategory = Constants.WRKFLW_REPO;
                 break;
             case Constants.RESOURCE_CAT:
-                repoCategory=Constants.RESOURCE_REPO;
+                repoCategory = Constants.RESOURCE_REPO;
                 break;
-            default: throw new FioranoException("Invalid category specified");
+            default:
+                throw new FioranoException("Invalid category specified");
         }
         return repoCategory;
     }
 
-    public HashMap getRunningCompUsingNamedConfigs(HashMap<Integer,HashMap<String,String>> configsToChange) throws ServiceException {
+    public HashMap getRunningCompUsingNamedConfigs(HashMap<Integer, HashMap<String, String>> configsToChange) throws ServiceException {
         try {
-            validateHandleID(handleId,"Get List of Running Components using the named configuration");
-            HashMap<Integer,String> namedConfigRef = new HashMap<>();
-            int i=0;
+            validateHandleID(handleId, "Get List of Running Components using the named configuration");
+            HashMap<Integer, String> namedConfigRef = new HashMap<>();
+            int i = 0;
             Enumeration<ApplicationReference> apprefs = applicationController.getHeadersOfRunningApplications(handleId);
-            while (apprefs.hasMoreElements())
-            {
+            while (apprefs.hasMoreElements()) {
                 ApplicationReference currentApp = apprefs.nextElement();
                 Application current = applicationRepository.readApplication(currentApp.getGUID(), String.valueOf(currentApp.getVersion()));
                 List<ServiceInstance> services = current.getServiceInstances();
-                for(ServiceInstance service : services){
-                    Boolean compUsingNamedConfigs=false;
+                for (ServiceInstance service : services) {
+                    Boolean compUsingNamedConfigs = false;
                     ArrayList<NamedConfigurationProperty> listofConfigs = service.getNamedConfigurations();
-                    for(NamedConfigurationProperty config:listofConfigs){
+                    for (NamedConfigurationProperty config : listofConfigs) {
                         String configType;
-                        if(config.getConfigurationType().equalsIgnoreCase("component")){
-                            configType="service";
-                        }
-                        else configType=config.getConfigurationType();
+                        if (config.getConfigurationType().equalsIgnoreCase("component")) {
+                            configType = "service";
+                        } else configType = config.getConfigurationType();
 
-                        for (int num : configsToChange.keySet()){
-                            HashMap<String,String> configDetails = configsToChange.get(num);
-                            if(configDetails.get("category").equalsIgnoreCase(configType) && configDetails.get("target").equalsIgnoreCase(config.getConfigurationName()) && current.getLabel().equalsIgnoreCase(configDetails.get("environment"))){
-                                if(configType.equalsIgnoreCase("service")){
-                                    if(service.getGUID().equalsIgnoreCase(configDetails.get("compGUID")) && service.getVersion()==Float.valueOf(configDetails.get("compVersion"))){
-                                        compUsingNamedConfigs=true;
+                        for (int num : configsToChange.keySet()) {
+                            HashMap<String, String> configDetails = configsToChange.get(num);
+                            if (configDetails.get("category").equalsIgnoreCase(configType) && configDetails.get("target").equalsIgnoreCase(config.getConfigurationName()) && current.getLabel().equalsIgnoreCase(configDetails.get("environment"))) {
+                                if (configType.equalsIgnoreCase("service")) {
+                                    if (service.getGUID().equalsIgnoreCase(configDetails.get("compGUID")) && service.getVersion() == Float.valueOf(configDetails.get("compVersion"))) {
+                                        compUsingNamedConfigs = true;
                                     }
-                                }else{
-                                    compUsingNamedConfigs=true;
+                                } else {
+                                    compUsingNamedConfigs = true;
                                 }
                             }
                         }
                     }
-                    if(compUsingNamedConfigs){
-                        namedConfigRef.put(i,current.getGUID()+":"+current.getVersion()+":"+service.getName());
+                    if (compUsingNamedConfigs) {
+                        namedConfigRef.put(i, current.getGUID() + ":" + current.getVersion() + ":" + service.getName());
                         i++;
                     }
                 }
@@ -1332,79 +1337,77 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    public String changeNamedConfigurations(HashMap<Integer,HashMap<String,String>> configsToChange) throws ServiceException{
-        int failure=0;
+    public String changeNamedConfigurations(HashMap<Integer, HashMap<String, String>> configsToChange) throws ServiceException {
+        int failure = 0;
         try {
-            String configurationsRepositoryPath = System.getProperty("ESB_USER_DIR")+File.separator+"repository"+File.separator+"configurations";
-            if(Boolean.valueOf(System.getProperty("HA_ENABLED"))){
-                if(System.getProperty("PROFILE_NAME").toLowerCase().contains("secondary")){
-                    configurationsRepositoryPath = System.getProperty("ESB_USER_DIR")+File.separator+"repository_backup"+File.separator+"configurations";
+            String configurationsRepositoryPath = System.getProperty("ESB_USER_DIR") + File.separator + "repository" + File.separator + "configurations";
+            if (Boolean.valueOf(System.getProperty("HA_ENABLED"))) {
+                if (System.getProperty("PROFILE_NAME").toLowerCase().contains("secondary")) {
+                    configurationsRepositoryPath = System.getProperty("ESB_USER_DIR") + File.separator + "repository_backup" + File.separator + "configurations";
                 }
             }
             File configDir = new File(configurationsRepositoryPath);
             String[] categoryList = configDir.list();
             ArrayList<String> categoryDir = new ArrayList<>();
-            if(!configDir.isDirectory() || categoryList==null || categoryList.length==0) {
+            if (!configDir.isDirectory() || categoryList == null || categoryList.length == 0) {
                 System.out.println("Named Configurations repository is empty. Please check configuration details");
                 throw new ServiceException("Named Configurations repository is empty. Please check configuration details");
             }
-            for(String value:categoryList){
+            for (String value : categoryList) {
                 categoryDir.add(value);
             }
-            for(int i=0;i<configsToChange.size();i++){
-                HashMap<String,String> configDetails = configsToChange.get(i);
+            for (int i = 0; i < configsToChange.size(); i++) {
+                HashMap<String, String> configDetails = configsToChange.get(i);
                 String namedCategory = configDetails.get("category").toLowerCase();
-                String namedEnvironment=configDetails.get("environment");
-                String source=configDetails.get("source");
-                String target=configDetails.get("target");
-                String compGUID=configDetails.get("compGUID");
-                String repoCategory="";
-                String compVersion=configDetails.get("compVersion");
-                String portType=configDetails.get("portType");
-                try{
-                    repoCategory=getRepoCategory(namedCategory);
-                }catch (Exception e){
+                String namedEnvironment = configDetails.get("environment");
+                String source = configDetails.get("source");
+                String target = configDetails.get("target");
+                String compGUID = configDetails.get("compGUID");
+                String repoCategory = "";
+                String compVersion = configDetails.get("compVersion");
+                String portType = configDetails.get("portType");
+                try {
+                    repoCategory = getRepoCategory(namedCategory);
+                } catch (Exception e) {
                     System.out.println("Named Configurations category " + namedCategory + " does not exist in the repository.");
                     failure++;
                     continue;
                 }
-                if(!categoryDir.contains(repoCategory)){
+                if (!categoryDir.contains(repoCategory)) {
                     System.out.println("Named Configurations category " + namedCategory + " does not exist in the repository. Please check configuration details");
                     failure++;
                     continue;
                 }
-                File sourceFile= NamedConfigurationUtil.getConfigurationFile(configurationsRepositoryPath, repoCategory, namedEnvironment, source);
-                File targetFile= NamedConfigurationUtil.getConfigurationFile(configurationsRepositoryPath, repoCategory, namedEnvironment, target);
-                if(namedCategory.equalsIgnoreCase("service"))
-                {
-                    sourceFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationsRepositoryPath,compGUID,compVersion,namedEnvironment,source);
-                    targetFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationsRepositoryPath,compGUID,compVersion,namedEnvironment,target);
+                File sourceFile = NamedConfigurationUtil.getConfigurationFile(configurationsRepositoryPath, repoCategory, namedEnvironment, source);
+                File targetFile = NamedConfigurationUtil.getConfigurationFile(configurationsRepositoryPath, repoCategory, namedEnvironment, target);
+                if (namedCategory.equalsIgnoreCase("service")) {
+                    sourceFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationsRepositoryPath, compGUID, compVersion, namedEnvironment, source);
+                    targetFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationsRepositoryPath, compGUID, compVersion, namedEnvironment, target);
                 }
-                if(namedCategory.equalsIgnoreCase("port"))
-                {
-                    sourceFile = NamedConfigurationUtil.getPortConfigurationFile(configurationsRepositoryPath,portType,namedEnvironment,source);
-                    targetFile = NamedConfigurationUtil.getPortConfigurationFile(configurationsRepositoryPath,portType,namedEnvironment,target);
+                if (namedCategory.equalsIgnoreCase("port")) {
+                    sourceFile = NamedConfigurationUtil.getPortConfigurationFile(configurationsRepositoryPath, portType, namedEnvironment, source);
+                    targetFile = NamedConfigurationUtil.getPortConfigurationFile(configurationsRepositoryPath, portType, namedEnvironment, target);
                 }
-                if(!sourceFile.exists()) {
+                if (!sourceFile.exists()) {
                     System.out.println("Source file for configuration type " + namedCategory + ", environment " + namedEnvironment + " with name " + source + " does not exist in the repository, please check configurations details.");
                     failure++;
                     continue;
                 }
-                if(!targetFile.exists()) {
+                if (!targetFile.exists()) {
                     System.out.println("Target file for configuration type " + namedCategory + ", environment " + namedEnvironment + " with name " + target + " does not exist in the repository, please check configurations details.");
                     failure++;
                     continue;
                 }
-               // rmiLogger.info(Bundle.class, Bundle.START_CHANGE_NAMED_CONFIG,source,target,namedCategory,namedEnvironment);
-                try{
-                    if(!repoCategory.equalsIgnoreCase("transformations"))
-                        FileUtil.copyFileUsingIO(sourceFile,targetFile);
+                // rmiLogger.info(Bundle.class, Bundle.START_CHANGE_NAMED_CONFIG,source,target,namedCategory,namedEnvironment);
+                try {
+                    if (!repoCategory.equalsIgnoreCase("transformations"))
+                        FileUtil.copyFileUsingIO(sourceFile, targetFile);
                     else {
                         FileUtil.deleteDir(targetFile);
-                        FileUtil.copyDirectory(sourceFile,targetFile);
+                        FileUtil.copyDirectory(sourceFile, targetFile);
                     }
                     //rmiLogger.info(Bundle.class, Bundle.CHANGE_NAMED_CONFIG_SUCCESSFUL,source,target,namedCategory,namedEnvironment);
-                }catch (Exception e){
+                } catch (Exception e) {
                     //rmiLogger.error(Bundle.class, Bundle.ERROR_CHANGE_NAMED_CONFIG+" source: "+source+" target: "+target+" category: "+namedCategory+" environment: "+namedEnvironment);
                     failure++;
                 }
@@ -1416,25 +1419,25 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    public String synchronizeAllRunningEP() throws ServiceException{
-        try{
-            int failure =0;
-            validateHandleID(handleId,"Synchronize All Running Event Processes");
+    public String synchronizeAllRunningEP() throws ServiceException {
+        try {
+            int failure = 0;
+            validateHandleID(handleId, "Synchronize All Running Event Processes");
             Enumeration<ApplicationReference> apprefs = applicationController.getHeadersOfRunningApplications(handleId);
-            ApplicationReference currentApp=null;
-            while (apprefs.hasMoreElements())
-            {   try{
-                currentApp = apprefs.nextElement();
-                synchronizeApplication(currentApp.getGUID(),currentApp.getVersion());
-                Thread.sleep(2000);
-            }catch (Exception e){
-              //  rmiLogger.error(Bundle.class, Bundle.ERROR_SYNCHRONIZE_EVENTPROCESS,currentApp.getGUID(),currentApp.getVersion(),e);
-                failure++;
-            }
+            ApplicationReference currentApp = null;
+            while (apprefs.hasMoreElements()) {
+                try {
+                    currentApp = apprefs.nextElement();
+                    synchronizeApplication(currentApp.getGUID(), currentApp.getVersion());
+                    Thread.sleep(2000);
+                } catch (Exception e) {
+                    //  rmiLogger.error(Bundle.class, Bundle.ERROR_SYNCHRONIZE_EVENTPROCESS,currentApp.getGUID(),currentApp.getVersion(),e);
+                    failure++;
+                }
             }
             return String.valueOf(failure);
         } catch (Exception e) {
-           // rmiLogger.error(Bundle.class, Bundle.ERROR_SYNC_ALL_RUN_EP,e);
+            // rmiLogger.error(Bundle.class, Bundle.ERROR_SYNC_ALL_RUN_EP,e);
             throw new ServiceException(e.getMessage());
         }
     }

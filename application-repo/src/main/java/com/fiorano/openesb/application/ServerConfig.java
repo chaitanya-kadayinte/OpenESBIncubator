@@ -18,6 +18,7 @@ public class ServerConfig {
     private long applicationStateRestoreWaitTime=5000;
     private String jettyUrl="http://localhost:8181";
     private String jettySSLUrl="https://localhost:8443";
+    private String javaHome = System.getProperty("java.home");
 
     public String getRepositoryPath() {
         File file = new File(repositoryPath);
@@ -90,6 +91,7 @@ public class ServerConfig {
             properties.setProperty("applicationStateRestoreWaitTime", String.valueOf(getApplicationStateRestoreWaitTime()));
             properties.setProperty("jettyUrl", getJettyUrl());
             properties.setProperty("jettySSLUrl", getJettySSLUrl());
+            properties.setProperty("javaHome",getJavaHome());
 
             File file = new File(System.getProperty("karaf.base") + File.separator
                     + "etc" + File.separator + "com.fiorano.openesb.server.cfg");
@@ -125,4 +127,11 @@ public class ServerConfig {
     }
 
 
+    public String getJavaHome() {
+        return javaHome;
+    }
+
+    public void setJavaHome(String javaHome) {
+        this.javaHome = javaHome;
+    }
 }

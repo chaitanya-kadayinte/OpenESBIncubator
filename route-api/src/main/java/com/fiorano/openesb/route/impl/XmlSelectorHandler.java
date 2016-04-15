@@ -20,7 +20,6 @@ public class XmlSelectorHandler implements RouteOperationHandler<JMSMessage> {
         this.selectorConfiguration = selectorConfiguration;
         this.selector = new XMLContentSelector(selectorConfiguration);
         this.logger = LoggerFactory.getLogger(Activator.class);
-
     }
 
     @Override
@@ -32,7 +31,7 @@ public class XmlSelectorHandler implements RouteOperationHandler<JMSMessage> {
                 throw new FilterMessageException();
             }
         } catch (JMSException e) {
-            logger.error("Exception occured in message selector : " + e.getMessage() + e.getStackTrace());
+            logger.error("Exception occurred in message selector : " + e.getMessage() + e.getStackTrace());
         }
     }
 }

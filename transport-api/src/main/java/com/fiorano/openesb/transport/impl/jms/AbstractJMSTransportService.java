@@ -1,6 +1,8 @@
 package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.transport.*;
+import com.fiorano.openesb.transport.bundle.Activator;
+//import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.jms.Message;
@@ -17,7 +19,7 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
         while ((connection = getConnection(cf))== null && i++ < count) {
             try {
                 String connectionRetryInterval = TransportConfig.getInstance().getValue("CONNECTION_LOOKUP_INTERVAL", "2000");
-                System.out.println("Waiting for JMS provider to activate.. Attempt - " + i);
+                System.out.println("Waiting for JMS provider to activate. Attempt - " + i);
                 Thread.sleep(Long.valueOf(connectionRetryInterval));
             } catch (InterruptedException e1) {
                 //
@@ -36,6 +38,7 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
             connection.start();
             return connection;
         } catch (JMSException e) {
+//            LoggerFactory.getLogger(Activator.class).debug("Error connecting - " + e.getMessage());
             if (e.getMessage().toUpperCase().contains("CONNECT ")) {
                 return null;
             } else {

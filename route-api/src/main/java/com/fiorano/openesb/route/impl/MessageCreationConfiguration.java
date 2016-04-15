@@ -5,10 +5,6 @@ import com.fiorano.openesb.transport.Port;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
 import com.fiorano.openesb.transport.impl.jms.JMSPort;
-
-/**
- * Created by root on 3/8/16.
- */
 public class MessageCreationConfiguration extends RouteOperationConfiguration {
     private TransportService<JMSPort,JMSMessage> transportService;
 
@@ -16,7 +12,8 @@ public class MessageCreationConfiguration extends RouteOperationConfiguration {
         return transportService;
     }
 
-    public void setTransportService(TransportService<JMSPort, JMSMessage> transportService) {
+    @SuppressWarnings("unchecked")
+    public void setTransportService(TransportService transportService) {
         this.transportService = transportService;
     }
 }
