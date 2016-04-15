@@ -51,9 +51,10 @@ public class ApplicationRepository {
         }
     }
 
-    public void saveApplication(Application application, File tempAppFolder, String userName, byte[] zippedContents, String handleID) {
+    public void saveApplication(Application application, File tempAppFolder, String userName, byte[] zippedContents, String handleID) throws FioranoException {
         String appGUID = application.getGUID().toUpperCase();
         float versionNumber = application.getVersion();
+        logger.info("Saving Application: " +appGUID+":"+versionNumber);
         File tempAppFolderObject = null;
         try {
             float version = application.getVersion();
@@ -174,9 +175,9 @@ public class ApplicationRepository {
 
             }
         } catch (FioranoException e) {
-
+            throw e;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new FioranoException(e);
 
         } finally {
             try {
@@ -185,17 +186,15 @@ public class ApplicationRepository {
                 e.printStackTrace();
             }
         }
+        logger.info("Saved Application: " +appGUID+":"+versionNumber);
     }
 
     public void saveApplication(Application application, String userName, String handleIDForEstudio, boolean skipManagableProps)
             throws FioranoException {
-
         // If applicationPropertySheet is null throw an Exception
         if (application == null)
             throw new FioranoException("ERROR_APPLICATION_SAVE_FAILURE_ERROR");
-
-        // Get the Application GUID and Version number.
-        float versionNumber = application.getVersion();
+        logger.info("Saving Application: "+application.getGUID()+":"+application.getVersion());
 
         File applicationFolder;
 
@@ -216,6 +215,7 @@ public class ApplicationRepository {
             throw new FioranoException("ERROR_APPLICATION_SAVE_FAILURE_ERROR",e);
             //"Exception in writing the application", e);
         }
+        logger.info("Saved Application: "+application.getGUID()+":"+application.getVersion());
     }
 
     private String getConfigurationFileName(String appGUID, float version, String fileName) {

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationHandle {
     private Logger logger = LoggerFactory.getLogger(Activator.class);
@@ -31,7 +32,7 @@ public class ApplicationHandle {
     private MicroServiceLauncher service;
     private RouteService<RouteConfiguration> routeService;
     private TransportService transport;
-    Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new HashMap<>();
+    Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new ConcurrentHashMap<>();
     private Map<String, Route> routeMap = new HashMap<>();
     private Map<String, Route> breakPointRoutes = new HashMap<>();
     private Map<String, BreakpointMetaData> breakpoints = new HashMap<String, BreakpointMetaData>();
@@ -220,31 +221,48 @@ public class ApplicationHandle {
     }
 
     public void startAllMicroServices() {
+        logger.info("Starting all micro services of the Application "+appGUID+":"+version);
         for (ServiceInstance instance : application.getServiceInstances()) {
             try {
                 startMicroService(instance.getName());
             } catch (FioranoException e) {
-                e.printStackTrace();
+                logger.error("Error occured while starting the Service: " + instance.getName()+" of Application: " +appGUID +":"+version, e);
             }
         }
+        logger.info("Started all micro services of the Application "+appGUID+":"+version);
     }
 
-    public void stopApplication() throws Exception {
+    public void stopApplication() {
         for(ServiceInstance serviceInstance : application.getServiceInstances()) {
             for(PortInstance portInstance : serviceInstance.getInputPortInstances()) {
                 JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
-                transport.disablePort(portConfiguration);
+                try {
+                    transport.disablePort(portConfiguration);
+                } catch (Exception e) {
+                    logger.error("Error occured while disabling the port: " + portConfiguration.getName()+" of Application: " +appGUID +":"+version, e);
+                }
             }
             for(PortInstance portInstance : serviceInstance.getOutputPortInstances()) {
                 JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
-                transport.disablePort(portConfiguration);
+                try {
+                    transport.disablePort(portConfiguration);
+                } catch (Exception e) {
+                    logger.error("Error occured while disabling the port: " + portConfiguration.getName() + " of Application: " + appGUID + ":" + version, e);
+                }
             }
         }
-        for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
-            handle.stop();
+        try {
+            stopAllMicroServices();
+        } catch (FioranoException e) {
+            logger.error("Error occured while stopping microservices of the Application: "+appGUID +":"+version, e);
         }
-        for(com.fiorano.openesb.route.Route route :routeMap.values()) {
-            route.stop();
+        for(String routeName :routeMap.keySet()) {
+            try {
+                Route route = routeMap.get(routeName);
+                route.stop();
+            } catch (Exception e) {
+                logger.error("Error occured while stoping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
+            }
         }
     }
 
@@ -398,38 +416,42 @@ public class ApplicationHandle {
     }
 
     public void stopAllMicroServices() throws FioranoException{
+        logger.info("Stopping all micro services of the Application "+appGUID+":"+version);
         for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
-            try {
-                handle.stop();
-            } catch (Exception e) {
-                throw new FioranoException(e);
-            }
+            stopMicroService(handle.getServiceInstName());
         }
         microServiceHandleList = new HashMap<>();
+        logger.info("Stopped all micro services of the Application "+appGUID+":"+version);
     }
 
     public void startMicroService(String microServiceName) throws FioranoException {
         ServiceInstance instance = application.getServiceInstance(microServiceName);
-        if(microServiceHandleList.containsKey(instance.getName())){
+        if(isMicroserviceRunning(microServiceName)){
+            logger.info("MicroService: "+ microServiceName + " of Application " + appGUID +":"+version+" is already running");
             return;
         }
+        logger.info("Starting MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
         } catch (Exception e) {
-            throw new FioranoException(e);
+            logger.error("Error occured while starting the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
         }
+        logger.info("Started MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
     }
 
     public void stopMicroService(String microServiceName) throws FioranoException {
         if(!isMicroserviceRunning(microServiceName)){
-            throw new FioranoException("Microservice is not running");
+            logger.warn("Microservice: "+ microServiceName + " of Application " + appGUID +":"+version+" is not running");
+            return;
         }
         try {
+            logger.info("Stoping MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
             microServiceHandleList.get(microServiceName).stop();
             microServiceHandleList.remove(microServiceName);
+            logger.info("Stopped MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
         } catch (Exception e) {
-            throw new FioranoException(e);
+            logger.error("Error occured while stopping the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
         }
     }
 
@@ -646,7 +668,7 @@ public class ApplicationHandle {
     public void changeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception {
         com.fiorano.openesb.route.Route route = routeMap.get(routeGUID);
         if(route==null){
-            throw new FioranoException("route does not exists");
+            throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
         }
         route.modifyHandler(configuration);
     }
