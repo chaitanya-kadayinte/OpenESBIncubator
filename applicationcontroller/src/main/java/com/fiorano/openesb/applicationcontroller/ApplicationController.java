@@ -69,6 +69,7 @@ public class ApplicationController {
     private transient boolean appsRestored;
 
     public ApplicationController(ApplicationRepository applicationRepository, BundleContext context) throws Exception {
+        logger.info("Initializing Application Controller.");
         this.applicationRepository = applicationRepository;
         routeService = context.getService(context.getServiceReference(RouteService.class));
         microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
@@ -97,6 +98,7 @@ public class ApplicationController {
         RestoreAppState restoreAppStateThread= new RestoreAppState(1000);
         restoreAppStateThread.setPriority(Thread.MAX_PRIORITY);
         restoreAppStateThread.start();
+        logger.info("Initialized Application Controller.");
     }
 
     private void registerConfigRequestListener(final CCPEventManager ccpEventManager) throws Exception {
@@ -104,15 +106,18 @@ public class ApplicationController {
             @Override
             public void onEvent(ComponentCCPEvent event) throws Exception {
                 ControlEvent controlEvent = event.getControlEvent();
-
                 if(controlEvent instanceof DataRequestEvent && controlEvent.isReplyNeeded()) {
-                    Application application = savedApplicationMap.get(getAppName(event) + Constants.NAME_DELIMITER + getAppVersion(event));
+                    String serviceInstanceName = getInstanceName(event);
+                    String appName = getAppName(event);
+                    String appVersion = getAppVersion(event);
+                    Application application = savedApplicationMap.get(appName + Constants.NAME_DELIMITER + appVersion);
                     DataEvent dataEvent = new DataEvent();
                     Map<DataRequestEvent.DataIdentifier,Data> data = new HashMap<>();
                     for(DataRequestEvent.DataIdentifier request: ((DataRequestEvent) controlEvent).getDataIdentifiers()) {
                         if(request == DataRequestEvent.DataIdentifier.COMPONENT_CONFIGURATION) {
+                            logger.info("Processing the "+DataRequestEvent.DataIdentifier.COMPONENT_CONFIGURATION.name()+ " Data Request CCP Event coming from Service: "+serviceInstanceName+ "of Application: "+appName+":"+appVersion);
                             MicroserviceConfiguration microserviceConfiguration = new MicroserviceConfiguration();
-                            String configuration = application.getServiceInstance(getInstanceName(event)).getConfiguration();
+                            String configuration = application.getServiceInstance(serviceInstanceName).getConfiguration();
                             if(configuration==null){
                                 configuration="";
                             }
@@ -120,26 +125,29 @@ public class ApplicationController {
                             data.put(request, microserviceConfiguration);
                         }
                         if(request == DataRequestEvent.DataIdentifier.NAMED_CONFIGURATION) {
+                            logger.info("Processing the "+DataRequestEvent.DataIdentifier.NAMED_CONFIGURATION.name()+ " Data Request CCP Event coming from Service: "+serviceInstanceName+ "of Application: "+appName+":"+appVersion);
                             NamedConfiguration namedConfiguration = new NamedConfiguration();
-                            HashMap<String, String> map = resolveNamedConfigurations(getAppName(event), getAppVersion(event), getInstanceName(event));
+                            HashMap<String, String> map = resolveNamedConfigurations(appName, appVersion, serviceInstanceName);
                             namedConfiguration.setConfiguration(map);
                             data.put(request,namedConfiguration);
                         }
                         if(request == DataRequestEvent.DataIdentifier.PORT_CONFIGURATION) {
+                            logger.info("Processing the "+DataRequestEvent.DataIdentifier.PORT_CONFIGURATION.name()+ " Data Request CCP Event coming from Service: "+serviceInstanceName+ "of Application: "+appName+":"+appVersion);
                             PortConfiguration portConfiguration = new PortConfiguration();
                             Map<String, List<PortInstance>> portInstances = new HashMap();
                             List<PortInstance> inPortInstanceList = new ArrayList();
-                            inPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getInputPortInstances());
+                            inPortInstanceList.addAll(application.getServiceInstance(serviceInstanceName).getInputPortInstances());
                             List<PortInstance> outPortInstanceList = new ArrayList();
-                            outPortInstanceList.addAll(application.getServiceInstance(getInstanceName(event)).getOutputPortInstances());
+                            outPortInstanceList.addAll(application.getServiceInstance(serviceInstanceName).getOutputPortInstances());
                             portInstances.put("IN_PORTS",inPortInstanceList);
                             portInstances.put("OUT_PORTS", outPortInstanceList);
                             portConfiguration.setPortInstances(portInstances);
                             data.put(request,portConfiguration);
                         }
                         if(request == DataRequestEvent.DataIdentifier.MANAGEABLE_PROPERTIES) {
+                            logger.info("Processing the "+DataRequestEvent.DataIdentifier.MANAGEABLE_PROPERTIES.name()+ " Data Request CCP Event coming from Service: "+serviceInstanceName+ "of Application: "+appName+":"+appVersion);
                             ManageableProperties manageableProperties = new ManageableProperties();
-                            ServiceInstance serviceInstance = application.getServiceInstance(getInstanceName(event));
+                            ServiceInstance serviceInstance = application.getServiceInstance(serviceInstanceName);
 
                             manageableProperties.setManageableProperties(getManageablePropertiesToBind(serviceInstance.getManageableProperties()));
                             data.put(request,manageableProperties);
@@ -189,9 +197,11 @@ public class ApplicationController {
             addDefaultConfigs(resolvedConfigurations, CommonConstants.KEY_STORE_CONFIG, CommonConstants.KEY_STORE_RESOURCE_TYPE, servInstance, serviceInstance.getVersion(), application.getLabel());
             addDefaultConfigs(resolvedConfigurations, CommonConstants.MSG_ENCRYPTION_CONFIG, CommonConstants.MSG_ENCRYPTION_CONFIG_TYPE, servInstance, serviceInstance.getVersion(), application.getLabel());
         } catch (FioranoException e) {
+            logger.error("Error occured while resolving Named configurations for Service: " +servInstance +"of Application: "+appGuid +":"+version);
             throw new FioranoException(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("");
+            throw new FioranoException(e);
         }
         return resolvedConfigurations;
     }
@@ -305,7 +315,7 @@ public class ApplicationController {
     private String getInstanceName(ComponentCCPEvent event) {
         String componentId = event.getComponentId();
         String version = componentId.substring(componentId.indexOf("__") + 2);
-        String instance = version.substring(version.indexOf("__")+2);
+        String instance = version.substring(version.indexOf("__") + 2);
         if(instance.contains("__")){
             return instance.substring(0, instance.indexOf("__"));
         }
@@ -323,7 +333,7 @@ public class ApplicationController {
 
     public void saveApplication(File appFileFolder, String handleID, byte[] zippedContents) throws FioranoException {
         String userName = securityManager.getUserName(handleID);
-        logger.info("saving Application");
+        logger.info("Reading Application from "+ appFileFolder.getName());
         Application application = null;
         application = ApplicationParser.readApplication(appFileFolder, Application.Label.none.toString(), false, false);
         try {
@@ -1478,6 +1488,18 @@ public class ApplicationController {
 
     }
 
+    public void Stop() {
+        //do not delete ports and routes. Just stop the running components. Routes will be closed automatically when the server is stopped.
+        for(ApplicationHandle appHandle: applicationHandleMap.values()){
+            try {
+                appHandle.stopAllMicroServices();
+            } catch (Exception e) {
+                logger.error("Error occured while stopping the Services of the Application: " +appHandle.getAppGUID()+":"+appHandle.getVersion()+" during bundle stop.");
+            }
+        }
+
+    }
+
      /*----------------------start of [Application Restore Thread]----------------------------------------*/
 
     private class RestoreAppState extends Thread {
@@ -1494,6 +1516,7 @@ public class ApplicationController {
     }
 
     private void restoreApplicationStates(long waitTime) {
+        logger.info("Starting Application state restore thread.");
         try {
             try {
                 Thread.sleep(waitTime);
@@ -1545,6 +1568,7 @@ public class ApplicationController {
             logger.error("", ex);
         }
         setAppsRestored(true);
+        logger.info("Restored Application state Successfully.");
     }
 
     private void updateApplicationHandleMap(ApplicationHandle applicationHandle) {

@@ -17,6 +17,7 @@ public class JMSRouteConfiguration extends AbstractRouteConfiguration implements
     public JMSRouteConfiguration(JMSPortConfiguration sourceConfiguration, JMSPortConfiguration destinationConfiguration, String jmsSelector) {
         this.sourceConfiguration = sourceConfiguration;
         this.destinationConfiguration = destinationConfiguration;
+        this.jmsSelector = jmsSelector;
     }
 
     public JMSPortConfiguration getSourceConfiguration() {

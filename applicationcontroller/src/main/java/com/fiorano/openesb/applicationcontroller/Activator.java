@@ -32,20 +32,26 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         logger = LoggerFactory.getLogger(getClass());
         logger.trace("Starting Application Controller bundle.");
-        System.out.println("Activating Fiorano Applications");
+        System.out.println("Activating Application Controller");
         ServiceReference<ApplicationRepository> applicationRepositoryRef = context.getServiceReference(ApplicationRepository.class);
         if (applicationRepositoryRef != null) {
             ApplicationRepository applicationRepository = context.getService(applicationRepositoryRef);
+
             applicationController = new ApplicationController(applicationRepository, context);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
+            //applicationController.launchApplication("SELECTOR","1.0");
+            //applicationController.launchApplication("TRANSFORMATION","1.0");
+            //applicationController.launchApplication("SENDERSELECTOR","1.0",null);
         }
         System.out.println("Activated Application Controller");
         logger.trace("Started Application Controller bundle.");
+
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping Application Repository");
-        logger.trace("Stopped Application Repository bundle.");
+        logger.info("Stopping Application Controller bundle");
+        applicationController.Stop();
+        logger.trace("Stopped Application Controller bundle.");
     }
 
 }
