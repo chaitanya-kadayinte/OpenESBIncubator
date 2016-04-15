@@ -31,7 +31,7 @@ public class NamedConfigRepository  {
         eventListeners.remove(eventListener);
     }
 
-    public void startup() {
+    public NamedConfigRepository() {
         repositoryPath = getBaseRepositoryLocation();
         ApplicationParser.setConfigurationRepoPath(repositoryPath);
         ServiceParser.setConfigurationRepoPath(repositoryPath);

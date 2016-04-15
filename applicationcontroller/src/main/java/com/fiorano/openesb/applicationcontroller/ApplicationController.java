@@ -218,7 +218,7 @@ public class ApplicationController {
 
     private String getConfigurationData(String configurationName, String configurationType, String servInstanceGuid, float servVersion, String label) throws FioranoException {
         if (configurationType != null) {
-            String configurationRepoPath = namedConfigRepository + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR;
+            String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath() + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR;
 
             ObjectCategory objectCategory = ObjectCategory.getObjectCategory(configurationType);
             final String environmentLabel = label;
@@ -348,6 +348,7 @@ public class ApplicationController {
         // boolean applicationExists = applicationRepository.applicationExists(appGuid, version);
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
         savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
+       updateChainLaunchDS(application);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED, Event.EventCategory.INFORMATION,
                 appGuid, application.getDisplayName(),String.valueOf(version), "Application saved Successfully");
     }
@@ -357,7 +358,7 @@ public class ApplicationController {
         boolean applicationExists = applicationRepository.applicationExists(application.getGUID(), application.getVersion());
         boolean applicationAnyVersionExists=applicationRepository.applicationExists(application.getGUID(),-1);
 
-        Application oldApp = applicationRepository.readApplication(application.getGUID(), String.valueOf(application.getVersion()));
+        Application oldApp = savedApplicationMap.get(application.getGUID() + Constants.NAME_DELIMITER + String.valueOf(application.getVersion()));
 
             try {
                 applicationRepository.saveApplication(application, userName, handleID, skipManagableProps);
@@ -456,6 +457,7 @@ public class ApplicationController {
             appHandle.setApplication(application);
         }
         savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
+        updateChainLaunchDS(application);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED, Event.EventCategory.INFORMATION,
                 application.getGUID(), application.getDisplayName(), String.valueOf(application.getVersion()), "Application saved Successfully");
     }
@@ -507,7 +509,7 @@ public class ApplicationController {
             String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
             String currentGUID = current_AppGUIDAndVersion[0];
             Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
-            Application currentApplication = applicationRepository.readApplication(currentGUID, String.valueOf(currentVersion));
+            Application currentApplication = savedApplicationMap.get(currentGUID + Constants.NAME_DELIMITER + String.valueOf(currentVersion));
             if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
                     ApplicationHandle appHandle = new ApplicationHandle(this, currentApplication, microServiceLauncher, routeService,transport, securityManager.getUserName(handleID), securityManager.getPassword(handleID));
                     appHandle.createRoutes();
