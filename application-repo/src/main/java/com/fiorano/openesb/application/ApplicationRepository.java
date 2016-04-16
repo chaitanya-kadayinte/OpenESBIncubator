@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by Janardhan on 1/6/2016.
- */
 public class ApplicationRepository {
 
     String applicationRepoPath;
@@ -291,6 +288,9 @@ public class ApplicationRepository {
         String applicationIds[] = new String[appFolders.length];
         int i = 0;
         for (File f : appFolders) {
+            if(appFolders == null || appFolders.length == 0){
+                return new String[0];
+            }
             applicationIds[i++] = f.getName();
         }
         return applicationIds;
