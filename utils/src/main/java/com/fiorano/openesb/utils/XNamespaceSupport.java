@@ -1,30 +1,9 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
-
-
-
-
 package com.fiorano.openesb.utils;
 
 import org.xml.sax.helpers.NamespaceSupport;
 
 import java.util.*;
 
-/**
- * @author Santhosh Kumar T
- * Created On: Sep 24, 2004 1:27:04 PM
- */
 public class XNamespaceSupport extends NamespaceSupport {
     private Hashtable suggestedPrefixes = null;   // <uri, prefix>
 

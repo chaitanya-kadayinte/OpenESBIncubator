@@ -6,9 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * Created by Janardhan on 3/2/2016.
- */
 public class RmiConnectorConfig {
     private static RmiConnectorConfig rmiConnectorConfig = new RmiConnectorConfig();
     private int     rmiRegistryPort=2099;

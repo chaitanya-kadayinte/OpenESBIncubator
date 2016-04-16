@@ -1,15 +1,4 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
+
 
 package com.fiorano.openesb.application.aps;
 
@@ -28,16 +17,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- *  Stores the Application Context (Structure and default instance).
- *
- * @author Amit Gupta
- * @created May 21'st, 2003
- * @version 2.0
- * @see com.fiorano.openesb.application.common.Param
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @since Tifosi2.0
- */
 public class ApplicationContext extends DmiObject implements Serializable
 {
     //  Structural definition of Application Context

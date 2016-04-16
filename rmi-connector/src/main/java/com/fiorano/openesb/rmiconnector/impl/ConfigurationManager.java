@@ -21,9 +21,6 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-/**
- * Created by Janardhan on 3/15/2016.
- */
 public class ConfigurationManager extends AbstractRmiManager implements IConfigurationManager {
     private NamedConfigRepository configurationManager;
     private InstanceHandler handler;

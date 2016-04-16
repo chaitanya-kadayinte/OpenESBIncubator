@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.sps;
 
 import com.fiorano.openesb.application.*;
@@ -26,27 +13,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
-
-/**
- *  Stores information about a service resource such as name and operating
- *  systems for which it is applicable.
- *
- *  <p>A Resource is a file which is required for configuration and execution
- *  of a service. For example, the executable file for a service is a resource.
- *  The Tifosi Peer Server (FPS) fetches all resources for a service from the
- *  service repository on the Tifosi Enterprise Server (TES) and uses them to
- *  launch the service.</p>
- *
- *  <p>Object of this is used in <code>Deployment</code> of a Tifosi service.</p>
- *
- * @author Manoj
- * @created January 5, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.sps.Deployment
- * @see com.fiorano.openesb.application.sps.ServicePropertySheet
- * @since Tifosi2.0
- */
 
 public class Resource extends DmiObject
 {

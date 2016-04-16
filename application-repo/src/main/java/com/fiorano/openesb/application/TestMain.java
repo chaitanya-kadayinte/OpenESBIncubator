@@ -6,9 +6,6 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.File;
 
-/**
- * Created by Janardhan on 1/6/2016.
- */
 public class TestMain {
     public static void main(String [] args){
         try {

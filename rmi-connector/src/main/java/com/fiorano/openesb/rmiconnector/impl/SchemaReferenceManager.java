@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by Janardhan on 3/17/2016.
- */
 public class SchemaReferenceManager extends AbstractRmiManager implements ISchemaReferenceManager {
 
     //Reference to instanceHandler instace.

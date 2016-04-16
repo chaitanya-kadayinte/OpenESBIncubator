@@ -12,9 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Janardhan on 4/4/2016.
- */
 public class PortConfiguration extends Data {
     private Map<String, List<PortInstance>> portInstances;
     public PortConfiguration() {

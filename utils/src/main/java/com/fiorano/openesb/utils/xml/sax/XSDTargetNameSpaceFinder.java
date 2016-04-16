@@ -1,9 +1,5 @@
 package com.fiorano.openesb.utils.xml.sax;
 
-/**
- * Created by Janardhan on 3/21/2016.
- */
-
 import com.fiorano.openesb.utils.SAXUtil;
 import com.fiorano.openesb.utils.sax.NoMoreSAXParsingException;
 import org.xml.sax.Attributes;

@@ -187,7 +187,7 @@ public class ApplicationController {
             for(NamedConfigurationProperty configurationProperty : namedConfigurations){
                 String configurationName = configurationProperty.getConfigurationName();
                 String configurationType = configurationProperty.getConfigurationType();
-                String configurationData = getConfigurationData(configurationName, configurationType, servInstance, serviceInstance.getVersion(), application.getLabel());
+                String configurationData = getConfigurationData(configurationName, configurationType, serviceInstance.getGUID(), serviceInstance.getVersion(), application.getLabel());
 
                 if(configurationData != null)
                     resolvedConfigurations.put(configurationType + "__" + configurationName, configurationData);

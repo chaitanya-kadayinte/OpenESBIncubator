@@ -7,9 +7,6 @@ import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-/**
- * Created by Janardhan on 1/25/2016.
- */
 public class RmiMain {
     public static void main(String [] args){
         System.out.println("Starting the bundle- rmi client");

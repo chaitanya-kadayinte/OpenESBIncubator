@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application;
 
@@ -21,17 +9,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-/**
- *  This class represents a data structure containing objects of
- *  <code>ServiceRemovalInfo</code> class for removed services.
- *
- * @author Administrator
- * @created May 23, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.ServiceRemovalInfo
- * @since Tifosi2.0
- */
 public class ServicesRemovalStatus extends DmiObject
 {
     //status of call for service removal

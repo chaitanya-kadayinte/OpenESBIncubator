@@ -13,9 +13,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.util.Enumeration;
 
-/**
- * Created by root on 3/3/16.
- */
 public class SenderSelector implements RouteOperationHandler<JMSMessage> {
     private String sourceName;
     private String appName_version;

@@ -6,9 +6,6 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class StreamRedirector
         extends Thread
 {

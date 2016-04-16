@@ -4,9 +4,6 @@ import com.fiorano.openesb.utils.UTFReaderWriter;
 
 import java.io.*;
 
-/**
- * Created by Janardhan on 3/2/2016.
- */
 public class MicroServiceRepoUpdateEvent extends SystemEvent {
 
         public final static String SERVICE_CREATED = "Service Created";

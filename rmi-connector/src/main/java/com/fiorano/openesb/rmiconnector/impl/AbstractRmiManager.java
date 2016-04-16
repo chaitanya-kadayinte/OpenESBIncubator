@@ -12,9 +12,6 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-/**
- * Created by Janardhan on 1/27/2016.
- */
 public abstract class AbstractRmiManager implements IDistributedRemoteObject {
 
     protected String handleId="FioranohandleID";

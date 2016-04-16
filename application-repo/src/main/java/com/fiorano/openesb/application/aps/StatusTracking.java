@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.aps;
 
@@ -29,19 +17,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-/**
- *  Tracks the state of any service over specified ports, using vectors
- *  of state objects and port names. For each service instance, one object of
- *  <code>StatusTracking</code> is maintained, if status tracking is enabled.
- *
- * @author Deepak Nohwal.
- * @created January 10, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.State
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @since Tifosi2.0
- */
 public class StatusTracking extends DmiObject
 {
 

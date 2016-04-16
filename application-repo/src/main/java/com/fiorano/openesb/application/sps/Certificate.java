@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.sps;
 
 import com.fiorano.openesb.application.*;
@@ -25,31 +12,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- *  Stores information about the certificate, which is used to sign the
- *  service. An object of <code>Certificate</code> is set as a field in
- *  the object of <code>Security</code>. This object of <code>Security</code>
- *  is a field of </code>ServicePropertySheet</code> for respective service.
- *
- *  <p>This consists of information regarding the usage of the service. A service
- *  can be secure if it is signed by someone and has a valid digital certificate
- *  attached with it. For externally launchable services, security is irrelevant
- *  because the identity of the externally connecting service can not be verified.</p>
- *
- *  <p>A function is the action specifying that a service is certified to perform
- *  and is applicable to certified services only. A user might restrict few
- *  actions to be performed on its node and appropriate checks will be applied
- *  before launching the service.</p>
- *
- * @author Manoj
- * @created January 5, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.sps.Security
- * @see com.fiorano.openesb.application.sps.ServicePropertySheet
- * @since Tifosi2.0
- */
-
 public class Certificate extends DmiObject
 {
     String          m_strSigner;
@@ -58,11 +20,6 @@ public class Certificate extends DmiObject
     String          m_strValidToDate;
 
 
-    /**
-     *  Constructor for the Certificate object
-     *
-     * @since Tifosi2.0
-     */
     public Certificate()
     {
         reset();

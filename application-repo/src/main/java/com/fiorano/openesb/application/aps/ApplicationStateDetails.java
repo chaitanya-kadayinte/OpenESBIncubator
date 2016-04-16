@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.aps;
 
 import com.fiorano.openesb.application.DmiObject;
@@ -28,21 +15,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-/**
- * Contains information on the state of a launched Tifosi application, including
- * the <code>ServiceInstanceStateDetails</code> of all services in the
- * application. This information can be used to monitor the state of a
- * launched application.
- *
- * @author Deepak Nohwal.
- * @version 2.0
- * @created February 6, 2002
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.ServiceInstanceStateDetails
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @see com.fiorano.openesb.utils.exception.FioranoException
- * @since Tifosi2.0
- */
 public class ApplicationStateDetails extends DmiObject {
     private long m_launchTime;
 

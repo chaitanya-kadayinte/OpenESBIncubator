@@ -2,9 +2,6 @@ package com.fiorano.openesb.tools;
 
 import java.io.*;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class StreamRedirector extends Thread {
     // Input Stream
     private InputStream inputStream;

@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.server;
 
 import com.fiorano.openesb.rmiconnector.client.FioranoRMIClientSocketFactory;
@@ -19,13 +7,6 @@ import java.rmi.server.RMIServerSocketFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This is the Master RMI Socket factory of the server. It produces different type of factories on demand.
- * Example usage: It can be used to create instances of ssl socket factories for client and server. This factory is a singleton instance.
- * @author Chander (vishnu)
- * @bundle classes.0.1.provided.for.rmi.server.socket.client.factories.could.not.be.found.returning.default.fiorano.socket.factories=Classes :{0},{1} provided for RMI Server Socket & Client Factories could not be found. Returning default Fiorano socket factories.
- * @bundle returning.fiorano.default.rmi.socketfactories.error.occured.while.creating.instances.of.configured.factory.classes=Returning fiorano default RMI SocketFactories. Error occured while creating instances of configured factory classes
- */
 public class FioranoRMIMasterSocketFactory {
 
     private static FioranoRMIMasterSocketFactory masterfac;

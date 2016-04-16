@@ -1,20 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
-
-
-
-
 package com.fiorano.openesb.utils.sax;
 
 import com.fiorano.openesb.utils.ClarkName;
@@ -38,15 +21,6 @@ import java.util.Hashtable;
 import java.util.Stack;
 import java.util.TreeSet;
 
-/**
- * For the sake of speed, this class does no checking
- * to see,
- *     whether valid element & attribute names are given
- *     whether same attribute is added more than one
- *     whether the sequence of method calles are valid
- * This is the responsibility of the application, who uses this
- * class
- */
 public abstract class AbstractXMLReader implements XMLReader, SAXFeatures, SAXProperties, ContentHandler, ErrorHandler, DTDHandler, EntityResolver, LexicalHandler, DeclHandler {
 
     public static final String SUGGESTED_NAMESPACE_PREFIXES = "SuggestedNamespacePrefixes"; //NOI18N

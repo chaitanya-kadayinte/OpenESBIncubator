@@ -2,9 +2,6 @@ package com.fiorano.openesb.utils;
 
 import java.io.*;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public class MarkableInputStream extends FilterInputStream {
     private byte buff[];
 

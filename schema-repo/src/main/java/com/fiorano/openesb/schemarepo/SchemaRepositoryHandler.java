@@ -33,9 +33,6 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-/**
- * Created by Janardhan on 3/17/2016.
- */
 public class SchemaRepositoryHandler {
     private static final String USER_CATALOG = "user/xml-catalog.xml";
     public static File userCatalogFolder;

@@ -8,9 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 3/3/2016.
- */
 public class ConfigReader {
     public static void readConfigFromPropertiesFile(File configFile, Object configObject) throws IOException, InvocationTargetException, IllegalAccessException {
        if(!configFile.exists()){

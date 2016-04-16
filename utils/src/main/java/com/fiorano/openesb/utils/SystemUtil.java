@@ -5,9 +5,6 @@ import com.sun.management.OperatingSystemMXBean;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public class SystemUtil {
 
     public static Double getProcessCPUUtilization() {

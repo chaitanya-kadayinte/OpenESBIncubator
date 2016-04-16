@@ -16,11 +16,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.concurrent.*;
 
-/**
- * @author : amit,Suresh
- * @version : 2.0
- * @Date : Aug 12, 2008
- */
 public class DapiEventManager implements EventListener {
 
     //Fes Event Manager

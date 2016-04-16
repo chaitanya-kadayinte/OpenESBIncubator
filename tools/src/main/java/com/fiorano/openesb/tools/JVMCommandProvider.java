@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-/**
- * Created by Janardhan on 4/12/2016.
- */
 public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration> {
     private LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration;
     private static String fioranoHomeDir = System.getProperty("karaf.base");

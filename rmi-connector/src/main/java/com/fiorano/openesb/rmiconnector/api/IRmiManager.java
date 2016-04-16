@@ -1,37 +1,8 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.api;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-/**
- * This interface provides methods for login and logout of the enterprise server by rmi clients. For connection to the enterprise server,
- * the rmi clients have to look up this reference from RMI registry and login to the rmi manager. Login method checks the authenticity of user
- * and returns a handle id which has to be passed by the client while performing any operation on server.
- * <br></br>
- * <br>Registry registry = LocateRegistry.getRegistry("localhost", 2047);</br>
- * <br>rmiManager = (IRmiManager) registry.lookup(IRmiManager.class.toString());</br>
- * <br>handleID = rmiManager.login("admin", "passwd");</br>
- * <br></br>
- * <br></br>
- * From this rmiManager reference, client can get various managers such as event process manager, service manager , fps manager. These managers are
- * then used to perform operations on Fiorano event processes, Fiorano services  on the enterprise server.
- * logout method has to be called with the handle id by the client to destroy the connection with the enterprise server.
- *
- * @author FSTPL
- * @version 10
- */
 public interface IRmiManager extends Remote {
 
     /**

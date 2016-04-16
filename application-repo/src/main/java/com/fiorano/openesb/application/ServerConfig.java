@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 3/27/2016.
- */
 public class ServerConfig {
     private String repositoryPath="./esb/server/repository";
     private String runtimeDataPath="./data";

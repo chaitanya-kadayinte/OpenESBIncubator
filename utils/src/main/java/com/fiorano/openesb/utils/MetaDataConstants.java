@@ -1,8 +1,5 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public interface MetaDataConstants {
     //Name of the ConnectURL field in the ConnectionFactory Metadata
     final static String CONNECT_URL = "ConnectURL";

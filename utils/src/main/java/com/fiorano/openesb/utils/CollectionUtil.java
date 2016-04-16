@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public final class CollectionUtil {
     public static final Enumeration EMPTY_ENUMERATION = new EmptyEnumeratorAndIterator();
     public static final Iterator EMPTY_ITERATOR = (Iterator)EMPTY_ENUMERATION;

@@ -10,9 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class CommandGenerator {
 
     private String EventProcessName;

@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.aps;
 
@@ -27,21 +15,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Hashtable;
-
-/**
- *  If an error occurs while launching a service instance, and error handling
- *  is set true for the associated application, this specifies the service instance
- *  and port to which the error should be routed.
- *
- *  <p>This is not supported in the current version of Tifosi.</p>
- *
- * @author Sachin
- * @created January 6, 2002
- * @version 1.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @since Tifosi2.0
- */
 
 public class OnException extends DmiObject
 {

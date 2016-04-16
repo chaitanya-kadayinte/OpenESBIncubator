@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.aps;
 
@@ -30,21 +18,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-/**
- *  Stores information of all the input and output ports as objects of
- *  <code>InPortInst</code> and <code>OutPortInst</code> respectively, for a specific
- *  service instance. It also provides methods to add and remove ports.
- *
- *  <p>Object of this is used in <code>ServicePropertySheet</code> of a service.</p>
- *
- * @author administrator
- * @created January 14, 2002
- * @version 1.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.InPortInst
- * @see com.fiorano.openesb.application.aps.OutPortInst
- * @since Tifosi2.0
- */
 public class PortInstDescriptor extends DmiObject implements Externalizable
 {
     Vector          m_inPorts = new Vector();

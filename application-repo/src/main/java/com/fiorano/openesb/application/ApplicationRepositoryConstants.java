@@ -1,8 +1,5 @@
 package com.fiorano.openesb.application;
 
-/**
- * Created by Janardhan on 3/22/2016.
- */
 public class ApplicationRepositoryConstants
 {
     public static final String APPLICATION_DIR_DEF = "applications";

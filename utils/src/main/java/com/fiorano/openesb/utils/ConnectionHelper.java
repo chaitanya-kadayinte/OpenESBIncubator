@@ -8,9 +8,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Created by Janardhan on 4/3/2016.
- */
 public class ConnectionHelper implements Runnable
 {
     public final static byte CREATE_SOCKET = 0x001;

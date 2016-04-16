@@ -10,9 +10,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 
-/**
- * Created by Janardhan on 3/2/2016.
- */
 public final class FileUtil4 extends FileUtil{
 
     /*-------------------------------------------------[ File <--> COPY ]---------------------------------------------------*/

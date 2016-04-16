@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.microservice.launch.impl.cl;
 
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -21,22 +8,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import java.util.Vector;
-
-
-/**
- * Created by IntelliJ IDEA.
- * author: prasanna
- * Date: Mar 2, 2006
- * Time: 11:02:45 PM
- * To change this template use File | Settings | File Templates.
- *
- * @author PRasanna
- * @created March 3, 2006
- * @version 1.0
- */
-// Join Class Loader. Maintains a list of ClassLoader iterates through them and
-// tries to locate the specified class. It helps in creating a ClassLoaders with
-// multiple parents which otherwise would not be possible according to JDK implementation - prasanna
 
 public class JoinClassLoader extends ClassLoader
 {

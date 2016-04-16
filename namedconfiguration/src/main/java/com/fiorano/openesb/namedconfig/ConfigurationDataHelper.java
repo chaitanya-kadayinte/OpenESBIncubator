@@ -6,9 +6,6 @@ import com.fiorano.openesb.application.DmiObjectTypes;
 import com.fiorano.openesb.application.configuration.data.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-/**
- * Created by Janardhan on 3/15/2016.
- */
 public class ConfigurationDataHelper {
     public static DmiObject getDataModelObject(int objectType) throws FioranoException {
         switch (objectType) {

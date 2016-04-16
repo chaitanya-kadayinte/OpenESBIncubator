@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.aps;
 
@@ -32,36 +20,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/**
- *  Stores the properties and runtime arguments of a service instance. This
- *  information is used to create a <code>ServiceLaunchPacket</code> for
- *  launching the service instance.
- *
- * @author Sachin
- * @created January 6, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.Monitor
- * @see com.fiorano.openesb.application.aps.LogModules
- * @see com.fiorano.openesb.application.aps.RuntimeArgs
- * @see com.fiorano.openesb.application.aps.EndState
- * @see com.fiorano.openesb.application.aps.StatusTracking
- * @see com.fiorano.openesb.application.common.Param
- * @see com.fiorano.openesb.application.aps.ServiceInstances
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @see com.fiorano.openesb.utils.exception.FioranoException
- * @since Tifosi2.0
- */
-
-/**
- * @author Prasanna
- * @created Aug 09, 2005
- * @version 1.0
- * @fiorano.xmbean
- * @jmx.mbean
- * @name="Service Instance"
- * @description = "Contains information about a service instance."
- */
 public class ServiceInstance extends DmiObject
 {
     /**

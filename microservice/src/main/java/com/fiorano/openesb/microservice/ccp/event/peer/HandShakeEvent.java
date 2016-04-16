@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.microservice.ccp.event.peer;
 
 
@@ -20,14 +7,6 @@ import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 
-/**
- * This class represents the hand shake event sent by Peer Server to component. A hand-shake is done
- * to determine whether component supports CCP or not along with the version of CCP supported.<br><br>
- *
- * @see com.fiorano.openesb.microservice.ccp.event.CCPEventType#HANDSHAKE_INITIATE
- * @author FSTPL
- * @version 10
- */
 public class HandShakeEvent extends ControlEvent {
     private double minVersionSupported = 1.0;
     private double maxVersionSupported = 1.0;

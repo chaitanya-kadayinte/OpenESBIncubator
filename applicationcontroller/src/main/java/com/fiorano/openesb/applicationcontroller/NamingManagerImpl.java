@@ -11,9 +11,6 @@ import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by Janardhan on 3/25/2016.
- */
 public class NamingManagerImpl {
     //  State indicators for various Admin Name entries
     private final static byte VALID_ENTRY = (byte) 0x00;

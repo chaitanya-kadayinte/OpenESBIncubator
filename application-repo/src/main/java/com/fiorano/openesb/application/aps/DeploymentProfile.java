@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.aps;
 
 import com.fiorano.openesb.application.DmiErrorCodes;
@@ -30,14 +17,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Stores information about a specific deployment profile.
- * Profile is a set of configurational parameters.
- *
- * @author Prasanna R
- * @created Dec 08, 2006
- * @version 1.0
- */
 public class DeploymentProfile  extends DmiObject
 {
     // name of the deployment profile

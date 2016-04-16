@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.microservice.ccp.event.common.data;
 
 import javax.jms.BytesMessage;
@@ -20,13 +7,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * Data class is an abstract class which represents all forms of data sent by components to Peer Server
- * via CCP channel. Data is generally sent by components in response to {@link com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent}
- * event from Peer Server.
- * @author FSTPL
- * @version 10
- */
 public abstract class Data implements Serializable {
 
     /**

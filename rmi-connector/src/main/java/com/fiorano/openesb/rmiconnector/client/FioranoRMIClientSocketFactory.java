@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.client;
 
 import java.io.IOException;
@@ -27,15 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Default Fiorano RMI Client Socket Factory.
- * The socket timeout on sockets created here is 120000 milli seconds by default. Clients wishing
- * to override this value, should set the System property "FIORANO_RMI_CALL_TIMEOUT".
- * This should be done before any remote calls are made by the client.
- * Example: System.setProperty("FIORANO_RMI_CALL_TIMEOUT","150000");  [value to be in milliseconds]
- * @see  fiorano.rmi.serverfac.def.FioranoRMIServerSocketFactory
- * @author Chander (Vishnu)
- */
 public class FioranoRMIClientSocketFactory implements Serializable, RMIClientSocketFactory {
 
     public final String socketFactoryID ="FioranoRMIClientDef";

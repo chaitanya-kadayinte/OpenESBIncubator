@@ -6,9 +6,6 @@ import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Created by Janardhan on 4/4/2016.
- */
 public class RouteEvent extends ApplicationEvent{
     private String m_routeGUID;
 

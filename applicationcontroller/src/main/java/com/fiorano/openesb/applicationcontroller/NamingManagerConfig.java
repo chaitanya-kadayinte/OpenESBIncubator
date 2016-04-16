@@ -1,8 +1,5 @@
 package com.fiorano.openesb.applicationcontroller;
 
-/**
- * Created by Janardhan on 3/25/2016.
- */
 public class NamingManagerConfig {
 
     private static final long serialVersionUID = 1269276345532736745L;

@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.aps;
 
@@ -30,21 +18,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/**
- *  Contains information on all service instances in an application as a vector
- *  of <code>ServiceInstance</code> objects and provides methods to add and remove
- *  service instance information.
- *
- * @author Sachin
- * @created January 6, 2002
- * @version 1.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.ServiceInstance
- * @see com.fiorano.openesb.application.aps.ExternalServiceInstance
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @see com.fiorano.openesb.utils.exception.FioranoException
- * @since Tifosi2.0
- */
 public class ServiceInstances extends DmiObject
 {
     Vector          m_serviceInstances = new Vector();

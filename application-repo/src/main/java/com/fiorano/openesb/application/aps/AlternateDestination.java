@@ -1,15 +1,4 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
+
 
 package com.fiorano.openesb.application.aps;
 
@@ -28,27 +17,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Hashtable;
 
-/**
- *  Stores information about the service instance to which messages that fail
- *  the transformation defined over a <code>Route</code> are sent. <p>
- *
- *  Object of <code>AlternateDestination</code> is a field in <code>Route</code>
- *  .</p> <p>
- *
- *  Messages are sent to this <code>AlternateDestination</code> if
- *  transformation on the associated <code>Route</code> fails. No transformation
- *  is applied on messages sent to this destination. This information maybe used
- *  by the <code>ServiceHandle</code> for routing messages.</p>
- *
- * @author Administrator
- * @created June 15, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.Route
- * @see com.fiorano.openesb.application.aps.Routes
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @since Tifosi2.0
- */
 public class AlternateDestination extends DmiObject
 {
 

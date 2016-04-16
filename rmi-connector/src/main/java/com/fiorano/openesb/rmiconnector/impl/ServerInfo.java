@@ -4,9 +4,6 @@ import com.fiorano.openesb.application.SystemInfo;
 import com.fiorano.openesb.application.TESPerformanceStats;
 import com.fiorano.openesb.utils.SystemUtil;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public class ServerInfo
 {
 

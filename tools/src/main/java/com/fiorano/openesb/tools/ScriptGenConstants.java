@@ -1,8 +1,5 @@
 package com.fiorano.openesb.tools;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public interface ScriptGenConstants {
 
     //properties

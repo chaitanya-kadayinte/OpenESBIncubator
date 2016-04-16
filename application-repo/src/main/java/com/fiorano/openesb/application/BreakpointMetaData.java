@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-/**
- * Created by Janardhan on 3/24/2016.
- */
 public class BreakpointMetaData implements Serializable {
     private static final long serialVersionUID = 5893167129302990073L;
     private Map<String, String> connectionProperties;

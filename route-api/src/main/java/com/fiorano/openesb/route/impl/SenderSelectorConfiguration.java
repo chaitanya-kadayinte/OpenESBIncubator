@@ -2,9 +2,6 @@ package com.fiorano.openesb.route.impl;
 
 import com.fiorano.openesb.route.RouteOperationConfiguration;
 
-/**
- * Created by root on 3/3/16.
- */
 public class SenderSelectorConfiguration extends RouteOperationConfiguration {
     private String sourceName;
     private String appName_version;

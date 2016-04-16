@@ -1,20 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
-
-
-
-
 package com.fiorano.openesb.utils.sax;
 
 import org.xml.sax.Attributes;
@@ -24,11 +7,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import java.io.CharArrayWriter;
 
-/**
- * XMLFilter which removes the unwanted whitespaces from xml
- *
- * @author Santhosh Kumar T
- */
 public class XMLTrimFilter extends XMLFilterImpl {
     protected final CharArrayWriter contents = new CharArrayWriter();
 

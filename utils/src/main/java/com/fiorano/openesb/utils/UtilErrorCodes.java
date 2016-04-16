@@ -1,8 +1,5 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public class UtilErrorCodes {
     public static final String ERR_SIZE_LIMIT_EXCEEDED_ERROR = "SIZE_LIMIT_EXCEEDED_ERROR";
 

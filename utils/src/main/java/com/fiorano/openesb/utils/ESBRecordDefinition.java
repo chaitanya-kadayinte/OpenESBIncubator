@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
-/**
- * Created by Janardhan on 3/21/2016.
- */
 public class ESBRecordDefinition implements LSResourceResolver, EntityResolver, ISchema {
 
     //default is XSD

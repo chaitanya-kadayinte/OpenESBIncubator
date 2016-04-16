@@ -2,21 +2,6 @@ package com.fiorano.openesb.microservice.ccp.event;
 
 import com.fiorano.openesb.microservice.ccp.event.EventFactory;
 
-/**
- * Each event in CCP implementation is represented by a unique string known as Event Type for that particular event.
- * Event Type value can take one of the value specified in this enumeration. Passing an object of this class to
- * {@link EventFactory} returns a new event of that particular type.<br><br>
- *
- * Available event types are:<br>
- * <ul>{@link #DATA_REQUEST}</ul>
- * <ul>{@link #DATA}</ul>
- * <ul>{@link #HANDSHAKE_INITIATE}</ul>
- * <ul>{@link #HANDSHAKE_ACK}</ul>
- * <ul>{@link #COMMAND}</ul>
- * <ul>{@link #STATUS}</ul>
- * @author FSTPL
- * @version 10
- */
 public enum CCPEventType {
 
     /**

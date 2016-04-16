@@ -8,9 +8,6 @@ import com.fiorano.openesb.utils.logging.api.FioranoClientLogger;
 
 import java.util.Map;
 
-/**
- * Created by Janardhan on 4/12/2016.
- */
 public class ManualLaunchProcessRuntimeHandle extends SeparateProcessRuntimeHandle {
 
     protected ManualLaunchProcessRuntimeHandle(LaunchConfiguration launchConfiguration, CCPCommandHelper ccpCommandHelper) throws FioranoException {

@@ -16,9 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Janardhan on 4/12/2016.
- */
 public abstract class CommandProvider<J extends AdditionalConfiguration>{
 
     protected abstract List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception;

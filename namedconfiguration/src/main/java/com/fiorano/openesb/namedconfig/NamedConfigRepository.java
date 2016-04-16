@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by Janardhan on 3/15/2016.
- */
 public class NamedConfigRepository  {
     private String repositoryPath;
     private ArrayList<ConfigurationRepositoryEventListener> eventListeners = new ArrayList<ConfigurationRepositoryEventListener>();
