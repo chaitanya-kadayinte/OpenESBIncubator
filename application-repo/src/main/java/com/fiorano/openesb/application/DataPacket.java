@@ -1,43 +1,9 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application;
 
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.util.Enumeration;
-
-/**
- *  Data coming from any service is packed inside the <code>DataPacket</code>
- *  along with the control information and sent across the network. <p>
- *
- *  From the Tifosi Service's point of view, the data is sent in the form of a
- *  <code>TifosiDocument</code> but the user needs to use this object in case of
- *  Debug Messages that are received in the form of <code>DataPacket</code>
- *  objects. <p>
- *
- *  The <code>getValue</code> method of this class can be used to get the <code>TifosiDocument</code>
- *  which contains the message to be debugged.
- *
- * @author Manoj
- * @created January 28, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.DmiRequesterInfo
- * @see com.fiorano.openesb.application.DmiCarryForwardContext
- * @see com.fiorano.openesb.application.DmiSourceContext
- * @since Tifosi 1.0
- */
 
 public class DataPacket extends DmiObject implements  Cloneable
 {

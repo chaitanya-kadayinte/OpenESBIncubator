@@ -1,8 +1,5 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 4/4/2016.
- */
 public class ComponentErrorCodes {
     public static final String INVALID_CONFIGURATION = "INVALID_CONFIGURATION";
     public static final String INVALID_COMPONENT_REPPATH = "INVALID_COMPONENT_REPPATH";

@@ -9,9 +9,6 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 
-/**
- * Created by Janardhan on 1/27/2016.
- */
 public class InstanceHandler {
     //Rmi Manager Instance
     private RmiManager rmiManager;

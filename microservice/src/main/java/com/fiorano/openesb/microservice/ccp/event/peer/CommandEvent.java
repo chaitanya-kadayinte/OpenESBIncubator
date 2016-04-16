@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.microservice.ccp.event.peer;
 
 
@@ -22,16 +9,6 @@ import javax.jms.JMSException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class represents a command event sent by Peer Server to components e.g. 'shutdown command' or
- * 'Set Log Level' command etc. Component Process should acknowledge these commands by sending appropriate status event(s)
- * indicating the result of the operation performed for this command.<br><br>
- *
- * @see com.fiorano.openesb.microservice.ccp.event.CCPEventType#COMMAND
- *
- * @author FSTPL
- * @version 10
- */
 public class CommandEvent extends ControlEvent {
     private Command command;
     private Map<String, String> arguments;

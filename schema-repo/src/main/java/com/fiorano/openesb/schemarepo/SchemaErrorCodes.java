@@ -1,8 +1,5 @@
 package com.fiorano.openesb.schemarepo;
 
-/**
- * Created by Janardhan on 3/17/2016.
- */
 public interface SchemaErrorCodes {
     String REQUEST_HANDLER_NOT_FOUND = "REQUEST_HANDLER_NOT_FOUND";
     String ERROR_UNKNOWN_SCHEMA_REPOSITORY_SYNC_TYPE = "ERROR_UNKNOWN_SCHEMA_REPOSITORY_SYNC_TYPE";

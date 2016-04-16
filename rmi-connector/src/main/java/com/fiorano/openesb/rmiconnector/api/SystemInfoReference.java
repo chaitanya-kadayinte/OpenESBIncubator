@@ -1,30 +1,7 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.api;
 
 import java.io.Serializable;
 
-/**
- *  This class represents system information such as name and version of the operating
- *  system, version of JRE specification and implementation, vendor of JRE
- *  implementation, version of JVM specification and implementation, vendor and
- *  name of JVM implementation.
- *
- *  <p>All the information pertaining to the system is returned in the form
- *  of <code>SystemInfoReference</code>.
- *  @author FSTPL
- *  @version 10
- */
 public class SystemInfoReference  implements Serializable {
 
 

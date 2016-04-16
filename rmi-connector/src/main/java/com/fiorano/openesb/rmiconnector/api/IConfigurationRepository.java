@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by Janardhan on 3/8/2016.
- */
 public interface IConfigurationRepository {
     /**
      * API to persist a named configuration into the registry

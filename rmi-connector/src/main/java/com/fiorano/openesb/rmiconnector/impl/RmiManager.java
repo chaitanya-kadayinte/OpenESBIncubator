@@ -25,9 +25,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.*;
 import java.util.*;
 
-/**
- * Created by Janardhan on 1/22/2016.
- */
 public class RmiManager implements IRmiManager{
 
     Map<String, InstanceHandler> handlerMap = new HashMap<String, InstanceHandler>();

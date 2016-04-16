@@ -12,9 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public class ServerManager {
 
     private static ServerManager serverManager;

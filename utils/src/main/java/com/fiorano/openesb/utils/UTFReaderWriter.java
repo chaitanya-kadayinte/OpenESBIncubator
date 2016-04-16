@@ -1,9 +1,5 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

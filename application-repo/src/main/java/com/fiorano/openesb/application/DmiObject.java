@@ -1,15 +1,4 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
+
 package com.fiorano.openesb.application;
 
 import com.fiorano.openesb.application.application.ManageableProperty;
@@ -33,17 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-/**
- *  Declares base methods which are implemented by all types of DMI objects.
- *  This is the base class for all data structures that are used within Fiorano
- *  system.
- *
- * @author Manoj
- * @created December 18, 2001
- * @version 2.0
- * @since Tifosi 1.0
- */
 
 public abstract class DmiObject implements Serializable
 {

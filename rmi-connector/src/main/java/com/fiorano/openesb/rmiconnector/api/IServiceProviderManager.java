@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.api;
 
 import java.rmi.RemoteException;
@@ -17,12 +5,6 @@ import java.rmi.Remote;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This interface provides methods to get various details of the Fiorano Enterprise Server.
- * The server can be shutdown/restarted using the api(s) present in this interface.
- * @author FSTPL
- * @version 10
- */
 public interface IServiceProviderManager extends Remote {
 
     public Map<String, String> getConnectionProperties();

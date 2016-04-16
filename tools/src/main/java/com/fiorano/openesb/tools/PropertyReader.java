@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class PropertyReader {
     private ServiceManualLauncher ServiceManualLauncher;
 

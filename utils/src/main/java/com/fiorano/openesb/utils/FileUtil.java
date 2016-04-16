@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by Janardhan on 1/27/2016.
- */
 public class FileUtil{
     public static final File USER_DIR = new File(System.getProperty("user.dir")); //NOI18N
     public static final File USER_HOME = new File(System.getProperty("user.home")); //NOI18N

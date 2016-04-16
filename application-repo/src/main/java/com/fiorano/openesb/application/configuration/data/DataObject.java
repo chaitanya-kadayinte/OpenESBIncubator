@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.configuration.data;
 
@@ -21,11 +9,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * @author FSTPL
- * @version 10
- * @since Jun 21, 2010 3:41:47 PM
- */
 public class DataObject extends DmiObject {
     private String name;
     private Label label;
@@ -33,9 +16,6 @@ public class DataObject extends DmiObject {
     private DataType dataType;
     private byte[] data;
 
-    /**
-     * Default Constructor
-     */
     public DataObject() {}
 
     /**

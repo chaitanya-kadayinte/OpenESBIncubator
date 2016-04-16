@@ -21,9 +21,6 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.util.*;
 
-/**
- * Created by Janardhan on 1/20/2016.
- */
 public class RmiConnector {
     private RMIServerSocketFactory ssf;
     private RMIClientSocketFactory csf;

@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.utils.io;
 
 import java.io.*;
@@ -18,13 +5,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.UnsupportedCharsetException;
 
-
-/**
- * Reads lines in a file reversely (similar to a BufferedReader, but starting at
- * the last line). Useful for e.g. searching in log files.
- *
- * @since 2.2
- */
 public class ReverseLineReader implements Closeable {
 
     private final int blockSize;

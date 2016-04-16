@@ -1,8 +1,5 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 3/2/2016.
- */
 public class Constants {
 
     public static final int INITIAL_CAPACITY = 5;

@@ -7,9 +7,6 @@ import java.io.*;
 import java.util.Hashtable;
 import java.util.Stack;
 
-/**
- * Created by Janardhan on 3/19/2016.
- */
 public class FioranoStaxParser extends StreamReaderDelegate {
     // This is the internal parser instance, which will be move forward while parsing.
     private XMLStreamReader cursor = null;

@@ -6,9 +6,6 @@ import com.fiorano.openesb.events.MicroServiceRepoUpdateEvent;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.osgi.framework.FrameworkUtil;
 
-/**
- * Created by Janardhan on 3/25/2016.
- */
 public class MicroServiceRepoEventRaiser {
     static EventsManager eventsManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     public static void generateServiceRepositoryEvent(String serviceGUID,

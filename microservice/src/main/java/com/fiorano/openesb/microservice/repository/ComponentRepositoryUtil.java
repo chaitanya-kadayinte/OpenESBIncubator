@@ -7,9 +7,6 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by Janardhan on 3/1/2016.
- */
 public class ComponentRepositoryUtil {
         public static void copyStream(InputStream in, OutputStream out)
         throws FioranoException {

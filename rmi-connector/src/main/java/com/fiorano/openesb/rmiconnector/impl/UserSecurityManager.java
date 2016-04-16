@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public class UserSecurityManager extends AbstractRmiManager implements IUserSecurityManager {
 
     protected SecurityManager userSecurityManager;

@@ -4,9 +4,6 @@ import com.fiorano.openesb.events.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.osgi.framework.FrameworkUtil;
 
-/**
- * Created by Janardhan on 3/24/2016.
- */
 public class ApplicationEventRaiser {
     static EventsManager eventsManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     public static void generateApplicationEvent(ApplicationEvent.ApplicationEventType eventType, Event.EventCategory category, String appGUID,

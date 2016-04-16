@@ -9,9 +9,6 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by Janardhan on 3/17/2016.
- */
 public class SchemaRepository {
 
     // SingleTon Instance

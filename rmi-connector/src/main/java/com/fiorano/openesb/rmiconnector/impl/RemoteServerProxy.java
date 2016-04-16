@@ -10,9 +10,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.Unreferenced;
 import java.util.HashMap;
 
-/**
- * Created by Janardhan on 1/27/2016.
- */
     public class RemoteServerProxy extends UnicastRemoteObject implements IRemoteServerProxy, Unreferenced {
 
 

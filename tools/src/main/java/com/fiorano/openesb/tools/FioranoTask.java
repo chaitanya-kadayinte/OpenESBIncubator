@@ -6,9 +6,6 @@ import org.apache.tools.ant.Task;
 
 import java.io.File;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public abstract class FioranoTask extends Task implements ConfigurationRepoConstants {
     protected RmiLoginInfo loginInfo;
     protected static ErrorMessage consoleErr=new ErrorMessage() ;

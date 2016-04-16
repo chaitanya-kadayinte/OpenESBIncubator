@@ -16,9 +16,6 @@ import java.util.zip.ZipOutputStream;
 
 import static com.fiorano.openesb.application.constants.ConfigurationRepoConstants.*;
 
-/**
- * Created by Janardhan on 3/15/2016.
- */
 public class NamedConfigurationUtil {
 
     private static final  String separator = File.separator;

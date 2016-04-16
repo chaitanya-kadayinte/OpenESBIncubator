@@ -1,30 +1,8 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application;
 
 import com.fiorano.openesb.utils.exception.FioranoException;
 
-/**
- *  The class <code>DmiResourceData</code> represents the data for a service
- *  resource. It consists of the start and end offset of the bytes for the
- *  resource and also the name of the resource.
- *
- * @author Manoj
- * @created December 27, 2001
- * @version 1.0
- * @since Tifosi 2.0
- */
 
 public class DmiResourceData extends DmiObject
 {

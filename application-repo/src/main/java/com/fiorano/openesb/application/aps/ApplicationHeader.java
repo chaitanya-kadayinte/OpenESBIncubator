@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.aps;
 
 import com.fiorano.openesb.application.*;
@@ -31,30 +18,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- *  Stores the header information for an application that identifies it in the
- *  <code>ApplicationRepository</code>. The header information includes:
- *
- *  <oltype='a'>
- *    <li> ApplicationGUID</li>
- *    <li> Name of this application</li>
- *    <li> Authors</li>
- *    <li> Creation Date</li>
- *    <li> Version</li>
- *    <li> Icon</li>
- *    <li> Short Description</li>
- *    <li> Long Description</li>
- *    <li> Category</li>
- *    <li> Scope of the application.</li>
- *  </ol>
- *
- * @author Deepak Nohwal.
- * @created January 11, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.common.Param
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @since Tifosi2.0
- */
 public class ApplicationHeader extends DmiObject
 {
     public static final SimpleDateFormat CREATION_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");

@@ -13,9 +13,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 1/25/2016.
- */
 public class RmiClient {
 
     public IRmiManager rmiManager;

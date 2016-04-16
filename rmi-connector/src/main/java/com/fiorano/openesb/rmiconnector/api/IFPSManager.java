@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.api;
 
 
@@ -18,13 +6,6 @@ import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/**
- * This interface provides methods to get various details of a Fiorano peer Server.
- * Also, one can register a listener for notifications when server(ESB/FPS) state changes using this interface.
- *
- * @author FSTPL
- * @version 10
- */
 public interface IFPSManager extends Remote {
 
     /**

@@ -14,9 +14,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class RmiClient {
     IRmiManager rmiManager;
     IApplicationManager applicationManager;

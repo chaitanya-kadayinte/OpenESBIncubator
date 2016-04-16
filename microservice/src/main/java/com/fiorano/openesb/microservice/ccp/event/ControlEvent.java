@@ -4,15 +4,6 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.util.Date;
 
-
-/**
- * This class represents general notion of an event with respect to Component Control Protocol.
- * With this protocol, all communication between Peer Server and components happens in the
- * form of events i.e. Peer Server sends commands/requests to component process and component
- * process sends information/status messages to Peer Server.
- * @author FSTPL
- * @version 10
- */
 public abstract class ControlEvent {
 
     /**

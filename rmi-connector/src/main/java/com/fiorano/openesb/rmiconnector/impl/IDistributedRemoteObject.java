@@ -5,9 +5,6 @@ import com.fiorano.openesb.rmiconnector.api.ServiceException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
-/**
- * Created by Janardhan on 1/27/2016.
- */
 public interface IDistributedRemoteObject {
 
     /**

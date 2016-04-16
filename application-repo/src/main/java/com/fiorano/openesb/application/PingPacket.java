@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application;
 
@@ -17,16 +5,6 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 
 import java.io.*;
 
-
-/**
- *  Class represents a Ping Packet which is sent by Tifosi Peer Servers(FPS) at
- *  regular intervals to Tifosi Enterprise Server(TES). These ping packet are
- *  used by TES to maintain information about alive FPS.
- *
- * @author Administrator
- * @created 23rd July 2002
- * @version 1.0
- */
 
 public class PingPacket extends DmiObject
 {

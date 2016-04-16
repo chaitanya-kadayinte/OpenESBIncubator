@@ -5,9 +5,6 @@ import com.fiorano.openesb.route.SelectorConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by root on 2/29/16.
- */
 public class XmlSelectorConfiguration extends SelectorConfiguration {
 
     private String xpath;

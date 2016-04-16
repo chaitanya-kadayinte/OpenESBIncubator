@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.microservice.ccp.event.common.data;
 
@@ -20,13 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class ComponentStats extends Data {
-    @Override
-    /**
-     * Returns the data type for the data represented by this object.
-     *
-     * @return DataType - Data type value for this data object i.e. i.e. {@link com.fiorano.openesb.microservice.ccp.event.common.data.Data.DataType#COMPONENT_STATS}
-     * @see com.fiorano.openesb.microservice.ccp.event.common.data.Data.DataType
-     */
+
     public DataType getDataType() {
         return DataType.COMPONENT_STATS;
     }

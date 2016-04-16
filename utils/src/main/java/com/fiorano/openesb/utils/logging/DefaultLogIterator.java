@@ -1,20 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
-
-
-
-
 package com.fiorano.openesb.utils.logging;
 
 
@@ -24,29 +7,6 @@ import com.fiorano.openesb.utils.logging.api.ILogIterator;
 import java.io.*;
 import java.nio.charset.Charset;
 
-/**
- * Provides Iterates a log directory
- *
- * @author FSIPL
- * @created June 22, 2005
- * @version 1.0
- * @bundle log_dir_does_not_exist=Log Dir {0} does not exists
- * @bundle No_file_found=Log Dir {0} : No file found
- * @bundle File_list_size=Log Dir {0} : Num Files {1}
- * @bundle Next_Log_File=Log Dir {0} : Next Log File {1}
- * @bundle Next_Log_File_equals_current_file=Log Dir {0} : Next Log File equals current file
- * @bundle m_currentFile=Log Dir {0} : m_currentFile {1}
- * @bundle Current_file_has_data=Log Dir {0} : Current file has data /? true
- * @bundle Current_file_is_empty=Log Dir {0} : Current file is empty /? true
- * @bundle Read_data=Log Dir {0} : Read Data {1}
- * @bundle creating_file_log_handler={0} : Creating File Log Handler with outFile {1} and errorFile {2}
- * @bundle clearing_error_log_files={0} : Clearing error log files {1}
- * @bundle clearing_out_log_files={0} : Clearing out log files {1}
- * @bundle cleared_log_file=Log file {0} cleared {1}
- * @bundle removing_handlers={0} : Removing Handlers {1}
- * @bundle removed_handler={0} : Removed Handler {1}
- * @bundle adding_handler={0} : Adding Handler {1}
- */
 public class DefaultLogIterator implements ILogIterator
 {
     // log owner

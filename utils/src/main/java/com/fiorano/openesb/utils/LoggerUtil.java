@@ -5,11 +5,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.logging.Handler;
 
-/**
- * Utilities to create unique logger and logger names for components
- *
- * @author Venkat
- */
 public final class LoggerUtil {
     static String JNDI_CONSTANT = "__";
     static String LOG_NAME_SEPARATOR = ".";

@@ -1,8 +1,5 @@
 package com.fiorano.openesb.application.constants;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public interface ConfigurationRepoConstants {
     public static final String CONFIGURATIONS_DIR = "configurations";
     public static final String ELEM_CONFIGURATION = "configuration";

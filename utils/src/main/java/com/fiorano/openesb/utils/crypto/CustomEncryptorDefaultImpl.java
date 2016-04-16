@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.utils.crypto;
 
 import sun.misc.BASE64Decoder;
@@ -23,13 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: hari
- * Date: 12/5/12
- * Time: 2:29 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CustomEncryptorDefaultImpl implements ICustomEncryptor {
 
     private SecretKeySpec SkeySpec;

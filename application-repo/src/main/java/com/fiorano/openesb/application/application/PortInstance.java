@@ -1,15 +1,4 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
+
 package com.fiorano.openesb.application.application;
 
 import com.fiorano.openesb.application.DmiObjectTypes;
@@ -27,12 +16,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.*;
 
-/**
- *  This class extends DMI Representation of a port of a service instance by defining properties like
- *  destination type, username for proxy, security manager etc.
- * @author FSTPL
- * @version 10
- */
 public class PortInstance extends Port{
     /**
      * Element port-instance in event process xml

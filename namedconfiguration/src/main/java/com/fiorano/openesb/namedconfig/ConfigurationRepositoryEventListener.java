@@ -2,9 +2,6 @@ package com.fiorano.openesb.namedconfig;
 
 import com.fiorano.openesb.application.configuration.data.NamedObject;
 
-/**
- * Created by Janardhan on 3/15/2016.
- */
 public interface ConfigurationRepositoryEventListener {
 
     /**

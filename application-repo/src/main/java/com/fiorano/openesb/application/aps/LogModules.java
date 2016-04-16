@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.aps;
 
@@ -28,15 +16,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
-
-/**
- * This class stores a list of all the <code>ApsLogModule</code> which are
- * specified for a particular service instance of an application.
- *
- * @author Manoj
- * @created August 9, 2002
- * @version 2.0
- */
 
 public class LogModules extends DmiObject
 {

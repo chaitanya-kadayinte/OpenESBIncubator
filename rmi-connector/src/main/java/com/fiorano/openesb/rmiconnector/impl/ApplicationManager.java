@@ -23,9 +23,6 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by Janardhan on 1/22/2016.
- */
 public class ApplicationManager extends AbstractRmiManager implements IApplicationManager {
     private ApplicationController applicationController;
 

@@ -5,9 +5,6 @@ import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Janardhan on 1/27/2016.
- */
 public class JavaUtil{
     public static final String JAVA_VERSION = System.getProperty("java.version"); //NOI18N
     public static final List KEY_WORDS = Arrays.asList(new String[]{

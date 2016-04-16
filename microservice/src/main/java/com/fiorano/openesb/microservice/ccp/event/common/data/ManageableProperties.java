@@ -7,9 +7,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.HashMap;
 
-/**
- * Created by Janardhan on 4/4/2016.
- */
 public class ManageableProperties extends Data {
 
     private HashMap<String, ConfigurationProperty> manageableProperties;

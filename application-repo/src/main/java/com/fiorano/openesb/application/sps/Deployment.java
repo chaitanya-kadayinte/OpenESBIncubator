@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.sps;
 
 import com.fiorano.openesb.application.*;
@@ -26,24 +13,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
-
-/**
- *  Stores information required for deploying a service, such as libraries and
- *  resources used by the service, the platforms on which it can be launched and ,
- *  whether the service is autoinstallable.
- *
- *  <p>An object of this is used by <code>ServicePropertySheet</code> for
- *  deploying the service.</p>
- *
- * @author Manoj
- * @created January 5, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.sps.Resource
- * @see com.fiorano.openesb.application.sps.ServiceDependency
- * @see com.fiorano.openesb.application.sps.ServicePropertySheet
- * @since Tifosi2.0
- */
 
 public class Deployment extends DmiObject
 {

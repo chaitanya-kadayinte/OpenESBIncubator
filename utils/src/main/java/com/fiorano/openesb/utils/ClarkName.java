@@ -2,9 +2,6 @@ package com.fiorano.openesb.utils;
 
 import javax.xml.namespace.QName;
 
-/**
- * Created by Janardhan on 1/6/2016.
- */
 public final class ClarkName{
     public static String toClarkName(String uri, String name){
         return uri!=null && uri.length()>0

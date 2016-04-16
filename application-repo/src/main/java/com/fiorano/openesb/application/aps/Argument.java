@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.aps;
 
 import com.fiorano.openesb.application.*;
@@ -26,25 +13,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Hashtable;
-
-/**
- *  Stores runtime arguments for a service instance, in the form of name-value
- *  pairs and provides methods to access this information. If any information
- *  besides the name-value pairs needs to be specified, the <code>isAdvanced</code>
- *  attribute should be set.
- *
- *  <p>This class may be used whenever some runtime parameters are to be passed
- *  to a service instance. Object of <code>Argument</code> is an attribute
- *  of <code>RuntimeArgs</code>.
- *
- * @author Manoj
- * @created January 6, 2002
- * @version 1.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.aps.RuntimeArgs
- * @see com.fiorano.openesb.application.aps.ApplicationPropertySheet
- * @since Tifosi2.0
- */
 
 public class Argument extends DmiObject
 {

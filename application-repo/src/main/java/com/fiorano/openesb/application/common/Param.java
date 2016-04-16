@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 
 package com.fiorano.openesb.application.common;
 
@@ -31,19 +19,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/**
- * Represents an object containing a name-value pair for inserting
- * additional information into an existing XML structure.
- * <p/>
- * This is a generic data structure for storing any name value pair that is
- * used by several DMI objects.
- *
- * @author Deepak Nohwal.
- * @version 2.0
- * @created January 12, 2002
- * @see com.fiorano.openesb.utils.exception.FioranoException
- * @since Tifosi2.0
- */
 public class Param extends DmiObject{
 
     public Param(String paramName, String paramValue){

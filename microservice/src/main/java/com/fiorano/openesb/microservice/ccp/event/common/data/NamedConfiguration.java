@@ -7,9 +7,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.HashMap;
 
-/**
- * Created by Janardhan on 4/4/2016.
- */
 public class NamedConfiguration extends Data {
     private HashMap<String, String> namedConfigurations;
 

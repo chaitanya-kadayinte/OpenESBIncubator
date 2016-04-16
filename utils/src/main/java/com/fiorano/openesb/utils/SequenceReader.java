@@ -5,9 +5,6 @@ import java.io.Reader;
 import java.util.Enumeration;
 import java.util.Vector;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public class SequenceReader extends Reader {
     private Enumeration e;
     private Reader in;

@@ -20,9 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public class ServiceProviderManager extends AbstractRmiManager implements IServiceProviderManager {
     private InstanceHandler handler;
     private HashMap<String, File> getFESLogsMap = new HashMap<String, File>(4);

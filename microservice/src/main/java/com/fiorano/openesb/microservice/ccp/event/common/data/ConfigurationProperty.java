@@ -2,9 +2,6 @@ package com.fiorano.openesb.microservice.ccp.event.common.data;
 
 import java.io.Serializable;
 
-/**
- * Created by Janardhan on 4/4/2016.
- */
 public class ConfigurationProperty implements Serializable{
     private String name;
     private String value;

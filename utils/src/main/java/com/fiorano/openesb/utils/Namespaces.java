@@ -1,20 +1,9 @@
 package com.fiorano.openesb.utils;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
-
 import org.xml.sax.helpers.NamespaceSupport;
 
 import java.lang.reflect.Field;
 
-/**
- * Interface containing commonly used namespaces and their common prefixes.
- *
- * NOTE: The naming convention that should be followed for an uri is:
- * String URI_<suggestedPrefixInUppercase> = "<namespaceURI>
- * @author Santhosh Kumar T
- */
 public interface Namespaces{
     String URI_XML   = "http://www.w3.org/XML/1998/namespace";                     //NOI18N
     String URI_XMLNS   = "http://www.w3.org/2000/xmlns/";                          //NOI18N

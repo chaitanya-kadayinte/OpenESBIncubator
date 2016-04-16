@@ -1,36 +1,6 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.rmiconnector.api;
 
 import java.rmi.RemoteException;
-
-/**
- * Created with IntelliJ IDEA.
- * User: Janardhan
- * Date: 12/10/13
- * Time: 11:41 AM
- * To change this template use File | Settings | File Templates.
- */
-
-/**
- * This is a callback listener interface which a client has to implement. An implementing class either has to
- * extend UniCastRemoteObject or call {@link  java.rmi.server.UnicastRemoteObject#exportObject(java.rmi.Remote)}.
- * When an implementing class has registered to receive such events, it will be notified of API Projects events
- * such as deploy, undeploy, etc. Registration for these events can be done via
- * {@link com.fiorano.openesb.rmi.impl.APIProjectsManager#addAPIProjectListener(IAPIProjectManagerListener, String, String)}
- *
- */
 
 public interface IAPIProjectManagerListener {
 

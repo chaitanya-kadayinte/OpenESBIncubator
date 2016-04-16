@@ -1,13 +1,6 @@
 
 package com.fiorano.openesb.utils;
 
-/**
- * Created with IntelliJ IDEA.
- * User: janardhan
- * Date: 2/11/13
- * Time: 12:48 PM
- * To change this template use File | Settings | File Templates.
- */
 public class LookUpUtil {
 
     public final static String VERSION_DOT_REPLACEMENT_STRING = "_";

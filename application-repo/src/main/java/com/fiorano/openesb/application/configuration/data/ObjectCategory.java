@@ -17,14 +17,6 @@ import com.fiorano.openesb.application.constants.ConfigurationRepoConstants;
 
 import java.io.Serializable;
 
-/**
- * Enumeration constants representing various types of configurations. Configurations are saved in registry in different directories
- * according to their object category.
- *
- * @author FSTPL
- * @version 10
- *
- */
 public enum ObjectCategory implements Serializable {
     SERVICE_CONFIGURATION, PORT_CONFIGURATION, RESOURCE_CONFIGURATION, ROUTE, TRANSFORMATION, SELECTOR, WORKFLOW, MESSAGEFILTERS, RUNTIME_ARG_CONFIGURATION, CONNECTION_FACTORY_CONFIGURATION, DESTINATION, MISCELLANEOUS;
 

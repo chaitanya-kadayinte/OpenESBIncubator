@@ -22,9 +22,6 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by Janardhan on 2/29/2016.
- */
 public class MicroServiceManager extends AbstractRmiManager implements IServiceManager {
     MicroServiceRepoManager microServiceRepository;
     private Logger logger = LoggerFactory.getLogger(Activator.class);

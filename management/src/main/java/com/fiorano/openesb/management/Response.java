@@ -2,9 +2,6 @@ package com.fiorano.openesb.management;
 
 import java.util.Map;
 
-/**
- * Created by root on 3/14/16.
- */
 public class Response {
     private Map<String,ApplicationHeader> applications;
 

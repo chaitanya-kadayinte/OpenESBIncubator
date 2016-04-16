@@ -1,17 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- * <p>
- * All rights reserved.
- * <p>
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
-
 package com.fiorano.openesb.utils.logging;
 
 import com.fiorano.openesb.utils.FileUtil;
@@ -31,18 +17,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.*;
 
-/**
- * Defines APIs to create, view and clear logs
- * @bundle getting_out_logs_for_id=LogID {0} Getting OutLogs
- * @bundle found_log_dir_name=LogID {0} Log DirName {1}
- * @bundle unknown_handler_log_handler_type=LogID {0} :: Invalid log Handler type {1} specified in properties {2}
- * @bundle getting_err_logs_for_id=LogID {0} Getting ErrLogs
- * @bundle found_log_dir_name=LogID {0} Log DirName {1}
- * @bundle base_log_path=Using path {0} to store client logs
- * @bundle create_file_handler=Creating file handler limit={0} count={1} append={2}
- * @bundle initializing_handler=Initializing Handler Level={0}, Encoding={1} ,filter={2}, formatter={3}
- * @bundle err_initializing_handler=Error in setting encoding for Handler having Level={0}, Encoding={1} ,filter={2}, formatter={3}
- */
 public class DefaultLogManager implements ILogManager {
 
     IFioranoLogger m_logger;

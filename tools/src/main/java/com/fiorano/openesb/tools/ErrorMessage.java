@@ -3,9 +3,6 @@ package com.fiorano.openesb.tools;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class ErrorMessage {
     Date date=new Date();
     String pattern = "[dd/MMM/yyyy HH:mm:ss] ";

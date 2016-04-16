@@ -17,12 +17,6 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-
-
-
-/**
- * Created by root on 3/2/16.
- */
 public class CarryForwardContextHandler implements RouteOperationHandler<JMSMessage> {
     // Transformation helper
     private Transformation m_transformHelper;
@@ -114,7 +108,12 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
             e.printStackTrace();
         }
             try {
-                jmsMessage.setStringProperty("ESBX__SYSTEM__INPUT_PORT",port.getName());
+
+                if(isInputPort()) {
+                    jmsMessage.setStringProperty("ESBX__SYSTEM__INPUT_PORT", port.getName());
+                } else {
+                    jmsMessage.setStringProperty("ESBX__SYSTEM__OUTPUT_PORT", port.getName());
+                }
             } catch (JMSException e) {
                 e.printStackTrace();
             }

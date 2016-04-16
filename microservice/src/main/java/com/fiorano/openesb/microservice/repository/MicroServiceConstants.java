@@ -1,8 +1,5 @@
 package com.fiorano.openesb.microservice.repository;
 
-/**
- * Created by Janardhan on 3/1/2016.
- */
 public class MicroServiceConstants {
     public static final String PARTIAL_RESOURCE_LOCATION = "Partial";
 

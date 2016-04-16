@@ -12,9 +12,6 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class ServiceManualLauncher extends FioranoTask {
 
     public static String JAVA_HOME;
@@ -318,13 +315,6 @@ public class ServiceManualLauncher extends FioranoTask {
     }
 }
 
-/**
- * Shutdown the process
- *
- * @author FSTPL
- * @version 1.0
- * @created January 27, 2006
- */
 class ShutDownThread extends Thread {
 
     private Process proc = null;

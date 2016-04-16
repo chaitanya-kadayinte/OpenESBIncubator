@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.aps;
 
 import com.fiorano.openesb.application.*;
@@ -31,23 +18,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-/**
- *  Contains information about the input port of a service such as port name and
- *  DTD/XSD for the port. It provides interface methods to access this
- *  information. <p>
- *
- *  Object of this class is created for each input port of a service and is
- *  stored in the <code>PortDescriptor</code> for the service.</p>
- *
- * @author Manoj
- * @created January 15, 2002
- * @version 2.0
- * @see com.fiorano.openesb.application.DmiObject
- * @see com.fiorano.openesb.application.sps.PortDescriptor
- * @see com.fiorano.openesb.application.sps.OutPort
- * @see com.fiorano.openesb.application.sps.ServicePropertySheet
- * @since Tifosi2.0
- */
 public class InPortInst extends PortInst
 {
 

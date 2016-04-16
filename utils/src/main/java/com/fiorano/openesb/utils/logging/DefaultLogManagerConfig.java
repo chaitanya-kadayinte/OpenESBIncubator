@@ -1,17 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- * <p>
- * All rights reserved.
- * <p>
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
-
 package com.fiorano.openesb.utils.logging;
 
 import com.fiorano.openesb.utils.FileUtil;
@@ -21,15 +7,6 @@ import java.io.File;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 
-/**
- * Configuration object for Default LogHandleManager
- *
- * @author FSIPL
- * @created March 31, 2005
- * @version 1.0
- * @jmx.mbean description="Configuration object for Default LogHandleManager"
- * @jmx.descriptor name="ID" value="LOG_STORE"
- */
 public class DefaultLogManagerConfig {
     private String logDir;
 

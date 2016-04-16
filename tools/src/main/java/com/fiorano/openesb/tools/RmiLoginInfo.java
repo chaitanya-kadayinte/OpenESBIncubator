@@ -7,9 +7,6 @@ import org.apache.tools.ant.input.InputRequest;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-/**
- * Created by Janardhan on 4/11/2016.
- */
 public class RmiLoginInfo
 {
     public boolean verboseFlag;

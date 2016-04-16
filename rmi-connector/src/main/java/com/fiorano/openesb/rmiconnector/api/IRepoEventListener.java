@@ -1,35 +1,8 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
 package com.fiorano.openesb.rmiconnector.api;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-/**
- * This is a callback listener interface which a client has to implement. An implementing class either has to
- * extend UniCastRemoteObject or call {@link  java.rmi.server.UnicastRemoteObject#exportObject(java.rmi.Remote)}.
- * When an implementing class has registered to receive such events, it will be notified of Service events
- * such as service instance deleted and deployed etc. Registration for these events can be done via
- * <p>
- * {@link IServiceManager#addServiceRepositoryEventListener(IRepositoryEventListener)} For Service Repository Update events
- * </p><p>
- * {@link IEventProcessManager#addRepositoryEventListener(IRepositoryEventListener)} For Event Process Repository Update Events.
- * </p>
- *
- * @author FSTPL
- * @version 10
- *
- */
 public interface IRepoEventListener extends Remote {
     /**
      * This notification is sent to the client when a Service Instance is deleted from the server

@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.application.sps;
 
 import com.fiorano.openesb.application.*;
@@ -23,14 +10,6 @@ import org.w3c.dom.Node;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
-/**
- *  This class consists of a log module for a service.
- *
- * @author Manoj
- * @created August 23, 2002
- * @version 2.0
- */
 
 public class EventModule extends DmiObject
 {

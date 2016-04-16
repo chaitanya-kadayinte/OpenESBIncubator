@@ -6,9 +6,6 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-/**
- * Created by Janardhan on 1/5/2016.
- */
 public final class StringUtil {
 
     /**

@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
- * Copyright (c) 2008-2015, Fiorano Software Pte. Ltd. and affiliates.
- *
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Fiorano Software ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * enclosed with this product or entered into with Fiorano.
- */
-
 package com.fiorano.openesb.microservice.ccp.event.component;
 
 
@@ -20,15 +7,6 @@ import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 
-/**
- * This class represents a status event sent by components to Peer Server.
- * A data event is generally sent by component in response to {@link com.fiorano.openesb.microservice.ccp.event.peer.CommandEvent} event from Peer Server.<br><br>
- *
- * @see com.fiorano.openesb.microservice.ccp.event.CCPEventType#STATUS
- *
- * @author FSTPL
- * @version 10
- */
 public class StatusEvent extends ControlEvent {
     private StatusType statusType;
     private Status status;

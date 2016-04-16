@@ -13,9 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-/**
- * Created by Janardhan on 3/23/2016.
- */
 public class ServerLogManager {
     public String getTESLastOutLogs(int numberOfLines)  throws FioranoException {
         Properties p = new Properties();
