@@ -62,6 +62,17 @@ public class MessageCreationHandler implements RouteOperationHandler<Message<jav
             if (readOnlyMessage instanceof TextMessage) {
                 ((TextMessage) writeableMessage).setText(((TextMessage) readOnlyMessage).getText());
             }
+            writeableMessage.setJMSCorrelationID(readOnlyMessage.getJMSCorrelationID());
+            writeableMessage.setJMSDestination(readOnlyMessage.getJMSDestination());
+            writeableMessage.setJMSRedelivered(readOnlyMessage.getJMSRedelivered());
+            writeableMessage.setJMSDeliveryMode(readOnlyMessage.getJMSDeliveryMode());
+            writeableMessage.setJMSExpiration(readOnlyMessage.getJMSExpiration());
+            writeableMessage.setJMSMessageID(readOnlyMessage.getJMSMessageID());
+            writeableMessage.setJMSPriority(readOnlyMessage.getJMSPriority());
+            writeableMessage.setJMSReplyTo(readOnlyMessage.getJMSReplyTo());
+            writeableMessage.setJMSTimestamp(readOnlyMessage.getJMSTimestamp());
+            writeableMessage.setJMSType(readOnlyMessage.getJMSType());
+
 
         } catch (JMSException e) {
             logger.error(" Unable to clone message " + e.getMessage());
