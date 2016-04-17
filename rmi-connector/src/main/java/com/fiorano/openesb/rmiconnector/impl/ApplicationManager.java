@@ -2,6 +2,7 @@ package com.fiorano.openesb.rmiconnector.impl;
 
 import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.DmiObject;
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
@@ -1191,7 +1192,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         String configuration = serviceInstance.getConfiguration();
         try {
             Hashtable<String, Object> stubProperties = ServiceConfigurationParser.INSTANCE().parseRESTStubConfiguration(configuration);
-            return "http://localhost:8181" + "/restgateway/" + "AdminService/wadls/" + stubProperties.get(ServiceConfigurationParser.ConfigurationMarkups.RESTFUL_SERVICE_NAME);
+            return ServerConfig.getConfig().getJettyUrl() + "/restgateway/services" + "AdminService/wadls/" + stubProperties.get(ServiceConfigurationParser.ConfigurationMarkups.RESTFUL_SERVICE_NAME);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
