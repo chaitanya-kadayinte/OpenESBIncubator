@@ -272,9 +272,15 @@ public class ApplicationRepository {
         if (applicationFolders != null) {
             for (File appFolder : applicationFolders) {
                 String applicationGUID = appFolder.getName();
+                if(applicationGUID.startsWith(".")){
+                    continue;
+                }
                 File[] versions = appFolder.listFiles();
                 if (versions != null) {
                     for (File version : versions) {
+                        if(version.getName().startsWith(".")){
+                            continue;
+                        }
                         applicationIdVersions.add(applicationGUID + ":" + version.getName());
                     }
                 }

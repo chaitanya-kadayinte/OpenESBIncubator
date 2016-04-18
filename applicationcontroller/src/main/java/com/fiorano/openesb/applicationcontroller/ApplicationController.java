@@ -1419,13 +1419,17 @@ public class ApplicationController {
         Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
         ServiceInstance si = application.getServiceInstance(serviceName);
         float serviceVersion = si.getVersion();
-        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.pathSeparator+"logs"+File.pathSeparator+appGUID.toUpperCase()
-                +File.pathSeparator+appVersion+File.separator+serviceName+File.separator+serviceVersion;
+        //todo: remove hardcoded service logs path.
+        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                +File.separator+appVersion+File.separator+serviceName.toUpperCase();
         File f = new File(path);
         File[] logfiles = f.listFiles();
         StringBuilder sb = new StringBuilder();
         int lineCount=0;
         for(File file:logfiles){
+            if(!file.getName().contains("out") || file.getName().contains("lck")){
+                continue;
+            }
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -1452,13 +1456,17 @@ public class ApplicationController {
         Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
         ServiceInstance si = application.getServiceInstance(serviceName);
         float serviceVersion = si.getVersion();
-        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.pathSeparator+"logs"+File.pathSeparator+appGUID.toUpperCase()
-                +File.pathSeparator+appVersion+File.separator+serviceName+File.separator+serviceVersion;
+        //todo: remove hardcoded service logs path.
+        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                +File.separator+appVersion+File.separator+serviceName.toUpperCase();
         File f = new File(path);
         File[] logfiles = f.listFiles();
         StringBuilder sb = new StringBuilder();
         int lineCount=0;
         for(File file:logfiles){
+            if(!file.getName().contains("err") || file.getName().contains("lck")){
+                continue;
+            }
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = br.readLine()) != null) {
