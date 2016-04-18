@@ -13,9 +13,9 @@ import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
-import com.fiorano.openesb.utils.logging.api.FioranoClientLogger;
-import com.fiorano.openesb.utils.logging.api.IFioranoLogger;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     private Process osProcess;
     private CCPCommandHelper ccpCommandHelper;
     private ComponentLifeCycleWorkflow lifeCycleWorkflow;
-    private IFioranoLogger coreLogger;
+    private Logger coreLogger;
     private boolean shutdownOfCCPComponentInProgress;
     private EventsManager eventManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     private int numberOfForceShutdownAttempts;
@@ -44,7 +44,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
         this.ccpCommandHelper = ccpCommandHelper;
         lifeCycleWorkflow = new ComponentLifeCycleWorkflow(serviceInstName, launchConfiguration.getApplicationName(), launchConfiguration.getApplicationVersion());
         ccpCommandHelper.registerListener(lifeCycleWorkflow, CCPEventType.STATUS);
-        coreLogger = new FioranoClientLogger().getLogger("service.launch");
+        coreLogger = LoggerFactory.getLogger(com.fiorano.openesb.microservice.bundle.Activator.class);
     }
 
     public void setProcess(Process process){
@@ -112,7 +112,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                 }
                 generateServiceUnboundEvent(reason, !userAction && reason != null && !(reason.equalsIgnoreCase(CoreConstants.APPLICATION_CLOSED_CONNECTION)));
                 if (coreLogger != null)
-                    coreLogger.debug(Bundle.class, Bundle.COMPONENT_RESOURCE_CLEANUP, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                    coreLogger.debug(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_RESOURCE_CLEANUP, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                 cleanupComponentResources(userAction, false, reason);
             } else {
                 coreLogger.info(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
@@ -140,10 +140,10 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                     stopThread.start();
                     stopThread.join(componentStopWaitTime);
                 } catch (InterruptedException e) {
-                    coreLogger.error(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                    coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
 
                     if (coreLogger.isDebugEnabled())
-                        coreLogger.error(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), e);
+                        coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()), e);
                 }
 
                 coreLogger.info(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT_OVER, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
@@ -166,7 +166,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                         lifeCycleWorkflow = null;
                     }
                     generateServiceUnboundEvent(reason, !userAction && reason != null && !(reason.equalsIgnoreCase(CoreConstants.APPLICATION_CLOSED_CONNECTION)));
-                    coreLogger.debug(Bundle.class, Bundle.COMPONENT_RESOURCE_CLEANUP, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                    coreLogger.debug(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_RESOURCE_CLEANUP, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                     cleanupComponentResources(userAction, false, reason);
                 }
             }
@@ -205,7 +205,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
             try {
                 generateServiceKillFailedEvent(ExceptionUtil.getMessage(ex));
             } catch (FioranoException e) {
-                coreLogger.error(Bundle.class, Bundle.FAILED_TO_GENERATE_STOP_EVENT, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), e);
+                coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.FAILED_TO_GENERATE_STOP_EVENT, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()), e);
             }
             throw new FioranoException(Bundle.FAILED_TO_KILL_COMPONENT.toUpperCase(), ex, RBUtil.getMessage(Bundle.class,
                     Bundle.FAILED_TO_KILL_COMPONENT, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
@@ -219,7 +219,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
 
     private void destroyComponent(boolean shutdownComponentProcess, boolean userAction, String reason) throws FioranoException {
-        coreLogger.debug(Bundle.class, Bundle.DESTROY_PROCESS, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+        coreLogger.debug(RBUtil.getMessage(Bundle.class, Bundle.DESTROY_PROCESS, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
 
         if (shutdownComponentProcess) {
             if (numberOfForceShutdownAttempts < 1)
@@ -285,10 +285,10 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
             stopThread.start();
             stopThread.join(retryIntervalBetweenForceShutdownAttempts);
         } catch (InterruptedException e) {
-            coreLogger.error(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+            coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
 
             if (coreLogger.isDebugEnabled())
-                coreLogger.error(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), e);
+                coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()), e);
         }
 
         if (!confirmProcessExit()) {
@@ -314,12 +314,12 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                     StatusEvent status = (StatusEvent) event.getControlEvent();
                     if (status.getOperationScope() == StatusEvent.OperationScope.COMPONENT_STOP) {
                         if (status.getStatusType() == StatusEvent.StatusType.ERROR) {
-                            coreLogger.error(Bundle.class, Bundle.ERROR_STOPPING_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                            coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_STOPPING_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                             generateServiceKillFailedEvent(status.getErrorMessage());
                         } else if (status.getStatusType() == StatusEvent.StatusType.WARNING)
-                            coreLogger.warn(Bundle.class, Bundle.WARN_STOPPING_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                            coreLogger.warn(RBUtil.getMessage(Bundle.class, Bundle.WARN_STOPPING_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                         else if (status.getStatusType() == StatusEvent.StatusType.INFORMATION) {
-                            coreLogger.debug(Bundle.class, Bundle.STOP_COMPONENT_UPDATE, status.getStatus().toString(), getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                            coreLogger.debug(RBUtil.getMessage(Bundle.class, Bundle.STOP_COMPONENT_UPDATE, status.getStatus().toString(), getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                             if (status.getStatus() == StatusEvent.Status.COMPONENT_STOPPED) {
                                 coreLogger.info(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOPPED_EVENT, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
 
@@ -340,12 +340,12 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                         }
                     } else if (status.getOperationScope() == StatusEvent.OperationScope.COMPONENT_LAUNCH) {
                         if (status.getStatusType() == StatusEvent.StatusType.ERROR) {
-                            coreLogger.error(Bundle.class, Bundle.ERROR_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                            coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                             generateServiceFailedToLaunchEvent(status.getErrorMessage());
                         } else if (status.getStatusType() == StatusEvent.StatusType.WARNING)
-                            coreLogger.warn(Bundle.class, Bundle.WARNING_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                            coreLogger.warn(RBUtil.getMessage(Bundle.class, Bundle.WARNING_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                         else if (status.getStatusType() == StatusEvent.StatusType.INFORMATION) {
-                            coreLogger.debug(Bundle.class, Bundle.LAUNCH_PROCESS_UPDATE, status.getStatus().toString(), getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                            coreLogger.debug(RBUtil.getMessage(Bundle.class, Bundle.LAUNCH_PROCESS_UPDATE, status.getStatus().toString(), getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                             if (status.getStatus() == StatusEvent.Status.COMPONENT_STARTED) {
                                 coreLogger.info(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STARTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                                 generateServiceBoundEvent();
@@ -358,15 +358,15 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                                 coreLogger.info(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_LAUNCHING, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                                 generateServiceBoundingEvent();
                             } else if (status.getStatusType() == StatusEvent.StatusType.ERROR) {
-                                coreLogger.error(Bundle.class, Bundle.ERROR_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                                coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                                 generateServiceFailedToLaunchEvent(status.getErrorMessage());
                             } else if (status.getStatusType() == StatusEvent.StatusType.WARNING)
-                                coreLogger.warn(Bundle.class, Bundle.WARNING_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
+                                coreLogger.warn(RBUtil.getMessage(Bundle.class, Bundle.WARNING_LAUNCH_COMPONENT, getServiceInstName(), status.getStatus().toString(), status.getErrorMessage(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
                         }
                     }
                 }
             } catch (FioranoException e) {
-                coreLogger.error(e);
+                coreLogger.error(e.getMessage());
             }
         }
     }

@@ -130,9 +130,14 @@ public class ApplicationHandle {
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
             String sourceServiceInstance = route.getSourceServiceInstance();
-            sourceConfiguration.setName(getPortName(sourcePortInstance, sourceServiceInstance));
             OutputPortInstance sourcePort = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
-
+            String sourcePortName;
+            if(sourcePort.isSpecifiedDestinationUsed()){
+                sourcePortName = sourcePort.getDestination();
+            }else{
+                sourcePortName = getPortName(sourcePortInstance, sourceServiceInstance);
+            }
+            sourceConfiguration.setName(sourcePortName);
             int type = sourcePort.getDestinationType();
             sourceConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
@@ -140,8 +145,14 @@ public class ApplicationHandle {
             String destPortInstance = route.getTargetPortInstance();
             JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
             String targetServiceInstance = route.getTargetServiceInstance();
-            destinationConfiguration.setName(getPortName(destPortInstance, targetServiceInstance));
             InputPortInstance targetPort = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
+            String targetPortName;
+            if(targetPort.isSpecifiedDestinationUsed()){
+                targetPortName = targetPort.getDestination();
+            }else{
+                targetPortName = getPortName(destPortInstance, sourceServiceInstance);
+            }
+            destinationConfiguration.setName(targetPortName);
             int inputPortInstanceDestinationType = targetPort.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
@@ -270,7 +281,13 @@ public class ApplicationHandle {
         int type = portInstance.getDestinationType();
         portConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-        portConfiguration.setName(getPortName(portInstance.getName(), serviceInstance.getName()));
+        String portName;
+        if(portInstance.isSpecifiedDestinationUsed()){
+            portName = portInstance.getDestination();
+        }else {
+            portName= getPortName(portInstance.getName(), serviceInstance.getName());
+        }
+        portConfiguration.setName(portName);
         return portConfiguration;
     }
 
@@ -293,12 +310,17 @@ public class ApplicationHandle {
         JMSPortConfiguration outPortConfiguration = new JMSPortConfiguration();
         String outPortName = routePS.getSourcePortInstance();
         String sourceServiceInstanceName = routePS.getSourceServiceInstance();
-        outPortConfiguration.setName(getPortName(outPortName, sourceServiceInstanceName));
         OutputPortInstance outPortInstnace = application.getServiceInstance(sourceServiceInstanceName).getOutputPortInstance(outPortName);
         int portType = outPortInstnace.getDestinationType();
         outPortConfiguration.setPortType(portType == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-
+        String outPortFullName;
+        if(outPortInstnace.isSpecifiedDestinationUsed()){
+            outPortFullName = outPortInstnace.getDestination();
+        }else{
+            outPortFullName = getPortName(outPortName, sourceServiceInstanceName);
+        }
+        outPortConfiguration.setName(outPortFullName);
         JMSPortConfiguration tgtCConfiguration = new JMSPortConfiguration();
         tgtCConfiguration.setName(bpSourceDestName);
         tgtCConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
@@ -367,17 +389,29 @@ public class ApplicationHandle {
         JMSPortConfiguration inPortConfiguration = new JMSPortConfiguration();
         String inPortName = routePS.getTargetPortInstance();
         String targetServiceInstanceName = routePS.getTargetServiceInstance();
-        inPortConfiguration.setName(getPortName(inPortName, targetServiceInstanceName));
         InputPortInstance inPortInstnace = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(inPortName);
         int inPortType = inPortInstnace.getDestinationType();
         inPortConfiguration.setPortType(inPortType == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
 
+        String inPortFullName;
+        if(inPortInstnace.isSpecifiedDestinationUsed()){
+            inPortFullName = inPortInstnace.getDestination();
+        }else{
+            inPortFullName = getPortName(inPortName, targetServiceInstanceName);
+        }
+        inPortConfiguration.setName(inPortFullName);
         JMSPortConfiguration srcDConfiguration = new JMSPortConfiguration();
         srcDConfiguration.setName(bpTargetdDestName);
         srcDConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
 
         JMSRouteConfiguration routeFromDConfiguration = new JMSRouteConfiguration(srcDConfiguration, inPortConfiguration, null);
+
+        MessageCreationConfiguration d2OutPortmessageCreationConfig = new MessageCreationConfiguration();
+        d2OutPortmessageCreationConfig.setTransportService(transport);
+        d2OutPortmessageCreationConfig.setRouteOperationType(RouteOperationType.MESSAGE_CREATE);
+        routeFromDConfiguration.getRouteOperationConfigurations().add(d2OutPortmessageCreationConfig);
+
         CarryForwardContextConfiguration targetCFC = new CarryForwardContextConfiguration();
         targetCFC.setApplication(application);
         targetCFC.setPortInstance(inPortInstnace);
@@ -407,8 +441,14 @@ public class ApplicationHandle {
         String bpTargetdDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__D";
         Route routeToC = breakPointRoutes.remove(bpSourceDestName);
         routeToC.stop();
+        JMSPortConfiguration portConfiguration = new JMSPortConfiguration();
+        portConfiguration.setPortType(JMSPortConfiguration.PortType.QUEUE);
+        portConfiguration.setName(bpSourceDestName);
+        transport.disablePort(portConfiguration);
         Route routeFromD = breakPointRoutes.remove(bpTargetdDestName);
         routeFromD.stop();
+        portConfiguration.setName(bpTargetdDestName);
+        transport.disablePort(portConfiguration);
         breakpoints.remove(routeName);
         ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully removed breakpoint to the Route");
     }
