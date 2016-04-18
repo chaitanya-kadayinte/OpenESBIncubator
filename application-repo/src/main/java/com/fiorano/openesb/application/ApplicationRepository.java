@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -301,7 +302,15 @@ public class ApplicationRepository {
         if (!appFolder.exists()) {
             throw new FioranoException("application does not exists");
         }
-        File[] versionFolders = appFolder.listFiles();
+        File[] versionFolders = appFolder.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if(pathname.isHidden()){
+                    return false;
+                }
+                return true;
+            }
+        });
         int i = 0;
         float[] versionNumbers = new float[0];
 

@@ -84,7 +84,10 @@ public class ApplicationController {
         DEPEND_APP_LIST = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
         String [] appIds = applicationRepository.getApplicationIds();
         for(String appid:appIds){
-           float[] appVersions = applicationRepository.getAppVersions(appid);
+            float[] appVersions = new float[0];
+            if(!appid.startsWith(".")){
+                appVersions = applicationRepository.getAppVersions(appid);
+            }
             for(float ver : appVersions){
                 Application application = applicationRepository.readApplication(appid, String.valueOf(ver));
                savedApplicationMap.put(appid + "__" + ver, application);
