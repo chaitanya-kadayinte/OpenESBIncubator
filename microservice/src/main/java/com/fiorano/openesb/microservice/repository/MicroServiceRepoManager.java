@@ -37,7 +37,7 @@ public class MicroServiceRepoManager {
     }
 
     public String getRepositoryLocation() {
-        return ServerConfig.getConfig().getRepositoryPath() + File.separator + "microservices";
+        return ServerConfig.getConfig().getRepositoryPath() + File.separator + MicroServiceConstants.MICRO_SERVICE_REPOSITORY_NAME;
     }
 
     /**
