@@ -150,7 +150,7 @@ public class ApplicationHandle {
             if(targetPort.isSpecifiedDestinationUsed()){
                 targetPortName = targetPort.getDestination();
             }else{
-                targetPortName = getPortName(destPortInstance, sourceServiceInstance);
+                targetPortName = getPortName(destPortInstance, targetServiceInstance);
             }
             destinationConfiguration.setName(targetPortName);
             int inputPortInstanceDestinationType = targetPort.getDestinationType();
