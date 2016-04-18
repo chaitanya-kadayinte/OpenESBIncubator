@@ -516,6 +516,7 @@ public class ApplicationController {
             if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
                     ApplicationHandle appHandle = new ApplicationHandle(this, currentApplication, microServiceLauncher, routeService,transport, securityManager.getUserName(handleID), securityManager.getPassword(handleID));
                     appHandle.createRoutes();
+                applicationHandleMap.put(app_version, appHandle);
                 ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_LAUNCHED, Event.EventCategory.INFORMATION,
                         currentGUID, currentApplication.getDisplayName(), current_AppGUIDAndVersion[1], "Application launched Successfully");
 
@@ -645,6 +646,7 @@ public class ApplicationController {
         }
         applicationRepository.deleteApplication(appGUID, version);
         savedApplicationMap.remove(key);
+        removeChainLaunchDS(key);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_DELETED, Event.EventCategory.INFORMATION,
                 appGUID, null, version, "Application Deleted Successfully");
 
@@ -1548,6 +1550,7 @@ public class ApplicationController {
                 ApplicationStateDetails appStateDetails = appInfo.getAppStateDetails();
                 try {
                     ApplicationHandle applicationHandle = new ApplicationHandle(this, savedApplicationMap.get(appGuidAndVersion),microServiceLauncher, routeService, transport, appInfo.getUserName(), appInfo.getPassword() );
+                    applicationHandle.createRoutes();
                     ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_LAUNCHED, Event.EventCategory.INFORMATION,
                             appStateDetails.getAppGUID(), null, appStateDetails.getAppVersion(), "Application launched Successfully");
 

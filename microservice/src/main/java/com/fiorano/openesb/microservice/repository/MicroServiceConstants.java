@@ -10,7 +10,7 @@ public class MicroServiceConstants {
     public static final int FILE_COPY_CHUNK_SIZE = 1024 * 100;
 
     public static final String REPOSITORY_PATH = "REPOSITORY_PATH";
-    public static final String MICRO_SERVICE_REPOSITORY_NAME = "microservices";
+    public static final String MICRO_SERVICE_REPOSITORY_NAME = "components";
 
     public static final float DEFAULT_VERSION_NO = 1.0F;
     public static final String SYNC_TEMP_DIR = "microservices_temp";
