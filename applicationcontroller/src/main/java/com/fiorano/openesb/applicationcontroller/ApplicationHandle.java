@@ -476,7 +476,7 @@ public class ApplicationHandle {
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error occured while starting the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
         }
         logger.info("Started MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
@@ -492,7 +492,7 @@ public class ApplicationHandle {
             microServiceHandleList.get(microServiceName).stop();
             microServiceHandleList.remove(microServiceName);
             logger.info("Stopped MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error occured while stopping the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
         }
     }
