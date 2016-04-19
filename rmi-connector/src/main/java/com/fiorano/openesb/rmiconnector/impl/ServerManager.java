@@ -25,7 +25,7 @@ public class ServerManager {
     public void restart() throws FioranoException {
         System.setProperty("karaf.restart", "true");
         try {
-            FrameworkUtil.getBundle(Activator.class).stop();
+            FrameworkUtil.getBundle(Activator.class).getBundleContext().getBundle(0).stop();
         } catch (BundleException e) {
             logger.error("Error occured while restarting the server.", e);
             throw new FioranoException(e);
@@ -33,9 +33,8 @@ public class ServerManager {
     }
 
     public void shutdown() throws FioranoException {
-        System.setProperty("karaf.shutdown", "true");
         try {
-            FrameworkUtil.getBundle(Activator.class).stop();
+            FrameworkUtil.getBundle(Activator.class).getBundleContext().getBundle(0).stop();
         } catch (BundleException e) {
             logger.error("Error occured while shutting down the server.", e);
             throw new FioranoException(e);
