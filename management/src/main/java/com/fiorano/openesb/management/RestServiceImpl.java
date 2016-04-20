@@ -133,8 +133,13 @@ public class RestServiceImpl implements ApplicationsService {
         ApplicationController controller = getController();
         Response response = new Response();
         try {
-            response.setStatus(controller.startMicroService(applicationName, applicationVersion, microServiceName, null));
-            return response;
+            if("stop".equalsIgnoreCase(action.getAction())){
+                response.setStatus(controller.stopMicroService(applicationName, applicationVersion,microServiceName ,null));
+                return response;
+            } else {
+                response.setStatus(controller.startMicroService(applicationName, applicationVersion, microServiceName, null));
+                return response;
+            }
         } catch (FioranoException e) {
             response.setMessage(e.getMessage());
             response.setStatus(false);
@@ -142,21 +147,5 @@ public class RestServiceImpl implements ApplicationsService {
         }
 
     }
-
-    @PUT
-    @Path("/applications/{applicationName}/{applicationVersion}/{microServiceName}")
-    public Response stopMicroService(@PathParam("applicationName") String applicationName, @PathParam("applicationVersion") String applicationVersion, @PathParam("microServiceName") String microServiceName) {
-        ApplicationController controller = getController();
-        Response response = new Response();
-        try {
-            response.setStatus(controller.stopMicroService(applicationName, applicationVersion, microServiceName, null));
-            return response;
-        } catch (FioranoException e) {
-            response.setMessage(e.getMessage());
-            response.setStatus(false);
-            return response;
-        }
-    }
-
 
 }
