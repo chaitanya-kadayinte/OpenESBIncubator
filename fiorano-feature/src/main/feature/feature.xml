@@ -3,19 +3,23 @@
 
     <feature name='${project.artifactId}' description='${project.name}' version='${project.version}'>
         <details>${project.description}</details>
-        <bundle start-level='85'>wrap:mvn:com.owlike/genson/1.2</bundle>
-        <bundle start-level='85'>mvn:org.slf4j/slf4j-log4j12/1.6.6</bundle>
-        <bundle start-level='85'>mvn:org.slf4j/slf4j-api/1.6.6</bundle>
-        <bundle start-level='85'>wrap:mvn:net.sf.saxon/Saxon-HE/9.7.0-4</bundle>
-        <bundle start-level='85'>mvn:log4j/log4j/1.2.17</bundle>
-        <bundle start-level='85'>mvn:org.apache.commons/commons-lang3/3.4</bundle>
-        <bundle start-level='85'>wrap:mvn:xml-resolver/xml-resolver/1.2</bundle>
-        <bundle start-level='85'>mvn:org.codehaus.woodstox/woodstox-core-asl/4.4.1</bundle>
-        <bundle start-level='85'>wrap:mvn:woodstox/wstx-asl/2.6</bundle>
-        <bundle start-level='85'>wrap:mvn:xmlunit/xmlunit/1.6</bundle>
-        <bundle start-level='85'>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
-        <bundle start-level='85'>wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
-        <bundle start-level="85">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
+        <feature version="5.13.1">activemq-broker</feature>
+        <feature version="3.1.0">cxf-core</feature>
+        <feature version="3.1.0">cxf-jaxrs</feature>
+        <bundle dependency="true" start-level='85'>wrap:mvn:com.owlike/genson/1.2$Bundle-SymbolicName=Genson&amp;Bundle-Version=1.2</bundle>
+        <bundle dependency="true" start-level='85'>mvn:org.slf4j/slf4j-log4j12/1.6.6</bundle>
+        <bundle dependency="true" start-level='85'>wrap:mvn:oro/oro/2.0.8$Bundle-SymbolicName=JakarthaOro&amp;Bundle-Version=2.0.8</bundle>
+        <bundle dependency="true" start-level='85'>mvn:org.slf4j/slf4j-api/1.6.6</bundle>
+        <bundle dependency="true" start-level='85'>wrap:mvn:net.sf.saxon/Saxon-HE/9.7.0-4$Bundle-SymbolicName=SaxonHE&amp;Bundle-Version=9.7</bundle>
+        <bundle dependency="true" start-level='85'>mvn:log4j/log4j/1.2.17</bundle>
+        <bundle dependency="true" start-level='85'>mvn:org.apache.commons/commons-lang3/3.4</bundle>
+        <bundle dependency="true" start-level='85'>wrap:mvn:xml-resolver/xml-resolver/1.2$Bundle-SymbolicName=resolver&amp;Bundle-Version=1.2</bundle>
+        <bundle dependency="true" start-level='85'>mvn:org.codehaus.woodstox/woodstox-core-asl/4.4.1</bundle>
+        <bundle dependency="true" start-level='85'>wrap:mvn:woodstox/wstx-asl/2.6$Bundle-SymbolicName=woodstox-asl&amp;Bundle-Version=2.6</bundle>
+        <bundle dependency="true" start-level='85'>wrap:mvn:xmlunit/xmlunit/1.6$Bundle-SymbolicName=xmlunit&amp;Bundle-Version=1.6</bundle>
+        <bundle dependency="true" start-level='85'>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
+        <bundle dependency="true" start-level='85'>wrap:mvn:mx4j/mx4j-tools/3.0.1$Bundle-SymbolicName=mx4j&amp;Bundle-Version=3.0.1</bundle>
+        <bundle dependency="true" start-level="85">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
 
         <bundle start-level='88'>mvn:com.fiorano.openesb/security/0.1.0</bundle>
         <bundle start-level='87'>mvn:com.fiorano.openesb/utils/0.1.0</bundle>
@@ -38,9 +42,8 @@
         <bundle start-level='96'>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.3</bundle>
 
 
-
         <!--<bundle start-level='99'>mvn:com.fiorano.openesb/rmi-client/0.1.0</bundle>-->
-<!--start level cannot be more than 100-->
+        <!--start level cannot be more than 100-->
     </feature>
 
 </features>

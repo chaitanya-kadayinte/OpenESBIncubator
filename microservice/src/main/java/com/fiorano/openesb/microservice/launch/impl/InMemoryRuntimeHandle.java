@@ -1,10 +1,12 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
+import com.fiorano.openesb.microservice.bundle.Activator;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.utils.LoggerUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.logging.FioranoLogHandler;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
 
     private Object service;
     private Class serviceClass;
-
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(Activator.class);
     public InMemoryRuntimeHandle(Object service, Class serviceClass, LaunchConfiguration launchConfiguration) {
         super(launchConfiguration);
         this.service = service;
@@ -24,6 +26,13 @@ public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
         this.launchConfiguration = launchConfiguration;
         isRunning = true;
         strStatus = EventStateConstants.SERVICE_HANDLE_BOUND;
+        try {
+            generateServiceBoundEvent();
+        } catch (FioranoException e) {
+            logger.error("Error Sending service bounf event for "+launchConfiguration.getApplicationName() +":"
+                    +launchConfiguration.getApplicationVersion() + "-"+ launchConfiguration.getMicroserviceId()+":" + launchConfiguration.getMicroserviceVersion()
+                    +e.getMessage(),e);
+        }
     }
 
     public boolean isRunning() {
@@ -36,6 +45,7 @@ public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
         isRunning = false;
         gracefulKill = true;
         strStatus = EventStateConstants.SERVICE_HANDLE_UNBOUND;
+        generateServiceUnboundEvent("Shutdown",false);
     }
 
     public void kill() throws Exception {

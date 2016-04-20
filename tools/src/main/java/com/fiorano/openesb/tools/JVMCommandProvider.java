@@ -240,8 +240,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
     protected void checkJavaHome() {
         //1st preference - user defined JAVA_HOME which is set in component properties.
-        //2nd preference - JAVA_HOME which is set in peer profiles EventProcessConfig JavaHomeForSeparateProcessComponents property.
-        //If nothing is set, JAVA_HOME on which peer server is running will be used. This is set in getLaunchComamnd() of JavaProcessInfo.
+        //2nd preference - JAVA_HOME which is set in server config file.
         for (RuntimeArgument runtimeArg : launchConfiguration.getRuntimeArgs()) {
             if (runtimeArg.getName().equalsIgnoreCase("JAVA_HOME")) {
                 String userDefinedJavaHome = runtimeArg.getValueAsString();
@@ -251,10 +250,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
                 }
                 break;
             }
-        }
-        String msJavaHome = null; //TransportConfig.getInstance().getValue("MS_JAVA_HOME");
-        if (msJavaHome != null) {
-            systemProps.setProperty(LaunchConstants.USER_DEFINED_JAVA_HOME, msJavaHome);
         }
     }
 

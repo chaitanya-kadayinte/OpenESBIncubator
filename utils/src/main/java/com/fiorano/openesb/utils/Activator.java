@@ -12,6 +12,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) {
         logger = LoggerFactory.getLogger(getClass());
         logger.trace("Started utilities bundle.");
+        System.setProperty("FIORANO_HOME", System.getProperty("user.home"));
     }
 
     public void stop(BundleContext context) {

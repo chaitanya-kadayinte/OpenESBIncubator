@@ -2,6 +2,7 @@ package com.fiorano.openesb.microservice.launch.impl.cl;
 import com.fiorano.openesb.application.service.Resource;
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.application.service.ServiceRef;
+import com.fiorano.openesb.microservice.bundle.Activator;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -75,7 +76,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
         Set<String> urlhashset = new LinkedHashSet<String>();
         updatePaths(sps, urlhashset);
         //Create URL Class loader using url hashset
-        return createComponentClassLoader(urlhashset, Thread.currentThread().getContextClassLoader());
+        return createComponentClassLoader(urlhashset, Activator.class.getClassLoader().getParent().getParent());
     }
 
     private ClassLoader getHierarchicalClassLoader(Service sps) throws FioranoException {

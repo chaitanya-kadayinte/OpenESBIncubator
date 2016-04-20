@@ -26,21 +26,13 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     private ComponentLifeCycleWorkflow lifeCycleWorkflow;
     private Logger coreLogger;
     private boolean shutdownOfCCPComponentInProgress;
-    private EventsManager eventManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     private int numberOfForceShutdownAttempts;
     private volatile boolean isKilling;
     private final Object killSyncObject = new Object();
-    private volatile boolean bServiceDestroyed;
-    private long retryIntervalBetweenForceShutdownAttempts;
-    private long componentStopWaitTime;
-    private long ccpRequestTimeout;
-
-    private ServiceInstanceStateDetails servStateDetails = new ServiceInstanceStateDetails();
-
+    private long componentStopWaitTime = 10000;
 
     public SeparateProcessRuntimeHandle(LaunchConfiguration launchConfiguration, CCPCommandHelper ccpCommandHelper) throws FioranoException {
         super(launchConfiguration);
-
         this.ccpCommandHelper = ccpCommandHelper;
         lifeCycleWorkflow = new ComponentLifeCycleWorkflow(serviceInstName, launchConfiguration.getApplicationName(), launchConfiguration.getApplicationVersion());
         ccpCommandHelper.registerListener(lifeCycleWorkflow, CCPEventType.STATUS);
@@ -75,6 +67,11 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     @Override
     public void setLogLevel(Map<String, String> modules) throws Exception {
         ccpCommandHelper.setLogLevel(modules);
+    }
+
+    @Override
+    public LaunchConfiguration.LaunchMode getLaunchMode() {
+        return LaunchConfiguration.LaunchMode.SEPARATE_PROCESS;
     }
 
     /**
@@ -283,6 +280,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
             stopThread.setDaemon(true);
             stopThread.start();
+            long retryIntervalBetweenForceShutdownAttempts = 5;
             stopThread.join(retryIntervalBetweenForceShutdownAttempts);
         } catch (InterruptedException e) {
             coreLogger.error(RBUtil.getMessage(Bundle.class, Bundle.COMPONENT_STOP_WAIT_THREAD_INTERRUPTED, getServiceInstName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion()));
@@ -369,124 +367,6 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                 coreLogger.error(e.getMessage());
             }
         }
-    }
-
-    public LaunchConfiguration.LaunchMode getLaunchMode() {
-        return launchConfiguration.getLaunchMode();
-    }
-
-    private void generateServiceBoundEvent() throws FioranoException {
-        bServiceDestroyed = false;
-        String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUND, getServiceInstName(), getNodeName());
-        servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUND);
-        generateMicroServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHED, Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_BOUND, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
-        strStatus=EventStateConstants.SERVICE_HANDLE_BOUND;
-    }
-
-    private void generateServiceKillFailedEvent(String reason) throws FioranoException {
-        String status = EventStateConstants.SERVICE_FAILED_TO_KILL;
-        MicroServiceEvent.MicroServiceEventType eventType = MicroServiceEvent.MicroServiceEventType.SERVICE_STOP_FAILED;
-        Event.EventCategory eventCategory = Event.EventCategory.ERROR;
-        String description = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_KILL_FAILURE, getNodeName());
-        servStateDetails.setRunningVersion(getVersion());
-        servStateDetails.setStatusString(status);
-        generateServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_STOP_FAILED, eventCategory, status, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), description, AlertModules.SERVICE_LAUNCH_KILL);
-
-    }
-
-    private void generateServiceFailedToLaunchEvent(String reason) throws FioranoException {
-        String status = EventStateConstants.SERVICE_FAILED_TO_LAUNCH;
-        MicroServiceEvent.MicroServiceEventType eventType = MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCH_FAILED;
-        Event.EventCategory eventCategory = Event.EventCategory.ERROR;
-        String description = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_LAUNCH_FAILURE, getNodeName());
-        servStateDetails.setRunningVersion(getVersion());
-        servStateDetails.setStatusString(status);
-        generateServiceEvent(eventType, eventCategory, status, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), description, AlertModules.SERVICE_LAUNCH_KILL);
-
-    }
-
-    private void generateServiceBoundingEvent() throws FioranoException {
-        bServiceDestroyed = false;
-        String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUNDING, getServiceInstName(), getNodeName());
-        servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUNDING);
-        generateMicroServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHING, Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_BOUNDING, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
-
-    }
-
-    private String getNodeName() {
-        return "FPS";
-    }
-
-    private String getVersion() {
-        return launchConfiguration.getMicroserviceVersion();
-    }
-
-    public MicroServiceEvent getMicroServiceEvent(MicroServiceEvent.MicroServiceEventType eventType, Event.EventCategory category, String status, String serviceGUID, String serviceVersion, String serviceInstName,
-                                                  String appGuid, String appVersion, String description, String moduleName, String serverID) throws FioranoException {
-        MicroServiceEvent event = new MicroServiceEvent();
-        event.setMicroServiceEventType(eventType);
-        event.setEventCategory(category);
-        event.setEventScope("OpenESB");
-        event.setSource("Peer Server");
-        event.setEventModule(moduleName);
-        event.setEventGenerationDate(System.currentTimeMillis());
-        event.setEventStatus(status);
-        event.setServiceGUID(serviceGUID);
-        event.setServiceVersion(Float.parseFloat(serviceVersion));
-        event.setApplicationGUID(launchConfiguration.getApplicationName());
-        event.setApplicationVersion(appVersion);
-        event.setServiceInstance(serviceInstName);
-        event.setEventDescription(description);
-        event.setSourceTPSName("FPS");
-        event.setBuildVersionNo(getBuildNo());
-        event.setSink(serverID);
-        return event;
-    }
-
-    /**
-     * Generates Service Unbound event
-     *
-     * @param reason Reason for which component is being killed
-     * @throws FioranoException exception
-     */
-    protected void generateServiceUnboundEvent(String reason, boolean isWarning) throws FioranoException {
-        String message;
-        if (reason != null && reason.contains("STOPPING_COMPONENT_DUE_TO_PRESENCE_OF_MULTIPLE_INSTANCES_IN_NETWORK")) {
-            message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_UNBOUND2, getServiceInstName(), getNodeName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), reason);
-            servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND_SERVER_MANAGEMENT_ACTION);
-            generateServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_STOPPED, isWarning ? Event.EventCategory.WARNING : Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_UNBOUND_SERVER_MANAGEMENT_ACTION,
-                    getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
-        } else {
-            if (isWarning || reason != null)
-                message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_UNBOUND2, getServiceInstName(), getNodeName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), reason);
-            else
-                message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_UNBOUND1, getServiceInstName(), getNodeName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
-
-            servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
-            generateServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_STOPPED, isWarning ? Event.EventCategory.WARNING : Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_UNBOUND,
-                    getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
-        }
-    }
-
-    private void generateServiceEvent(MicroServiceEvent.MicroServiceEventType eventType, Event.EventCategory category, String status, String serviceGUID, String serviceVersion, String serviceInstName,
-                                      String appGuid, String appVersion, String description, String moduleName) throws FioranoException {
-        MicroServiceEvent event = getMicroServiceEvent(eventType, category, status, serviceGUID, serviceVersion, serviceInstName, launchConfiguration.getApplicationName(), appVersion, description, moduleName, getNodeName());
-        eventManager.raiseEvent(event);
-    }
-
-    //todo implement in common class
-    private static int getBuildNo() {
-        return 100;
-    }
-
-    private void generateMicroServiceEvent(MicroServiceEvent.MicroServiceEventType eventType, Event.EventCategory category, String status, String serviceGUID, String serviceVersion, String serviceInstName,
-                                           String appGuid, String appVersion, String description, String moduleName) throws FioranoException {
-        MicroServiceEvent event = getMicroServiceEvent(eventType, category, status, serviceGUID, serviceVersion, serviceInstName, launchConfiguration.getApplicationName(), appVersion, description, moduleName, getNodeName());
-        eventManager.raiseEvent(event);
-    }
-
-    private class AlertModules {
-        public static final String SERVICE_LAUNCH_KILL = "SERVICE_LAUNCH_KILL";
     }
 
 }
