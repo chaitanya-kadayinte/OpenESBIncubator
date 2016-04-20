@@ -111,7 +111,7 @@ public class DapiEventManager implements EventListener {
                 return;
             }
         }
-       System.out.println("cannot deliover event");
+       System.out.println("Cannot deliver event");
     }
 
 

@@ -1,6 +1,7 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.application.service.Service;
+import com.fiorano.openesb.microservice.bundle.Activator;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
@@ -8,6 +9,8 @@ import com.fiorano.openesb.microservice.launch.impl.cl.ClassLoaderManager;
 import com.fiorano.openesb.microservice.launch.impl.cl.IClassLoaderManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -25,9 +28,10 @@ public class InMemoryLauncher implements Launcher {
     public MicroServiceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
         this.launchConfiguration = launchConfiguration;
         ClassLoader classLoader = m_classLoaderManager.getClassLoader(getComponentPS());
-        InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader);
+        InMemoryRuntimeHandle inMemoryRuntimeHandle = new InMemoryRuntimeHandle(service, serviceClass, launchConfiguration);
+        InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader, inMemoryRuntimeHandle);
         inMemoryLaunchThread.start();
-        return new InMemoryRuntimeHandle(service, serviceClass, launchConfiguration);
+        return inMemoryRuntimeHandle;
     }
 
     private Service getComponentPS() throws FioranoException {
@@ -39,9 +43,12 @@ public class InMemoryLauncher implements Launcher {
 
         private final Method startup;
         private ClassLoader serviceClassLoader;
+        private InMemoryRuntimeHandle inMemoryRuntimeHandle;
+        private Logger logger = LoggerFactory.getLogger(Activator.class);
 
-        public InMemoryLaunchThread(ClassLoader classLoader) throws Exception {
+        public InMemoryLaunchThread(ClassLoader classLoader, InMemoryRuntimeHandle inMemoryRuntimeHandle) throws Exception {
             serviceClassLoader = classLoader;
+            this.inMemoryRuntimeHandle = inMemoryRuntimeHandle;
             setName(launchConfiguration.getServiceName() + " Launch In-memory Thread");
             startup = initStartMethod();
         }
@@ -50,8 +57,11 @@ public class InMemoryLauncher implements Launcher {
             try {
                 Thread.currentThread().setContextClassLoader(serviceClassLoader);
                 startup.invoke(service, getArguments());
+                inMemoryRuntimeHandle.generateServiceBoundEvent();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error Starting service " + launchConfiguration.getApplicationName() + ":"
+                        + launchConfiguration.getApplicationVersion() + "-" + launchConfiguration.getMicroserviceId() + ":" + launchConfiguration.getMicroserviceVersion()
+                        + e.getMessage(), e);
             }
         }
 
@@ -91,7 +101,7 @@ public class InMemoryLauncher implements Launcher {
 
             CommandProvider commandProvider = new JVMCommandProvider();
             List<String> list = commandProvider.getCommandLineParams(launchConfiguration);
-            argListForInvokedMain[0] =  list.toArray(new String[list.size()]);
+            argListForInvokedMain[0] = list.toArray(new String[list.size()]);
             return argListForInvokedMain;
         }
 

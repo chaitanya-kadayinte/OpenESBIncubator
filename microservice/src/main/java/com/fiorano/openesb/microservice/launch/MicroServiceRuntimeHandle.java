@@ -136,7 +136,7 @@ public abstract class MicroServiceRuntimeHandle {
         return details;
     }
 
-    protected void generateServiceBoundEvent() throws FioranoException {
+    public void generateServiceBoundEvent() throws FioranoException {
         bServiceDestroyed = false;
         String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUND, getServiceInstName(), getNodeName());
         servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUND);

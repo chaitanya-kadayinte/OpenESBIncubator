@@ -84,7 +84,11 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
      */
     public void killComponent(boolean isComponentConnOpen, boolean userAction, String reason) throws Exception {
         if (isComponentConnOpen) {
-            ccpCommandHelper.stopComponent(componentStopWaitTime);
+            try {
+                ccpCommandHelper.stopComponent(componentStopWaitTime);
+            } catch (FioranoException e) {
+                cleanupComponentResources(userAction,true,reason);
+            }
             waitForCCPComponentDeath(true, userAction, reason);
         } else {
             cleanupComponentResources(userAction, true, reason);
@@ -255,7 +259,7 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
     //// TODO: 28-02-2016
     private void shutdown(long componentStopWaitTime) {
-
+        osProcess.destroy();
     }
 
     private boolean runStop(boolean userAction, String reason) throws FioranoException {
