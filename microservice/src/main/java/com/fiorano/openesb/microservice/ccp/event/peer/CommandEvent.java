@@ -89,7 +89,15 @@ public class CommandEvent extends ControlEvent {
         /**
          * This command is sent by Peer Server to component process to flush messages
          */
-        FLUSH_MESSAGES
+        FLUSH_MESSAGES,
+        /**
+         * This command is sent by Server to component to clear error logs
+         */
+        CLEAR_ERR_LOGS,
+        /**
+         * This command is sent by Server to component to clear out logs
+         */
+        CLEAR_OUT_LOGS,
     }
 
     /**
