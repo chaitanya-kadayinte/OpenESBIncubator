@@ -1417,7 +1417,7 @@ public class ApplicationController {
         ApplicationHandle applicationHandle = applicationHandleMap.get(eventProcessName + Constants.NAME_DELIMITER + appVersion);
 
         if(applicationHandle!=null){
-            applicationHandle.isMicroserviceRunning(servInstanceName);
+            return applicationHandle.isMicroserviceRunning(servInstanceName);
         }
         return false;
     }
@@ -1586,7 +1586,7 @@ public class ApplicationController {
                     logger.error("Error occurred while sending 'clear out logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion);
                     throw new FioranoException("Error occurred while sending 'clear out logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion, e);
                 }
-                return;
+                continue;
             }
             //todo: remove hardcoded service logs path.
             String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
