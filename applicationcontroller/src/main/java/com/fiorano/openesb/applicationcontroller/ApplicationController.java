@@ -350,10 +350,99 @@ public class ApplicationController {
         }
         String appGuid = application.getGUID();
         float version = application.getVersion();
+        Application oldApp = savedApplicationMap.get(appGuid+Constants.NAME_DELIMITER+version);
         // boolean applicationExists = applicationRepository.applicationExists(appGuid, version);
         applicationRepository.saveApplication(application, appFileFolder, userName, zippedContents, handleID);
         savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
-       updateChainLaunchDS(application);
+        if (oldApp != null) {
+            removeChainLaunchDS(oldApp);
+            Vector<String> deletedComponents = new Vector<String>();
+            Vector<String> deletedConfigComponents = new Vector<String>();
+            HashMap<String, String> deletedPorts = new HashMap<String, String>();
+
+            for (Object o1 : oldApp.getServiceInstances()) {
+                boolean check = false;
+                ServiceInstance oldInst = (ServiceInstance) o1;
+
+                for (Object o : application.getServiceInstances()) {
+                    ServiceInstance newInst = (ServiceInstance) o;
+                    if (oldInst.getName().equals(newInst.getName())) {
+                        check = false;
+
+                        List<OutputPortInstance> oldOutputPortInstances = oldInst.getOutputPortInstances();
+                        for (OutputPortInstance oldPort : oldOutputPortInstances) {
+                            boolean deletePort = false;
+
+                            List<OutputPortInstance> newOutputPortInstances = newInst.getOutputPortInstances();
+                            for (OutputPortInstance newPort : newOutputPortInstances) {
+                                if (oldPort.getName().equals(newPort.getName())) {
+                                    deletePort = false;
+                                    break;
+                                } else {
+                                    deletePort = true;
+                                }
+                            }
+
+                            if (newInst.getOutputPortInstances().size() == 0)
+                                deletePort = true;
+
+                            if (deletePort)
+                                deletedPorts.put(oldInst.getName(), oldPort.getName());
+                        }
+
+                        break;
+                    } else {
+                        check = true;
+                    }
+                }
+
+                if (application.getServiceInstances().size() == 0) {
+                    check = true;
+                }
+
+                if (check) {
+                    deletedConfigComponents.add(oldInst.getName());
+                    String[] nodes = oldInst.getNodes();
+                    if (nodes != null)
+                        deletedComponents.add(oldInst.getName());
+                }
+            }
+
+            deleteLogs(oldApp, deletedComponents);
+            if (!deletedConfigComponents.isEmpty())
+                deleteConfigurations(oldApp, deletedConfigComponents);
+
+            if (!deletedComponents.isEmpty()) {
+                deleteInPort(oldApp, deletedConfigComponents);
+            }
+
+            if (!deletedPorts.isEmpty())
+                deletePortTransformations(oldApp, deletedPorts);
+
+            Vector<String> deletedRoutes = new Vector<String>();
+            for (Route oldRoute : oldApp.getRoutes()) {
+                boolean check = false;
+
+                for (Route newRoute : application.getRoutes()) {
+                    if (oldRoute.getName().equals(newRoute.getName())) {
+                        check = false;
+                        break;
+                    } else {
+                        check = true;
+                    }
+                }
+
+                if (application.getRoutes().size() == 0)
+                    check = true;
+
+                if (check)
+                    deletedRoutes.add(oldRoute.getName());
+            }
+
+            if (!deletedRoutes.isEmpty())
+                deleteRouteConfigurations(oldApp, deletedRoutes);
+        }
+        updateChainLaunchDS(application);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED, Event.EventCategory.INFORMATION,
                 appGuid, application.getDisplayName(),String.valueOf(version), "Application saved Successfully");
     }
@@ -423,17 +512,12 @@ public class ApplicationController {
                         deletedComponents.add(oldInst.getName());
                 }
             }
-
+            deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
             if (!deletedComponents.isEmpty()) {
                 deleteInPort(oldApp, deletedConfigComponents);
-            }
-
-            for(String deletedComponent: deletedComponents){
-                clearServiceErrLogs(deletedComponent, application.getGUID(), application.getVersion());
-                clearServiceOutLogs(deletedComponent, application.getGUID(), application.getVersion());
             }
 
             if (!deletedPorts.isEmpty())
@@ -503,8 +587,11 @@ public class ApplicationController {
         //todo
     }
 
-    private void deleteLogs(Application application, Vector<String> components) {
-        //todo
+    private void deleteLogs(Application application, Vector<String> components) throws FioranoException {
+        for(String deletedComponent: components){
+            clearServiceErrLogs(deletedComponent, application.getGUID(), application.getVersion());
+            clearServiceOutLogs(deletedComponent, application.getGUID(), application.getVersion());
+        }
     }
 
     public Set<String> getListOfRunningApplications(String handleId){

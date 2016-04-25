@@ -32,10 +32,10 @@ public class ApplicationHandle {
     private RouteService<RouteConfiguration> routeService;
     private TransportService transport;
     Map<String, MicroServiceRuntimeHandle> microServiceHandleList = new ConcurrentHashMap<>();
-    private Map<String, Route> routeMap = new HashMap<>();
-    private Map<String, Route> breakPointRoutes = new HashMap<>();
-    private Map<String, BreakpointMetaData> breakpoints = new HashMap<String, BreakpointMetaData>();
-    private Map<String, BreakpointMetaData> pendingBreakpointsForClouser = new HashMap<String, BreakpointMetaData>();
+    private Map<String, Route> routeMap = new ConcurrentHashMap<>();
+    private Map<String, Route> breakPointRoutes = new ConcurrentHashMap<>();
+    private Map<String, BreakpointMetaData> breakpoints = new ConcurrentHashMap<>();
+    private Map<String, BreakpointMetaData> pendingBreakpointsForClouser = new ConcurrentHashMap<>();
     private ApplicationController applicationController;
 
 
@@ -653,24 +653,21 @@ public class ApplicationHandle {
 
         toBeKilledComponents.removeAll(tobeRunningComponents);
         for (String killcomp : toBeKilledComponents) {
-            MicroServiceRuntimeHandle handle=null;
             try {
-                handle = microServiceHandleList.get(killcomp);
-                if (handle != null) {
-                    handle.stop();
-                }
+                stopMicroService(killcomp);
             } catch (Exception e) {
-                logger.error("error occured while stopping the component " + handle.getServiceInstName());
+                logger.error("error occured while stopping the component " + killcomp + "of Application " +appGUID +":"+version);
             }
         }
     }
 
     public void synchronizeRoutes() throws Exception {
-        Collection<Route> toDelete = new ArrayList<Route>();
-        for (Route route : routeMap.values())
-            if (!checkForRouteExistanceAndUpdateRoute(route))
-                toDelete.add(route);
-        for (Route route : toDelete) {
+        Collection<String> toDelete = new ArrayList();
+        for (String routeName : routeMap.keySet())
+            if (!checkForRouteExistanceAndUpdateRoute(routeMap.get(routeName)))
+                toDelete.add(routeName);
+        for (String routeName : toDelete) {
+            Route route = routeMap.remove(routeName);
             route.stop();
             route.delete();
         }
