@@ -158,10 +158,10 @@ public class ServiceManualLauncher extends FioranoTask {
                 }
             }
         } catch (IOException e) {
-            System.out.println(ExceptionUtil.getMessage(e));
+            e.printStackTrace();
            // if (!noninteractive && dialog != null) dialog.dispose();
         } catch (InterruptedException ie) {
-            System.out.println(ExceptionUtil.getMessage(ie));
+            ie.printStackTrace();
           //  if (!noninteractive && dialog != null) dialog.dispose();
         }
     }
@@ -202,7 +202,7 @@ public class ServiceManualLauncher extends FioranoTask {
         }
     }
 
-    private void handleNonNTService(Runtime runtime, String[] exec) throws IOException, InterruptedException, FioranoException {
+    private void handleNonNTService(Runtime runtime, String[] exec) throws IOException, FioranoException, InterruptedException {
         boolean applicationLaunched;
         boolean componentLaunched;
         try {

@@ -22,6 +22,7 @@ import com.fiorano.openesb.microservice.ccp.event.ControlEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
 import com.fiorano.openesb.microservice.ccp.event.common.data.*;
+import com.fiorano.openesb.microservice.ccp.event.peer.CommandEvent;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
@@ -67,6 +68,7 @@ public class ApplicationController {
 
     // This will be set to true after the applications are started during the server startup
     private transient boolean appsRestored;
+    private CCPEventManager ccpEventManager;
 
     public ApplicationController(ApplicationRepository applicationRepository, BundleContext context) throws Exception {
         logger.info("Initializing Application Controller.");
@@ -74,7 +76,7 @@ public class ApplicationController {
         routeService = context.getService(context.getServiceReference(RouteService.class));
         microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
         eventsManager = context.getService(context.getServiceReference(EventsManager.class));
-        CCPEventManager ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
+        ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
         namedConfigRepository = context.getService(context.getServiceReference(NamedConfigRepository.class));
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
@@ -645,6 +647,11 @@ public class ApplicationController {
             throw new FioranoException("Cannot delete running Application. Stop the Application and then delete");
         }
         applicationRepository.deleteApplication(appGUID, version);
+        try{
+            clearApplicationLogs(appGUID, Float.parseFloat(version));
+        }catch (Throwable th){
+            logger.error(th.getMessage());
+        }
         savedApplicationMap.remove(key);
         removeChainLaunchDS(key);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_DELETED, Event.EventCategory.INFORMATION,
@@ -1407,7 +1414,7 @@ public class ApplicationController {
     }
 
     public boolean isServiceRunning(String eventProcessName, float appVersion, String servInstanceName) {
-        ApplicationHandle applicationHandle = applicationHandleMap.get(eventProcessName+Constants.NAME_DELIMITER+appVersion);
+        ApplicationHandle applicationHandle = applicationHandleMap.get(eventProcessName + Constants.NAME_DELIMITER + appVersion);
 
         if(applicationHandle!=null){
             applicationHandle.isMicroserviceRunning(servInstanceName);
@@ -1415,7 +1422,7 @@ public class ApplicationController {
         return false;
     }
 
-    public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) {
+    public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws FioranoException {
         Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
         ServiceInstance si = application.getServiceInstance(serviceName);
         float serviceVersion = si.getVersion();
@@ -1423,8 +1430,11 @@ public class ApplicationController {
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceName.toUpperCase();
         File f = new File(path);
+        if(!f.exists()){
+            return "";
+        }
         File[] logfiles = f.listFiles();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("");
         int lineCount=0;
         for(File file:logfiles){
             if(!file.getName().contains("out") || file.getName().contains("lck")){
@@ -1444,15 +1454,15 @@ public class ApplicationController {
                     return sb.toString();
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                throw new FioranoException(e);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new FioranoException(e);
             }
         }
         return sb.toString();
     }
 
-    public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) {
+    public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws FioranoException{
         Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
         ServiceInstance si = application.getServiceInstance(serviceName);
         float serviceVersion = si.getVersion();
@@ -1460,8 +1470,11 @@ public class ApplicationController {
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceName.toUpperCase();
         File f = new File(path);
+        if(!f.exists()){
+            return "";
+        }
         File[] logfiles = f.listFiles();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("");
         int lineCount=0;
         for(File file:logfiles){
             if(!file.getName().contains("err") || file.getName().contains("lck")){
@@ -1481,24 +1494,115 @@ public class ApplicationController {
                     return sb.toString();
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                throw new FioranoException(e);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new FioranoException(e);
             }
         }
         return sb.toString();
     }
 
-    public void clearServiceOutLogs(String serviceInst, String appGUID, float appVersion) {
-
+    public void clearServiceOutLogs(String serviceInst, String appGUID, float appVersion) throws FioranoException {
+        if(isServiceRunning(appGUID, appVersion, serviceInst)){
+            CommandEvent commandEvent = new CommandEvent();
+            commandEvent.setCommand(CommandEvent.Command.CLEAR_OUT_LOGS);
+            try {
+                ccpEventManager.getCcpEventGenerator().sendEvent(commandEvent, LookUpUtil.getServiceInstanceLookupName(appGUID, appVersion, serviceInst));
+            } catch (Exception e) {
+                logger.error("Error occurred while sending 'clear out logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion);
+                throw new FioranoException("Error occurred while sending 'clear out logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion, e);
+            }
+            return;
+        }
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        ServiceInstance si = application.getServiceInstance(serviceInst);
+        float serviceVersion = si.getVersion();
+        //todo: remove hardcoded service logs path.
+        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
+        File f = new File(path);
+        if(!f.exists()){
+            return;
+        }
+        File[] logfiles = f.listFiles();
+        for(File file:logfiles){
+            if(!file.getName().contains("out") || file.getName().contains("lck")){
+                continue;
+            }
+            file.delete();
+        }
     }
 
-    public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) {
-
+    public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) throws FioranoException {
+        if(isServiceRunning(appGUID, appVersion, serviceInst)){
+            ApplicationHandle applicationHandle = getApplicationHandle(appGUID, appVersion);
+            CommandEvent commandEvent = new CommandEvent();
+            commandEvent.setCommand(CommandEvent.Command.CLEAR_ERR_LOGS);
+            try {
+                ccpEventManager.getCcpEventGenerator().sendEvent(commandEvent, LookUpUtil.getServiceInstanceLookupName(appGUID, appVersion, serviceInst));
+            } catch (Exception e) {
+                logger.error("Error occurred while sending 'clear error logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion);
+                throw new FioranoException("Error occurred while sending 'clear error logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion, e);
+            }
+            return;
+        }
+        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        ServiceInstance si = application.getServiceInstance(serviceInst);
+        float serviceVersion = si.getVersion();
+        //todo: remove hardcoded service logs path.
+        String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
+        File f = new File(path);
+        if(!f.exists()){
+            return;
+        }
+        File[] logfiles = f.listFiles();
+        for(File file:logfiles){
+            if(!file.getName().contains("err") || file.getName().contains("lck")){
+                continue;
+            }
+            file.delete();
+        }
     }
 
-    public void clearApplicationLogs(String appGUID, float appVersion) {
-
+    public void clearApplicationLogs(String appGUID, float appVersion) throws FioranoException {
+        Application application = savedApplicationMap.get(appGUID + Constants.NAME_DELIMITER + appVersion);
+        for(ServiceInstance si : application.getServiceInstances()){
+            String serviceInst = si.getName();
+            if(isServiceRunning(appGUID, appVersion, serviceInst)){
+                CommandEvent commandEvent = new CommandEvent();
+                commandEvent.setCommand(CommandEvent.Command.CLEAR_ERR_LOGS);
+                String componentIdentifier =LookUpUtil.getServiceInstanceLookupName(appGUID, appVersion, serviceInst);
+                try {
+                    ccpEventManager.getCcpEventGenerator().sendEvent(commandEvent, componentIdentifier);
+                } catch (Exception e) {
+                    logger.error("Error occurred while sending 'clear error logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion);
+                    throw new FioranoException("Error occurred while sending 'clear error logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion, e);
+                }
+                commandEvent.setCommand(CommandEvent.Command.CLEAR_OUT_LOGS);
+                try {
+                    ccpEventManager.getCcpEventGenerator().sendEvent(commandEvent, componentIdentifier);
+                } catch (Exception e) {
+                    logger.error("Error occurred while sending 'clear out logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion);
+                    throw new FioranoException("Error occurred while sending 'clear out logs' command to service " + serviceInst + "of Application "+appGUID+":"+appVersion, e);
+                }
+                return;
+            }
+            //todo: remove hardcoded service logs path.
+            String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                    +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
+            File f = new File(path);
+            if(!f.exists()){
+                return;
+            }
+            File[] logfiles = f.listFiles();
+            for(File file:logfiles){
+                if(file.getName().contains("lck")){
+                    continue;
+                }
+                file.delete();
+            }
+        }
     }
 
     public void Stop() {

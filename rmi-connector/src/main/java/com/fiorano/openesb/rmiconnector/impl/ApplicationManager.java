@@ -1102,27 +1102,47 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return applicationController.getLastOutTrace(numberOfLines, serviceName, appGUID, appVersion);
+        try {
+            return applicationController.getLastOutTrace(numberOfLines, serviceName, appGUID, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        return applicationController.getLastErrTrace(numberOfLines, serviceName, appGUID, appVersion);
+        try {
+            return applicationController.getLastErrTrace(numberOfLines, serviceName, appGUID, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void clearServiceOutLogs(String serviceInst, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        applicationController.clearServiceOutLogs(serviceInst, appGUID, appVersion);
+        try {
+            applicationController.clearServiceOutLogs(serviceInst, appGUID, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) throws RemoteException, ServiceException {
-        applicationController.clearServiceErrLogs(serviceInst, appGUID, appVersion);
+        try {
+            applicationController.clearServiceErrLogs(serviceInst, appGUID, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
     public void clearApplicationLogs(String appGUID, float appVersion) throws RemoteException, ServiceException {
-        applicationController.clearApplicationLogs(appGUID, appVersion);
+        try {
+            applicationController.clearApplicationLogs(appGUID, appVersion);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override

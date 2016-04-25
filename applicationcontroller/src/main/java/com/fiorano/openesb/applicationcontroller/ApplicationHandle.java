@@ -491,7 +491,7 @@ public class ApplicationHandle {
             logger.info("Stoping MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
             microServiceHandleList.get(microServiceName).stop();
             microServiceHandleList.remove(microServiceName);
-            logger.info("Stopped MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
+            logger.info("Stopped MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
         } catch (Throwable e) {
             logger.error("Error occured while stopping the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
         }
@@ -683,8 +683,8 @@ public class ApplicationHandle {
 
         List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
         for (com.fiorano.openesb.application.application.Route route : routes) {
-            if(rInfo.getSourceDestinationName().equals(route.getSourcePortInstance())
-                    && rInfo.getTargetDestinationName().equals(route.getTargetPortInstance())){
+            if(srcPortName.equals(getPortName(route.getSourcePortInstance(), route.getSourceServiceInstance()))
+                    && tgtPortName.equals(getPortName(route.getTargetPortInstance(), route.getTargetServiceInstance()))){
                 found = true;
                 break;
             }

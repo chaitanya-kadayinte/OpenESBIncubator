@@ -33,6 +33,7 @@ public class CCPEventManager implements MessageListener<Message> {
         trackResponseCount = new HashMap<>();
         ccpEventGenerator = new CCPEventGenerator();
         createDestinations();
+        ccpEventGenerator.createProducer();
     }
 
     private void createDestinations() throws Exception {
@@ -119,6 +120,7 @@ public class CCPEventManager implements MessageListener<Message> {
 
     public class CCPEventGenerator {
         private Port sendTopic;
+        private Producer<Message> producer;
 
         /**
          * Send the control event to the list of component instances as specified.
@@ -157,7 +159,6 @@ public class CCPEventManager implements MessageListener<Message> {
                 message.setJMSExpiration(event.getExpiryTime());
                 message.setStringProperty(ControlEvent.TARGET_OBJECTS, target.toString());
                 message.setStringProperty(ControlEvent.EVENT_TYPE_HEADER, event.getEventType().toString());
-                Producer<Message> producer = transportService.createProducer(sendTopic, new JMSProducerConfiguration());
                 producer.send(new JMSMessage(message));
 
             } catch (Exception e) {
@@ -171,6 +172,9 @@ public class CCPEventManager implements MessageListener<Message> {
 
         public void setSendTopic(Port sendTopic) {
             this.sendTopic = sendTopic;
+        }
+        public void createProducer() throws Exception {
+            producer = transportService.createProducer(sendTopic, new JMSProducerConfiguration());
         }
     }
 }
