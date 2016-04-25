@@ -676,7 +676,7 @@ public class ApplicationHandle {
         }
     }
 
-    private boolean checkForRouteExistanceAndUpdateRoute(Route rInfo) {
+    private boolean checkForRouteExistanceAndUpdateRoute(Route rInfo) throws Exception {
         boolean found = false;
         String srcPortName = rInfo.getSourceDestinationName();
         String tgtPortName = rInfo.getTargetDestinationName();
@@ -686,6 +686,52 @@ public class ApplicationHandle {
             if(srcPortName.equals(getPortName(route.getSourcePortInstance(), route.getSourceServiceInstance()))
                     && tgtPortName.equals(getPortName(route.getTargetPortInstance(), route.getTargetServiceInstance()))){
                 found = true;
+                String sourcePortInstance = route.getSourcePortInstance();
+                String sourceServiceInstance = route.getSourceServiceInstance();
+                OutputPortInstance sourcePort = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
+                //check and update all route operation handlers
+                Transformation applicationContextTransformation = sourcePort.getApplicationContextTransformation();
+                if(applicationContextTransformation != null) {
+                    TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                    transformationConfiguration.setXsl(applicationContextTransformation.getScript());
+                    transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
+                    transformationConfiguration.setJmsXsl(applicationContextTransformation.getJMSScript());
+                    transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
+                    rInfo.modifyHandler(transformationConfiguration);
+                }
+
+                if(route.getSenderSelector()!=null){
+                    SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+                    senderSelectorConfiguration.setSourceName(route.getSenderSelector());
+                    senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                    senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
+                    rInfo.modifyHandler(senderSelectorConfiguration);
+                }
+
+                if(route.getApplicationContextSelector() != null) {
+                    XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+                    appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
+                    appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                    appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
+                    rInfo.modifyHandler(appContextSelectorConfig);
+                }
+
+                if(route.getBodySelector() != null) {
+                    XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
+                    bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
+                    bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
+                    bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
+                    rInfo.modifyHandler(bodySelectorConfig);
+                }
+
+                if(route.getMessageTransformation()!=null) {
+                    TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
+                    transformationConfiguration.setXsl(route.getMessageTransformation().getScript());
+                    transformationConfiguration.setTransformerType(route.getMessageTransformation().getFactory());
+                    transformationConfiguration.setJmsXsl(route.getMessageTransformation().getJMSScript());
+                    transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                    rInfo.modifyHandler(transformationConfiguration);
+                }
                 break;
             }
         }

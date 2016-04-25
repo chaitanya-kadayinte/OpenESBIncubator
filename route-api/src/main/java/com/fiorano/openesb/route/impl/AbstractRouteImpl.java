@@ -24,9 +24,12 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
     public void handleMessage(M message) {
         if (!routeOperationHandlers.isEmpty()) {
             try {
-                for (RouteOperationHandler handler : routeOperationHandlers.values()) {
-                    LoggerFactory.getLogger(Activator.class).trace("Handling Operation " + handler.toString());
-                    handler.handleOperation(message);
+                for(RouteOperationType operationType : RouteOperationType.values()){
+                    RouteOperationHandler handler = routeOperationHandlers.get(operationType);
+                    if(handler!=null){
+                        LoggerFactory.getLogger(Activator.class).trace("Handling Operation " + handler.toString());
+                        handler.handleOperation(message);
+                    }
                 }
             } catch (FilterMessageException e) {
                 LoggerFactory.getLogger(Activator.class).debug("Message skipped by selector : " + e.getMessage());// Message skipped by selector - debug log.
