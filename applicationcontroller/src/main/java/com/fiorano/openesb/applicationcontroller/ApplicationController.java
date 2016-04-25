@@ -431,6 +431,11 @@ public class ApplicationController {
                 deleteInPort(oldApp, deletedConfigComponents);
             }
 
+            for(String deletedComponent: deletedComponents){
+                clearServiceErrLogs(deletedComponent, application.getGUID(), application.getVersion());
+                clearServiceOutLogs(deletedComponent, application.getGUID(), application.getVersion());
+            }
+
             if (!deletedPorts.isEmpty())
                 deletePortTransformations(oldApp, deletedPorts);
 
@@ -457,10 +462,10 @@ public class ApplicationController {
             if (!deletedRoutes.isEmpty())
                 deleteRouteConfigurations(oldApp, deletedRoutes);
         }
-        ApplicationHandle appHandle = getApplicationHandle(application.getGUID(), application.getVersion(), handleID);
+        /*ApplicationHandle appHandle = getApplicationHandle(application.getGUID(), application.getVersion(), handleID);
         if (appHandle != null) {
             appHandle.setApplication(application);
-        }
+        }*/
         savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
         updateChainLaunchDS(application);
         ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_SAVED, Event.EventCategory.INFORMATION,

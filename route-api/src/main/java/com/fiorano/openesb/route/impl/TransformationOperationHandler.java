@@ -20,7 +20,7 @@ public class TransformationOperationHandler implements RouteOperationHandler<JMS
     public TransformationOperationHandler(TransformationConfiguration configuration) throws Exception {
         this.configuration = configuration;
         this.logger = LoggerFactory.getLogger(Activator.class);
-        msgTransformer = new JmsMessageTransformerImpl(configuration.getXsl(),configuration.getTransformerType());
+        msgTransformer = new JmsMessageTransformerImpl(configuration.getXsl(), configuration.getJmsXsl(), configuration.getTransformerType());
     }
 
     public void handleOperation(JMSMessage message) throws FioranoException {

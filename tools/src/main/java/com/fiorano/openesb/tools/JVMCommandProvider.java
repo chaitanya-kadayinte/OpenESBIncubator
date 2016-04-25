@@ -316,7 +316,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         systemProps.setProperty("mx4j.log.priority", "error");
         systemProps.setProperty("COMP_REPOSITORY_DIR", System.getProperty("COMP_REPOSITORY_PATH"));
         systemProps.setProperty("FIORANO_HOME", fioranoHomeDir);
-
+        systemProps.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         //todo need to assign log handlers
         List logModules = launchConfiguration.getLogModules();
 
