@@ -8,16 +8,21 @@ import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.microservice.launch.impl.cl.ClassLoaderManager;
 import com.fiorano.openesb.microservice.launch.impl.cl.IClassLoaderManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
+import com.fiorano.openesb.utils.LoggerUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import com.fiorano.openesb.utils.logging.FioranoLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 
 public class InMemoryLauncher implements Launcher {
     private IClassLoaderManager m_classLoaderManager;
-    private Object service;
+    private Object runtimeService;
     private LaunchConfiguration launchConfiguration;
     private Class serviceClass;
 
@@ -27,8 +32,9 @@ public class InMemoryLauncher implements Launcher {
 
     public MicroServiceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
         this.launchConfiguration = launchConfiguration;
-        ClassLoader classLoader = m_classLoaderManager.getClassLoader(getComponentPS());
-        InMemoryRuntimeHandle inMemoryRuntimeHandle = new InMemoryRuntimeHandle(service, serviceClass, launchConfiguration);
+        Service componentPS = getComponentPS();
+        ClassLoader classLoader = m_classLoaderManager.getClassLoader(componentPS, launchConfiguration);
+        InMemoryRuntimeHandle inMemoryRuntimeHandle = new InMemoryRuntimeHandle(launchConfiguration);
         InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader, inMemoryRuntimeHandle);
         inMemoryLaunchThread.start();
         return inMemoryRuntimeHandle;
@@ -43,12 +49,12 @@ public class InMemoryLauncher implements Launcher {
 
         private final Method startup;
         private ClassLoader serviceClassLoader;
-        private InMemoryRuntimeHandle inMemoryRuntimeHandle;
+        private InMemoryRuntimeHandle runtimeHandle;
         private Logger logger = LoggerFactory.getLogger(Activator.class);
 
-        public InMemoryLaunchThread(ClassLoader classLoader, InMemoryRuntimeHandle inMemoryRuntimeHandle) throws Exception {
+        public InMemoryLaunchThread(ClassLoader classLoader, InMemoryRuntimeHandle runtimeHandle) throws Exception {
             serviceClassLoader = classLoader;
-            this.inMemoryRuntimeHandle = inMemoryRuntimeHandle;
+            this.runtimeHandle = runtimeHandle;
             setName(launchConfiguration.getServiceName() + " Launch In-memory Thread");
             startup = initStartMethod();
         }
@@ -56,9 +62,9 @@ public class InMemoryLauncher implements Launcher {
         public void run() {
             try {
                 Thread.currentThread().setContextClassLoader(serviceClassLoader);
-                startup.invoke(service, getArguments());
-                inMemoryRuntimeHandle.generateServiceBoundEvent();
-            } catch (Exception e) {
+                startup.invoke(runtimeService, getArguments());
+                runtimeHandle.generateServiceBoundEvent();
+            } catch (Throwable e) {
                 logger.error("Error Starting service " + launchConfiguration.getApplicationName() + ":"
                         + launchConfiguration.getApplicationVersion() + "-" + launchConfiguration.getMicroserviceId() + ":" + launchConfiguration.getMicroserviceVersion()
                         + e.getMessage(), e);
@@ -76,13 +82,14 @@ public class InMemoryLauncher implements Launcher {
                             Bundle.COMPONENT_IMPL_INVALID);
                 serviceClass = Class.forName(m_implClass, true, serviceClassLoader);
                 try {
-                    service = serviceClass.newInstance();
+                    runtimeService = serviceClass.newInstance();
                 } catch (ClassCastException e) {
                     throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_CANNOT_LAUNCH_IN_MEMORY,
                             Bundle.COMPONENT_IMPL_INVALID);
                 }
                 Method startup;
                 try {
+                    //noinspection unchecked
                     startup = serviceClass.getMethod("startup", String[].class);
                     if (startup == null)
                         throw new FioranoException("Could not find the main method.");
@@ -105,5 +112,55 @@ public class InMemoryLauncher implements Launcher {
             return argListForInvokedMain;
         }
 
+    }
+
+    public class InMemoryRuntimeHandle extends MicroServiceRuntimeHandle {
+
+        public InMemoryRuntimeHandle(LaunchConfiguration launchConfiguration) {
+            super(launchConfiguration);
+            this.launchConfiguration = launchConfiguration;
+            isRunning = true;
+            strStatus = EventStateConstants.SERVICE_HANDLE_BOUND;
+        }
+
+        public boolean isRunning() {
+            return isRunning;
+        }
+
+        public void stop() throws Exception {
+            @SuppressWarnings("unchecked")
+            Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
+            shutDownMethod.invoke(runtimeService, "Shutdown Microservice");
+            isRunning = false;
+            gracefulKill = true;
+            m_classLoaderManager.unloadClassLoader(getComponentPS(), launchConfiguration);
+            strStatus = EventStateConstants.SERVICE_HANDLE_UNBOUND;
+            generateServiceUnboundEvent("Shutdown", false);
+        }
+
+        public void kill() throws Exception {
+            stop();
+        }
+
+        @Override
+        public void setLogLevel(Map<String, String> modules) throws FioranoException {
+            for (Map.Entry<String, String> modifiedLevel : modules.entrySet()) {
+                java.util.logging.Logger logger = LoggerUtil.getServiceLogger(modifiedLevel.getKey(), launchConfiguration.getApplicationName(),
+                        launchConfiguration.getApplicationVersion(), launchConfiguration.getMicroserviceId(), launchConfiguration.getServiceName());
+                for (Handler handler : logger.getHandlers()) {
+                    logger.removeHandler(handler);
+                    if (handler instanceof FioranoLogHandler)
+                        ((FioranoLogHandler) handler).setLogLevel(Level.parse(modifiedLevel.getValue()));
+                    else
+                        handler.setLevel(Level.parse(modifiedLevel.getValue()));
+                    logger.addHandler(handler);
+                }
+            }
+        }
+
+        @Override
+        public LaunchConfiguration.LaunchMode getLaunchMode() {
+            return LaunchConfiguration.LaunchMode.IN_MEMORY;
+        }
     }
 }

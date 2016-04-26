@@ -1,8 +1,10 @@
 package com.fiorano.openesb.microservice.launch.impl.cl;
+
 import com.fiorano.openesb.application.service.Resource;
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.application.service.ServiceRef;
 import com.fiorano.openesb.microservice.bundle.Activator;
+import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -10,16 +12,20 @@ import com.fiorano.openesb.utils.logging.api.FioranoClientLogger;
 import com.fiorano.openesb.utils.logging.api.IFioranoLogger;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 public class ClassLoaderManager implements IClassLoaderManager {
     private final static String ID_SEPERATOR = "__";
     Hashtable<String, ClassLoader> classLoaderList;
+    Hashtable<String, ClassLoader> loaders;
     Hashtable<String, Integer> classLoaderRefCount;
     private MicroServiceRepoManager componentRepository;
     private String componentRepositoryDir;
+
 
     private static final Map<String, File> favorites = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("karaf.base")));
 
@@ -34,6 +40,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
 
         componentRepository = MicroServiceRepoManager.getInstance();
         classLoaderList = new Hashtable<>();
+        loaders = new Hashtable<>();
         classLoaderRefCount = new Hashtable<>();
         classLoaderMgrLogger = new FioranoClientLogger().getLogger("CLM");
     }
@@ -72,11 +79,12 @@ public class ClassLoaderManager implements IClassLoaderManager {
      * @return Class Loader
      * @throws FioranoException FioranoException
      */
-    private ClassLoader getsingleClassLoader(Service sps) throws FioranoException {
+    private ClassLoader getSingleClassLoader(Service sps) throws FioranoException {
         Set<String> urlhashset = new LinkedHashSet<String>();
         updatePaths(sps, urlhashset);
         //Create URL Class loader using url hashset
-        return createComponentClassLoader(urlhashset, Activator.class.getClassLoader().getParent().getParent());
+        ClassLoader componentClassLoader = createComponentClassLoader(urlhashset, Activator.class.getClassLoader().getParent());
+        return componentClassLoader;
     }
 
     private ClassLoader getHierarchicalClassLoader(Service sps) throws FioranoException {
@@ -100,7 +108,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
             ServiceRef sd = (ServiceRef) serviceDependencies.next();
 
             if (parentClassLoaderList == null)
-                parentClassLoaderList = new Vector<ClassLoader>();
+                parentClassLoaderList = new Vector<>();
 
             Service dependentSPS = componentRepository.readMicroService(sd.getGUID(), String.valueOf(sd.getVersion()));
 
@@ -129,7 +137,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
 
         // If there are parent classloaders, then create a join classloader of all them
         if (parentClassLoaderList != null) {
-            joinParentClassLoader = new JoinClassLoader(parentClassLoaderList,classLoaderMgrLogger);
+            joinParentClassLoader = new JoinClassLoader(parentClassLoaderList, classLoaderMgrLogger);
             classLoaderMgrLogger.trace(LogHelper.getOutMessage("CLM", 4, joinParentClassLoader.toString()));
         }
 
@@ -158,24 +166,19 @@ public class ClassLoaderManager implements IClassLoaderManager {
 
     }
 
-    /**
-     * Creating the Class Loader for Service
-     * <p/>
-     * Returns class loader for the given SPS
-     *
-     * @param sps Service
-     * @return ClassLoader of the given Service
-     * @throws FioranoException
-     */
-    public ClassLoader getClassLoader(Service sps) throws FioranoException {
+    public ClassLoader getClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException {
 
         classLoaderMgrLogger.trace(LogHelper.getOutMessage("CLM", 2, getUniqueComponentIdentifier(sps)));
         // Set the component repository
         componentRepositoryDir = componentRepository.getRepositoryLocation();
 
-        if (!usecache)
-            return getsingleClassLoader(sps);
-        else
+        if (!usecache) {
+
+            ClassLoader singleClassLoader = getSingleClassLoader(sps);
+            loaders.put(launchConfiguration.getServiceName(),singleClassLoader);
+
+            return singleClassLoader;
+        } else
             return getHierarchicalClassLoader(sps);
 
     }
@@ -184,28 +187,32 @@ public class ClassLoaderManager implements IClassLoaderManager {
     * UnLoads the class loader if there are no running components that are referring to it
     */
 
-    public void unloadClassLoader(Service sps) throws FioranoException {
-        if (!usecache)
+    public void unloadClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException {
+        if (!usecache) {
+            URLClassLoader remove = (URLClassLoader) loaders.remove(launchConfiguration.getServiceName());
+            try {
+                remove.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return;
+        }
         Integer count = classLoaderRefCount.get(getUniqueComponentIdentifier(sps));
         if (count == null) return;
-        if (count.intValue() == 1) {
+        if (count == 1) {
             classLoaderList.remove(getUniqueComponentIdentifier(sps));
             classLoaderRefCount.remove(getUniqueComponentIdentifier(sps));
         } else {
-            classLoaderRefCount.put(getUniqueComponentIdentifier(sps), new Integer(count.intValue() - 1));
+            classLoaderRefCount.put(getUniqueComponentIdentifier(sps), count - 1);
         }
 
-        Iterator serviceDependencies = sps.getDeployment().getServiceRefs().iterator();
-        while (serviceDependencies.hasNext()) {
-            ServiceRef sd = (ServiceRef) serviceDependencies.next();
+        for (ServiceRef sd : sps.getDeployment().getServiceRefs()) {
             Service dependentSPS = componentRepository.readMicroService(sd.getGUID(), String.valueOf(sd.getVersion()));
             if (classLoaderList.containsKey(getUniqueComponentIdentifier(dependentSPS))) {
-                unloadClassLoader(dependentSPS);
+                unloadClassLoader(dependentSPS,launchConfiguration);
             }
         }
     }
-
 
 
     String getUniqueComponentIdentifier(Service sps) {
@@ -214,43 +221,19 @@ public class ClassLoaderManager implements IClassLoaderManager {
 
     ClassLoader createComponentClassLoader(Set<String> hashset, ClassLoader parentClassLoader) throws FioranoException {
 
-
         Set<File> fileHashSet = getFileHashset(hashset);
         boolean emptyClassLoader = findEmptyClassLoader(fileHashSet);
 
         // we try to create a classloader using ESBClassLoaderRepository.createClassLoader() and the fileHashSet doesnt have any
         // libraries in it. Take a example for Encryption which has no libraries of its own but depends fully on EncryptDecrypt
         // library and hence the library search in URL List of such classloaders will be nul and hency the function returns with
-        // FPS classloader and its parent being the SUN APP class loader. to prevent this dont create a empty classloader for such
+        // peer classloader and its parent being the SUN APP class loader. to prevent this dont create a empty classloader for such
         // component instead give the Join parent classloaders as its classloader.
         if (emptyClassLoader)
             return parentClassLoader;
-        // create ESBURLClassloader with the hasSet and with the parent specified. If parent is null then get the context classloader.
-//        if(TRACE.ServiceRepository>5)
-//            LogHelper.log("CLM", 8, getUniqueComponentIdentifier(sps), parentClassLoader.toString());
-        return ESBClassLoaderRepository.createClassLoader(fileHashSet, (parentClassLoader == null) ? Thread.currentThread().getContextClassLoader() : parentClassLoader, true);
+        return ESBClassLoaderRepository.createClassLoader(fileHashSet, (parentClassLoader == null) ? Thread.currentThread().getContextClassLoader() : parentClassLoader, true, false);
 
     }
-
-    /*
-     * A Common Framework Fiorano Classloader
-     */
-//    ClassLoader createFioranoClassLoader()
-//        throws FioranoException
-//    {
-//        //System.out.println("Creating a Common Fiorano Class Loader");
-//
-//        HashSet hashSet = new HashSet();
-//
-//        addFioranoJars(hashSet);
-//
-//        HashSet fileHashSet = getFileHashset(hashSet);
-//
-//        // create the class loader
-//        return ESBClassLoaderRepository.createClassLoader(fileHashSet,
-//                Thread.currentThread().getContextClassLoader(), true);
-//
-//    }
 
     /**
      * Get component base directory
@@ -311,7 +294,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
             Service dependentSPS = componentRepository.readMicroService(sd.getGUID(), String.valueOf(sd.getVersion()));
             updatePaths(dependentSPS, hashset);
         }
-         addResources(sps, hashset);
+        addResources(sps, hashset);
         classLoaderMgrLogger.trace(LogHelper.getOutMessage("CLM", 9, getUniqueComponentIdentifier(sps), hashset.toString()));
     }
 

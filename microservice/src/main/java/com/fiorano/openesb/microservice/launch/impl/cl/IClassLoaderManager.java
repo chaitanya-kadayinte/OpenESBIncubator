@@ -1,19 +1,12 @@
 package com.fiorano.openesb.microservice.launch.impl.cl;
 
 import com.fiorano.openesb.application.service.Service;
+import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
 
-public interface IClassLoaderManager
-{
-    /**
-     * Returns class loader for object
-     *
-     * @param sps
-     * @return
-     * @exception FioranoException
-     */
-    public ClassLoader getClassLoader(Service sps) throws FioranoException;
+public interface IClassLoaderManager {
+    ClassLoader getClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException;
 
-    public void unloadClassLoader(Service sps) throws FioranoException;
+    void unloadClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException;
 }
