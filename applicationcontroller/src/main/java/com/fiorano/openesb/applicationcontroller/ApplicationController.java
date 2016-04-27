@@ -803,7 +803,7 @@ public class ApplicationController {
                     transformationConfiguration.setXsl(newTransformation);
                     transformationConfiguration.setTransformerType(transformerType);
                     transformationConfiguration.setJmsXsl(newJMSTransformation);
-                    transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                    transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
                     try {
                         appHandle.changeRouteOperationHandler(route.getName(), transformationConfiguration);
                     } catch (Exception e) {
@@ -907,7 +907,7 @@ public class ApplicationController {
                             transformationConfiguration.setXsl(transformation.getScript());
                             transformationConfiguration.setTransformerType(transformation.getFactory());
                             transformationConfiguration.setJmsXsl(transformation.getJMSScript());
-                            transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                            transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
                             try {
                                 appHandle.changeRouteOperationHandler(route.getName(), transformationConfiguration);
                             } catch (Exception e) {

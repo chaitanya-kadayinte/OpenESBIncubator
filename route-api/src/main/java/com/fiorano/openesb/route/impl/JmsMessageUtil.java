@@ -66,10 +66,6 @@ public class JmsMessageUtil {
     public final static Hashtable ATTACHMENT_TABLE_DEF = null;
     public final static Hashtable ATTACHMENT_PROP_DEF = null;
 
-    //  Carry forward context
-    //
-    public final static CarryForwardContext CARRY_FORWARD_CONTEXT_DEF = new CarryForwardContext();
-
     //  Bytes Data
     //
     public final static byte[] BYTES_DATA_DEF = null;
@@ -298,7 +294,7 @@ public class JmsMessageUtil {
             throws
             JMSException {
         if (!message.propertyExists(MessagePropertyNames.CARRY_FORWARD_CONTEXT)) {
-            return CARRY_FORWARD_CONTEXT_DEF;
+            return CarryForwardContext.getDefault();
         }
         String carryForwardContextJson = message.getStringProperty(MessagePropertyNames.CARRY_FORWARD_CONTEXT);
         if(!StringUtil.isEmpty(carryForwardContextJson)) {
@@ -306,7 +302,7 @@ public class JmsMessageUtil {
             CarryForwardContext carryForwardContext = genson.deserialize(carryForwardContextJson, CarryForwardContext.class);
             return carryForwardContext;
         }
-        return CARRY_FORWARD_CONTEXT_DEF;
+        return CarryForwardContext.getDefault();
     }
 
     public static String getApplicationContext(Message message)

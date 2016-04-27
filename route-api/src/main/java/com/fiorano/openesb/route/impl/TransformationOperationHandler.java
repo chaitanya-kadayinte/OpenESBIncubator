@@ -6,6 +6,7 @@ import com.fiorano.openesb.route.RouteOperationType;
 import com.fiorano.openesb.route.bundle.Activator;
 import com.fiorano.openesb.transport.Message;
 import com.fiorano.openesb.transport.impl.jms.JMSMessage;
+import com.fiorano.openesb.utils.StringUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,9 @@ public class TransformationOperationHandler implements RouteOperationHandler<JMS
     }
 
     public void handleOperation(JMSMessage message) throws FioranoException {
-        _applyTransformation(message);
-    }
-
-    public Message _applyTransformation(JMSMessage message) throws FioranoException {
+        if(StringUtil.isEmpty(configuration.getXsl()) && StringUtil.isEmpty(configuration.getJmsXsl())){
+            return ;
+        }
         try {
             javax.jms.TextMessage jmsMessage = (TextMessage) message.getMessage();
             String result = msgTransformer.transform(jmsMessage);
@@ -41,6 +41,5 @@ public class TransformationOperationHandler implements RouteOperationHandler<JMS
         } catch (Exception e) {
             logger.error("Exception occured while message transformation : "  + e.getMessage());
         }
-        return message;
     }
 }
