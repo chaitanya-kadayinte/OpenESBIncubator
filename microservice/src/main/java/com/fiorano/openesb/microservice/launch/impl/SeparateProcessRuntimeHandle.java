@@ -83,6 +83,11 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
      * @throws FioranoException If an exception occurs
      */
     public void killComponent(boolean isComponentConnOpen, boolean userAction, String reason) throws Exception {
+        synchronized (this) {
+            if (shutdownOfCCPComponentInProgress)
+                return;
+            shutdownOfCCPComponentInProgress = true;
+        }
         if (isComponentConnOpen) {
             try {
                 ccpCommandHelper.stopComponent(componentStopWaitTime);
@@ -96,12 +101,6 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     }
 
     public void waitForCCPComponentDeath(boolean isComponentConnectionOpen, boolean userAction, String reason) throws FioranoException {
-        synchronized (this) {
-            if (shutdownOfCCPComponentInProgress)
-                return;
-            shutdownOfCCPComponentInProgress = true;
-        }
-
         try {
             if (confirmProcessExit()) {
                 if (coreLogger != null)
@@ -330,6 +329,9 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                                  * object to die using com.fiorano.peer.launch.process.runtime.IProcess.waitFor() API. Thus, unbound event is raised when component process has actually terminated.
                                  */
                                 //Un-register workflow listener now for this component.
+                                if(!shutdownOfCCPComponentInProgress){
+                                    waitForCCPComponentDeath(true, false, "component stopped");
+                                }
                                 if (lifeCycleWorkflow != null && getLaunchMode() != LaunchConfiguration.LaunchMode.MANUAL) {
                                     ccpCommandHelper.unregisterListener(lifeCycleWorkflow, CCPEventType.STATUS);
                                     lifeCycleWorkflow = null;
