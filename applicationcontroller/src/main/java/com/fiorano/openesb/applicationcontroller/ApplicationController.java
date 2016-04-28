@@ -408,7 +408,7 @@ public class ApplicationController {
                 }
             }
 
-            deleteLogs(oldApp, deletedComponents);
+           // deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
@@ -512,7 +512,7 @@ public class ApplicationController {
                         deletedComponents.add(oldInst.getName());
                 }
             }
-            deleteLogs(oldApp, deletedComponents);
+            //deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
@@ -1606,9 +1606,6 @@ public class ApplicationController {
             }
             return;
         }
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
-        ServiceInstance si = application.getServiceInstance(serviceInst);
-        float serviceVersion = si.getVersion();
         //todo: remove hardcoded service logs path.
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
@@ -1638,9 +1635,6 @@ public class ApplicationController {
             }
             return;
         }
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
-        ServiceInstance si = application.getServiceInstance(serviceInst);
-        float serviceVersion = si.getVersion();
         //todo: remove hardcoded service logs path.
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
