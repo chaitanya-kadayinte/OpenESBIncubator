@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration> {
     private LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration;
-    private static String fioranoHomeDir = System.getProperty("user.dir");
+    private static String fioranoHomeDir = System.getProperty("FIORANO_HOME");
     private static final Map favorites = Collections.singletonMap("FIORANO_HOME", new File(fioranoHomeDir));
 
     private String m_componentRepositoryDir;

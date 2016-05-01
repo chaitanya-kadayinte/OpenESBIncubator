@@ -27,14 +27,14 @@ public class ClassLoaderManager implements IClassLoaderManager {
     private String componentRepositoryDir;
 
 
-    private static final Map<String, File> favorites = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("karaf.base")));
+    private static final Map<String, File> favorites = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("FIORANO_HOME")));
 
     private boolean usecache;
 
     private IFioranoLogger classLoaderMgrLogger = null;
 
     /**
-     * Contructor which sets the component repository - needed for reading the SPS.
+     * Constructor which sets the component repository - needed for reading the SPS.
      */
     public ClassLoaderManager() throws FioranoException {
 
@@ -83,7 +83,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
         Set<String> urlhashset = new LinkedHashSet<String>();
         updatePaths(sps, urlhashset);
         //Create URL Class loader using url hashset
-        ClassLoader componentClassLoader = createComponentClassLoader(urlhashset, Activator.class.getClassLoader().getParent());
+        ClassLoader componentClassLoader = createComponentClassLoader(urlhashset, Activator.class.getClassLoader().getParent().getParent().getParent());
         return componentClassLoader;
     }
 
@@ -186,7 +186,6 @@ public class ClassLoaderManager implements IClassLoaderManager {
     /*
     * UnLoads the class loader if there are no running components that are referring to it
     */
-
     public void unloadClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException {
         if (!usecache) {
             URLClassLoader remove = (URLClassLoader) loaders.remove(launchConfiguration.getServiceName());

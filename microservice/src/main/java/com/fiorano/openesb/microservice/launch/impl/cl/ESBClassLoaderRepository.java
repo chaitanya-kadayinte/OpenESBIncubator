@@ -1,16 +1,18 @@
 package com.fiorano.openesb.microservice.launch.impl.cl;
 
 
+import com.fiorano.openesb.microservice.bundle.Activator;
 import com.fiorano.openesb.utils.FileUtil;
 import com.fiorano.openesb.utils.I18NUtil;
 import com.fiorano.openesb.utils.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 public class ESBClassLoaderRepository {
@@ -22,7 +24,9 @@ public class ESBClassLoaderRepository {
     private final static HashMap classLoaders = new HashMap();
 
     // <File, Vector<ChangeListener>>
-    private final static HashMap<File,Vector<ESBClassLoaderListener>> listeners = new HashMap<>();
+    private final static HashMap<File, Vector<ESBClassLoaderListener>> listeners = new HashMap<>();
+    public static final String FIORANO_HOME = System.getProperty("FIORANO_HOME");
+    private static Logger logger = LoggerFactory.getLogger(Activator.class);
 
     /**
      * Adds a feature to the ChangeListener attribute of the ESBClassLoaderRepository class
@@ -116,15 +120,40 @@ public class ESBClassLoaderRepository {
             if (loader != null)
                 return loader;
         }
-
-        ArrayList<URL> urls = new ArrayList<>();
+       ArrayList<URL> urls = new ArrayList<>();
         for (File rarFile : rarFileSet) {
-            addLibraries(rarFile, urls,directoriesWithResources);
+            addLibraries(rarFile, urls, directoriesWithResources);
         }
-        urls.add(FileUtil.file2URL(new File(System.getProperty("FIORANO_HOME") + File.separator + "licenses")));
-        ClassLoader loader = new ESBURLClassLoader(urls.toArray(new URL[urls.size()]), parent);
-//        addClassLoader(rarFileSet, loader);
-        return loader;
+        addPeerLevelURLs(urls);
+        return new URLClassLoader(urls.toArray(new URL[urls.size()]));
+    }
+
+    private static void addPeerLevelURLs(ArrayList<URL> urls) {
+        File configFile = new File(FIORANO_HOME + File.separator + "etc" + File.separator +
+                "com.fiorano.inmemory.classpath.cfg");
+        try (BufferedReader r = new BufferedReader(new FileReader(configFile))) {
+            String line;
+            while ((line = r.readLine()) != null) {
+                line = line.replace("FIORANO_HOME", FIORANO_HOME);
+                File file = new File(line);
+                if (file.isDirectory()) {
+                    File[] files = file.listFiles();
+                    if (files != null) {
+                        for (File child : files) {
+                            loadJarURLs(urls,child);
+                        }
+                    }
+                } else {
+                    loadJarURLs(urls,file);
+                }
+                String s = file.getName().toUpperCase();
+                if(!s.endsWith(".JAR") && !s.endsWith(".ZIP")) {
+                    urls.add(FileUtil.file2URL(file));
+                }
+            }
+        } catch (IOException e) {
+            logger.debug(e.getMessage(), e);
+        }
     }
 
     public static ClassLoader fetchClassLoader(String srcFile)
@@ -143,7 +172,7 @@ public class ESBClassLoaderRepository {
             String componentDir = System.getProperty("COMPONENTS_DIR");
 
             if (componentDir == null) {
-                String fioranoHome = System.getProperty("FIORANO_HOME");
+                String fioranoHome = FIORANO_HOME;
 
                 if (fioranoHome == null)
                     fioranoHome = System.getProperty("FMQ_DIR") + "/..";
@@ -160,7 +189,7 @@ public class ESBClassLoaderRepository {
 
     private static void addLibraries(File rarFile, List<URL> urls, boolean directoriesWithResources) {
         if (rarFile.isDirectory()) {
-            if(directoriesWithResources) {
+            if (directoriesWithResources) {
                 URL url = FileUtil.file2URL(rarFile);
                 urls.add(url);
             } else {
@@ -170,26 +199,31 @@ public class ESBClassLoaderRepository {
                 for (File file : files) {
                     if (file.isDirectory())
                         continue;
-                    populateJarURL(urls, file);
+                    loadJarURLs(urls, file);
                 }
             }
         } else {
-            populateJarURL(urls, rarFile);
+            loadJarURLs(urls, rarFile);
         }
     }
 
-    private static void populateJarURL(List<URL> urls, File file) {
+    private static void loadJarURLs(List<URL> urls, File file) {
         String name = file.getName().toUpperCase();
         if (name.endsWith(".JAR") || name.endsWith(".ZIP")) {
-            URL url = FileUtil.file2URL(file);
-            URL u;
-            try {
-                u = new URL("jar", "", -1, url.toString() + "!/");
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(I18NUtil.getMessage(ESBClassLoaderRepository.class, "error.in.creating.url.for.resource.0", url.toString()), e);
-            }
+            URL u = populateJarURL(file);
             urls.add(u);
         }
+    }
+
+    private static URL populateJarURL(File file) {
+        URL url = FileUtil.file2URL(file);
+        URL u;
+        try {
+            u = new URL("jar", "", -1, url.toString() + "!/");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(I18NUtil.getMessage(ESBClassLoaderRepository.class, "error.in.creating.url.for.resource.0", url.toString()), e);
+        }
+        return u;
     }
 
 
