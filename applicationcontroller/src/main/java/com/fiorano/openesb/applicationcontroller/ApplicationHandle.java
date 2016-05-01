@@ -244,22 +244,7 @@ public class ApplicationHandle {
 
     public void stopApplication() {
         for(ServiceInstance serviceInstance : application.getServiceInstances()) {
-            for(PortInstance portInstance : serviceInstance.getInputPortInstances()) {
-                JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
-                try {
-                    transport.disablePort(portConfiguration);
-                } catch (Exception e) {
-                    logger.error("Error occured while disabling the port: " + portConfiguration.getName()+" of Application: " +appGUID +":"+version, e);
-                }
-            }
-            for(PortInstance portInstance : serviceInstance.getOutputPortInstances()) {
-                JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
-                try {
-                    transport.disablePort(portConfiguration);
-                } catch (Exception e) {
-                    logger.error("Error occured while disabling the port: " + portConfiguration.getName() + " of Application: " + appGUID + ":" + version, e);
-                }
-            }
+            disableServicePorts(serviceInstance);
         }
         try {
             stopAllMicroServices();
@@ -273,6 +258,17 @@ public class ApplicationHandle {
             } catch (Exception e) {
                 logger.error("Error occured while stoping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
             }
+        }
+    }
+
+    private void disableServicePorts(ServiceInstance serviceInstance) {
+        for(PortInstance portInstance : serviceInstance.getInputPortInstances()) {
+            JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
+            disablePort(portConfiguration);
+        }
+        for(PortInstance portInstance : serviceInstance.getOutputPortInstances()) {
+            JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
+            disablePort(portConfiguration);
         }
     }
 
@@ -655,9 +651,23 @@ public class ApplicationHandle {
         for (String killcomp : toBeKilledComponents) {
             try {
                 stopMicroService(killcomp);
+                ServiceInstance serviceInstance = application.getServiceInstance(killcomp);
+                //delete ports
+                disableServicePorts(serviceInstance);
+                //delete logs
+                applicationController.clearServiceOutLogs(killcomp, appGUID, version);
+                applicationController.clearServiceErrLogs(killcomp, appGUID, version);
             } catch (Exception e) {
                 logger.error("error occured while stopping the component " + killcomp + "of Application " +appGUID +":"+version);
             }
+        }
+    }
+
+    private void disablePort(JMSPortConfiguration portConfiguration) {
+        try {
+            transport.disablePort(portConfiguration);
+        } catch (Exception e) {
+            logger.error("Error occured while disabling the port: " + portConfiguration.getName()+" of Application: " +appGUID +":"+version, e);
         }
     }
 

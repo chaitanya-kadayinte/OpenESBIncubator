@@ -1,10 +1,12 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
+import com.fiorano.openesb.schemarepo.SchemaRepoConstants;
 import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
@@ -187,7 +189,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     protected void addDefaults(Queue<String> cPathQueue) {
-        String catalogs = fioranoHomeDir + File.separator + "Schemas";
+        String catalogs = ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME;
         cPathQueue.add(catalogs);
         String licenses = fioranoHomeDir + File.separator + "licenses";
         cPathQueue.add(licenses);

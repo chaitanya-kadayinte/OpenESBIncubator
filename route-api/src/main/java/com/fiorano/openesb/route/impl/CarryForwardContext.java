@@ -36,6 +36,9 @@ public class CarryForwardContext implements Serializable {
         hashCarryFwdProps = new Hashtable();
     }
 
+    public static CarryForwardContext getDefault() {
+        return new CarryForwardContext();
+    }
 
     public Enumeration getContexts() {
         return vecOfContextsCarriedFwd.elements();

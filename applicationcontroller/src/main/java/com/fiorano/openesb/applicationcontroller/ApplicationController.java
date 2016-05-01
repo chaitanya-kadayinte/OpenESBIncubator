@@ -11,6 +11,9 @@ import com.fiorano.openesb.application.aps.ServiceInstances;
 import com.fiorano.openesb.application.configuration.data.ObjectCategory;
 import com.fiorano.openesb.application.configuration.data.ResourceConfigurationNamedObject;
 import com.fiorano.openesb.application.constants.ConfigurationRepoConstants;
+import com.fiorano.openesb.application.service.Deployment;
+import com.fiorano.openesb.application.service.Service;
+import com.fiorano.openesb.application.service.ServiceRef;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.events.EventsManager;
@@ -25,6 +28,7 @@ import com.fiorano.openesb.microservice.ccp.event.common.data.*;
 import com.fiorano.openesb.microservice.ccp.event.peer.CommandEvent;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.namedconfig.NamedConfigRepository;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.route.RouteOperationType;
@@ -56,7 +60,7 @@ public class ApplicationController {
     private RouteService routeService;
     private SecurityManager securityManager;
     private EventsManager eventsManager;
-
+    private MicroServiceRepoManager microServiceRepoManager;
     //To store the list of applications referring particular component(key) and values(Event_Process)
     private HashMap<String, Set<String>> COMPONENTS_REFERRING_APPS;
 
@@ -78,6 +82,7 @@ public class ApplicationController {
         eventsManager = context.getService(context.getServiceReference(EventsManager.class));
         ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
         namedConfigRepository = context.getService(context.getServiceReference(NamedConfigRepository.class));
+        microServiceRepoManager = context.getService(context.getServiceReference(MicroServiceRepoManager.class));
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
         securityManager = context.getService(context.getServiceReference(SecurityManager.class));
@@ -408,7 +413,7 @@ public class ApplicationController {
                 }
             }
 
-            deleteLogs(oldApp, deletedComponents);
+           // deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
@@ -512,7 +517,7 @@ public class ApplicationController {
                         deletedComponents.add(oldInst.getName());
                 }
             }
-            deleteLogs(oldApp, deletedComponents);
+            //deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
@@ -602,6 +607,19 @@ public class ApplicationController {
         logger.info("Launching application : " + appGuid + ":" + version);
 
         Map<String, Boolean> orderedListOfApplications = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
+        //validate services in all applications before launch
+        for(String app_version: orderedListOfApplications.keySet()){
+            String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
+            String currentGUID = current_AppGUIDAndVersion[0];
+            Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
+            Application currentApplication = savedApplicationMap.get(currentGUID + Constants.NAME_DELIMITER + String.valueOf(currentVersion));
+            if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
+                for(ServiceInstance si:currentApplication.getServiceInstances()){
+                    validateServicesBeforeLaunch(currentApplication, si);
+                }
+            }
+        }
+
         for (String app_version: orderedListOfApplications.keySet()) {
             String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
             String currentGUID = current_AppGUIDAndVersion[0];
@@ -620,6 +638,108 @@ public class ApplicationController {
             }
         }
         return true;
+    }
+
+    private void validateServicesBeforeLaunch(Application application, ServiceInstance instance) throws FioranoException {
+        String instName = instance.getName();
+        String servGUID = instance.getGUID();
+        String version = String.valueOf(instance.getVersion());
+        //  If any of the services doesn't exist in SP-Repository then throw an exception.
+        Service service;
+        try {
+            service = microServiceRepoManager.getServiceInfo(servGUID, version);
+        } catch (Throwable thr) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.SERVICE_NOT_FOUND, instance.getGUID()), thr);
+            throw new FioranoException(I18NUtil.getMessage(Bundle.class, Bundle.SERVICE_NOT_FOUND, instance.getGUID()));
+        }
+
+        // Ensure that if the Configuration is Required, then we must ensure
+        // that the corresponding component instance has non-null value for
+        // configuration data set using CPS.
+        // Even if the Configuration is not required, if it is partially configured,
+        // Exception must be thrown
+        if (service.getExecution().getCPS() != null) {
+            if (instance.isPartiallyConfigured()) {
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_COMPONENT_NOT_FULLY_CONFIGURED_ERROR, servGUID, application.getGUID()+Constants.NAME_DELIMITER+Float.toString(application.getVersion())));
+                throw new FioranoException(I18NUtil.getMessage(Bundle.class, Bundle.ERROR_COMPONENT_NOT_FULLY_CONFIGURED_ERROR, servGUID, application.getGUID()+Constants.NAME_DELIMITER+Float.toString(application.getVersion())));
+            }
+
+            String config = instance.getConfiguration();
+            if ((config == null || config.trim().length() == 0) && service.getExecution().getCPS().isMandatory()) {
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_COMPONENT_NOT_CONFIGURED_ERROR, servGUID, application.getGUID()+Constants.NAME_DELIMITER+Float.toString(application.getVersion())));
+                throw new FioranoException(I18NUtil.getMessage(Bundle.class, Bundle.ERROR_COMPONENT_NOT_CONFIGURED_ERROR, servGUID, application.getGUID()+Constants.NAME_DELIMITER+Float.toString(application.getVersion())));
+            }
+        }
+
+        // We also need to check if the zip file of the service exist or not.
+        try {
+            microServiceRepoManager.checkServiceResourceFiles(instance.getGUID(),
+                    String.valueOf(instance.getVersion()));
+        } catch (Throwable thr) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_RESOURCE_NOT_EXISTS, servGUID, ""), thr);
+            throw new FioranoException(I18NUtil.getMessage(Bundle.class, Bundle.ERROR_RESOURCE_NOT_EXISTS, servGUID, thr.getMessage()));
+        }
+
+        //  Ensure that this service is LAUNCHABLE
+        if (service.getExecution() == null) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.SERVICE_NOT_LAUNCHABLE, servGUID));
+            throw new FioranoException( I18NUtil.getMessage(Bundle.class, Bundle.SERVICE_NOT_LAUNCHABLE, servGUID));
+        }
+
+        // check the service dependencies.
+        checkServiceResources(service, service);
+
+        //  Changes related to debugMode.
+        if (instance.isDebugMode())
+            checkUniquenessOfDebugPorts(instance, application);
+    }
+
+    private void checkServiceResources(Service service, Service originalService) throws FioranoException {
+        Deployment dep = service.getDeployment();
+        if (dep != null) {
+            for (Object obj : dep.getServiceRefs()) {
+                ServiceRef dependency = (ServiceRef) obj;
+                if (dependency != null) {
+                    String depServiceGUID = dependency.getGUID();
+                    float depServiceVersion = dependency.getVersion();
+                    Service depSps = null;
+                    try {
+
+                        depSps = microServiceRepoManager.getServiceInfo(
+                                depServiceGUID, String.valueOf(depServiceVersion));
+                        if (depSps != null)
+                            microServiceRepoManager.checkServiceResourceFiles(
+                                    depServiceGUID, String.valueOf(depServiceVersion));
+
+                    } catch (Exception e) {
+                        throw new FioranoException(e.getMessage()+ " required for the Service Instance " + originalService.getGUID()+ " : "+ originalService.getVersion());
+                    }
+                    checkServiceResources(depSps, originalService);
+                }
+            }
+        }
+    }
+
+    private void checkUniquenessOfDebugPorts(ServiceInstance instance, Application application) throws FioranoException {
+
+        for (Object o : application.getServiceInstances()) {
+            ServiceInstance localInstance = (ServiceInstance) o;
+            //  If it's the same instance then continue.
+            if (localInstance.getName().equalsIgnoreCase(instance.getName()))
+                continue;
+            //  If this instance doesn't have debugging ON then the port number doesn't matter.
+            if (!localInstance.isDebugMode())
+                continue;
+            int localPort = localInstance.getDebugPort();
+            int globalPort = instance.getDebugPort();
+            if (localPort == globalPort) {
+                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_SERVICE_DEBUG_PORT_INUSE, instance.getName(),
+                        String.valueOf(globalPort), localInstance.getName()));
+                throw new FioranoException(I18NUtil.getMessage(Bundle.class, Bundle.ERROR_SERVICE_DEBUG_PORT_INUSE, instance.getName(),
+                        String.valueOf(globalPort), localInstance.getName()));
+
+            }
+        }
     }
 
     public boolean stopApplication(String appGuid, String version, String handleID) throws Exception {
@@ -803,7 +923,7 @@ public class ApplicationController {
                     transformationConfiguration.setXsl(newTransformation);
                     transformationConfiguration.setTransformerType(transformerType);
                     transformationConfiguration.setJmsXsl(newJMSTransformation);
-                    transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                    transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
                     try {
                         appHandle.changeRouteOperationHandler(route.getName(), transformationConfiguration);
                     } catch (Exception e) {
@@ -907,7 +1027,7 @@ public class ApplicationController {
                             transformationConfiguration.setXsl(transformation.getScript());
                             transformationConfiguration.setTransformerType(transformation.getFactory());
                             transformationConfiguration.setJmsXsl(transformation.getJMSScript());
-                            transformationConfiguration.setRouteOperationType(RouteOperationType.ROUTE_TRANSFORM);
+                            transformationConfiguration.setRouteOperationType(RouteOperationType.APP_CONTEXT_TRANSFORM);
                             try {
                                 appHandle.changeRouteOperationHandler(route.getName(), transformationConfiguration);
                             } catch (Exception e) {
@@ -1606,9 +1726,6 @@ public class ApplicationController {
             }
             return;
         }
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
-        ServiceInstance si = application.getServiceInstance(serviceInst);
-        float serviceVersion = si.getVersion();
         //todo: remove hardcoded service logs path.
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
@@ -1638,9 +1755,6 @@ public class ApplicationController {
             }
             return;
         }
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
-        ServiceInstance si = application.getServiceInstance(serviceInst);
-        float serviceVersion = si.getVersion();
         //todo: remove hardcoded service logs path.
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceInst.toUpperCase();
@@ -1825,7 +1939,7 @@ public class ApplicationController {
                 NamingManagerImpl.GETINSTANCE().rebind(ApplicationControllerConstants.RUNNING_APPLICATION_LIST, appStates, true);
             }
         } catch (FioranoException ex) {
-            //logger.error(Bundle.class, Bundle.EXCEPTION_WHILE_REMOVING_APPHANDLE, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(appVersion), ex.toString());
+            //logger.error(Bundle.class, Bundle.EXCEPTION_WHILE_REMOVING_APPHANDLE, appGUID+Constants.NAME_DELIMITER+Float.toString(appVersion), ex.toString());
             logger.error("", ex);
         }
 
