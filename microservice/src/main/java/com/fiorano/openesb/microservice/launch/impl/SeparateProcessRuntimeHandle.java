@@ -49,6 +49,9 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
     public boolean isAlive() {
         try {
+            if(osProcess==null){
+                return false;
+            }
             osProcess.exitValue();
             return false;
         } catch(IllegalThreadStateException e) {
@@ -58,10 +61,13 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
     public void stop() throws Exception {
         killComponent(true, false, "General");
         gracefulKill = true;
+        isRunning=false;
     }
 
     public void kill() {
-        osProcess.destroy();
+        if(osProcess!=null){
+            osProcess.destroy();
+        }
     }
 
     @Override
@@ -179,6 +185,9 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
     private boolean confirmProcessExit() {
         try {
+            if(osProcess==null){
+                return true;
+            }
             osProcess.exitValue();
             return false;
         } catch (IllegalThreadStateException e) {
@@ -258,7 +267,9 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
 
     //// TODO: 28-02-2016
     private void shutdown(long componentStopWaitTime) {
-        osProcess.destroy();
+        if(osProcess!=null){
+            osProcess.destroy();
+        }
     }
 
     private boolean runStop(boolean userAction, String reason) throws FioranoException {

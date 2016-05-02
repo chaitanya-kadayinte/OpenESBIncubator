@@ -1,17 +1,11 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
-import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
-import com.fiorano.openesb.schemarepo.SchemaRepoConstants;
 import com.fiorano.openesb.utils.*;
-import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.exception.FioranoException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,11 +24,10 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     private Queue<String> genClassPath;
     private Queue<String> javaLibQueue;
     private Properties systemProps = new Properties();
-    protected Logger logger = LoggerFactory.getLogger(com.fiorano.openesb.microservice.bundle.Activator.class);
 
     public List<String> generateCommand(LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration) throws FioranoException {
         this.launchConfiguration = launchConfiguration;
-        this.m_componentRepositoryDir = MicroServiceRepoManager.getInstance().getRepositoryLocation();
+        this.m_componentRepositoryDir = launchConfiguration.getAdditionalConfiguration().getCompRepoPath();
         initialize();
         List<String> command = new ArrayList<>();
         command.add(getLaunchCommand());
@@ -57,10 +50,9 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
             ArrayUtil.toCollection(StringUtil.getTokens(jvmArguments, " ", true), command);
 
         prepareClasspath(command);
-        command.add(getComponentPS(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
+        command.add(getComponentPS(launchConfiguration.getAdditionalConfiguration().getCompRepoPath(), launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
         List<String> commandLineParams = getCommandLineParams(launchConfiguration);
         command.addAll(commandLineParams);
-        logger.debug(command.toString());
         return command;
     }
 
@@ -126,7 +118,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
         StringBuilder componentJVMParameters = new StringBuilder();
         componentJVMParameters.append(jvmParams);
-        if (Boolean.getBoolean("isService") && Boolean.valueOf(TransportConfig.getInstance().getValue("WatchForControlEvents")))
+        if (Boolean.getBoolean("isService") && launchConfiguration.getAdditionalConfiguration().isWatchForControlEvents())
             componentJVMParameters.append(" -Xrs");
 
         jvmArguments = componentJVMParameters.toString();
@@ -189,7 +181,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     protected void addDefaults(Queue<String> cPathQueue) {
-        String catalogs = ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME;
+        String catalogs = launchConfiguration.getAdditionalConfiguration().getSchemaRepoPath();
         cPathQueue.add(catalogs);
         String licenses = fioranoHomeDir + File.separator + "licenses";
         cPathQueue.add(licenses);
@@ -260,7 +252,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
                 break;
             }
         }
-        String msJavaHome = TransportConfig.getInstance().getValue("MS_JAVA_HOME");
+        String msJavaHome = launchConfiguration.getAdditionalConfiguration().getMS_JAVA_HOME();
         if (msJavaHome != null) {
             systemProps.setProperty(LaunchConstants.USER_DEFINED_JAVA_HOME, msJavaHome);
         }
@@ -327,7 +319,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         systemProps.setProperty("ENABLE_CLIENT_LOGGER", "true");
         systemProps.setProperty("DontSetReadOnly", "true");
         systemProps.setProperty("mx4j.log.priority", "error");
-        systemProps.setProperty("COMP_REPOSITORY_DIR", MicroServiceRepoManager.getInstance().getRepositoryLocation());
+        systemProps.setProperty("COMP_REPOSITORY_DIR", m_componentRepositoryDir);
         systemProps.setProperty("FIORANO_HOME", fioranoHomeDir);
 
         //todo need to assign log handlers
@@ -358,7 +350,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         }
 
         String java = Util.isWindows() ? "java.exe" : "java";
-        String userJavaHome = TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME);
+        String userJavaHome = launchConfiguration.getAdditionalConfiguration().getUserDefinedJavaHome();
         String javaHome = (userJavaHome != null && userJavaHome.trim().length() != 0) ? userJavaHome : System.getProperty("java.home");
         if (isDebug) {
             int index = javaHome.lastIndexOf(File.separator);
@@ -430,7 +422,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
     private void addDependencies(String componentGUID, String componentVersion, ResourcePacket resPacket, List<ComponentPacket> traversedComponents)
             throws FioranoException {
-        Service componentPS = getComponentPS(componentGUID,
+        Service componentPS = getComponentPS(launchConfiguration.getAdditionalConfiguration().getCompRepoPath(),componentGUID,
                 componentVersion);
 
         for (ServiceRef serviceRef : componentPS.getDeployment().getServiceRefs()) {
@@ -448,7 +440,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     private void addResources(String componentGUID,
                               String componentVersion, ResourcePacket resPacket)
             throws FioranoException {
-        Service componentPS = getComponentPS(componentGUID,
+        Service componentPS = getComponentPS(m_componentRepositoryDir, componentGUID,
                 componentVersion);
 
         String componentBaseDir = m_componentRepositoryDir + File.separator + componentGUID + File.separator + componentVersion;

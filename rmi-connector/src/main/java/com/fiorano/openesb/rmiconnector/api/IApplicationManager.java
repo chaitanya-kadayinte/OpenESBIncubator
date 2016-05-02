@@ -1,5 +1,7 @@
 package com.fiorano.openesb.rmiconnector.api;
 
+import com.fiorano.openesb.application.application.ServiceInstance;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -838,4 +840,8 @@ public interface IApplicationManager extends Remote{
     boolean isDeleteDestinationSetAtApp(String appGUID, float appVersion) throws RemoteException, ServiceException;
 
     boolean isServiceRunning(String eventProcessName, float appVersion, String servInstanceName) throws RemoteException, ServiceException;
+
+    public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws ServiceException;
+
+    public Map<String, String> getJettyServerDetails() throws ServiceException;
 }
