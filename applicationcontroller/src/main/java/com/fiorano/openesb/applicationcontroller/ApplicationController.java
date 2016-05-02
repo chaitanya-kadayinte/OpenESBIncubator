@@ -1245,7 +1245,7 @@ public class ApplicationController {
         if (appHandle != null) {
             if(selectors.containsKey(Route.SELECTOR_SENDER)){
                 SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
-                senderSelectorConfiguration.setSourceName(route.getSenderSelector());
+                senderSelectorConfiguration.setSourceName((String) selectors.get("sender"));
                 senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
                 senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                 try {
@@ -1256,8 +1256,9 @@ public class ApplicationController {
             }
             if(selectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
                 XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
-                appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
-                appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
+                XPathSelector xPathSelector = (XPathSelector) selectors.get("application-context");
+                appContextSelectorConfig.setXpath(xPathSelector.getXPath());
+                appContextSelectorConfig.setNsPrefixMap(xPathSelector.getNamespaces());
                 appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
                 try {
                     appHandle.changeRouteOperationHandler(routeGUID, appContextSelectorConfig);
@@ -1268,8 +1269,9 @@ public class ApplicationController {
 
             if(selectors.containsKey(Route.SELECTOR_BODY)) {
                 XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
-                bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
-                bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
+                XPathSelector xPathSelector = (XPathSelector) selectors.get("body");
+                bodySelectorConfig.setXpath(xPathSelector.getXPath());
+                bodySelectorConfig.setNsPrefixMap(xPathSelector.getNamespaces());
                 bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
                 try {
                     appHandle.changeRouteOperationHandler(routeGUID, bodySelectorConfig);
