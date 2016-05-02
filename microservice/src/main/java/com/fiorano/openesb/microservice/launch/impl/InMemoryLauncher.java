@@ -25,6 +25,7 @@ public class InMemoryLauncher implements Launcher {
     private Object runtimeService;
     private LaunchConfiguration launchConfiguration;
     private Class serviceClass;
+    private ClassLoader serviceClassLoader;
 
     public InMemoryLauncher() throws FioranoException {
         m_classLoaderManager = new ClassLoaderManager();
@@ -48,7 +49,6 @@ public class InMemoryLauncher implements Launcher {
     public class InMemoryLaunchThread extends Thread {
 
         private final Method startup;
-        private ClassLoader serviceClassLoader;
         private InMemoryRuntimeHandle runtimeHandle;
         private Logger logger = LoggerFactory.getLogger(Activator.class);
 
@@ -61,6 +61,7 @@ public class InMemoryLauncher implements Launcher {
 
         public void run() {
             try {
+                System.setProperty("FIORANO_HOME", System.getProperty("user.dir"));
                 Thread.currentThread().setContextClassLoader(serviceClassLoader);
                 startup.invoke(runtimeService, getArguments());
                 runtimeHandle.generateServiceBoundEvent();
@@ -76,7 +77,6 @@ public class InMemoryLauncher implements Launcher {
             ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(serviceClassLoader);
-
                 if (m_implClass == null || m_implClass.trim().length() == 0)
                     throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_INMEMORY_IMPL_NOT_SPECIFIED,
                             Bundle.COMPONENT_IMPL_INVALID);
@@ -105,7 +105,6 @@ public class InMemoryLauncher implements Launcher {
 
         private Object[] getArguments() throws Exception {
             Object[] argListForInvokedMain = new Object[1];
-
             CommandProvider commandProvider = new JVMCommandProvider();
             List<String> list = commandProvider.getCommandLineParams(launchConfiguration);
             argListForInvokedMain[0] = list.toArray(new String[list.size()]);
@@ -128,12 +127,19 @@ public class InMemoryLauncher implements Launcher {
         }
 
         public void stop() throws Exception {
-            @SuppressWarnings("unchecked")
-            Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
-            shutDownMethod.invoke(runtimeService, "Shutdown Microservice");
+            ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(serviceClassLoader);
+                @SuppressWarnings("unchecked")
+                Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
+                shutDownMethod.invoke(runtimeService, "Shutdown Microservice");
+            } finally {
+                Thread.currentThread().setContextClassLoader(serverClassLoader);
+            }
             isRunning = false;
             gracefulKill = true;
             m_classLoaderManager.unloadClassLoader(getComponentPS(), launchConfiguration);
+            serviceClassLoader = null;
             strStatus = EventStateConstants.SERVICE_HANDLE_UNBOUND;
             generateServiceUnboundEvent("Shutdown", false);
         }
