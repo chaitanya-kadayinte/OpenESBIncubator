@@ -24,11 +24,6 @@ public class PropertyReader {
         try {
             inStream = new FileInputStream(new File(propertiesFile));
             prop.load(inStream);
-            String componentRepositoryPath = getComponentRepositoryPath(prop.getProperty(LaunchConstants.NODE_NAME));
-            if (componentRepositoryPath != null) {
-                ServiceManualLauncher.setComponentsPath(componentRepositoryPath);
-            }
-            prop.setProperty(LaunchConstants.COMPONENT_REPO_PATH, ServiceManualLauncher.COMP_REPOSITORY_PATH);
         } catch (IOException e) {
             throw new FioranoException("ERROR : Failed to load launch script. The properties file given is not specified or Invalid", e);
         } finally {
@@ -44,9 +39,8 @@ public class PropertyReader {
         return prop;
     }
 
-    private String getComponentRepositoryPath(String nodeName) {
+    private String getComponentRepositoryPath() {
         try {
-            if (!StringUtil.isEmpty(nodeName)) {
                 RmiClient rmiClient = ServiceManualLauncher.getConnectionManager();
                 if (rmiClient == null) {
                     System.out.println("WARNING: Unable to fetch the component repository path. Reason: Could not connect to Enterprise server.");
@@ -55,7 +49,6 @@ public class PropertyReader {
                 } else {
                     return rmiClient.getMicroServiceManager().getServiceRepositoryPath();
                 }
-            }
         } catch (RemoteException e) {
             System.out.println("WARNING: Unable to fetch the component repository path. Reason: " + e.getMessage());
             System.out.println("Using default value " + ServiceManualLauncher.COMP_REPOSITORY_PATH + ". Update the path in scriptgen.[bat|sh] to appropriate value if required and launch");
