@@ -1,19 +1,18 @@
 package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.application.DmiObject;
-import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.LogManager;
 import com.fiorano.openesb.application.service.LogModule;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.Service;
+import com.fiorano.openesb.application.service.ServiceParser;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
-import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
-import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.LookUpUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
+import java.io.File;
 import java.util.*;
 
 public abstract class CommandProvider<J extends AdditionalConfiguration> {
@@ -22,7 +21,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
 
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
         Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
-        String connectURL = TransportConfig.getInstance().getValue("providerURL");
+        String connectURL = launchConfiguration.getAdditionalConfiguration().getProviderUrl();
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
         commandLineArgs.put(LaunchConstants.FES_URL, connectURL);
@@ -38,11 +37,11 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.IS_IN_MEMORY, launchConfiguration.getLaunchMode() == LaunchConfiguration.
                 LaunchMode.IN_MEMORY ? "true" : "false");
         commandLineArgs.put(LaunchConstants.CCP_ENABLED, "true");
-        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, MicroServiceRepoManager.getInstance().getRepositoryLocation());
+        commandLineArgs.put(LaunchConstants.COMPONENT_REPO_PATH, launchConfiguration.getAdditionalConfiguration().getCompRepoPath());
         commandLineArgs.put(LaunchConstants.COMPONENT_GUID, launchConfiguration.getMicroserviceId());
         commandLineArgs.put(LaunchConstants.COMPONENT_VERSION, launchConfiguration.getMicroserviceVersion());
-        commandLineArgs.put(LaunchConstants.JETTY_URL, ServerConfig.getConfig().getJettyUrl());
-        commandLineArgs.put(LaunchConstants.JETTY_URL_SSL, ServerConfig.getConfig().getJettySSLUrl());
+        commandLineArgs.put(LaunchConstants.JETTY_URL, launchConfiguration.getAdditionalConfiguration().getJettyUrl());
+        commandLineArgs.put(LaunchConstants.JETTY_URL_SSL, launchConfiguration.getAdditionalConfiguration().getJettySSLUrl());
         List logmodules = launchConfiguration.getLogModules();
         StringBuilder sb = new StringBuilder();
         for(Object object:logmodules){
@@ -86,11 +85,12 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
     }
 
     protected String getExecutionDir(LaunchConfiguration launchConfiguration) {
-        return MicroServiceRepoManager.getInstance().getMicroServiceBase(launchConfiguration.getMicroserviceId(),
-                launchConfiguration.getMicroserviceVersion());
+        return launchConfiguration.getAdditionalConfiguration().getCompRepoPath()+ File.separator +launchConfiguration.getMicroserviceId() +File.separator+
+                launchConfiguration.getMicroserviceVersion();
     }
 
-    protected Service getComponentPS(String componentGUID, String componentVersion) throws FioranoException {
-        return MicroServiceRepoManager.getInstance().readMicroService(componentGUID, componentVersion);
+    protected Service getComponentPS(String compRepoPath, String componentGUID, String componentVersion) throws FioranoException {
+        File sdFile = new File(compRepoPath+ File.separator +componentGUID +File.separator+componentVersion  + File.separator + "ServiceDescriptor.xml");
+        return ServiceParser.readService(sdFile);
     }
 }

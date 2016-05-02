@@ -138,6 +138,7 @@ public abstract class MicroServiceRuntimeHandle {
 
     public void generateServiceBoundEvent() throws FioranoException {
         bServiceDestroyed = false;
+        isRunning=true;
         String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUND, getServiceInstName(), getNodeName());
         servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUND);
         generateMicroServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHED, Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_BOUND, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);

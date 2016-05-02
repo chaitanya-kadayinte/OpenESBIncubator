@@ -12,7 +12,7 @@ public class NJCommandProvider extends CommandProvider {
     protected List<String> generateCommand(LaunchConfiguration launchConfiguration) throws Exception {
         List<String> command = new ArrayList<>();
         command.add(getExecutionDir(launchConfiguration)+ File.separator +
-                getComponentPS(launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
+                getComponentPS(launchConfiguration.getAdditionalConfiguration().getCompRepoPath(),launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()).getExecution().getExecutable());
         command.addAll(getCommandLineParams(launchConfiguration));
         return command;
     }
