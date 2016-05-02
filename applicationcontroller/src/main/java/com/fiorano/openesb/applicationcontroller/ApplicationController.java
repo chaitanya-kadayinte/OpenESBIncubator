@@ -455,7 +455,7 @@ public class ApplicationController {
     public void saveApplication(Application application, boolean skipManagableProps, String handleID) throws FioranoException {
         String userName = securityManager.getUserName(handleID);
         boolean applicationExists = applicationRepository.applicationExists(application.getGUID(), application.getVersion());
-        boolean applicationAnyVersionExists=applicationRepository.applicationExists(application.getGUID(),-1);
+        boolean applicationAnyVersionExists=applicationRepository.applicationExists(application.getGUID(), -1);
 
         Application oldApp = savedApplicationMap.get(application.getGUID() + Constants.NAME_DELIMITER + String.valueOf(application.getVersion()));
 
@@ -1824,6 +1824,20 @@ public class ApplicationController {
         }
 
     }
+
+    public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws FioranoException{
+        Application application = savedApplicationMap.get(eventProcessName+Constants.NAME_DELIMITER+appVersion);
+        return application.getServiceInstance(servInstanceName);
+    }
+
+    public Map<String, String> getJettyServerDetails() {
+        Map<String, String> map = new HashMap<>();
+        map.put("NON_SSL", ServerConfig.getConfig().getJettyUrl());
+        map.put("SSL", ServerConfig.getConfig().getJettySSLUrl());
+        return map;
+    }
+
+
 
      /*----------------------start of [Application Restore Thread]----------------------------------------*/
 

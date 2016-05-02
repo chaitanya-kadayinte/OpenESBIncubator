@@ -93,7 +93,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.fiorano.openesb.tools.Activator</Bundle-Activator>
                         <Export-Package>
-                            com.fiorano.openesb*;version=${project.version}
+                            com.fiorano.openesb.tools*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *
