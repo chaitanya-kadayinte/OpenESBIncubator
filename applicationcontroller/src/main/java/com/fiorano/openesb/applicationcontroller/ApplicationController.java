@@ -1279,6 +1279,36 @@ public class ApplicationController {
                     e.printStackTrace();
                 }
             }
+            if(route.getApplicationContextSelector()!=null && !selectors.containsKey("application-context")){
+                XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
+                appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
+                try {
+                    appHandle.removeRouteOperationHandler(routeGUID, appContextSelectorConfig);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            if(route.getSenderSelector()!=null && !selectors.containsKey("sender")){
+                SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
+                senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
+                try {
+                    appHandle.removeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            if(route.getBodySelector()!=null && !selectors.containsKey("body")){
+                XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
+                bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
+                try {
+                    appHandle.removeRouteOperationHandler(routeGUID, bodySelectorConfig);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
 
         // set the selector type and its value in the route

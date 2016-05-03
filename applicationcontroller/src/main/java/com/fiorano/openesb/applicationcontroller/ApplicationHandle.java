@@ -786,4 +786,12 @@ public class ApplicationHandle {
         }
         route.modifyHandler(configuration);
     }
+
+    public void removeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception{
+        com.fiorano.openesb.route.Route route = routeMap.get(routeGUID);
+        if(route==null){
+            throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
+        }
+        route.removeHandler(configuration);
+    }
 }

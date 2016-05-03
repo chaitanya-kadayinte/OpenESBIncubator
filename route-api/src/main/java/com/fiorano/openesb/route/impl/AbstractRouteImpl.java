@@ -68,4 +68,18 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
         }
     }
 
+    public void removeHandler(RouteOperationConfiguration configuration) throws Exception {
+        if (configuration instanceof MessageCreationConfiguration) {
+            routeOperationHandlers.remove(configuration.getRouteOperationType());
+        } else if (configuration instanceof CarryForwardContextConfiguration) {
+            routeOperationHandlers.remove(configuration.getRouteOperationType());
+        } else if (configuration instanceof TransformationConfiguration) {
+            routeOperationHandlers.remove(configuration.getRouteOperationType());
+        } else if (configuration instanceof SelectorConfiguration) {
+            routeOperationHandlers.remove(configuration.getRouteOperationType());
+        } else if (configuration instanceof SenderSelectorConfiguration) {
+            routeOperationHandlers.remove(configuration.getRouteOperationType());
+        }
+    }
+
 }

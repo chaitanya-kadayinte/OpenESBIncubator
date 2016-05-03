@@ -14,4 +14,5 @@ public interface Route<M extends Message> {
     String getSourceDestinationName();
     String getTargetDestinationName();
     void modifyHandler(RouteOperationConfiguration configuration) throws Exception;
+    void removeHandler(RouteOperationConfiguration configuration) throws Exception;
 }
