@@ -62,7 +62,7 @@ public class TransportConfig {
     }
 
     private TransportConfig() {
-        File configFile = new File(System.getProperty("karaf.base") + File.separator
+        File configFile = new File(System.getProperty("user.dir") + File.separator
                 + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg");
         if (!configFile.exists()) {
             return;
@@ -102,7 +102,7 @@ public class TransportConfig {
             properties.setProperty("jmxURL", getJmxURL());
             properties.setProperty("providerURL", getProviderURL());
 
-            File file = new File(System.getProperty("karaf.base") + File.separator
+            File file = new File(System.getProperty("user.dir") + File.separator
                     + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg");
             FileOutputStream fileOut = new FileOutputStream(file);
             properties.store(fileOut, "Transport Config");

@@ -20,8 +20,7 @@ import java.util.regex.Pattern;
 
 public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration> {
     private LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration;
-    private static String fioranoHomeDir = System.getProperty("FIORANO_HOME");
-    private static final Map favorites = Collections.singletonMap("FIORANO_HOME", new File(fioranoHomeDir));
+    private static final Map favorites = Collections.singletonMap("FIORANO_HOME", new File(getFioranoHomeDir()));
 
     private String m_componentRepositoryDir;
     private List<String> resourceParents = new ArrayList<>();
@@ -71,6 +70,10 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         command.add(classPath);
     }
 
+    private static String getFioranoHomeDir() {
+        return System.getProperty("FIORANO_HOME");
+    }
+    
     private String getJavaLibraryPath(String executionDir) {
         String javaLibraryPathStr = null;
 
@@ -191,7 +194,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     protected void addDefaults(Queue<String> cPathQueue) {
         String catalogs = ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME;
         cPathQueue.add(catalogs);
-        String licenses = fioranoHomeDir + File.separator + "licenses";
+        String licenses = getFioranoHomeDir() + File.separator + "licenses";
         cPathQueue.add(licenses);
     }
 
@@ -272,7 +275,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         if (!javaHome.endsWith("jre")) {
             systemExtDir = systemExtDir + File.pathSeparator + javaHome + File.separator + "jre" + File.separator + "lib" + File.separator + "ext" + File.separator;
         }
-        systemExtDir = systemExtDir + File.pathSeparator + fioranoHomeDir + File.separator + "esb" + File.separator + "lib" + File.separator + "ext";
+        systemExtDir = systemExtDir + File.pathSeparator + getFioranoHomeDir() + File.separator + "esb" + File.separator + "lib" + File.separator + "ext";
 
         String javaExtDirs = popWithPrefix(list, "-Djava.ext.dirs=");
 
@@ -328,7 +331,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         systemProps.setProperty("DontSetReadOnly", "true");
         systemProps.setProperty("mx4j.log.priority", "error");
         systemProps.setProperty("COMP_REPOSITORY_DIR", MicroServiceRepoManager.getInstance().getRepositoryLocation());
-        systemProps.setProperty("FIORANO_HOME", fioranoHomeDir);
+        systemProps.setProperty("FIORANO_HOME", getFioranoHomeDir());
 
         //todo need to assign log handlers
         List logModules = launchConfiguration.getLogModules();
@@ -417,15 +420,15 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
 
     private String getEndorsedDirs() {
 
-        return fioranoHomeDir + File.separator + "esb" + File.separator + "lib" + File.separator + "endorsed" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "sax" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "dom" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "xerces" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "xalan"+
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "saxon" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "xml-commons-resolver" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "mx4j" +
-                File.pathSeparator + fioranoHomeDir + File.separator + "extlib" + File.separator + "ObjectHandler";
+        return getFioranoHomeDir() + File.separator + "esb" + File.separator + "lib" + File.separator + "endorsed" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "sax" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "dom" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xerces" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xalan"+
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "saxon" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xml-commons-resolver" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "mx4j" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "ObjectHandler";
     }
 
     private void addDependencies(String componentGUID, String componentVersion, ResourcePacket resPacket, List<ComponentPacket> traversedComponents)

@@ -11,6 +11,7 @@ import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.LoggerUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.logging.FioranoLogHandler;
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,7 @@ public class InMemoryLauncher implements Launcher {
             try {
                 System.setProperty("FIORANO_HOME", System.getProperty("user.dir"));
                 Thread.currentThread().setContextClassLoader(serviceClassLoader);
+                BasicConfigurator.configure();
                 startup.invoke(runtimeService, getArguments());
                 runtimeHandle.generateServiceBoundEvent();
             } catch (Throwable e) {
