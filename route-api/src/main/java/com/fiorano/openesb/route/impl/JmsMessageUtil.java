@@ -285,8 +285,9 @@ public class JmsMessageUtil {
         if (!message.propertyExists(MessagePropertyNames.ATTACHMENT_TABLE)) {
             return ATTACHMENT_TABLE_DEF;
         }
-
-        return (Hashtable) message.getObjectProperty(MessagePropertyNames.ATTACHMENT_TABLE);
+        Hashtable attachments = new Hashtable();
+        attachments.putAll((Map) message.getObjectProperty(MessagePropertyNames.ATTACHMENT_TABLE));
+        return attachments;
     }
 
 
