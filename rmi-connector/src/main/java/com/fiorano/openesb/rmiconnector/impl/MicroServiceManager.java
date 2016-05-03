@@ -299,13 +299,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                     String serviceGUID = (service != null) ?
                             service.getGUID()+":"+service.getVersion() : servDir.getParentFile().getName()+":"+servDir.getName();
                     logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_SERVICE,e));
-                    //delete the service completely if failed to import service
-                    try{
-                        if(service != null)
-                            delete(service.getGUID(), service.getVersion(), false);
-                    } catch (Exception e1){
-                        //ignore
-                    }
+                    //todo: if service already exists, restore it
                     errorServices.add(serviceGUID);
                 } finally {
                     service = null;
