@@ -479,7 +479,7 @@ public class ApplicationHandle {
         logger.info("Starting MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
         JavaLaunchConfiguration javaLaunchConfiguration = new JavaLaunchConfiguration(instance.isDebugMode(),
                 instance.getDebugPort(), TransportConfig.getInstance().getProviderURL(), MicroServiceRepoManager.getInstance().getRepositoryLocation(), ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME,
-                ServerConfig.getConfig().getJettySSLUrl(), ServerConfig.getConfig().getJettySSLUrl(),
+                ServerConfig.getConfig().getJettyUrl(), ServerConfig.getConfig().getJettySSLUrl(),
                 Boolean.valueOf(TransportConfig.getInstance().getValue("WatchForControlEvents")), TransportConfig.getInstance().getValue("MS_JAVA_HOME"),
                 TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME));
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance, javaLaunchConfiguration);

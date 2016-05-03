@@ -413,7 +413,7 @@ public class ApplicationController {
                 }
             }
 
-           // deleteLogs(oldApp, deletedComponents);
+            deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
@@ -517,7 +517,7 @@ public class ApplicationController {
                         deletedComponents.add(oldInst.getName());
                 }
             }
-            //deleteLogs(oldApp, deletedComponents);
+            deleteLogs(oldApp, deletedComponents);
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
