@@ -189,9 +189,9 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                 return true;
             }
             osProcess.exitValue();
-            return false;
-        } catch (IllegalThreadStateException e) {
             return true;
+        } catch (IllegalThreadStateException e) {
+            return false;
         }
     }
 
