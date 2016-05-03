@@ -1,10 +1,15 @@
 package com.fiorano.openesb.applicationcontroller;
 
 import com.fiorano.openesb.application.BreakpointMetaData;
+import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
+import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
+import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
+import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
@@ -13,6 +18,8 @@ import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
 import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.route.impl.*;
+import com.fiorano.openesb.schemarepo.SchemaRepoConstants;
+import com.fiorano.openesb.schemarepo.SchemaRepository;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
@@ -22,6 +29,7 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -469,7 +477,12 @@ public class ApplicationHandle {
             return;
         }
         logger.info("Starting MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
-        MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance);
+        JavaLaunchConfiguration javaLaunchConfiguration = new JavaLaunchConfiguration(instance.isDebugMode(),
+                instance.getDebugPort(), TransportConfig.getInstance().getProviderURL(), MicroServiceRepoManager.getInstance().getRepositoryLocation(), ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME,
+                ServerConfig.getConfig().getJettyUrl(), ServerConfig.getConfig().getJettySSLUrl(),
+                Boolean.valueOf(TransportConfig.getInstance().getValue("WatchForControlEvents")), TransportConfig.getInstance().getValue("MS_JAVA_HOME"),
+                TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME));
+        MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance, javaLaunchConfiguration);
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
         } catch (Throwable e) {
@@ -484,9 +497,11 @@ public class ApplicationHandle {
             return;
         }
         try {
-            logger.info("Stoping MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
+            logger.info("Stoping MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
             microServiceHandleList.get(microServiceName).stop();
-            microServiceHandleList.remove(microServiceName);
+            if(application.getServiceInstance(microServiceName).getLaunchType()<3){
+                microServiceHandleList.remove(microServiceName);
+            }
             logger.info("Stopped MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
         } catch (Throwable e) {
             logger.error("Error occured while stopping the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
@@ -494,7 +509,11 @@ public class ApplicationHandle {
     }
 
     public boolean isMicroserviceRunning(String microServiceName) {
-        return microServiceHandleList.containsKey(microServiceName);
+        MicroServiceRuntimeHandle handle = microServiceHandleList.get(microServiceName);
+        if(handle==null){
+            return false;
+        }
+        return handle.isRunning();
     }
 
     public String getLaunchMode(String name) {
@@ -766,5 +785,13 @@ public class ApplicationHandle {
             throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
         }
         route.modifyHandler(configuration);
+    }
+
+    public void removeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception{
+        com.fiorano.openesb.route.Route route = routeMap.get(routeGUID);
+        if(route==null){
+            throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
+        }
+        route.removeHandler(configuration);
     }
 }

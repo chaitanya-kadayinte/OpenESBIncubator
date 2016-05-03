@@ -30,7 +30,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
     private LogManager logManager;
     private Vector<ServiceRef> runtimeDependencies;
 
-    MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, final ServiceInstance si){
+    public MicroServiceLaunchConfiguration(String appGuid, String appVersion, String userName, String password, final ServiceInstance si, AdditionalConfiguration ac){
         this.userName = userName;
         this.password = password;
         this.runtimeArgs = si.getRuntimeArguments();
@@ -55,16 +55,7 @@ public class MicroServiceLaunchConfiguration implements LaunchConfiguration {
             addRuntimeDependency(runtimeDependency);
         }
 
-        additionalConfiguration = new JavaLaunchConfiguration() {
-            @Override
-            public boolean isDebugMode() {
-                return si.isDebugMode();
-            }
-            @Override
-            public int getDebugPort() {
-                return si.getDebugPort();
-            }
-        };
+        additionalConfiguration = ac;
 
     }
     public void addRuntimeDependency(ServiceRef servDependencyInfo)

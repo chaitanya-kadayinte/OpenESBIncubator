@@ -1485,6 +1485,19 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         return applicationController.isServiceRunning(eventProcessName, appVersion, servInstanceName);
     }
 
+    public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws ServiceException{
+        try {
+            return applicationController.getServiceInstance(eventProcessName, appVersion, servInstanceName);
+        } catch (FioranoException e) {
+            logger.error("error occured while getting the sevice instance " + servInstanceName +"of application " +eventProcessName+":"+appVersion, e);
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public Map<String, String> getJettyServerDetails() throws ServiceException{
+        return applicationController.getJettyServerDetails();
+    }
+
     public void unreferenced() {
         handler.onUnReferenced(this.toString());
     }

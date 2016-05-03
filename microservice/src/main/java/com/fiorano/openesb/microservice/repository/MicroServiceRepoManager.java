@@ -1875,9 +1875,8 @@ public class MicroServiceRepoManager {
         {
             bos.write(bytes);
         }
-        fos.close();
         bos.close();
-       
+        fos.close();
     }
 
     private void moveResourceFromPartialToCompleted(String serviceGUID, String version, String resName)

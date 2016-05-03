@@ -27,7 +27,7 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
     @Override
     public void handleOperation(JMSMessage message) throws FilterMessageException, FioranoException {
         String context = sourceName + "|" + appName_version;
-        if (isMessageSelected(message)) {
+        if (!isMessageSelected(message)) {
             throw new FilterMessageException();
         }
     }
