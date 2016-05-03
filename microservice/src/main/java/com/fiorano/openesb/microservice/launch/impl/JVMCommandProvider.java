@@ -66,7 +66,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     }
 
     private static String getFioranoHomeDir() {
-        return System.getProperty("FIORANO_HOME");
+        return System.getProperty("user.dir");
     }
 
     private String getJavaLibraryPath(String executionDir) {
@@ -100,7 +100,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         if ((list != null) && (list.size() > 0)) {
             jvmParams = toSpaceSeparatedString(list);
             jvmParams = Pattern.compile("\\$\\{user_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("user.home"));
-            jvmParams = Pattern.compile("\\$\\{fiorano_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("FIORANO_HOME"));
+            jvmParams = Pattern.compile("\\$\\{fiorano_home\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(System.getProperty("user.dir"));
             jvmParams = Pattern.compile("\\$\\{appName\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(launchConfiguration.getApplicationName());
             jvmParams = Pattern.compile("\\$\\{serviceInstanceName\\}", Pattern.CASE_INSENSITIVE).matcher(jvmParams).replaceAll(launchConfiguration.getServiceName());
             int logFileParamIndex = jvmParams.indexOf("-Xloggc:");
