@@ -16,7 +16,7 @@ public class AMQConnectionProvider extends AbstractJMSConnectionProvider {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setClientID(name);
         Properties properties = new Properties();
-        try(FileInputStream inStream = new FileInputStream(System.getProperty("karaf.base") + File.separator
+        try(FileInputStream inStream = new FileInputStream(System.getProperty("user.dir") + File.separator
                 + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg")) {
             properties.load(inStream);
             activeMQConnectionFactory.buildFromProperties(properties);

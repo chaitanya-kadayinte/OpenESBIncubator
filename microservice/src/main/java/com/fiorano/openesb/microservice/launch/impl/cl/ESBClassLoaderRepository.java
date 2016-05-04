@@ -25,7 +25,7 @@ public class ESBClassLoaderRepository {
 
     // <File, Vector<ChangeListener>>
     private final static HashMap<File, Vector<ESBClassLoaderListener>> listeners = new HashMap<>();
-    public static final String FIORANO_HOME = System.getProperty("FIORANO_HOME");
+    public static final String FIORANO_HOME = System.getProperty("user.dir");
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
 
     /**

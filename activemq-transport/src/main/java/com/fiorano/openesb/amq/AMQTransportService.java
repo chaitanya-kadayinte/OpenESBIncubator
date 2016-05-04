@@ -27,7 +27,7 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
     public AMQTransportService() throws Exception {
         super();
         Properties properties = new Properties();
-        try (FileInputStream inStream = new FileInputStream(System.getProperty("karaf.base") + File.separator
+        try (FileInputStream inStream = new FileInputStream(System.getProperty("user.dir") + File.separator
                 + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg")) {
             properties.load(inStream);
         }

@@ -64,7 +64,7 @@ public class ServerConfig {
     private static ServerConfig serverConfig = new ServerConfig();
 
     private ServerConfig() {
-        File configFile = new File(System.getProperty("karaf.base") + File.separator
+        File configFile = new File(System.getProperty("user.dir") + File.separator
                 + "etc" + File.separator + "com.fiorano.openesb.server.cfg");
         if (!configFile.exists()) {
             return;
@@ -90,7 +90,7 @@ public class ServerConfig {
             properties.setProperty("jettySSLUrl", getJettySSLUrl());
             properties.setProperty("javaHome",getJavaHome());
 
-            File file = new File(System.getProperty("karaf.base") + File.separator
+            File file = new File(System.getProperty("user.dir") + File.separator
                     + "etc" + File.separator + "com.fiorano.openesb.server.cfg");
             FileOutputStream fileOut = new FileOutputStream(file);
             properties.store(fileOut, "Server Config");

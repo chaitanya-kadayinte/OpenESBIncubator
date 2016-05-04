@@ -27,7 +27,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
     private String componentRepositoryDir;
 
 
-    private static final Map<String, File> favorites = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("FIORANO_HOME")));
+    private static final Map<String, File> favorites = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("user.dir")));
 
     private boolean usecache;
 
