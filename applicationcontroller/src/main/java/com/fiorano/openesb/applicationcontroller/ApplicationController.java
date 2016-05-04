@@ -7,7 +7,6 @@ import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationInfo;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
-import com.fiorano.openesb.application.aps.ServiceInstances;
 import com.fiorano.openesb.application.configuration.data.ObjectCategory;
 import com.fiorano.openesb.application.configuration.data.ResourceConfigurationNamedObject;
 import com.fiorano.openesb.application.constants.ConfigurationRepoConstants;
@@ -1228,25 +1227,22 @@ public class ApplicationController {
         throw new FioranoException("ROUTE_NOT_FOUND");
     }
 
-    public void changeRouteSelector(String appGUID, float appVersion, String routeGUID, HashMap selectors, String handleID) throws FioranoException {
+    public void changeRouteSelector(String appGUID, float appVersion, String routeGUID, HashMap modifiedSelectors, String handleID) throws FioranoException {
         Application application = savedApplicationMap.get(appGUID + Constants.NAME_DELIMITER + appVersion);
 
         // get the route. This throws an exception if route is not present
         Route route = getRoute(routeGUID, application);
-
-        if (route.getSelectorConfigName() != null && (selectors != null && selectors.size() > 0))
-            throw new FioranoException("ERR_ROUTE_SELECTOR_CHANGE_NOT_ALLOWED");
-
-        // get source service instance and port name for this route
-        String srcPortName = route.getSourcePortInstance();
-        String srcServiceInstName = route.getSourceServiceInstance();
+//
+//        if (route.getSelectorConfigName() == null && (modifiedSelectors == null || modifiedSelectors.size() == 0))
+//            throw new FioranoException("ERR_ROUTE_SELECTOR_CHANGE_NOT_ALLOWED");
+//
 
         ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleID);
         if (appHandle != null) {
-            if(selectors.containsKey(Route.SELECTOR_SENDER)){
+            if(modifiedSelectors.containsKey(Route.SELECTOR_SENDER)){
                 SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
-                senderSelectorConfiguration.setSourceName((String) selectors.get("sender"));
-                senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                senderSelectorConfiguration.setSourceName((String) modifiedSelectors.get("sender"));
+                senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
                 senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                 try {
                     appHandle.changeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
@@ -1254,9 +1250,9 @@ public class ApplicationController {
                     e.printStackTrace();
                 }
             }
-            if(selectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
+            if(modifiedSelectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
                 XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
-                XPathSelector xPathSelector = (XPathSelector) selectors.get("application-context");
+                XPathSelector xPathSelector = (XPathSelector) modifiedSelectors.get("application-context");
                 appContextSelectorConfig.setXpath(xPathSelector.getXPath());
                 appContextSelectorConfig.setNsPrefixMap(xPathSelector.getNamespaces());
                 appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
@@ -1267,9 +1263,9 @@ public class ApplicationController {
                 }
             }
 
-            if(selectors.containsKey(Route.SELECTOR_BODY)) {
+            if(modifiedSelectors.containsKey(Route.SELECTOR_BODY)) {
                 XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
-                XPathSelector xPathSelector = (XPathSelector) selectors.get("body");
+                XPathSelector xPathSelector = (XPathSelector) modifiedSelectors.get("body");
                 bodySelectorConfig.setXpath(xPathSelector.getXPath());
                 bodySelectorConfig.setNsPrefixMap(xPathSelector.getNamespaces());
                 bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
@@ -1279,7 +1275,8 @@ public class ApplicationController {
                     e.printStackTrace();
                 }
             }
-            if(route.getApplicationContextSelector()!=null && !selectors.containsKey("application-context")){
+
+            if(route.getApplicationContextSelector()!=null && !modifiedSelectors.containsKey("application-context")){
                 XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
                 appContextSelectorConfig.setRouteOperationType(RouteOperationType.APP_CONTEXT_XML_SELECTOR);
                 try {
@@ -1289,7 +1286,7 @@ public class ApplicationController {
                 }
 
             }
-            if(route.getSenderSelector()!=null && !selectors.containsKey("sender")){
+            if(route.getSenderSelector()!=null && !modifiedSelectors.containsKey("sender")){
                 SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                 senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                 try {
@@ -1299,7 +1296,7 @@ public class ApplicationController {
                 }
 
             }
-            if(route.getBodySelector()!=null && !selectors.containsKey("body")){
+            if(route.getBodySelector()!=null && !modifiedSelectors.containsKey("body")){
                 XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
                 bodySelectorConfig.setRouteOperationType(RouteOperationType.BODY_XML_SELECTOR);
                 try {
@@ -1312,7 +1309,7 @@ public class ApplicationController {
         }
 
         // set the selector type and its value in the route
-        route.setSelectors(selectors);
+        route.setSelectors(modifiedSelectors);
         route.setSelectorConfigName(null);
 
         saveApplication(application, false, handleID);
@@ -1344,7 +1341,7 @@ public class ApplicationController {
                 if (selectors.containsKey(Route.SELECTOR_SENDER)) {
                     SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                     senderSelectorConfiguration.setSourceName(route.getSenderSelector());
-                    senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                    senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
                     senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                     try {
                         appHandle.changeRouteOperationHandler(routeGUID, senderSelectorConfiguration);

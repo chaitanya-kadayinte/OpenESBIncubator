@@ -6,7 +6,6 @@ import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
-import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
@@ -19,7 +18,6 @@ import com.fiorano.openesb.microservice.launch.impl.MicroServiceLauncher;
 import com.fiorano.openesb.route.*;
 import com.fiorano.openesb.route.impl.*;
 import com.fiorano.openesb.schemarepo.SchemaRepoConstants;
-import com.fiorano.openesb.schemarepo.SchemaRepository;
 import com.fiorano.openesb.transport.TransportService;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import com.fiorano.openesb.transport.impl.jms.TransportConfig;
@@ -191,7 +189,7 @@ public class ApplicationHandle {
             if(route.getSenderSelector()!=null){
                 SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                 senderSelectorConfiguration.setSourceName(route.getSenderSelector());
-                senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
                 senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                 routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
             }
@@ -300,8 +298,8 @@ public class ApplicationHandle {
         if(route==null){
             throw new FioranoException("Route with name: "+routeName+" does not exist in the Application: " + application.getGUID());
         }
-        String bpSourceDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
-        String bpTargetdDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__D";
+        String bpSourceDestName = getBPSourceDestName(routeName);
+        String bpTargetdDestName = getBPTargetDestinationName(routeName);
         com.fiorano.openesb.application.application.Route routePS=null;
         for(final com.fiorano.openesb.application.application.Route rPS: application.getRoutes()) {
             if(rPS.getName().equals(routeName)){
@@ -356,7 +354,7 @@ public class ApplicationHandle {
         if(routePS.getSenderSelector()!=null){
             SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
             senderSelectorConfiguration.setSourceName(routePS.getSenderSelector());
-            senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+            senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
             senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
             routeToCConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
         }
@@ -441,8 +439,8 @@ public class ApplicationHandle {
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
         route.start();
         //remove breakpoint routes C and D
-        String bpSourceDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__C";
-        String bpTargetdDestName = application.getGUID() + "__" + application.getVersion() + routeName + "__D";
+        String bpSourceDestName = getBPSourceDestName(routeName);
+        String bpTargetdDestName = getBPTargetDestinationName(routeName);
         Route routeToC = breakPointRoutes.remove(bpSourceDestName);
         routeToC.stop();
         JMSPortConfiguration portConfiguration = new JMSPortConfiguration();
@@ -466,7 +464,7 @@ public class ApplicationHandle {
         for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
             stopMicroService(handle.getServiceInstName());
         }
-        microServiceHandleList = new HashMap<>();
+        microServiceHandleList = new ConcurrentHashMap<>();
         logger.info("Stopped all micro services of the Application "+appGUID+":"+version);
     }
 
@@ -729,7 +727,7 @@ public class ApplicationHandle {
                 if(route.getSenderSelector()!=null){
                     SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                     senderSelectorConfiguration.setSourceName(route.getSenderSelector());
-                    senderSelectorConfiguration.setAppName_version(application.getGUID() + ":" + application.getVersion());
+                    senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
                     senderSelectorConfiguration.setRouteOperationType(RouteOperationType.SENDER_SELECTOR);
                     rInfo.modifyHandler(senderSelectorConfiguration);
                 }
@@ -785,6 +783,11 @@ public class ApplicationHandle {
             throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
         }
         route.modifyHandler(configuration);
+
+        com.fiorano.openesb.route.Route bpRoute = breakPointRoutes.get(getBPSourceDestName(routeGUID));
+        if(bpRoute!=null){
+            bpRoute.modifyHandler(configuration);
+        }
     }
 
     public void removeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception{
@@ -793,5 +796,18 @@ public class ApplicationHandle {
             throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
         }
         route.removeHandler(configuration);
+
+        com.fiorano.openesb.route.Route bpRoute = breakPointRoutes.get(getBPSourceDestName(routeGUID));
+        if(bpRoute!=null){
+            bpRoute.removeHandler(configuration);
+        }
+    }
+
+    private String getBPSourceDestName(String routeName) {
+        return application.getGUID() + "__" + application.getVersion() + routeName + "__C";
+    }
+
+    private String getBPTargetDestinationName(String routeName) {
+        return application.getGUID() + "__" + application.getVersion() + routeName + "__D";
     }
 }
