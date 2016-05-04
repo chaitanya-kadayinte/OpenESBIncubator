@@ -17,13 +17,13 @@ public class ServerLogManager {
     public String getTESLastOutLogs(int numberOfLines)  throws FioranoException {
         Properties p = new Properties();
         try {
-            ConfigReader.readPropertiesFromFile(new File(System.getProperty("karaf.base") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
+            ConfigReader.readPropertiesFromFile(new File(System.getProperty("user.dir") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
             String path = p.getProperty("log4j.appender.fiorano.file");
             if(path.contains("${karaf.data}")){
-                path = path.replace("${karaf.data}", System.getProperty("karaf.base")+File.separator+"data");
+                path = path.replace("${karaf.data}", System.getProperty("user.dir")+File.separator+"data");
             }
             if(path.contains("${karaf.base}")){
-                path = path.replace("${karaf.base}", System.getProperty("karaf.base"));
+                path = path.replace("${karaf.base}", System.getProperty("user.dir"));
             }
 
             byte[] encoded = Files.readAllBytes(Paths.get(new File(path).toURI()));
@@ -59,13 +59,13 @@ public class ServerLogManager {
     public void clearTESOutLogs()  throws FioranoException{
         Properties p = new Properties();
         try {
-            ConfigReader.readPropertiesFromFile(new File(System.getProperty("karaf.base") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
+            ConfigReader.readPropertiesFromFile(new File(System.getProperty("user.dir") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
             String path = p.getProperty("log4j.appender.fiorano.file");
             if(path.contains("${karaf.data}")){
-                path = path.replace("${karaf.data}", System.getProperty("karaf.base")+File.separator+"data");
+                path = path.replace("${karaf.data}", System.getProperty("user.dir")+File.separator+"data");
             }
             if(path.contains("${karaf.base}")){
-                path = path.replace("${karaf.base}", System.getProperty("karaf.base"));
+                path = path.replace("${karaf.base}", System.getProperty("user.dir"));
             }
             new PrintWriter(path).close();
         } catch (IOException e) {

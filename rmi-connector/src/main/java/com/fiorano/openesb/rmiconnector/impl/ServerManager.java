@@ -44,7 +44,7 @@ public class ServerManager {
     public HashMap getServerDetails() throws FioranoException {
         HashMap fesDetails = new HashMap();
         fesDetails.put("JMS URL", TransportConfig.getInstance().getValue("providerURL"));
-        fesDetails.put("Server IP", rmiManager.getIPAliases().get(rmiManager.getIPAliases().size()));
+        fesDetails.put("Server IP", rmiManager.getIPAliases().get(rmiManager.getIPAliases().size()-1));
         fesDetails.put("Rmi Registry Port", rmiManager.getRmiRegistryPort());
         TESPerformanceStats stats = ServerInfo.getTESPerformanceStats();
         fesDetails.put("ProcessCount", String.valueOf(stats.getTotalProcessCount()));

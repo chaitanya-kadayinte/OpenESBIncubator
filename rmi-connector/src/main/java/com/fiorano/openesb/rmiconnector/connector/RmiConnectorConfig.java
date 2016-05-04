@@ -75,7 +75,7 @@ public class RmiConnectorConfig {
     }
 
     private RmiConnectorConfig() {
-            File configFile = new File(System.getProperty("karaf.base") + File.separator
+            File configFile = new File(System.getProperty("user.dir") + File.separator
                     + "etc" + File.separator + "com.fiorano.openesb.rmiconnector.cfg");
             if (!configFile.exists()) {
                 return;
