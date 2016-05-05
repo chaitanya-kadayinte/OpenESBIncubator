@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
 import java.util.Enumeration;
 
 public class SenderSelector implements RouteOperationHandler<JMSMessage> {
@@ -20,7 +19,7 @@ public class SenderSelector implements RouteOperationHandler<JMSMessage> {
 
     public SenderSelector(SenderSelectorConfiguration configuration) {
         this.sourceName = configuration.getSourceName();
-        this.appName_version = configuration.getAppName_version();
+        this.appName_version = configuration.getAppID();
         this.logger = LoggerFactory.getLogger(Activator.class);
     }
 
