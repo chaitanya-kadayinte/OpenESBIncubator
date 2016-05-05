@@ -1247,7 +1247,8 @@ public class ApplicationController {
                 try {
                     appHandle.changeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("EXCEPTION WHILE MODIFYING SENDER SELECTOR");
+                    throw new FioranoException("EXCEPTION WHILE MODIFYING SENDER SELECTOR");
                 }
             }
             if(modifiedSelectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
@@ -1259,7 +1260,8 @@ public class ApplicationController {
                 try {
                     appHandle.changeRouteOperationHandler(routeGUID, appContextSelectorConfig);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("EXCEPTION WHILE MODIFYING APPLICATION CONTEXT SELECTOR");
+                    throw new FioranoException("EXCEPTION WHILE MODIFYING APPLICATION CONTEXT SELECTOR");
                 }
             }
 
@@ -1272,7 +1274,8 @@ public class ApplicationController {
                 try {
                     appHandle.changeRouteOperationHandler(routeGUID, bodySelectorConfig);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("EXCEPTION WHILE MODIFYING MESSAGE BODY SELECTOR");
+                    throw new FioranoException("EXCEPTION WHILE MODIFYING MESSAGE BODY SELECTOR");
                 }
             }
 
@@ -1282,7 +1285,8 @@ public class ApplicationController {
                 try {
                     appHandle.removeRouteOperationHandler(routeGUID, appContextSelectorConfig);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("EXCEPTION WHILE REMOVING APPLICATION CONTEXT SELECTOR");
+                    throw new FioranoException("EXCEPTION WHILE REMOVING APPLICATION CONTEXT SELECTOR");
                 }
 
             }
@@ -1292,7 +1296,8 @@ public class ApplicationController {
                 try {
                     appHandle.removeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("EXCEPTION WHILE REMOVING SENDER SELECTOR");
+                    throw new FioranoException("EXCEPTION WHILE REMOVING SENDER SELECTOR");
                 }
 
             }
@@ -1302,7 +1307,8 @@ public class ApplicationController {
                 try {
                     appHandle.removeRouteOperationHandler(routeGUID, bodySelectorConfig);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("EXCEPTION WHILE REMOVING MESSAGE BODY SELECTOR");
+                    throw new FioranoException("EXCEPTION WHILE REMOVING MESSAGE BODY SELECTOR");
                 }
 
             }
@@ -1346,7 +1352,8 @@ public class ApplicationController {
                     try {
                         appHandle.changeRouteOperationHandler(routeGUID, senderSelectorConfiguration);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("EXCEPTION WHILE MODIFYING SENDER SELECTOR CONFIGURATION");
+                        throw new FioranoException("EXCEPTION WHILE MODIFYING SENDER SELECTOR CONFIGURATION");
                     }
                 }
                 if (selectors.containsKey(Route.SELECTOR_APPLICATION_CONTEXT)) {
@@ -1357,7 +1364,8 @@ public class ApplicationController {
                     try {
                         appHandle.changeRouteOperationHandler(routeGUID, appContextSelectorConfig);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("EXCEPTION WHILE MODIFYING APPLICATION CONTEXT SELECTOR CONFIGURATION");
+                        throw new FioranoException("EXCEPTION WHILE MODIFYING APPLICATION CONTEXT SELECTOR CONFIGURATION");
                     }
                 }
 
@@ -1369,7 +1377,8 @@ public class ApplicationController {
                     try {
                         appHandle.changeRouteOperationHandler(routeGUID, bodySelectorConfig);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("EXCEPTION WHILE MODIFYING MESSAGE BODY SELECTOR CONFIGURATION");
+                        throw new FioranoException("EXCEPTION WHILE MODIFYING MESSAGE BODY SELECTOR CONFIGURATION");
                     }
                 }
             }
