@@ -6,7 +6,7 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 
 
 public interface IClassLoaderManager {
-    ClassLoader getClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException;
+    ClassLoader getClassLoader(Service sps, LaunchConfiguration launchConfiguration, ClassLoader parent) throws FioranoException;
 
     void unloadClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException;
 }

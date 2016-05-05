@@ -11,6 +11,7 @@ import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.utils.LoggerUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.logging.FioranoLogHandler;
+import org.apache.activemq.command.RemoveInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,20 +22,19 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 
 public class InMemoryLauncher implements Launcher {
-    private IClassLoaderManager m_classLoaderManager;
+    private IClassLoaderManager classLoaderManager;
     private Object runtimeService;
     private LaunchConfiguration launchConfiguration;
     private Class serviceClass;
     private ClassLoader serviceClassLoader;
 
     public InMemoryLauncher() throws FioranoException {
-        m_classLoaderManager = new ClassLoaderManager();
+        classLoaderManager = new ClassLoaderManager();
     }
 
     public MicroServiceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
         this.launchConfiguration = launchConfiguration;
-        Service componentPS = getComponentPS();
-        ClassLoader classLoader = m_classLoaderManager.getClassLoader(componentPS, launchConfiguration);
+        ClassLoader classLoader = classLoaderManager.getClassLoader(getComponentPS(), launchConfiguration,null);
         InMemoryRuntimeHandle inMemoryRuntimeHandle = new InMemoryRuntimeHandle(launchConfiguration);
         InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader, inMemoryRuntimeHandle);
         inMemoryLaunchThread.start();
@@ -55,7 +55,7 @@ public class InMemoryLauncher implements Launcher {
         public InMemoryLaunchThread(ClassLoader classLoader, InMemoryRuntimeHandle runtimeHandle) throws Exception {
             serviceClassLoader = classLoader;
             this.runtimeHandle = runtimeHandle;
-            setName(launchConfiguration.getServiceName() + " Launch In-memory Thread");
+            setName(launchConfiguration.getServiceName() + "  InMemory Launch Thread");
             startup = initStartMethod();
         }
 
@@ -66,7 +66,7 @@ public class InMemoryLauncher implements Launcher {
                 startup.invoke(runtimeService, getArguments());
                 runtimeHandle.generateServiceBoundEvent();
             } catch (Throwable e) {
-                logger.error("Error Starting service " + launchConfiguration.getApplicationName() + ":"
+                logger.error("Error starting service " + launchConfiguration.getApplicationName() + ":"
                         + launchConfiguration.getApplicationVersion() + "-" + launchConfiguration.getMicroserviceId() + ":" + launchConfiguration.getMicroserviceVersion()
                         + e.getMessage(), e);
             }
@@ -129,7 +129,8 @@ public class InMemoryLauncher implements Launcher {
         public void stop() throws Exception {
             ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(serviceClassLoader);
+                ClassLoader stopClassLoader = classLoaderManager.getClassLoader(getComponentPS(), launchConfiguration, RemoveInfo.class.getClassLoader());
+                Thread.currentThread().setContextClassLoader(classLoaderManager.getClassLoader(getComponentPS(),launchConfiguration,stopClassLoader));
                 @SuppressWarnings("unchecked")
                 Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
                 shutDownMethod.invoke(runtimeService, "Shutdown Microservice");
@@ -138,7 +139,7 @@ public class InMemoryLauncher implements Launcher {
             }
             isRunning = false;
             gracefulKill = true;
-            m_classLoaderManager.unloadClassLoader(getComponentPS(), launchConfiguration);
+            classLoaderManager.unloadClassLoader(getComponentPS(), launchConfiguration);
             serviceClassLoader = null;
             strStatus = EventStateConstants.SERVICE_HANDLE_UNBOUND;
             generateServiceUnboundEvent("Shutdown", false);

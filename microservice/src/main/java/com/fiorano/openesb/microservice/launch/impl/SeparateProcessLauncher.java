@@ -33,6 +33,7 @@ public class SeparateProcessLauncher implements Launcher<SeparateProcessRuntimeH
         ProcessBuilder command = processBuilder.command(commandProvider.generateCommand(launchConfiguration));
         File directory = new File(MicroServiceRepoManager.getInstance().getMicroServiceBase(
                 launchConfiguration.getMicroserviceId(), launchConfiguration.getMicroserviceVersion()));
+        command.inheritIO();
         command.directory(directory);
         return command.start();
     }

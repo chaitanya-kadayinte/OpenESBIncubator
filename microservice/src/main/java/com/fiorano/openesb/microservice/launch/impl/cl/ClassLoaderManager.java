@@ -79,11 +79,11 @@ public class ClassLoaderManager implements IClassLoaderManager {
      * @return Class Loader
      * @throws FioranoException FioranoException
      */
-    private ClassLoader getSingleClassLoader(Service sps) throws FioranoException {
+    private ClassLoader getSingleClassLoader(Service sps, ClassLoader parent) throws FioranoException {
         Set<String> urlhashset = new LinkedHashSet<String>();
         updatePaths(sps, urlhashset);
         //Create URL Class loader using url hashset
-        ClassLoader componentClassLoader = createComponentClassLoader(urlhashset, Activator.class.getClassLoader().getParent().getParent().getParent());
+        ClassLoader componentClassLoader = createComponentClassLoader(urlhashset,parent);
         return componentClassLoader;
     }
 
@@ -166,17 +166,15 @@ public class ClassLoaderManager implements IClassLoaderManager {
 
     }
 
-    public ClassLoader getClassLoader(Service sps, LaunchConfiguration launchConfiguration) throws FioranoException {
+    public ClassLoader getClassLoader(Service sps, LaunchConfiguration launchConfiguration,ClassLoader parent) throws FioranoException {
 
         classLoaderMgrLogger.trace(LogHelper.getOutMessage("CLM", 2, getUniqueComponentIdentifier(sps)));
         // Set the component repository
         componentRepositoryDir = componentRepository.getRepositoryLocation();
 
         if (!usecache) {
-
-            ClassLoader singleClassLoader = getSingleClassLoader(sps);
+            ClassLoader singleClassLoader = getSingleClassLoader(sps,parent);
             loaders.put(launchConfiguration.getServiceName(),singleClassLoader);
-
             return singleClassLoader;
         } else
             return getHierarchicalClassLoader(sps);
@@ -230,7 +228,7 @@ public class ClassLoaderManager implements IClassLoaderManager {
         // component instead give the Join parent classloaders as its classloader.
         if (emptyClassLoader)
             return parentClassLoader;
-        return ESBClassLoaderRepository.createClassLoader(fileHashSet, (parentClassLoader == null) ? Thread.currentThread().getContextClassLoader() : parentClassLoader, true, false);
+        return ESBClassLoaderRepository.createClassLoader(fileHashSet, parentClassLoader, true, false);
 
     }
 
