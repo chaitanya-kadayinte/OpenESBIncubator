@@ -419,8 +419,8 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "sax" +
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "dom" +
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xerces" +
-                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xalan"+
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "saxon" +
+                File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xalan"+
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "xml-commons-resolver" +
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "mx4j" +
                 File.pathSeparator + getFioranoHomeDir() + File.separator + "extlib" + File.separator + "ObjectHandler";
