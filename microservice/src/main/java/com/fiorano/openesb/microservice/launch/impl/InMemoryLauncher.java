@@ -27,6 +27,7 @@ public class InMemoryLauncher implements Launcher {
     private LaunchConfiguration launchConfiguration;
     private Class serviceClass;
     private ClassLoader serviceClassLoader;
+    private Logger logger = LoggerFactory.getLogger(Activator.class);
 
     public InMemoryLauncher() throws FioranoException {
         classLoaderManager = new ClassLoaderManager();
@@ -35,10 +36,9 @@ public class InMemoryLauncher implements Launcher {
     public MicroServiceRuntimeHandle launch(LaunchConfiguration launchConfiguration, String configuration) throws Exception {
         this.launchConfiguration = launchConfiguration;
         ClassLoader classLoader = classLoaderManager.getClassLoader(getComponentPS(), launchConfiguration,null);
-        InMemoryRuntimeHandle inMemoryRuntimeHandle = new InMemoryRuntimeHandle(launchConfiguration);
-        InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader, inMemoryRuntimeHandle);
+        InMemoryLaunchThread inMemoryLaunchThread = new InMemoryLaunchThread(classLoader);
         inMemoryLaunchThread.start();
-        return inMemoryRuntimeHandle;
+        return inMemoryLaunchThread.runtimeHandle;
     }
 
     private Service getComponentPS() throws FioranoException {
@@ -50,11 +50,10 @@ public class InMemoryLauncher implements Launcher {
 
         private final Method startup;
         private InMemoryRuntimeHandle runtimeHandle;
-        private Logger logger = LoggerFactory.getLogger(Activator.class);
 
-        public InMemoryLaunchThread(ClassLoader classLoader, InMemoryRuntimeHandle runtimeHandle) throws Exception {
+        public InMemoryLaunchThread(ClassLoader classLoader) throws Exception {
             serviceClassLoader = classLoader;
-            this.runtimeHandle = runtimeHandle;
+            this.runtimeHandle = new InMemoryRuntimeHandle(launchConfiguration);
             setName(launchConfiguration.getServiceName() + "  InMemory Launch Thread");
             startup = initStartMethod();
         }
@@ -130,7 +129,7 @@ public class InMemoryLauncher implements Launcher {
             ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 ClassLoader stopClassLoader = classLoaderManager.getClassLoader(getComponentPS(), launchConfiguration, RemoveInfo.class.getClassLoader());
-                Thread.currentThread().setContextClassLoader(classLoaderManager.getClassLoader(getComponentPS(),launchConfiguration,stopClassLoader));
+                Thread.currentThread().setContextClassLoader(serviceClassLoader);
                 @SuppressWarnings("unchecked")
                 Method shutDownMethod = serviceClass.getMethod("shutdown", Object.class);
                 shutDownMethod.invoke(runtimeService, "Shutdown Microservice");

@@ -15,7 +15,6 @@ public class Activator implements BundleActivator {
         logger.trace("Starting Application repo bundle.");
         context.registerService(
                 ApplicationRepository.class.getName(), new ApplicationRepository(), null);
-        System.out.println("Activated Fiorano Application Repository");
         logger.debug("Started Application repo bundle.");
 
     }
