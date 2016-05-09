@@ -194,7 +194,7 @@ public class ServiceProviderManager extends AbstractRmiManager implements IServi
             try {
                 esbLogManager.exportFESLogs(tempZipFile.getAbsolutePath(),tempDir.getAbsolutePath());
                 getFESLogsMap.put("FES", tempZipFile);
-            } catch (FioranoException e) {
+            } catch (Exception e) {
                 tempZipFile.delete();
                 //rmiLogger.error(Bundle.class, Bundle.ERROR_EXPORT_LOGS, "EnterpriseServer", "FES", "", e);
                 throw new ServiceException(e.getMessage());

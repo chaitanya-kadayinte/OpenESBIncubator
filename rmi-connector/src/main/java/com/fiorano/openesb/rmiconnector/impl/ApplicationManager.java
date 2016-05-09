@@ -47,12 +47,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     ApplicationManager(RmiManager rmiManager, InstanceHandler instanceHandler) {
         super(rmiManager);
-        logger.trace("initializing Appliaction Manager");
+        logger.trace("Initializing Application Manager");
         this.applicationController = rmiManager.getApplicationController();
         this.applicationRepository = rmiManager.getApplicationRepository();
         this.handler = instanceHandler;
         setHandleID(instanceHandler.getHandleID());
-        logger.trace("initialized Appliaction Manager");
+        logger.trace("Initialized Application Manager");
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.fiorano.openesb.amq;
 
 import com.fiorano.openesb.transport.impl.jms.AbstractJMSConnectionProvider;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.ConnectionFactory;
 import java.io.File;
@@ -21,7 +23,9 @@ public class AMQConnectionProvider extends AbstractJMSConnectionProvider {
             properties.load(inStream);
             activeMQConnectionFactory.buildFromProperties(properties);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            Logger logger = LoggerFactory.getLogger(Activator.class);
+            logger.debug("JMS connection failed - " + e.getMessage());
         }
         return activeMQConnectionFactory;
     }

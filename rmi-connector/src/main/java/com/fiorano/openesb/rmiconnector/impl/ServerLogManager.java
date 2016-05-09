@@ -5,24 +5,24 @@ import com.fiorano.openesb.utils.exception.FioranoException;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class ServerLogManager {
-    public String getTESLastOutLogs(int numberOfLines)  throws FioranoException {
+    public String getTESLastOutLogs(int numberOfLines) throws FioranoException {
         Properties p = new Properties();
         try {
-            ConfigReader.readPropertiesFromFile(new File(System.getProperty("user.dir") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
+            ConfigReader.readPropertiesFromFile(new File(System.getProperty("user.dir") + File.separator + "etc" + File.separator + "org.ops4j.pax.logging.cfg"), p);
             String path = p.getProperty("log4j.appender.fiorano.file");
-            if(path.contains("${karaf.data}")){
-                path = path.replace("${karaf.data}", System.getProperty("user.dir")+File.separator+"data");
+            if (path.contains("${karaf.data}")) {
+                path = path.replace("${karaf.data}", System.getProperty("user.dir") + File.separator + "data");
             }
-            if(path.contains("${karaf.base}")){
+            if (path.contains("${karaf.base}")) {
                 path = path.replace("${karaf.base}", System.getProperty("user.dir"));
             }
 
@@ -44,52 +44,70 @@ public class ServerLogManager {
         return "";
     }
 
-    public String getTESLastErrLogs(int numberOfLines)  throws FioranoException{
+    public String getTESLastErrLogs(int numberOfLines) throws FioranoException {
         return "";
     }
 
-    public String getMQLastErrLogs(int numberOfLines)  throws FioranoException{
+    public String getMQLastErrLogs(int numberOfLines) throws FioranoException {
         return "";
     }
 
-    public String getMQLastOutLogs(int numberOfLines)  throws FioranoException{
+    public String getMQLastOutLogs(int numberOfLines) throws FioranoException {
         return "";
     }
 
-    public void clearTESOutLogs()  throws FioranoException{
-        Properties p = new Properties();
+    public void clearTESOutLogs() throws FioranoException {
+
         try {
-            ConfigReader.readPropertiesFromFile(new File(System.getProperty("user.dir") +File.separator+"etc"+File.separator+"org.ops4j.pax.logging.cfg"),p );
-            String path = p.getProperty("log4j.appender.fiorano.file");
-            if(path.contains("${karaf.data}")){
-                path = path.replace("${karaf.data}", System.getProperty("user.dir")+File.separator+"data");
-            }
-            if(path.contains("${karaf.base}")){
-                path = path.replace("${karaf.base}", System.getProperty("user.dir"));
-            }
+            String path = getLogPath();
             new PrintWriter(path).close();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+          throw new FioranoException(e);
         }
     }
 
-    public void clearTESMQOutLogs()  throws FioranoException{
-        
+    private String getLogPath() throws FioranoException {
+        try {
+            Properties properties = new Properties();
+            ConfigReader.readPropertiesFromFile(new File(System.getProperty("user.dir") + File.separator + "etc" + File.separator + "org.ops4j.pax.logging.cfg"), properties);
+            String path = properties.getProperty("log4j.appender.fiorano.file");
+            if (path.contains("${karaf.data}")) {
+                path = path.replace("${karaf.data}", System.getProperty("user.dir") + File.separator + "data");
+            }
+            if (path.contains("${karaf.base}")) {
+                path = path.replace("${karaf.base}", System.getProperty("user.dir"));
+            }
+            return path;
+        } catch (Exception e) {
+            throw new FioranoException(e);
+        }
     }
 
-    public void clearTESErrLogs()  throws FioranoException{
-        
+    public void clearTESMQOutLogs() throws FioranoException {
+
     }
 
-    public void clearTESMQErrLogs()  throws FioranoException{
-        
+    public void clearTESErrLogs() throws FioranoException {
+
     }
 
-    public void exportFESLogs(String absolutePath, String absolutePath1)  throws FioranoException{
-        
+    public void clearTESMQErrLogs() throws FioranoException {
+
+    }
+
+    public void exportFESLogs(String absolutePath, String absolutePath1) throws Exception {
+        String path = getLogPath();
+        try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(absolutePath));  FileInputStream fis = new FileInputStream(new File(path))) {
+            ZipEntry e = new ZipEntry((new File(path).getName()));
+            out.putNextEntry(e);
+
+            byte[] buffer = new byte[4092];
+            int byteCount = 0;
+            while ((byteCount = fis.read(buffer)) != -1) {
+                out.write(buffer, 0, byteCount);
+            }
+        } catch (Exception e) {
+            throw new FioranoException(e);
+        }
     }
 }

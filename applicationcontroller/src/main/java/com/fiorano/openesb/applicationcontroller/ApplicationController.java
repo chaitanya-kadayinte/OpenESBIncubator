@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class ApplicationController {
     private NamedConfigRepository namedConfigRepository;
@@ -62,6 +64,8 @@ public class ApplicationController {
     private MicroServiceRepoManager microServiceRepoManager;
     //To store the list of applications referring particular component(key) and values(Event_Process)
     private HashMap<String, Set<String>> COMPONENTS_REFERRING_APPS;
+
+    private HashMap<String, File> applicationLogMap = new HashMap<String, File>(8);
 
     //To store the set of applications referring particular
     private HashMap<String,Set<String>> REFERRING_APPS_LIST;
@@ -1995,6 +1999,152 @@ public class ApplicationController {
             logger.error("", ex);
         }
 
+    }
+
+    public byte[] exportApplicationLogs(String appGUID, float version, long index ,String handleId) throws FioranoException {
+        byte[] contents = new byte[0];
+        String eventProcessKey = appGUID.toUpperCase() + "__" + version;
+        File tempZipFile = null;
+        boolean completed = false;
+        if (applicationLogMap.get(eventProcessKey) == null) {
+            File tempdir = null;
+            File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                    +File.separator+version);
+            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile));FileInputStream fis = new FileInputStream(path)){
+                tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "applicationlogs","tmp");
+                tempdir.mkdir();
+                tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,appGUID+"__"+version + "logs", "zip");
+                ZipEntry e;
+                for(File service : path.listFiles()){
+                    for(File f : service.listFiles()){
+                        if(f.getName().endsWith("lck")){
+                            continue;
+                        }
+                        e = new ZipEntry(f.getName());
+                        out.putNextEntry(e);
+
+                        byte[] buffer = new byte[4092];
+                        int byteCount = 0;
+                        while ((byteCount = fis.read(buffer)) != -1)
+                        {
+                            out.write(buffer, 0, byteCount);
+                        }
+                    }
+                }
+                applicationLogMap.put(eventProcessKey, tempZipFile);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (tempdir != null)
+                    FileUtil.deleteDir(tempdir);
+                if (completed) {
+                    applicationLogMap.remove(eventProcessKey);
+                    tempZipFile.delete();
+                }
+            }
+        } else {
+            tempZipFile = applicationLogMap.get(eventProcessKey);
+        }
+
+        try ( BufferedInputStream bis = new BufferedInputStream(new FileInputStream(tempZipFile))){
+            bis.skip(index);
+            byte[] tempContents = new byte[Constants.CHUNK_SIZE];
+            int readCount;
+            readCount = bis.read(tempContents);
+            if (readCount < 0) {
+                completed = true;
+                return null;
+            }
+            contents = new byte[readCount];
+            System.arraycopy(tempContents, 0, contents, 0, readCount);
+        } catch (IOException e) {
+            completed = true;
+            throw new FioranoException("ERROR_SENDING_CONTENTS_OF_LOGS EventProcess", appGUID +":"+ version);
+        } finally {
+            if (completed) {
+                applicationLogMap.remove(eventProcessKey);
+                if (tempZipFile != null) {
+                    tempZipFile.delete();
+                }
+            }
+
+        }
+        return contents;
+    }
+
+    public byte[] exportServiceLogs(String appGUID, float version, String serviceInst, long index) throws FioranoException{
+
+        byte[] contents = new byte[0];
+        String serviceKey = appGUID.toUpperCase() + "__" + version +"__"+ serviceInst.toUpperCase();
+        File tempZipFile = null;
+        boolean completed = false;
+        if (applicationLogMap.get(serviceKey) == null) {
+            File tempdir = null;
+            File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
+                    +File.separator+version+File.separator+serviceInst);
+
+            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile));FileInputStream fis = new FileInputStream(path)){
+                tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "servicelogs","tmp");
+                tempdir.mkdir();
+                tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,serviceKey, "zip");
+                ZipEntry e = null;
+                    for(File f : path.listFiles()){
+                        if(f.getName().endsWith("lck")){
+                            continue;
+                        }
+                        e = new ZipEntry(f.getName());
+                        out.putNextEntry(e);
+
+                        byte[] buffer = new byte[4092];
+                        int byteCount = 0;
+                        while ((byteCount = fis.read(buffer)) != -1)
+                        {
+                            out.write(buffer, 0, byteCount);
+                        }
+
+                    }
+                applicationLogMap.put(serviceKey, tempZipFile);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (tempdir != null)
+                    FileUtil.deleteDir(tempdir);
+                if (completed) {
+                    applicationLogMap.remove(serviceKey);
+                    tempZipFile.delete();
+                }
+            }
+        } else {
+            tempZipFile = applicationLogMap.get(serviceKey);
+        }
+
+        try (BufferedInputStream bis =  new BufferedInputStream(new FileInputStream(tempZipFile))){
+            bis.skip(index);
+            byte[] tempContents = new byte[Constants.CHUNK_SIZE];
+            int readCount;
+            readCount = bis.read(tempContents);
+            if (readCount < 0) {
+                completed = true;
+                return null;
+            }
+            contents = new byte[readCount];
+            System.arraycopy(tempContents, 0, contents, 0, readCount);
+        } catch (IOException e) {
+            completed = true;
+            throw new FioranoException("ERROR_SENDING_CONTENTS_OF_LOGS EventProcess", appGUID +":"+ version);
+        } finally {
+            if (completed) {
+                applicationLogMap.remove(serviceKey);
+                if (tempZipFile != null) {
+                    tempZipFile.delete();
+                }
+            }
+        }
+        return contents;
     }
 
 }
