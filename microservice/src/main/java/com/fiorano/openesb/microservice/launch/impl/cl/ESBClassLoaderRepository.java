@@ -125,7 +125,11 @@ public class ESBClassLoaderRepository {
             addLibraries(rarFile, urls, directoriesWithResources);
         }
         addPeerLevelURLs(urls);
-        return new URLClassLoader(urls.toArray(new URL[urls.size()]));
+        if(parent != null) {
+            return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
+        } else {
+            return new URLClassLoader(urls.toArray(new URL[urls.size()]));
+        }
     }
 
     private static void addPeerLevelURLs(ArrayList<URL> urls) {

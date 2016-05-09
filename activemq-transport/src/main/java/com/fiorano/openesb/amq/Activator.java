@@ -17,7 +17,6 @@ import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 
-    private BundleContext bundleContext;
     private AMQTransportService service;
     private Logger logger;
 
@@ -27,19 +26,17 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext context) throws Exception {
         System.out.println("Starting Active MQ Transport");
-        this.bundleContext = context;
         try {
             service = new AMQTransportService();
         } catch (JMSException e) {
             System.out.println("Could not connect to MQ Server.");
             context.getBundle(0).stop();
         }
-        bundleContext.registerService(TransportService.class, service, new Hashtable<String, Object>());
+        context.registerService(TransportService.class, service, new Hashtable<String,Object>());
         System.out.println("Started Active MQ Transport");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Stopping Active MQ Transport");
         try {
             service.stop();
         } catch (Exception e) {

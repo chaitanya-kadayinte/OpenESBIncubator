@@ -77,7 +77,7 @@ public class MicroServiceRepoManager {
     // Events manager to notify the Security Events which might be raised.
     private EventsManager m_eventsManager;
 
-    private static final Map favorites = Collections.singletonMap("FIORANO_HOME", System.getProperty("FIORANO_HOME"));
+    private static final Map favorites = Collections.singletonMap("FIORANO_HOME", System.getProperty("user.dir"));
 
     public static String COMPONENTS_REPOSITORY_FOLDER;// = System.getProperty(IMQConstants.FIORANO_HOME)+"/esb/fes/repository/components";
     private boolean componentrepoinsync = false;

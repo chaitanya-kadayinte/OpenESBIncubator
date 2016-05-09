@@ -25,7 +25,7 @@ import java.util.zip.ZipOutputStream;
 public class MicroServiceManager extends AbstractRmiManager implements IServiceManager {
     MicroServiceRepoManager microServiceRepository;
     private Logger logger = LoggerFactory.getLogger(Activator.class);
-    public static final Map FAVORITES = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("FIORANO_HOME")));
+    public static final Map FAVORITES = Collections.singletonMap("FIORANO_HOME", new File(System.getProperty("user.dir")));
 
     //maintains a hashmap of the file reference to service zip files that are being created when executing operations getService, deployService, fetchResource
     private HashMap<String, File> SERVICEMAP = new HashMap<String, File>(8);

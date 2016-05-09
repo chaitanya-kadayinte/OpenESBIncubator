@@ -484,7 +484,7 @@ public class ApplicationHandle {
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
         } catch (Throwable e) {
-            logger.error("Error occured while starting the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
+            logger.error("Error occurred while starting the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
         }
         logger.info("Started MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
     }

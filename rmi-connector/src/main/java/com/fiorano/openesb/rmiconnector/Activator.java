@@ -47,6 +47,7 @@ public class Activator implements BundleActivator {
             logger.error("Errors occurred while activating RMI modules", e);
         }
         logger.trace("Started RMI bundle.");
+        System.out.println("Fiorano Open ESB Server has started successfully.");
     }
 
     public void stop(BundleContext context) {
