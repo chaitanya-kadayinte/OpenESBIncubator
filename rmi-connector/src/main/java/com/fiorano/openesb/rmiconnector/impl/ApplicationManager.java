@@ -1147,12 +1147,20 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public byte[] exportServiceLogs(String appGUID, float version, String serviceInst, long index) throws RemoteException, ServiceException {
-        return new byte[0];
+       try{
+           return applicationController.exportServiceLogs(appGUID,version,serviceInst,index);
+       } catch (FioranoException e) {
+           throw new ServiceException(e.getMessage());
+       }
     }
 
     @Override
     public byte[] exportApplicationLogs(String appGUID, float version, long index) throws RemoteException, ServiceException {
-        return new byte[0];
+        try {
+            return applicationController.exportApplicationLogs(appGUID, version, index);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override

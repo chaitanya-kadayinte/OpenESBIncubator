@@ -2001,19 +2001,20 @@ public class ApplicationController {
 
     }
 
-    public byte[] exportApplicationLogs(String appGUID, float version, long index ,String handleId) throws FioranoException {
+    public byte[] exportApplicationLogs(String appGUID, float version, long index) throws FioranoException {
         byte[] contents = new byte[0];
         String eventProcessKey = appGUID.toUpperCase() + "__" + version;
         File tempZipFile = null;
+        FileInputStream fis = null;
         boolean completed = false;
         if (applicationLogMap.get(eventProcessKey) == null) {
             File tempdir = null;
             File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                     +File.separator+version);
-            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile));FileInputStream fis = new FileInputStream(path)){
-                tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "applicationlogs","tmp");
-                tempdir.mkdir();
-                tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,appGUID+"__"+version + "logs", "zip");
+            tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "applicationlogs","tmp");
+            tempdir.mkdir();
+            tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,appGUID+"__"+version + "logs", "zip");
+            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile))){
                 ZipEntry e;
                 for(File service : path.listFiles()){
                     for(File f : service.listFiles()){
@@ -2025,6 +2026,7 @@ public class ApplicationController {
 
                         byte[] buffer = new byte[4092];
                         int byteCount = 0;
+                        fis = new FileInputStream(f);
                         while ((byteCount = fis.read(buffer)) != -1)
                         {
                             out.write(buffer, 0, byteCount);
@@ -2037,6 +2039,13 @@ public class ApplicationController {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                if(fis != null){
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        //ignore
+                    }
+                }
                 if (tempdir != null)
                     FileUtil.deleteDir(tempdir);
                 if (completed) {
@@ -2079,16 +2088,17 @@ public class ApplicationController {
         byte[] contents = new byte[0];
         String serviceKey = appGUID.toUpperCase() + "__" + version +"__"+ serviceInst.toUpperCase();
         File tempZipFile = null;
+        FileInputStream fis= null;
         boolean completed = false;
         if (applicationLogMap.get(serviceKey) == null) {
             File tempdir = null;
             File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
-                    +File.separator+version+File.separator+serviceInst);
+                    +File.separator+version+File.separator+serviceInst.toUpperCase());
+            tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,serviceKey, "zip");
 
-            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile));FileInputStream fis = new FileInputStream(path)){
+            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile))){
                 tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "servicelogs","tmp");
                 tempdir.mkdir();
-                tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,serviceKey, "zip");
                 ZipEntry e = null;
                     for(File f : path.listFiles()){
                         if(f.getName().endsWith("lck")){
@@ -2099,6 +2109,7 @@ public class ApplicationController {
 
                         byte[] buffer = new byte[4092];
                         int byteCount = 0;
+                        fis = new FileInputStream(f);
                         while ((byteCount = fis.read(buffer)) != -1)
                         {
                             out.write(buffer, 0, byteCount);
@@ -2111,6 +2122,13 @@ public class ApplicationController {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                if(fis!=null){
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        //ignore
+                    }
+                }
                 if (tempdir != null)
                     FileUtil.deleteDir(tempdir);
                 if (completed) {
