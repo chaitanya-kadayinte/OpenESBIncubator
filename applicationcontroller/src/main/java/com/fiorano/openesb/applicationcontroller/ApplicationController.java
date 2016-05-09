@@ -2011,6 +2011,9 @@ public class ApplicationController {
             File tempdir = null;
             File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                     +File.separator+version);
+            if(!path.exists()) {
+                throw new FioranoException("Logs are empty");
+            }
             tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "applicationlogs","tmp");
             tempdir.mkdir();
             tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,appGUID+"__"+version + "logs", "zip");
@@ -2095,7 +2098,9 @@ public class ApplicationController {
             File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                     +File.separator+version+File.separator+serviceInst.toUpperCase());
             tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,serviceKey, "zip");
-
+            if(!path.exists()) {
+                throw new FioranoException("Logs are empty");
+            }
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile))){
                 tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "servicelogs","tmp");
                 tempdir.mkdir();
