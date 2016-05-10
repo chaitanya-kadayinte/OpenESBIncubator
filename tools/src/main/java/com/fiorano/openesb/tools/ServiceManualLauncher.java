@@ -159,7 +159,7 @@ public class ServiceManualLauncher extends FioranoTask {
             e.printStackTrace();
         }
 
-        AdditionalConfiguration ac = new JavaLaunchConfiguration(serviceInstance.isDebugMode(), serviceInstance.getDebugPort(), prop.getProperty("-fesUrl"), COMP_REPOSITORY_PATH, SCHEMA_REPO_PATH, jettyServerDetails.get("NON_SSL"), jettyServerDetails.get("SSL"), watchForControlEvents, MS_JAVA_HOME, userDefinedJavaHome);
+        AdditionalConfiguration ac = new JavaLaunchConfiguration(serviceInstance.isDebugMode(), serviceInstance.getDebugPort(), prop.getProperty("-url"), COMP_REPOSITORY_PATH, SCHEMA_REPO_PATH, jettyServerDetails.get("NON_SSL"), jettyServerDetails.get("SSL"), watchForControlEvents, MS_JAVA_HOME, userDefinedJavaHome);
         LaunchConfiguration launchConfiguration = new MicroServiceLaunchConfiguration(eventProcessName, String.valueOf(appVersion), loginInfo.user, loginInfo.pwd, serviceInstance, ac);
         com.fiorano.openesb.microservice.launch.impl.JVMCommandProvider jvmCommandProvider = new JVMCommandProvider();
         try {
