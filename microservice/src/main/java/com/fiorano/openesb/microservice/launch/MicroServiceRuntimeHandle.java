@@ -33,6 +33,8 @@ public abstract class MicroServiceRuntimeHandle {
     protected MicroServiceRuntimeHandle(LaunchConfiguration launchConfiguration){
         this.launchConfiguration = launchConfiguration;
         this.serviceInstName = launchConfiguration.getServiceName();
+        this.serviceGUID = launchConfiguration.getMicroserviceId();
+        setRunningVersion(Float.parseFloat(launchConfiguration.getMicroserviceVersion()));
         eventManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     }
 
@@ -132,8 +134,20 @@ public abstract class MicroServiceRuntimeHandle {
         details.setStatusString(strStatus);
         details.setGracefulKill(gracefulKill);
         details.setRunningVersion(String.valueOf(runningVersion));
-
+        details.setLaunchType(convertLaunchMode(launchConfiguration.getLaunchMode()));
         return details;
+    }
+
+    private int convertLaunchMode(LaunchConfiguration.LaunchMode launchMode) {
+        if (launchMode.name().equalsIgnoreCase("SEPARATE_PROCESS"))
+            return 1;
+        else if (launchMode.name().equalsIgnoreCase("IN_MEMORY"))
+            return 2;
+        else if (launchMode.name().equalsIgnoreCase("MANUAL"))
+            return 4;
+        else
+            return 3;
+
     }
 
     public void generateServiceBoundEvent() throws FioranoException {

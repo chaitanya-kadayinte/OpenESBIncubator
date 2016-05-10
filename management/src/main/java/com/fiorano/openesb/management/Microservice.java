@@ -8,6 +8,16 @@ public class Microservice {
     private boolean isRunning;
     private String launchMode;
 
+    public String getMemoryUsage() {
+        return memoryUsage;
+    }
+
+    public void setMemoryUsage(String memoryUsage) {
+        this.memoryUsage = memoryUsage;
+    }
+
+    private String memoryUsage;
+
     public String getGuid() {
         return guid;
     }

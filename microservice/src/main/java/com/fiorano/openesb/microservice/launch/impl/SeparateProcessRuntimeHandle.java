@@ -8,6 +8,7 @@ import com.fiorano.openesb.events.MicroServiceEvent;
 import com.fiorano.openesb.microservice.ccp.ComponentWorkflowListener;
 import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
 import com.fiorano.openesb.microservice.ccp.event.ComponentCCPEvent;
+import com.fiorano.openesb.microservice.ccp.event.common.data.MemoryUsage;
 import com.fiorano.openesb.microservice.ccp.event.component.StatusEvent;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
@@ -384,6 +385,15 @@ public class SeparateProcessRuntimeHandle extends MicroServiceRuntimeHandle {
                 coreLogger.error(e.getMessage());
             }
         }
+    }
+
+    public MemoryUsage getMemoryUsage() {
+        try {
+            return ccpCommandHelper.getMemoryUsage(EventStateConstants.SERVICE_HANDLE_BOUND);
+        } catch (FioranoException e) {
+            coreLogger.error(e.getMessage());
+        }
+        return null;
     }
 
 }

@@ -844,7 +844,14 @@ public class ApplicationController {
         }
         return false;
     }
-
+    public MemoryUsage getMemoryUsage(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+        String key = appGuid+Constants.NAME_DELIMITER+version;
+        if(applicationHandleMap.containsKey(key)){
+            ApplicationHandle appHandle = applicationHandleMap.get(key);
+            return appHandle.getMemoryUsage(microServiceName);
+        }
+        return null;
+    }
     public boolean stopMicroService(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){

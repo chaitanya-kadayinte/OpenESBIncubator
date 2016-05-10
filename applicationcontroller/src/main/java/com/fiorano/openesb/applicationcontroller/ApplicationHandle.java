@@ -5,9 +5,11 @@ import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
+import com.fiorano.openesb.microservice.ccp.event.common.data.MemoryUsage;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
+import com.fiorano.openesb.microservice.launch.impl.SeparateProcessRuntimeHandle;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.route.Route;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
@@ -512,6 +514,18 @@ public class ApplicationHandle {
             return false;
         }
         return handle.isRunning();
+    }
+
+    public MemoryUsage getMemoryUsage(String microServiceName) {
+        MicroServiceRuntimeHandle handle = microServiceHandleList.get(microServiceName);
+        if(handle == null){
+            return null;
+        }
+        if(handle instanceof SeparateProcessRuntimeHandle) {
+           return  ((SeparateProcessRuntimeHandle)handle).getMemoryUsage();
+        } else{
+            return null;
+        }
     }
 
     public String getLaunchMode(String name) {

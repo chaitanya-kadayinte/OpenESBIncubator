@@ -5,6 +5,7 @@ import com.fiorano.openesb.application.ApplicationRepository;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
+import com.fiorano.openesb.microservice.ccp.event.common.data.MemoryUsage;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.osgi.framework.BundleContext;
@@ -61,18 +62,22 @@ public class RestServiceImpl implements ApplicationsService {
             ApplicationStateDetails stateOfApplication = getController().getCurrentStateOfApplication(applicationName, Float.parseFloat(applicationVersion), null);
             com.fiorano.openesb.management.Application application = new com.fiorano.openesb.management.Application();
 
+            MemoryUsage memoryUsage;
             List<Microservice> services = new ArrayList<>();
             @SuppressWarnings("unchecked") Enumeration<String> serviceNames = stateOfApplication.getAllServiceNames();
             while (serviceNames.hasMoreElements()) {
                 String service = serviceNames.nextElement();
                 ServiceInstanceStateDetails serviceInstance = stateOfApplication.getServiceStatus(service);
                 Microservice microservice = new Microservice();
+                memoryUsage = getController().getMemoryUsage(applicationName,applicationVersion,serviceInstance.getServiceInstanceName(),null);
+                microservice.setMemoryUsage(memoryUsage != null ?
+                        String.valueOf(memoryUsage.getHeapMemoryUsed()) :"NA");
                 microservice.setGuid(serviceInstance.getServiceGUID());
                 microservice.setName(serviceInstance.getServiceInstanceName());
                 microservice.setVersion(String.valueOf(serviceInstance.getRunningVersion()));
                 boolean microserviceRunning = getController().isMicroserviceRunning(applicationName, applicationVersion, serviceInstance.getServiceInstanceName(), null);
                 microservice.setRunning(microserviceRunning);
-                microservice.setLaunchMode(String.valueOf(serviceInstance.getLaunchType()));
+                microservice.setLaunchMode(getLaunchMode(serviceInstance.getLaunchType()));
                 services.add(microservice);
             }
             application.setServices(services);
@@ -86,6 +91,19 @@ public class RestServiceImpl implements ApplicationsService {
             response.setStatus(false);
             response.setMessage(e.getMessage());
             return response;
+        }
+    }
+
+    private String getLaunchMode(int launchType) {
+        switch (launchType){
+            case 1:
+                return "Separate Process";
+            case 2 :
+                return "In Memory";
+            case 4:
+                return "Manual Launch";
+            default:
+                return "None";
         }
     }
 
