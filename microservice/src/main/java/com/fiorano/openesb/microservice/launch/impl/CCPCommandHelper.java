@@ -90,8 +90,8 @@ public class CCPCommandHelper {
         return maxLevel;
     }
 
-    public ComponentStats getComponentStats(String statusString) throws FioranoException {
-        return (ComponentStats) _getData(DataRequestEvent.DataIdentifier.COMPONENT_STATS, statusString);
+    public ComponentStats getComponentStats() throws FioranoException {
+        return (ComponentStats) _getData(DataRequestEvent.DataIdentifier.COMPONENT_STATS);
     }
 
     public void flushMessages() throws Exception {
@@ -101,23 +101,22 @@ public class CCPCommandHelper {
         ccpEventGenerator.sendEvent(flushCommand, getComponentId());
     }
 
-    public MemoryUsage getMemoryUsage(String statusString) throws FioranoException {
-        return (MemoryUsage) getData(DataRequestEvent.DataIdentifier.MEMORY_USAGE, statusString);
+    public MemoryUsage getMemoryUsage() throws FioranoException {
+        return (MemoryUsage) getData(DataRequestEvent.DataIdentifier.MEMORY_USAGE);
     }
 
-    public ProcessID getProcessID(String statusString) throws FioranoException {
+    public ProcessID getProcessID() throws FioranoException {
         if (processID == null) {
-            processID = (ProcessID) getData(DataRequestEvent.DataIdentifier.PID, statusString);
+            processID = (ProcessID) getData(DataRequestEvent.DataIdentifier.PID);
         }
         return processID;
     }
 
-    private Data getData(DataRequestEvent.DataIdentifier dataIdentifier, String statusString) throws FioranoException {
-        return _getData(dataIdentifier, statusString);
+    private Data getData(DataRequestEvent.DataIdentifier dataIdentifier) throws FioranoException {
+        return _getData(dataIdentifier);
     }
 
-    private Data _getData(DataRequestEvent.DataIdentifier dataIdentifier, String statusString) throws FioranoException {
-        if (statusString.equals(EventStateConstants.SERVICE_HANDLE_BOUND)) {
+    private Data _getData(DataRequestEvent.DataIdentifier dataIdentifier) throws FioranoException {
             String applicationName = launchConfiguration.getApplicationName();
             String applicationVersion = launchConfiguration.getApplicationVersion();
             String serviceName = launchConfiguration.getServiceName();
@@ -159,15 +158,9 @@ public class CCPCommandHelper {
                             + CoreConstants.APP_VERSION_DELIM + applicationVersion, serviceName, dataIdentifier.toString()));
                 }
             } else {
-                if (statusString.equals(EventStateConstants.SERVICE_HANDLE_BOUND))
                     throw new FioranoException(Bundle.CCP_DATA_REQUEST_TIMEOUT.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.CCP_DATA_REQUEST_TIMEOUT, applicationName
                             + CoreConstants.APP_VERSION_DELIM + applicationVersion, serviceName, dataIdentifier.toString()));
-                else
-                    return null;
             }
-        } else {
-            return null;
-        }
     }
 
     public void stopComponent(long componentStopWaitTime) throws Exception {

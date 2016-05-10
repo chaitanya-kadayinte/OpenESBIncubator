@@ -835,7 +835,10 @@ public final class XMLUtils
             try{
                 // These should be taken from either properties file or from command line arguments.
                 System.setProperty("javax.xml.stream.XMLInputFactory", "com.ctc.wstx.stax.WstxInputFactory");
+                ClassLoader currentThreadContextCL = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(XMLUtils.class.getClassLoader());
                 staxInputFactory = XMLInputFactory.newInstance();
+                Thread.currentThread().setContextClassLoader(currentThreadContextCL);
                 staxInputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.TRUE);
                 staxInputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
                 staxInputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);

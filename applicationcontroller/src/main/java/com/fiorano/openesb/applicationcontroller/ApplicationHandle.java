@@ -6,6 +6,8 @@ import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.microservice.ccp.event.common.data.MemoryUsage;
+import com.fiorano.openesb.microservice.ccp.event.common.DataRequestEvent;
+import com.fiorano.openesb.microservice.ccp.event.common.data.ComponentStats;
 import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
@@ -137,13 +139,35 @@ public class ApplicationHandle {
             }
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
-            String sourceServiceInstance = route.getSourceServiceInstance();
-            OutputPortInstance sourcePort = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
-            String sourcePortName;
-            if(sourcePort.isSpecifiedDestinationUsed()){
-                sourcePortName = sourcePort.getDestination();
+            String sourceServiceInstanceName = route.getSourceServiceInstance();
+            OutputPortInstance sourcePort = null;
+            String sourcePortName=null;
+            ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
+            if(sourceServiceInstance==null){
+                RemoteServiceInstance remoteSourceServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
+                if(remoteSourceServiceInstance!=null){
+                    String remoteAppGuid = remoteSourceServiceInstance.getApplicationGUID();
+                    float remoteAppVersion = remoteSourceServiceInstance.getApplicationVersion();
+                   ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                    if(remoteAppHandle==null){
+                        throw new FioranoException("Remote Application not running");
+                    }
+                    Application remoteApplication = remoteAppHandle.getApplication();
+                    sourceServiceInstance = remoteApplication.getServiceInstance(remoteSourceServiceInstance.getRemoteName());
+                    sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
+                    if(sourcePort.isSpecifiedDestinationUsed()){
+                        sourcePortName = sourcePort.getDestination();
+                    }else{
+                        sourcePortName = getPortName(remoteAppGuid, remoteAppVersion, sourcePortInstance, remoteSourceServiceInstance.getRemoteName());
+                    }
+                }
             }else{
-                sourcePortName = getPortName(sourcePortInstance, sourceServiceInstance);
+                sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
+                if(sourcePort.isSpecifiedDestinationUsed()){
+                    sourcePortName = sourcePort.getDestination();
+                }else{
+                    sourcePortName = getPortName(appGUID, version, sourcePortInstance, sourceServiceInstanceName);
+                }
             }
             sourceConfiguration.setName(sourcePortName);
             int type = sourcePort.getDestinationType();
@@ -152,13 +176,32 @@ public class ApplicationHandle {
 
             String destPortInstance = route.getTargetPortInstance();
             JMSPortConfiguration destinationConfiguration = new JMSPortConfiguration();
-            String targetServiceInstance = route.getTargetServiceInstance();
-            InputPortInstance targetPort = application.getServiceInstance(targetServiceInstance).getInputPortInstance(destPortInstance);
-            String targetPortName;
-            if(targetPort.isSpecifiedDestinationUsed()){
-                targetPortName = targetPort.getDestination();
+            String targetServiceInstanceName = route.getTargetServiceInstance();
+            ServiceInstance targetServiceInstance = application.getServiceInstance(targetServiceInstanceName);
+            InputPortInstance targetPort = null;
+            String targetPortName = null;
+            if(targetServiceInstance==null){
+                RemoteServiceInstance remoteTgtServiceInstance = application.getRemoteServiceInstance(targetServiceInstanceName);
+                if(remoteTgtServiceInstance!=null){
+                    String remoteAppGuid = remoteTgtServiceInstance.getApplicationGUID();
+                    float remoteAppVersion = remoteTgtServiceInstance.getApplicationVersion();
+                    ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                    Application remoteApplication = remoteAppHandle.getApplication();
+                    targetPort = remoteApplication.getServiceInstance(remoteTgtServiceInstance.getRemoteName()).getInputPortInstance(destPortInstance);
+                    if(targetPort.isSpecifiedDestinationUsed()){
+                        targetPortName = targetPort.getDestination();
+                    }else{
+                        targetPortName = getPortName(remoteAppGuid, remoteAppVersion, destPortInstance, remoteTgtServiceInstance.getRemoteName());
+                    }
+                }
+
             }else{
-                targetPortName = getPortName(destPortInstance, targetServiceInstance);
+                targetPort = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(destPortInstance);
+                if(targetPort.isSpecifiedDestinationUsed()){
+                    targetPortName = targetPort.getDestination();
+                }else{
+                    targetPortName = getPortName(appGUID, version, destPortInstance, targetServiceInstanceName);
+                }
             }
             destinationConfiguration.setName(targetPortName);
             int inputPortInstanceDestinationType = targetPort.getDestinationType();
@@ -174,7 +217,7 @@ public class ApplicationHandle {
             CarryForwardContextConfiguration srcCFC = new CarryForwardContextConfiguration();
             srcCFC.setApplication(application);
             srcCFC.setPortInstance(sourcePort);
-            srcCFC.setServiceInstanceName(sourceServiceInstance);
+            srcCFC.setServiceInstanceName(sourceServiceInstanceName);
             srcCFC.setRouteOperationType(RouteOperationType.SRC_CARRY_FORWARD_CONTEXT);
             routeConfiguration.getRouteOperationConfigurations().add(srcCFC);
 
@@ -224,7 +267,7 @@ public class ApplicationHandle {
             CarryForwardContextConfiguration targetCFC = new CarryForwardContextConfiguration();
             targetCFC.setApplication(application);
             targetCFC.setPortInstance(targetPort);
-            targetCFC.setServiceInstanceName(targetServiceInstance);
+            targetCFC.setServiceInstanceName(targetServiceInstanceName);
             targetCFC.setRouteOperationType(RouteOperationType.TGT_CARRY_FORWARD_CONTEXT);
             routeConfiguration.getRouteOperationConfigurations().add(targetCFC);
 
@@ -234,7 +277,7 @@ public class ApplicationHandle {
         }
     }
 
-    private String getPortName(String portInstance, String sourceServiceInstance) {
+    private String getPortName(String appGUID, float version, String portInstance, String sourceServiceInstance) {
         return LookUpUtil.getServiceInstanceLookupName(appGUID, version, sourceServiceInstance) + Constants.NAME_DELIMITER + portInstance;
     }
 
@@ -289,7 +332,7 @@ public class ApplicationHandle {
         if(portInstance.isSpecifiedDestinationUsed()){
             portName = portInstance.getDestination();
         }else {
-            portName= getPortName(portInstance.getName(), serviceInstance.getName());
+            portName= getPortName(appGUID, version, portInstance.getName(), serviceInstance.getName());
         }
         portConfiguration.setName(portName);
         return portConfiguration;
@@ -314,16 +357,38 @@ public class ApplicationHandle {
         JMSPortConfiguration outPortConfiguration = new JMSPortConfiguration();
         String outPortName = routePS.getSourcePortInstance();
         String sourceServiceInstanceName = routePS.getSourceServiceInstance();
-        OutputPortInstance outPortInstnace = application.getServiceInstance(sourceServiceInstanceName).getOutputPortInstance(outPortName);
+        OutputPortInstance outPortInstnace = null;
+        String outPortFullName=null;
+        ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
+        if(sourceServiceInstance==null){
+            RemoteServiceInstance remoteSourceServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
+            if(remoteSourceServiceInstance!=null){
+                String remoteAppGuid = remoteSourceServiceInstance.getApplicationGUID();
+                float remoteAppVersion = remoteSourceServiceInstance.getApplicationVersion();
+                ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                if(remoteAppHandle==null){
+                    throw new FioranoException("Remote Application not running");
+                }
+                Application remoteApplication = remoteAppHandle.getApplication();
+                sourceServiceInstance = remoteApplication.getServiceInstance(remoteSourceServiceInstance.getRemoteName());
+                outPortInstnace = sourceServiceInstance.getOutputPortInstance(outPortName);
+                if(outPortInstnace.isSpecifiedDestinationUsed()){
+                    outPortFullName = outPortInstnace.getDestination();
+                }else{
+                    outPortFullName = getPortName(remoteAppGuid, remoteAppVersion, outPortName, remoteSourceServiceInstance.getRemoteName());
+                }
+            }
+        }else{
+            outPortInstnace = sourceServiceInstance.getOutputPortInstance(outPortName);
+            if(outPortInstnace.isSpecifiedDestinationUsed()){
+                outPortFullName = outPortInstnace.getDestination();
+            }else{
+                outPortFullName = getPortName(appGUID, version, outPortName, sourceServiceInstanceName);
+            }
+        }
         int portType = outPortInstnace.getDestinationType();
         outPortConfiguration.setPortType(portType == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
-        String outPortFullName;
-        if(outPortInstnace.isSpecifiedDestinationUsed()){
-            outPortFullName = outPortInstnace.getDestination();
-        }else{
-            outPortFullName = getPortName(outPortName, sourceServiceInstanceName);
-        }
         outPortConfiguration.setName(outPortFullName);
         JMSPortConfiguration tgtCConfiguration = new JMSPortConfiguration();
         tgtCConfiguration.setName(bpSourceDestName);
@@ -393,17 +458,36 @@ public class ApplicationHandle {
         JMSPortConfiguration inPortConfiguration = new JMSPortConfiguration();
         String inPortName = routePS.getTargetPortInstance();
         String targetServiceInstanceName = routePS.getTargetServiceInstance();
-        InputPortInstance inPortInstnace = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(inPortName);
+        ServiceInstance targetServiceInstance = application.getServiceInstance(targetServiceInstanceName);
+        InputPortInstance inPortInstnace = null;
+        String inPortFullName = null;
+        if(targetServiceInstance==null){
+            RemoteServiceInstance remoteTgtServiceInstance = application.getRemoteServiceInstance(targetServiceInstanceName);
+            if(remoteTgtServiceInstance!=null){
+                String remoteAppGuid = remoteTgtServiceInstance.getApplicationGUID();
+                float remoteAppVersion = remoteTgtServiceInstance.getApplicationVersion();
+                ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                Application remoteApplication = remoteAppHandle.getApplication();
+                inPortInstnace = remoteApplication.getServiceInstance(remoteTgtServiceInstance.getRemoteName()).getInputPortInstance(inPortName);
+                if(inPortInstnace.isSpecifiedDestinationUsed()){
+                    inPortFullName = inPortInstnace.getDestination();
+                }else{
+                    inPortFullName = getPortName(remoteAppGuid, remoteAppVersion, inPortName, remoteTgtServiceInstance.getRemoteName());
+                }
+            }
+
+        }else{
+            inPortInstnace = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(inPortName);
+            if(inPortInstnace.isSpecifiedDestinationUsed()){
+                inPortFullName = inPortInstnace.getDestination();
+            }else{
+                inPortFullName = getPortName(appGUID, version, inPortName, targetServiceInstanceName);
+            }
+        }
         int inPortType = inPortInstnace.getDestinationType();
         inPortConfiguration.setPortType(inPortType == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
 
-        String inPortFullName;
-        if(inPortInstnace.isSpecifiedDestinationUsed()){
-            inPortFullName = inPortInstnace.getDestination();
-        }else{
-            inPortFullName = getPortName(inPortName, targetServiceInstanceName);
-        }
         inPortConfiguration.setName(inPortFullName);
         JMSPortConfiguration srcDConfiguration = new JMSPortConfiguration();
         srcDConfiguration.setName(bpTargetdDestName);
@@ -721,8 +805,8 @@ public class ApplicationHandle {
 
         List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
         for (com.fiorano.openesb.application.application.Route route : routes) {
-            if(srcPortName.equals(getPortName(route.getSourcePortInstance(), route.getSourceServiceInstance()))
-                    && tgtPortName.equals(getPortName(route.getTargetPortInstance(), route.getTargetServiceInstance()))){
+            if(srcPortName.equals(getPortName(appGUID, version, route.getSourcePortInstance(), route.getSourceServiceInstance()))
+                    && tgtPortName.equals(getPortName(appGUID, version, route.getTargetPortInstance(), route.getTargetServiceInstance()))){
                 found = true;
                 String sourcePortInstance = route.getSourcePortInstance();
                 String sourceServiceInstance = route.getSourceServiceInstance();
@@ -823,5 +907,14 @@ public class ApplicationHandle {
 
     private String getBPTargetDestinationName(String routeName) {
         return application.getGUID() + "__" + application.getVersion() + routeName + "__D";
+    }
+
+    public ComponentStats getComponentStats(String serviceName) throws FioranoException {
+        MicroServiceRuntimeHandle serviceRuntimeHandle = microServiceHandleList.get(serviceName);
+        if(serviceRuntimeHandle!=null){
+            return serviceRuntimeHandle.getComponentStats();
+        }else {
+            return null;
+        }
     }
 }

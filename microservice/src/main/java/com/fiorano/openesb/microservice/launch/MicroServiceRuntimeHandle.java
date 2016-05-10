@@ -4,6 +4,7 @@ import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.events.MicroServiceEvent;
+import com.fiorano.openesb.microservice.ccp.event.common.data.ComponentStats;
 import com.fiorano.openesb.microservice.launch.impl.Bundle;
 import com.fiorano.openesb.microservice.launch.impl.CoreConstants;
 import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
@@ -121,6 +122,8 @@ public abstract class MicroServiceRuntimeHandle {
     protected abstract   void kill() throws Exception;
 
     protected abstract void setLogLevel(Map<String, String> modules) throws Exception;
+
+    public abstract ComponentStats getComponentStats() throws FioranoException;
 
     public abstract LaunchConfiguration.LaunchMode getLaunchMode();
 

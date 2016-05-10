@@ -985,12 +985,23 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public String getComponentStats(String appGUID, float appVersion, String servInstName) throws ServiceException {
-        return null;
+        try {
+            return applicationController.getComponentStats(appGUID, appVersion, servInstName, handleId);
+        } catch (FioranoException e) {
+            logger.error("Error occured while getting component Statistics for serviec " + servInstName + "of application " + appGUID +":"+ appVersion);
+            throw new ServiceException("Error occured while getting component Statistics for serviec " + servInstName + "of application " + appGUID +":"+ appVersion, e);
+        }
     }
 
     @Override
     public void flushMessages(String appGUID, float appVersion, String servInstName) throws ServiceException {
+        try {
+            applicationController.flushMessages(appGUID, appVersion, servInstName, handleId);
+        } catch (Exception e) {
+            logger.error("Error occured while flushing messages in serviec " + servInstName + "of application " + appGUID + ":" + appVersion);
+            throw new ServiceException("Error occured while flushing messages in serviec " + servInstName + "of application " + appGUID +":"+ appVersion, e);
 
+        }
     }
 
     @Override
