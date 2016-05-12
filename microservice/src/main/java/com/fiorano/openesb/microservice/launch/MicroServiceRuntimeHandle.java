@@ -4,6 +4,7 @@ import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.events.Event;
 import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.events.MicroServiceEvent;
+import com.fiorano.openesb.microservice.bundle.Activator;
 import com.fiorano.openesb.microservice.ccp.event.common.data.ComponentStats;
 import com.fiorano.openesb.microservice.launch.impl.Bundle;
 import com.fiorano.openesb.microservice.launch.impl.CoreConstants;
@@ -11,6 +12,8 @@ import com.fiorano.openesb.microservice.launch.impl.EventStateConstants;
 import com.fiorano.openesb.utils.RBUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -30,6 +33,7 @@ public abstract class MicroServiceRuntimeHandle {
     protected boolean gracefulKill;
     protected LaunchConfiguration launchConfiguration;
     protected EventsManager eventManager;
+    protected Logger logger = LoggerFactory.getLogger(Activator.class);
 
     protected MicroServiceRuntimeHandle(LaunchConfiguration launchConfiguration){
         this.launchConfiguration = launchConfiguration;
@@ -173,6 +177,7 @@ public abstract class MicroServiceRuntimeHandle {
         String description = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_KILL_FAILURE, getNodeName());
         servStateDetails.setRunningVersion(getVersion());
         servStateDetails.setStatusString(status);
+        strStatus=status;
         generateServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_STOP_FAILED, eventCategory, status, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), description, AlertModules.SERVICE_LAUNCH_KILL);
 
     }
@@ -184,6 +189,7 @@ public abstract class MicroServiceRuntimeHandle {
         String description = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_LAUNCH_FAILURE, getNodeName());
         servStateDetails.setRunningVersion(getVersion());
         servStateDetails.setStatusString(status);
+        strStatus = status;
         generateServiceEvent(eventType, eventCategory, status, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), description, AlertModules.SERVICE_LAUNCH_KILL);
 
     }
@@ -192,6 +198,7 @@ public abstract class MicroServiceRuntimeHandle {
         bServiceDestroyed = false;
         String message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_BOUNDING, getServiceInstName(), getNodeName());
         servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_BOUNDING);
+        strStatus=EventStateConstants.SERVICE_HANDLE_BOUNDING;
         generateMicroServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHING, Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_BOUNDING, getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
 
     }
@@ -235,6 +242,7 @@ public abstract class MicroServiceRuntimeHandle {
         if (reason != null && reason.contains("STOPPING_COMPONENT_DUE_TO_PRESENCE_OF_MULTIPLE_INSTANCES_IN_NETWORK")) {
             message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_UNBOUND2, getServiceInstName(), getNodeName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion(), reason);
             servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND_SERVER_MANAGEMENT_ACTION);
+            strStatus=EventStateConstants.SERVICE_HANDLE_UNBOUND_SERVER_MANAGEMENT_ACTION;
             generateServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_STOPPED, isWarning ? Event.EventCategory.WARNING : Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_UNBOUND_SERVER_MANAGEMENT_ACTION,
                     getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
         } else {
@@ -244,6 +252,7 @@ public abstract class MicroServiceRuntimeHandle {
                 message = RBUtil.getMessage(Bundle.class, Bundle.SERVICE_UNBOUND1, getServiceInstName(), getNodeName(), launchConfiguration.getApplicationName() + CoreConstants.APP_VERSION_DELIM + getAppVersion());
 
             servStateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
+            strStatus=EventStateConstants.SERVICE_HANDLE_UNBOUND;
             generateServiceEvent(MicroServiceEvent.MicroServiceEventType.SERVICE_STOPPED, isWarning ? Event.EventCategory.WARNING : Event.EventCategory.INFORMATION, EventStateConstants.SERVICE_HANDLE_UNBOUND,
                     getServiceGUID(), getVersion(), getServiceInstName(), launchConfiguration.getApplicationName(), getAppVersion(), message, AlertModules.SERVICE_LAUNCH_KILL);
         }
@@ -252,11 +261,13 @@ public abstract class MicroServiceRuntimeHandle {
     private void generateServiceEvent(MicroServiceEvent.MicroServiceEventType eventType, Event.EventCategory category, String status, String serviceGUID, String serviceVersion, String serviceInstName,
                                       String appGuid, String appVersion, String description, String moduleName) throws FioranoException {
         MicroServiceEvent event = getMicroServiceEvent(eventType, category, status, serviceGUID, serviceVersion, serviceInstName, launchConfiguration.getApplicationName(), appVersion, description, moduleName, getNodeName());
+        logger.debug("Generating micro Service event "+event.toString());
         eventManager.raiseEvent(event);
     }
     private void generateMicroServiceEvent(MicroServiceEvent.MicroServiceEventType eventType, Event.EventCategory category, String status, String serviceGUID, String serviceVersion, String serviceInstName,
                                            String appGuid, String appVersion, String description, String moduleName) throws FioranoException {
         MicroServiceEvent event = getMicroServiceEvent(eventType, category, status, serviceGUID, serviceVersion, serviceInstName, launchConfiguration.getApplicationName(), appVersion, description, moduleName, getNodeName());
+        logger.debug("Generating micro Service event "+event.toString());
         eventManager.raiseEvent(event);
     }
 
