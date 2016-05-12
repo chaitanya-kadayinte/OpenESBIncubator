@@ -62,16 +62,16 @@ public class RestServiceImpl implements ApplicationsService {
             ApplicationStateDetails stateOfApplication = getController().getCurrentStateOfApplication(applicationName, Float.parseFloat(applicationVersion), null);
             com.fiorano.openesb.management.Application application = new com.fiorano.openesb.management.Application();
 
-            MemoryUsage memoryUsage;
+           // MemoryUsage memoryUsage;
             List<Microservice> services = new ArrayList<>();
             @SuppressWarnings("unchecked") Enumeration<String> serviceNames = stateOfApplication.getAllServiceNames();
             while (serviceNames.hasMoreElements()) {
                 String service = serviceNames.nextElement();
                 ServiceInstanceStateDetails serviceInstance = stateOfApplication.getServiceStatus(service);
                 Microservice microservice = new Microservice();
-                memoryUsage = getController().getMemoryUsage(applicationName,applicationVersion,serviceInstance.getServiceInstanceName(),null);
+                /*memoryUsage = getController().getMemoryUsage(applicationName,applicationVersion,serviceInstance.getServiceInstanceName(),null);
                 microservice.setMemoryUsage(memoryUsage != null ?
-                        String.valueOf(memoryUsage.getHeapMemoryUsed()) :"NA");
+                        String.valueOf(memoryUsage.getHeapMemoryUsed()) :"NA");*/
                 microservice.setGuid(serviceInstance.getServiceGUID());
                 microservice.setName(serviceInstance.getServiceInstanceName());
                 microservice.setVersion(String.valueOf(serviceInstance.getRunningVersion()));
