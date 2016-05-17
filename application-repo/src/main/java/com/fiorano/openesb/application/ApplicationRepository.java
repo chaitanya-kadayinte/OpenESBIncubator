@@ -196,14 +196,6 @@ public class ApplicationRepository {
 
         File applicationFolder;
 
-        //bug#23050: no need to delete the application if its already exists. If the version of saving app is new version,
-        // the new version will be saved in the repo. If its the same version, the old version will be overwritten.
-        /*try {
-            deleteAppIfExists(application,userName, handleIDForEstudio);
-        } catch (IOException e) {
-            //logging done inside deleteAppIfExists
-            throw new TifosiException(ApplicationRepositoryErrorCodes.ERROR_APPLICATION_SAVE_FAILURE_ERROR,ExceptionUtil.getMessage(e),e);
-        }*/
         try {
             applicationFolder = new File(getAppRootDirectory(application.getGUID(), application.getVersion()));
             if(!applicationFolder.exists())

@@ -114,7 +114,7 @@ public class MessageTransformation extends Transformation{
      * @bundle NEITHER_SCRIPT_SPECIFIED=Neither body nor message transformation script is not specified
      */
     protected void validateScript() throws FioranoException{
-        if((StringUtils.isEmpty(getScriptFile()) && StringUtils.isEmpty(getScript())) && StringUtils.isEmpty(jmsScript))       //bug#23438: temporary fix. eStudio eventProcess.xml has only script file name unlike nstudio xml file which contains script.
+        if((StringUtils.isEmpty(getScriptFile()) && StringUtils.isEmpty(getScript())) && StringUtils.isEmpty(jmsScript))
             throw new FioranoException( "NEITHER_SCRIPT_SPECIFIED");
     }
 }

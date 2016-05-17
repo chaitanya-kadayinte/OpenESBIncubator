@@ -71,11 +71,6 @@
             <version>4.4.1</version>
         </dependency>
         <dependency>
-            <groupId>woodstox</groupId>
-            <artifactId>wstx-asl</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-osgi</artifactId>
             <version>2.2.11</version>
@@ -124,7 +119,7 @@
                             com.fiorano.openesb.utils*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            *
+                            *,!javax.jms*
                         </Import-Package>
                     </instructions>
                 </configuration>

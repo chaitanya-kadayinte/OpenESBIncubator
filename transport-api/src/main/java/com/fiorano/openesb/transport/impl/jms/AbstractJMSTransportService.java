@@ -1,17 +1,21 @@
 package com.fiorano.openesb.transport.impl.jms;
 
 import com.fiorano.openesb.transport.*;
-import com.fiorano.openesb.transport.bundle.Activator;
-//import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.jms.Message;
+import java.util.Properties;
 
 public abstract class AbstractJMSTransportService implements TransportService<JMSPort, JMSMessage> {
 
     private Session session;
+    protected Properties properties;
 
-    protected AbstractJMSTransportService() throws JMSException {
+    protected AbstractJMSTransportService(Properties properties) throws Exception {
+        this.properties = properties;
+    }
+
+    protected void initialize() throws Exception {
         ConnectionFactory cf = ((AbstractJMSConnectionProvider) getConnectionProvider()).getConnectionFactory("ConnectionFactory");
         Connection connection;
         String connectionRetryCount = TransportConfig.getInstance().getValue("CONNECTION_RETRY_COUNT", "5");
@@ -38,7 +42,6 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
             connection.start();
             return connection;
         } catch (JMSException e) {
-//            LoggerFactory.getLogger(Activator.class).debug("Error connecting - " + e.getMessage());
             if (e.getMessage().toUpperCase().contains("CONNECT ")) {
                 return null;
             } else {

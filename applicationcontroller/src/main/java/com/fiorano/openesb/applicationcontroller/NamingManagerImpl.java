@@ -159,23 +159,6 @@ public class NamingManagerImpl {
      */
     public boolean bind(String name, Object data, boolean persist)
             throws FioranoException {
-        //AdminInfo adminInfo = (AdminInfo) m_pAdminObjectsTable.get(
-        //  name.toUpperCase());
-
-        //if (adminInfo == null)
-        //{
-        //  adminInfo = (AdminInfo) m_npAdminObjectsTable.get(name.toUpperCase());
-        //}
-        /*
-         * Note : An additional Check has been added for not allowing the name as empty
-         * strings, there is no specific reasons for doing this , just to maintain the
-         * consistency with the nm-ldap & nm-rdbms impls, since in both nm-ldap & nm-rdbms
-         * allowing an empty string to bind is not possible...
-         */
-        //if (adminInfo == null && !name.equalsIgnoreCase(" "))
-
-        // Changes for Bug#6046
-        // -Anurag
         if (!isBound(name) && !name.equalsIgnoreCase(" ")) {
             if (persist) {
                 return bind(name, data);
@@ -194,10 +177,6 @@ public class NamingManagerImpl {
         }
     }
 
-    /**
-     * Additional API added for Bug#6046
-     * -Anurag
-     */
     public boolean isBound(String name) {
         AdminInfo adminInfo = (AdminInfo) persistentAdminObjectsTable.get(
                 name.toUpperCase());
@@ -214,7 +193,6 @@ public class NamingManagerImpl {
      * its removed first before adding this binding. It provides an
      * additional functionalityof binding the object in in-memory namimg store only.
      */
-    //TODO: Revert the temporary fix : making rebind synchronized, refer Bug#21003
     public synchronized boolean rebind(String adminObjectName, Object data, boolean persist)
             throws FioranoException {
         if (isBound(adminObjectName)) {
@@ -286,38 +264,7 @@ public class NamingManagerImpl {
     }
 
     /**
-     * returns an enumeration of all Adminobjects(either Destination or
-     * ConnectionFactory) depending on the specified type
-     *
-     * @throws FioranoException if this operation fails to complete.
-     */
-    public Enumeration elements(byte type)
-            throws FioranoException {
-        
-
-        Vector queue = new Vector();
-        // Get the enumeration
-        Enumeration enums = elements();
-
-        while (enums.hasMoreElements()) {
-            Object obj = enums.nextElement();
-
-            /*if (obj instanceof JMSMetaData) {
-                JMSMetaData metaData = (JMSMetaData) (obj);
-
-                // Fixed #N_122 bug
-                //
-                if (metaData.getType() == type) {
-                    queue.addElement(metaData);
-                }
-            }*/
-        }
-        return queue.elements();
-    }
-
-    /**
-     * Get the  description of the AdminObject. Retreive from the local storage.
-     *
+     * Get the  description of the AdminObject. Retrieve from the local storage.
      * @throws FioranoException if this operation fails to complete.
      */
     public synchronized Object lookup(String adminObjectName)

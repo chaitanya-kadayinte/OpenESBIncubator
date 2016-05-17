@@ -282,7 +282,6 @@ public class Param extends DmiObject{
         if(size==0)
             return null;
         try{
-            //RandomAccessFile raf = new RandomAccessFile("F:\\Params.txt","rw");
             for(int i = 0; i<size; i++){
 
                 Param param = (Param)params.get(i);

@@ -1,7 +1,12 @@
 package com.fiorano.openesb.amq;
 
-import com.fiorano.openesb.transport.*;
-import com.fiorano.openesb.transport.impl.jms.*;
+import com.fiorano.openesb.transport.ConnectionProvider;
+import com.fiorano.openesb.transport.PortConfiguration;
+import com.fiorano.openesb.transport.TransportService;
+import com.fiorano.openesb.transport.impl.jms.AbstractJMSTransportService;
+import com.fiorano.openesb.transport.impl.jms.JMSMessage;
+import com.fiorano.openesb.transport.impl.jms.JMSPort;
+import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +15,6 @@ import javax.management.*;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,22 +22,20 @@ import java.util.Properties;
 
 public class AMQTransportService extends AbstractJMSTransportService implements TransportService<JMSPort, JMSMessage> {
 
-
     private BrokerViewMBean adminMBean;
     private JMXConnector connector;
-    private AMQConnectionProvider amqConnectionProvider;
 
-    public AMQTransportService() throws Exception {
-        super();
-        Properties properties = new Properties();
-        try (FileInputStream inStream = new FileInputStream(System.getProperty("user.dir") + File.separator
-                + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg")) {
-            properties.load(inStream);
-        }
-        initializeAdminConnector(properties);
+    public AMQTransportService(Properties properties) throws Exception {
+        super(properties);
     }
 
-    private void initializeAdminConnector(Properties properties) throws IOException, MalformedObjectNameException {
+    @Override
+    protected void initialize() throws Exception {
+        super.initialize();
+        initializeAdminConnector();
+    }
+
+    private void initializeAdminConnector() throws IOException, MalformedObjectNameException {
         String username = properties.getProperty("userName");
         String password = properties.getProperty("password");
         Map<String, String[]> env = new HashMap<>();
@@ -49,8 +50,7 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
     }
 
     public ConnectionProvider getConnectionProvider() {
-        amqConnectionProvider = new AMQConnectionProvider();
-        return amqConnectionProvider;
+        return new AMQConnectionProvider(properties);
     }
 
     public void disablePort(PortConfiguration portConfiguration) throws Exception {

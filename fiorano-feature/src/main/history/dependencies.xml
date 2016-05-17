@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="fiorano-open-esb-1.0.0">
     <feature version="0.0.0">
-        <feature prerequisite="false" dependency="false">activemq-broker</feature>
         <feature prerequisite="false" dependency="false">cxf-core</feature>
         <feature prerequisite="false" dependency="false">cxf-jaxrs</feature>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.3</bundle>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.3</bundle>
-        <bundle>mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/application-repo/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/applicationcontroller/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/events/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/jms-route/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/management/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/microservice/1.0.0</bundle>
+        <bundle>mvn:com.fiorano.openesb/mq-transport/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/namedconfiguration/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/rmi-connector/1.0.0</bundle>
         <bundle>mvn:com.fiorano.openesb/route-api/1.0.0</bundle>

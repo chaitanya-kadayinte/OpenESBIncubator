@@ -59,6 +59,7 @@ public class InMemoryLauncher implements Launcher {
         }
 
         public void run() {
+            ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 System.setProperty("FIORANO_HOME", System.getProperty("user.dir"));
                 Thread.currentThread().setContextClassLoader(serviceClassLoader);
@@ -68,6 +69,8 @@ public class InMemoryLauncher implements Launcher {
                 logger.error("Error starting service " + launchConfiguration.getApplicationName() + ":"
                         + launchConfiguration.getApplicationVersion() + "-" + launchConfiguration.getMicroserviceId() + ":" + launchConfiguration.getMicroserviceVersion()
                         + e.getMessage(), e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(serverClassLoader);
             }
         }
 
@@ -91,7 +94,7 @@ public class InMemoryLauncher implements Launcher {
                     //noinspection unchecked
                     startup = serviceClass.getMethod("startup", String[].class);
                     if (startup == null)
-                        throw new FioranoException("Could not find the main method.");
+                        throw new FioranoException("Could not find the startup(Object) method.");
                 } catch (NoSuchMethodException e) {
                     throw new FioranoException(Bundle.class, LaunchErrorCodes.COMPONENT_CANNOT_LAUNCH_IN_MEMORY, e,
                             Bundle.COMPONENT_IMPL_INVALID);
@@ -105,6 +108,7 @@ public class InMemoryLauncher implements Launcher {
         private Object[] getArguments() throws Exception {
             Object[] argListForInvokedMain = new Object[1];
             CommandProvider commandProvider = new JVMCommandProvider();
+            @SuppressWarnings("unchecked")
             List<String> list = commandProvider.getCommandLineParams(launchConfiguration);
             argListForInvokedMain[0] = list.toArray(new String[list.size()]);
             return argListForInvokedMain;

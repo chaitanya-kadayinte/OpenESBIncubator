@@ -63,12 +63,6 @@ public class RmiConnector {
     /** Sets the 'java.rmi.server.hostname' system property. <br>WARNING: Call it before creating rmi registry else it is of no use. </br>*/
     private void setRmiRegistryIpAddress(){
 
-        /*if(this.config.getHostname() != null)
-        {
-            System.setProperty("java.rmi.server.hostname",this.config.getHostname());
-            m_loggerRuntime.info(RmiConnectorMBean.class, FMQI18Nutil.getL10NMsg(this.getClass(), "exporting.rmi.objects", this.config.getHostname()));
-            return;
-        }*/
         StringBuilder bf= new StringBuilder();
         try
         {

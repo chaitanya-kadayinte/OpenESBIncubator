@@ -1,19 +1,17 @@
 
 package com.fiorano.openesb.amq;
 
-import com.fiorano.openesb.transport.ConnectionProvider;
 import com.fiorano.openesb.transport.TransportService;
-import com.fiorano.openesb.transport.impl.jms.JMSConnectionConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.*;
-import java.util.Collection;
+import javax.jms.JMSException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Hashtable;
+import java.util.Properties;
 
 public class Activator implements BundleActivator {
 
@@ -27,7 +25,15 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         System.out.println("Starting Active MQ Transport");
         try {
-            service = new AMQTransportService();
+            Properties properties = new Properties();
+            try (FileInputStream inStream = new FileInputStream(System.getProperty("user.dir") + File.separator
+                    + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg")) {
+                properties.load(inStream);
+            }
+            if (properties.containsKey("provider.name") && !"activemq".equalsIgnoreCase(properties.getProperty("provider.name"))) {
+                return;
+            }
+            service = new AMQTransportService(properties);
         } catch (JMSException e) {
             System.out.println("Could not connect to MQ Server.");
             context.getBundle(0).stop();

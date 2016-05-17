@@ -55,7 +55,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
                 try {
                     jmsMessage.setStringProperty(application.getGUID() + "__" + application.getVersion() + "__" + APPLICATION_CONTEXT, carryForwardContext.getAppContext());
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
                 carryForwardContext.setAppContext(null);
                 try {
@@ -67,13 +67,13 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
         } else if (port.getAppContextAction().equals(PortInstance.RESTORE_APP_CONTEXT)) {
             String appContext = null;
             try {
-                appContext = jmsMessage.getStringProperty(application.getGUID() + "__" + application.getVersion()+ "__" + APPLICATION_CONTEXT);
+                appContext = jmsMessage.getStringProperty(application.getGUID() + "__" + application.getVersion() + "__" + APPLICATION_CONTEXT);
             } catch (JMSException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
             if (appContext != null) {
                 try {
-                    jmsMessage.setStringProperty(application.getGUID() + "__" + application.getVersion()+ "__" + APPLICATION_CONTEXT,null);
+                    jmsMessage.setStringProperty(application.getGUID() + "__" + application.getVersion() + "__" + APPLICATION_CONTEXT, null);
                 } catch (JMSException e) {
                     e.printStackTrace();
                 }
@@ -86,7 +86,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
                     }
                 }
             }
-        }  else if (port.getAppContextAction().equals(PortInstance.SET_DEFAULT_APP_CONTEXT)) {
+        } else if (port.getAppContextAction().equals(PortInstance.SET_DEFAULT_APP_CONTEXT)) {
             // TODO: 3/2/16 check toString
             String defaultAppContext = application.getApplicationContext().getValue();
             if (carryForwardContext != null) {
@@ -96,7 +96,7 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
                 carryForwardContext.setAppContext(defaultAppContext);
             }
             try {
-                JmsMessageUtil.setCarryForwardContext(jmsMessage,carryForwardContext);
+                JmsMessageUtil.setCarryForwardContext(jmsMessage, carryForwardContext);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
@@ -107,40 +107,39 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
         } catch (JMSException e) {
             e.printStackTrace();
         }
-            try {
+        try {
 
-                if(isInputPort()) {
-                    jmsMessage.setStringProperty("ESBX__SYSTEM__INPUT_PORT", port.getName());
-                } else {
-                    jmsMessage.setStringProperty("ESBX__SYSTEM__OUTPUT_PORT", port.getName());
-                }
+            if (isInputPort()) {
+                jmsMessage.setStringProperty("ESBX__SYSTEM__INPUT_PORT", port.getName());
+            } else {
+                jmsMessage.setStringProperty("ESBX__SYSTEM__OUTPUT_PORT", port.getName());
+            }
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+        try {
+            carryForwardContext = JmsMessageUtil.getCarryForwardContext(jmsMessage);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+        // Setting carry forward context to default values in the absence of carry forward context, to specify message coming from an external source
+        // This presence of carry forward context also generates carry forward properties that is used at the time of document re- injection
+        if (carryForwardContext == null) {
+
+            carryForwardContext = new CarryForwardContext();
+            SourceContext sourceContext = new SourceContext();
+            sourceContext.setAppInstName(application.getDisplayName());
+            sourceContext.setAppInstVersion(String.valueOf(application.getVersion()));
+            sourceContext.setSrvInstName(serviceInstName);
+            sourceContext.setNodeName("fps1");
+            carryForwardContext.addContext(sourceContext);
+
+            try {
+                JmsMessageUtil.setCarryForwardContext(jmsMessage, carryForwardContext);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
-            try {
-                carryForwardContext = JmsMessageUtil.getCarryForwardContext(jmsMessage);
-            } catch (JMSException e) {
-                e.printStackTrace();
-            }
-            // Setting carry forward context to default values in the absence of carry forward context, to specify message coming from an external source
-            // This presence of carry forward context also generates carry forward properties that is used at the time of document re- injection
-            if (carryForwardContext == null)  {
-
-                carryForwardContext = new CarryForwardContext();
-                SourceContext sourceContext = new SourceContext();
-                sourceContext.setAppInstName(application.getDisplayName());
-                sourceContext.setAppInstVersion(String.valueOf(application.getVersion()));
-                sourceContext.setSrvInstName(serviceInstName);
-                sourceContext.setNodeName("fps1");
-                carryForwardContext.addContext(sourceContext);
-
-                try {
-                    JmsMessageUtil.setCarryForwardContext(jmsMessage, carryForwardContext);
-                } catch (JMSException e) {
-                    e.printStackTrace();
-                }
-            }
-        else {
+        } else {
             // Source should be set on messages originating from the first service.
             // So moved addSourceContext from input port to output port
             // -Aseem
@@ -163,22 +162,23 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
 
         }
 
-        if (port.getName().endsWith(PortInstance.EXCEPTION_PORT_NAME)){
+        if (port.getName().endsWith(PortInstance.EXCEPTION_PORT_NAME)) {
             try {
                 JmsMessageUtil.setPortName(jmsMessage, port.getName());
             } catch (JMSException e) {
                 e.printStackTrace();
             }
-        try {
-            JmsMessageUtil.setCompInstName(jmsMessage,application.getServiceInstance(serviceInstName).getGUID());
-            JmsMessageUtil.setEventProcessName(jmsMessage, application.getGUID());
-            JmsMessageUtil.setEventProcessVersion(jmsMessage, application.getSchemaVersion());
-           //JmsMessageUtil.setSourceFPSName(msg, handle.slp.getNodeName());
-        } catch (Exception e){
+            try {
+                JmsMessageUtil.setCompInstName(jmsMessage, application.getServiceInstance(serviceInstName).getGUID());
+                JmsMessageUtil.setEventProcessName(jmsMessage, application.getGUID());
+                JmsMessageUtil.setEventProcessVersion(jmsMessage, application.getSchemaVersion());
+                //JmsMessageUtil.setSourceFPSName(msg, handle.slp.getNodeName());
+            } catch (Exception e) {
 
-        }
+            }
         }
     }
+
     private void addSourceContext(Message msg) throws JMSException {
         CarryForwardContext carryForwardContext = (CarryForwardContext)
                 JmsMessageUtil.getCarryForwardContext(msg);
@@ -194,7 +194,8 @@ public class CarryForwardContextHandler implements RouteOperationHandler<JMSMess
 
         JmsMessageUtil.setCarryForwardContext(msg, carryForwardContext);
     }
-    public boolean isInputPort(){
+
+    public boolean isInputPort() {
         return port instanceof InputPortInstance;
     }
 }

@@ -232,7 +232,6 @@ public interface MetaDataConstants {
     final static String ENABLE_LMS = "EnableLMS";
 
     /////////////////////////////////////////////////////////////////
-    // Fix for Bug# 171 - Jissy
     // Constants for Topic/Queue Meta Data properties
     //
     // Storage URL property.

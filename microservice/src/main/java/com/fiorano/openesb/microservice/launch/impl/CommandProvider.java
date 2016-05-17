@@ -20,7 +20,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
     protected abstract List<String> generateCommand(LaunchConfiguration<J> launchConfiguration) throws  Exception;
 
     protected List<String> getCommandLineParams(LaunchConfiguration<J> launchConfiguration) {
-        Map<String, String> commandLineArgs = new LinkedHashMap<String, String>();
+        Map<String, String> commandLineArgs = new LinkedHashMap<>();
         String connectURL = launchConfiguration.getAdditionalConfiguration().getProviderUrl();
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);

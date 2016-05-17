@@ -1,6 +1,5 @@
 package com.fiorano.openesb.route.impl;
 
-import com.fiorano.openesb.utils.JmsMessageUtil;
 import com.fiorano.openesb.utils.SourceContext;
 
 import java.io.Serializable;

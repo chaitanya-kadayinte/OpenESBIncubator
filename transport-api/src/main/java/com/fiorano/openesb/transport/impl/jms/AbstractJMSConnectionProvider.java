@@ -6,8 +6,15 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public abstract class AbstractJMSConnectionProvider implements ConnectionProvider<Connection,JMSConnectionConfiguration> {
+    protected Properties properties;
+
+    public AbstractJMSConnectionProvider(Properties properties) {
+        this.properties = properties;
+    }
+
     private Map<String,ConnectionFactory> connectionFactories = new HashMap<>();
     public void prepareConnectionMD(JMSConnectionConfiguration jmsConnectionConfiguration) throws Exception {
         String cfName = jmsConnectionConfiguration.getClientId();
@@ -15,7 +22,7 @@ public abstract class AbstractJMSConnectionProvider implements ConnectionProvide
         connectionFactories.put(cfName,connectionFactory);
     }
 
-    protected abstract ConnectionFactory getConnectionFactory(String name);
+    protected abstract ConnectionFactory getConnectionFactory(String name) throws Exception;
 
     public Connection createConnection(JMSConnectionConfiguration jmsConnectionConfiguration) throws Exception{
         return connectionFactories.get(jmsConnectionConfiguration.getClientId()).createConnection();

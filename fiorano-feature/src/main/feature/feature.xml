@@ -3,7 +3,6 @@
 
     <feature name='${project.artifactId}' description='${project.name}' version='${project.version}'>
         <details>${project.description}</details>
-        <feature version="5.13.1">activemq-broker</feature>
         <feature version="3.1.0">cxf-core</feature>
         <feature version="3.1.0">cxf-jaxrs</feature>
         <bundle dependency="true" start-level='85'>wrap:mvn:com.owlike/genson/1.2$Bundle-SymbolicName=Genson&amp;Bundle-Version=1.2</bundle>
@@ -26,12 +25,13 @@
         <bundle start-level="89">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
         <bundle start-level="89">mvn:com.fiorano.openesb/route-api/1.0.0</bundle>
         <bundle start-level="90">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
-        <bundle start-level="90">mvn:com.fiorano.openesb/jms-route/1.0.0</bundle>
-        <bundle start-level="91">mvn:com.fiorano.openesb/microservice/1.0.0</bundle>
-        <bundle start-level='92'>mvn:com.fiorano.openesb/application-repo/1.0.0</bundle>
-        <bundle start-level='92'>mvn:com.fiorano.openesb/namedconfiguration/1.0.0</bundle>
-        <bundle start-level='93'>mvn:com.fiorano.openesb/applicationcontroller/1.0.0</bundle>
-        <bundle start-level='94'>mvn:com.fiorano.openesb/schema-repo/1.0.0</bundle>
+        <!--<bundle start-level="90">mvn:com.fiorano.openesb/fmq-transport/1.0.0</bundle>-->
+        <bundle start-level="91">mvn:com.fiorano.openesb/jms-route/1.0.0</bundle>
+        <bundle start-level="92">mvn:com.fiorano.openesb/microservice/1.0.0</bundle>
+        <bundle start-level='93'>mvn:com.fiorano.openesb/application-repo/1.0.0</bundle>
+        <bundle start-level='93'>mvn:com.fiorano.openesb/namedconfiguration/1.0.0</bundle>
+        <bundle start-level='94'>mvn:com.fiorano.openesb/applicationcontroller/1.0.0</bundle>
+        <bundle start-level='95'>mvn:com.fiorano.openesb/schema-repo/1.0.0</bundle>
         <bundle start-level='88'>mvn:com.fiorano.openesb/events/1.0.0</bundle>
 
         <bundle start-level='96'>mvn:com.fiorano.openesb/rmi-connector/1.0.0</bundle>
@@ -42,7 +42,6 @@
         <bundle start-level='96'>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.3</bundle>
 
 
-        <!--<bundle start-level='99'>mvn:com.fiorano.openesb/rmi-client/0.1.0</bundle>-->
         <!--start level cannot be more than 100-->
     </feature>
 

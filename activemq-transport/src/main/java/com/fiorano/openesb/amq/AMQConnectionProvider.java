@@ -13,20 +13,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class AMQConnectionProvider extends AbstractJMSConnectionProvider {
+    public AMQConnectionProvider(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public ConnectionFactory getConnectionFactory(String name) {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setClientID(name);
-        Properties properties = new Properties();
-        try(FileInputStream inStream = new FileInputStream(System.getProperty("user.dir") + File.separator
-                + "etc" + File.separator + "com.fiorano.openesb.transport.provider.cfg")) {
-            properties.load(inStream);
-            activeMQConnectionFactory.buildFromProperties(properties);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            Logger logger = LoggerFactory.getLogger(Activator.class);
-            logger.debug("JMS connection failed - " + e.getMessage());
-        }
+        activeMQConnectionFactory.buildFromProperties(properties);
         return activeMQConnectionFactory;
     }
 }
