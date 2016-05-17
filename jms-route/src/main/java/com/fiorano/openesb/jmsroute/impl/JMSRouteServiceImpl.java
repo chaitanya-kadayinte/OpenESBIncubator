@@ -16,8 +16,8 @@ public class JMSRouteServiceImpl implements RouteService<JMSRouteConfiguration> 
         this.transportService = transportService;
     }
 
-    public Route createRoute(JMSRouteConfiguration routeConfiguration) throws Exception {
-        return new JMSRouteImpl(transportService,routeConfiguration);
+    public Route createRoute(String routeName, JMSRouteConfiguration routeConfiguration) throws Exception {
+        return new JMSRouteImpl(routeName, transportService,routeConfiguration);
     }
 
 
