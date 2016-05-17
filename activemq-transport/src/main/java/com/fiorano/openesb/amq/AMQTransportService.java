@@ -33,6 +33,7 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
 
     public AMQTransportService(Properties properties) throws Exception {
         super(properties);
+        initialize();
     }
 
     @Override

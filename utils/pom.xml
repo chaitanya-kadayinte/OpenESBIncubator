@@ -95,6 +95,11 @@
             <artifactId>wstx-asl</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.6.3</version>
+        </dependency>
     </dependencies>
 
     <build>

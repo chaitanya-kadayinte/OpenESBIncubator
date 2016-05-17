@@ -8,7 +8,13 @@ package com.fiorano.openesb.utils.config;
 
 import com.fiorano.openesb.utils.FioranoStaxParser;
 import com.fiorano.openesb.utils.exception.FioranoException;
+import com.ibm.wsdl.extensions.PopulatedExtensionRegistry;
+import org.xml.sax.InputSource;
 
+import javax.wsdl.Definition;
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLReader;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.StringReader;
 import java.util.Hashtable;
@@ -17,7 +23,7 @@ import java.util.Map;
 
 import static com.fiorano.openesb.utils.config.ServiceConfigurationParser.ConfigurationMarkups.*;
 
-//todo replace this with loading the configuration with custom classloader with required dependencies.
+//todo replace this with loading the configuration with custom classloader with required dependencies?
 public class ServiceConfigurationParser {
 
     private ServiceConfigurationParser() {
@@ -124,6 +130,78 @@ public class ServiceConfigurationParser {
     }
 
 
+    public Hashtable<String, Object> parseWSStubConfiguration(String configuration) throws FioranoException {
+        // Parse the CDATA section and fetch the required data
+        FioranoStaxParser parser = null;
+        Hashtable<String, Object> webInstanceData = new Hashtable<>();
+        try {
+            parser = new FioranoStaxParser(new StringReader(configuration));
+            parser.markCursor("java");
+            while (parser.nextElement()) {
+                if (parser.getLocalName().equalsIgnoreCase("object")) {
+                    String className = parser.getAttributeValue(null, "class");
+                    parser.markCursor(parser.getLocalName());
+                    if (className.equalsIgnoreCase(WSSTUB_PM_NEW)) {
+                        while (parser.nextElement()) {
+                            if (parser.getLocalName().equalsIgnoreCase("void")) {
+                                String propertyName = parser.getAttributeValue(null, "property");
+                                if (propertyName.equalsIgnoreCase(TRANSPORT_SECURTIY_CONFIG)
+                                        || propertyName.equalsIgnoreCase(WSDEFINITION_CONFIG)) {
+                                    if (propertyName.equalsIgnoreCase(WSDEFINITION_CONFIG)) {
+                                        parser.markCursor(parser.getLocalName());
+
+                                        while (parser.nextElement()) {
+                                            if (parser.getLocalName().equalsIgnoreCase("void")) {
+                                                propertyName = parser.getAttributeValue(null, "property");
+                                                if (propertyName.equalsIgnoreCase(WSDL)
+                                                        || propertyName.equalsIgnoreCase(BASEURI)) {
+                                                    parser.markCursor(parser.getLocalName());
+                                                    while (parser.nextElement()) {
+                                                        // Get the value
+                                                        String value = parser.getText();
+                                                        webInstanceData.put(propertyName, value);
+                                                    }
+                                                    parser.resetCursor();
+                                                } else parser.skipElement(parser.getLocalName());
+                                            }
+                                        }
+                                        parser.resetCursor();
+                                    }
+                                } else
+                                    parser.skipElement(parser.getLocalName());
+                            }
+                        }
+                    }
+                    parser.resetCursor();
+                }
+            }
+        } catch (XMLStreamException e) {
+            throw new FioranoException("Error parsing WS configuration");
+        } finally {
+            if (parser != null)
+                parser.resetCursor();
+        }
+        if (webInstanceData.containsKey(WSDL)) {
+            String contextName;
+            contextName = getContextName((String) webInstanceData.get(WSDL), (String) webInstanceData.get(BASEURI));
+            webInstanceData.put(CONTEXT_NAME, contextName);
+        }
+
+        return webInstanceData;
+    }
+    private String getContextName(String wsdl, String baseUri) throws FioranoException {
+        try {
+            WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
+            wsdlReader.setExtensionRegistry(new PopulatedExtensionRegistry());
+            wsdlReader.setFeature(com.ibm.wsdl.Constants.FEATURE_VERBOSE, false);
+            wsdlReader.setFeature(com.ibm.wsdl.Constants.FEATURE_IMPORT_DOCUMENTS, true);
+            Definition definition = wsdlReader.readWSDL(baseUri, new InputSource(new StringReader(wsdl)));
+            @SuppressWarnings("unchecked") Map<QName,Object> services = definition.getServices();
+            return services.keySet().iterator().next().getLocalPart();
+        } catch (Exception e) {
+            throw new FioranoException(e.getMessage(),e);
+        }
+    }
     public static class ConfigurationMarkups {
 
         public static final String SCHEMA_LOCATIONS = "SchemaLocations";
@@ -133,8 +211,13 @@ public class ServiceConfigurationParser {
         public static final String WADL_CONFIGURATION = "wadlConfiguration";
 
         public static final String RESTFUL_SERVICE_NAME = "serviceName";
-
         public static final String WADL = "wadl";
+        public static final String CONTEXT_NAME = "contextName";
+        public static final String WSSTUB_PM_NEW = "com.fiorano.services.wsstub.configuration.WSStubPM";
+        public static final String TRANSPORT_SECURTIY_CONFIG = "transportSecurityConfiguration";
+        public static final String WSDEFINITION_CONFIG = "wsDefinitionConfiguration";
+        public static final String BASEURI = "baseURI";
+        public static final String WSDL = "wsdl";
 
     }
 }

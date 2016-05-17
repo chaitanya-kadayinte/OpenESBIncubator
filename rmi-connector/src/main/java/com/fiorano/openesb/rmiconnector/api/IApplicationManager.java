@@ -726,6 +726,18 @@ public interface IApplicationManager extends Remote{
     String getWADLURL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException;
 
     /**
+     * This method returns the WSDL URL of the deployed SOAP Service, when an Event process is exposed as a SOAP service using WSStub component,
+     *
+     * @param appGUID      appGUID
+     * @param appVersion   Application Version
+     * @param servInstName Service instance Name of the WSStub
+     * @return String - WSDL URL of the deployed SOAP Service
+     * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
+     * @throws ServiceException ServiceException
+     */
+    String getWSDLURL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException;
+
+    /**
      * This method returns a Set of running Application GUIDs which are using the specified Service Instance as a remote service
      *
      * @param appGUID      appGUID

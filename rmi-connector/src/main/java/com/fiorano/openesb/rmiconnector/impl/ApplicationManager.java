@@ -994,8 +994,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             return applicationController.getComponentStats(appGUID, appVersion, servInstName, handleId);
         } catch (FioranoException e) {
-            logger.error("Error occured while getting component Statistics for serviec " + servInstName + "of application " + appGUID +":"+ appVersion);
-            throw new ServiceException("Error occured while getting component Statistics for serviec " + servInstName + "of application " + appGUID +":"+ appVersion, e);
+            logger.error("Error occured while getting component Statistics for serviec " + servInstName + "of application " + appGUID + ":" + appVersion);
+            throw new ServiceException("Error occured while getting component Statistics for serviec " + servInstName + "of application " + appGUID + ":" + appVersion, e);
         }
     }
 
@@ -1005,7 +1005,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             applicationController.flushMessages(appGUID, appVersion, servInstName, handleId);
         } catch (Exception e) {
             logger.error("Error occured while flushing messages in serviec " + servInstName + "of application " + appGUID + ":" + appVersion);
-            throw new ServiceException("Error occured while flushing messages in serviec " + servInstName + "of application " + appGUID +":"+ appVersion, e);
+            throw new ServiceException("Error occured while flushing messages in serviec " + servInstName + "of application " + appGUID + ":" + appVersion, e);
 
         }
     }
@@ -1164,11 +1164,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public byte[] exportServiceLogs(String appGUID, float version, String serviceInst, long index) throws RemoteException, ServiceException {
-       try{
-           return applicationController.exportServiceLogs(appGUID,version,serviceInst,index);
-       } catch (FioranoException e) {
-           throw new ServiceException(e.getMessage());
-       }
+        try {
+            return applicationController.exportServiceLogs(appGUID, version, serviceInst, index);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     @Override
@@ -1238,6 +1238,25 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         try {
             Hashtable<String, Object> stubProperties = ServiceConfigurationParser.INSTANCE().parseRESTStubConfiguration(configuration);
             return ServerConfig.getConfig().getJettyUrl() + "/restgateway/services/AdminService/wadls/" + stubProperties.get(ServiceConfigurationParser.ConfigurationMarkups.RESTFUL_SERVICE_NAME);
+        } catch (FioranoException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public String getWSDLURL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException {
+        ApplicationHandle applicationHandle = applicationController.getApplicationHandle(appGUID, appVersion);
+        if (applicationHandle == null) {
+            throw new ServiceException("Application " + appGUID + ":" + appVersion + " is not running.");
+        }
+        ServiceInstance serviceInstance = applicationHandle.getApplication().getServiceInstance(servInstName);
+        if (!serviceInstance.getGUID().equalsIgnoreCase("WSStub")) {
+            throw new ServiceException("Service " + servInstName + " in application " + appGUID + ":" + appVersion + " is not a WSStub");
+        }
+        String configuration = serviceInstance.getConfiguration();
+        try {
+            Hashtable<String, Object> stubProperties = ServiceConfigurationParser.INSTANCE().parseWSStubConfiguration(configuration);
+            return ServerConfig.getConfig().getJettyUrl() +"/bcwsgateway/services/"+stubProperties.get(ServiceConfigurationParser.ConfigurationMarkups.CONTEXT_NAME)+"?wsdl";
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1510,16 +1529,16 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         return applicationController.isServiceRunning(eventProcessName, appVersion, servInstanceName);
     }
 
-    public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws ServiceException{
+    public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws ServiceException {
         try {
             return applicationController.getServiceInstance(eventProcessName, appVersion, servInstanceName);
         } catch (FioranoException e) {
-            logger.error("error occured while getting the sevice instance " + servInstanceName +"of application " +eventProcessName+":"+appVersion, e);
+            logger.error("error occured while getting the sevice instance " + servInstanceName + "of application " + eventProcessName + ":" + appVersion, e);
             throw new ServiceException(e.getMessage());
         }
     }
 
-    public Map<String, String> getJettyServerDetails() throws ServiceException{
+    public Map<String, String> getJettyServerDetails() throws ServiceException {
         return applicationController.getJettyServerDetails();
     }
 
