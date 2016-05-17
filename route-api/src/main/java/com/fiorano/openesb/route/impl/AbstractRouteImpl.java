@@ -8,10 +8,11 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
+    protected String routeName;
     protected Map<RouteOperationType, RouteOperationHandler> routeOperationHandlers;
 
-    public AbstractRouteImpl(List<RouteOperationConfiguration> operationConfigurations) throws Exception {
-
+    public AbstractRouteImpl(String routeName, List<RouteOperationConfiguration> operationConfigurations) throws Exception {
+        this.routeName = routeName;
         routeOperationHandlers = Collections.synchronizedMap(new LinkedHashMap<RouteOperationType, RouteOperationHandler>(operationConfigurations.size()));
         if (!operationConfigurations.isEmpty()) {
             for (RouteOperationConfiguration configuration : operationConfigurations) {
@@ -19,6 +20,10 @@ public abstract class AbstractRouteImpl<M extends Message> implements Route<M> {
                 routeOperationHandlers.put(configuration.getRouteOperationType(), routeOperationHandler);
             }
         }
+    }
+
+    public String getRouteName() {
+        return routeName;
     }
 
     public void handleMessage(M message) {

@@ -178,6 +178,14 @@ public class ApplicationController {
         }, CCPEventType.DATA_REQUEST);
     }
 
+    public String getComponentStats(String appGuid, float version, String serviceName, String handleId) throws FioranoException {
+        ApplicationHandle applicationHandle = getApplicationHandle(appGuid, version, handleId);
+        if(applicationHandle!=null){
+           return applicationHandle.getComponentStats(serviceName).getValue();
+        }
+        return null;
+    }
+
     private HashMap<String, ConfigurationProperty> getManageablePropertiesToBind(List manageablePropertiesList) {
         HashMap<String, ConfigurationProperty> configurationProps = new HashMap<String, ConfigurationProperty>();
         if (manageablePropertiesList != null) {
@@ -608,21 +616,8 @@ public class ApplicationController {
 
     public boolean launchApplication(String appGuid, String version, String handleID) throws Exception {
         logger.info("Launching application : " + appGuid + ":" + version);
-
         Map<String, Boolean> orderedListOfApplications = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
-        //validate services in all applications before launch
-        for(String app_version: orderedListOfApplications.keySet()){
-            String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
-            String currentGUID = current_AppGUIDAndVersion[0];
-            Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
-            Application currentApplication = savedApplicationMap.get(currentGUID + Constants.NAME_DELIMITER + String.valueOf(currentVersion));
-            if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
-                for(ServiceInstance si:currentApplication.getServiceInstances()){
-                    validateServicesBeforeLaunch(currentApplication, si);
-                }
-            }
-        }
-
+        checkResourceAndConnectivity(handleID, orderedListOfApplications);
         for (String app_version: orderedListOfApplications.keySet()) {
             String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
             String currentGUID = current_AppGUIDAndVersion[0];
@@ -773,8 +768,8 @@ public class ApplicationController {
 
     public boolean synchronizeApplication(String appGuid, String version, String handleID) throws FioranoException{
         logger.debug("synchronizing Application " + appGuid + ":" + version);
-        checkResourceAndConnectivity(appGuid, Float.parseFloat(version), handleID);
         Map<String, Boolean> orderedList = getApplicationChainForLaunch(appGuid, Float.parseFloat(version), handleID);
+        checkResourceAndConnectivity(handleID, orderedList);
         for (String app_version : orderedList.keySet()) {
             String[] appGUIDAndVersion = returnAppGUIDAndVersion(app_version);
             String currentGUID = appGUIDAndVersion[0];
@@ -1476,8 +1471,24 @@ public class ApplicationController {
         return result;
     }
 
-    public void checkResourceAndConnectivity(String appGUID, float version, String handleId) throws FioranoException{
+    public void checkResourceAndConnectivity(String appGuid, float version, String handleID) throws FioranoException{
+        //validate services in all applications
+        Map<String, Boolean> orderedList = getApplicationChainForLaunch(appGuid, version, handleID);
+        checkResourceAndConnectivity(handleID, orderedList);
+    }
 
+    public void checkResourceAndConnectivity(String handleID,  Map<String, Boolean> orderedList) throws FioranoException{
+        for(String app_version: orderedList.keySet()){
+            String[] current_AppGUIDAndVersion = returnAppGUIDAndVersion(app_version);
+            String currentGUID = current_AppGUIDAndVersion[0];
+            Float currentVersion = Float.valueOf(current_AppGUIDAndVersion[1]);
+            Application currentApplication = savedApplicationMap.get(currentGUID + Constants.NAME_DELIMITER + String.valueOf(currentVersion));
+            if (!isApplicationRunning(currentGUID, currentVersion, handleID)) {
+                for(ServiceInstance si:currentApplication.getServiceInstances()){
+                    validateServicesBeforeLaunch(currentApplication, si);
+                }
+            }
+        }
     }
 
     public ApplicationStateDetails getCurrentStateOfApplication(String appGUID, float appVersion, String handleId) throws FioranoException{
@@ -1884,7 +1895,12 @@ public class ApplicationController {
         return map;
     }
 
-
+    public void flushMessages(String appGUID, float appVersion, String servInstName, String handleId) throws Exception {
+        CommandEvent flushCommand = new CommandEvent();
+        flushCommand.setCommand(CommandEvent.Command.FLUSH_MESSAGES);
+        flushCommand.setReplyNeeded(false);
+        ccpEventManager.getCcpEventGenerator().sendEvent(flushCommand, LookUpUtil.getServiceInstanceLookupName(appGUID, appVersion, servInstName));
+    }
 
      /*----------------------start of [Application Restore Thread]----------------------------------------*/
 

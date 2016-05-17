@@ -2,6 +2,7 @@ package com.fiorano.openesb.microservice.launch.impl;
 
 import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.microservice.bundle.Activator;
+import com.fiorano.openesb.microservice.ccp.event.common.data.ComponentStats;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.Launcher;
 import com.fiorano.openesb.microservice.launch.MicroServiceRuntimeHandle;
@@ -166,6 +167,11 @@ public class InMemoryLauncher implements Launcher {
                     logger.addHandler(handler);
                 }
             }
+        }
+
+        @Override
+        public ComponentStats getComponentStats() throws FioranoException {
+            return null;
         }
 
         @Override

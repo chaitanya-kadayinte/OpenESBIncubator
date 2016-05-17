@@ -10,6 +10,8 @@ import com.fiorano.openesb.rmiconnector.api.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.utils.queue.FioranoQueueImpl;
 import com.fiorano.openesb.utils.queue.IFioranoQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.NoSuchObjectException;
 import java.util.Enumeration;
@@ -54,6 +56,7 @@ public class DapiEventManager implements EventListener {
     //Service to execute event tasks in a thread pool
     private ExecutorService exec;
     private ConfigurationEventListener configurationEventListener;
+    private Logger logger = LoggerFactory.getLogger(com.fiorano.openesb.rmiconnector.Activator.class);
 
     /**
      * stores the ipaddress(s) of all clients connected to the fes.
@@ -225,7 +228,7 @@ public class DapiEventManager implements EventListener {
         }
     }
 
-    private void processEvent(Event event) {
+    private void processEvent(final Event event) {
          if (event instanceof ApplicationEvent) {
              final ApplicationEvent appEvent = (ApplicationEvent) event;
              final String appGUID = appEvent.getApplicationGUID();
@@ -307,8 +310,10 @@ public class DapiEventManager implements EventListener {
                          exec.execute(new Runnable() {
                              public void run() {
                                  try {
-                                     if (serviceEvent.getMicroServiceEventType() == MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHED)
+                                     if (serviceEvent.getMicroServiceEventType() == MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHED){
+                                         logger.debug("Sending service launch event to rmi listeners: " + event.toString());
                                          appEventListener.serviceInstanceStarted(serviceInstanceName, serviceVersion);
+                                     }
                                      else if (serviceEvent.getMicroServiceEventType() == MicroServiceEvent.MicroServiceEventType.SERVICE_LAUNCHING)
                                          appEventListener.serviceInstanceStarting(serviceInstanceName, serviceVersion);
                                      else if (serviceEvent.getMicroServiceEventType() == MicroServiceEvent.MicroServiceEventType.SERVICE_STOPPED)
