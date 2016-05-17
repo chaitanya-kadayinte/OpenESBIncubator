@@ -2,7 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
+    <!--
+        Copyright (c) Fiorano Software Pte. Ltd. and affiliates. All rights reserved. http://www.fiorano.com
+        The software in this package is published under the terms of the CPAL v1.0
+        license, a copy of which has been included with this distribution in the
+        LICENSE.txt file.
+        -->
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -20,6 +25,13 @@
     <description>
         transport-api OSGi bundle project.
     </description>
+    <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/transport-api</url>
+    <licenses>
+        <license>
+            <name>CPAL, Version 1.0</name>
+            <url>https://opensource.org/licenses/CPAL-1.0</url>
+        </license>
+    </licenses>
     <properties>
         <maven-bundle-plugin.version>2.5.4</maven-bundle-plugin.version>
         <osgi.version>6.0.0</osgi.version>

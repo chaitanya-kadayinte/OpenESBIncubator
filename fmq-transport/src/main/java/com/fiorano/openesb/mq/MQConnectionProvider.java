@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Fiorano Software Pte. Ltd. and affiliates. All rights reserved. http://www.fiorano.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 /**
  * Copyright (c) 1999-2007, Fiorano Software Technologies Pvt. Ltd. and affiliates.
  * Copyright (c) 2008-2014, Fiorano Software Pte. Ltd. and affiliates.
