@@ -17,19 +17,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>applicationcontroller</artifactId>
     <packaging>bundle</packaging>
 
-    <name>applicationcontroller Bundle</name>
+    <name>Application Controller</name>
     <description>
-        applicationcontroller OSGi bundle project.
+        Application controller takes care of in-memory operations on applications and persists them using Application Repository.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/applicationcontroller</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

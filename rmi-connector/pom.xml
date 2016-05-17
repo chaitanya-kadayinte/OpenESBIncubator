@@ -17,19 +17,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>rmi-connector</artifactId>
     <packaging>bundle</packaging>
 
-    <name>rmi-connector Bundle</name>
+    <name>RMI Connector Module</name>
     <description>
-        rmi-connector OSGi bundle project.
+        Encapsultes the RMI interface exposed for tools like eStudio.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/rmi-connector</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

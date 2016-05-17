@@ -20,15 +20,16 @@
     <version>1.0.0</version>
     <packaging>bundle</packaging>
 
-    <name>schema-repo Bundle</name>
+    <name>Schema Repository</name>
     <description>
-        schema-repo OSGi bundle project.
+        Handles persistence and management of XML Schemas used in Fiorano Environment.
+        Can be extended to manage JSON Schemas and related resolution semantics.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/schema-repo</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

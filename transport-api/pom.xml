@@ -17,19 +17,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>transport-api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>transport-api Bundle</name>
+    <name>Transport API</name>
     <description>
-        transport-api OSGi bundle project.
+        Module which defines communication endpoints and related metadata. A little tightly bound to JMS right now.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/transport-api</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
     <properties>

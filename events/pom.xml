@@ -17,19 +17,18 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>events</artifactId>
     <packaging>bundle</packaging>
 
-    <name>events Bundle</name>
+    <name>Events</name>
     <description>
-        events OSGi bundle project.
+        Events module encapsulates the events that are generated from the server which are used by orchestration or monitoring tools.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/events</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

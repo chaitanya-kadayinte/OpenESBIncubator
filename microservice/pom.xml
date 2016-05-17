@@ -16,19 +16,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>microservice</artifactId>
     <packaging>bundle</packaging>
 
-    <name>microservice Bundle</name>
+    <name>Microservice Module</name>
     <description>
-        microservice OSGi bundle project.
+        Responsible for Microservice lifecycle as well as communication with server. Repository management might get its own bundle in future.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/microservice</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

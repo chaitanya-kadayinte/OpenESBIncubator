@@ -20,15 +20,16 @@
 
     <artifactId>route-api</artifactId>
     <packaging>bundle</packaging>
-    <name>route-api</name>
+    <name>Route API</name>
     <description>
-        routes OSGi bundle project.
+       Route API is generic communication model between two ports of a microservice.
+       It could be implemented using any protocol, preferably which can hold long living connections.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/route-api</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

@@ -21,15 +21,15 @@
     <artifactId>security</artifactId>
     <packaging>bundle</packaging>
 
-    <name>security Bundle</name>
+    <name>Security Bundle</name>
     <description>
-        security OSGi bundle project.
+       Basic Security built on top of Karaf. Will be extended in upcoming releases.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/security</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

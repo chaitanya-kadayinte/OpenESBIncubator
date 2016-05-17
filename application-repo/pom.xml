@@ -17,19 +17,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fiorano.openesb</groupId>
     <artifactId>application-repo</artifactId>
     <packaging>bundle</packaging>
 
-    <name>application-repo Bundle</name>
+    <name>Application Repository Bundle</name>
     <description>
-        application-repo OSGi bundle project.
+        Application repository takes care of managing disk level operation of applications. This module can be replaced with shared repository semantics when needed.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/application-repo</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

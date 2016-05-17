@@ -18,13 +18,13 @@
     <artifactId>activemq-transport</artifactId>
     <packaging>bundle</packaging>
 
-    <name>activemq-transport Bundle</name>
-    <description>activemq-transport OSGi bundle project.</description>
+    <name>ActiveMQ transport Bundle</name>
+    <description>ActiveMQ Implementation of Transport API. Not needed if any other transport is used.</description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/activemq-transport</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
     <properties>

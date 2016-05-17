@@ -20,15 +20,15 @@
     <artifactId>utils</artifactId>
     <packaging>bundle</packaging>
 
-    <name>utils Bundle</name>
+    <name>Utilities module</name>
     <description>
-        utils OSGi bundle project.
+        Utilities used by other Bundles that make up Fiorano OpenESB
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/utils</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 

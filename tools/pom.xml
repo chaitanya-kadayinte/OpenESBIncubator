@@ -18,15 +18,15 @@
     <artifactId>tools</artifactId>
     <packaging>bundle</packaging>
 
-    <name>tools Bundle</name>
+    <name>Tools Module</name>
     <description>
-        tools OSGi bundle project.
+        Module which provides RMI based tools to interact with server. CLI will be coming soon here.
     </description>
     <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/tools</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
-            <url>https://opensource.org/licenses/CPAL-1.0</url>
+            <url>http://www.fiorano.com/products/opensource/esb-core/license.php</url>
         </license>
     </licenses>
 
