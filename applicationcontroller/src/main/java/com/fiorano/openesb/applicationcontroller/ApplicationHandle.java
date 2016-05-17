@@ -271,7 +271,7 @@ public class ApplicationHandle {
             targetCFC.setRouteOperationType(RouteOperationType.TGT_CARRY_FORWARD_CONTEXT);
             routeConfiguration.getRouteOperationConfigurations().add(targetCFC);
 
-            com.fiorano.openesb.route.Route route1 = routeService.createRoute(routeConfiguration);
+            com.fiorano.openesb.route.Route route1 = routeService.createRoute(route.getName(), routeConfiguration);
             route1.start();
             routeMap.put(route.getName(), route1);
         }
@@ -294,9 +294,6 @@ public class ApplicationHandle {
     }
 
     public void stopApplication() {
-        for(ServiceInstance serviceInstance : application.getServiceInstances()) {
-            disableServicePorts(serviceInstance);
-        }
         try {
             stopAllMicroServices();
         } catch (FioranoException e) {
@@ -309,6 +306,9 @@ public class ApplicationHandle {
             } catch (Exception e) {
                 logger.error("Error occured while stoping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
             }
+        }
+        for(ServiceInstance serviceInstance : application.getServiceInstances()) {
+            disableServicePorts(serviceInstance);
         }
     }
 
@@ -451,7 +451,7 @@ public class ApplicationHandle {
             routeToCConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
         }
 
-        com.fiorano.openesb.route.Route routeToC = routeService.createRoute(routeToCConfiguration);
+        com.fiorano.openesb.route.Route routeToC = routeService.createRoute(bpSourceDestName, routeToCConfiguration);
         routeToC.start();
         breakPointRoutes.put(bpSourceDestName, routeToC);
         //create route from D to inport and start
@@ -506,7 +506,7 @@ public class ApplicationHandle {
         targetCFC.setServiceInstanceName(routePS.getTargetServiceInstance());
         targetCFC.setRouteOperationType(RouteOperationType.TGT_CARRY_FORWARD_CONTEXT);
         routeFromDConfiguration.getRouteOperationConfigurations().add(targetCFC);
-        com.fiorano.openesb.route.Route routeFromD = routeService.createRoute(routeFromDConfiguration);
+        com.fiorano.openesb.route.Route routeFromD = routeService.createRoute(bpTargetdDestName, routeFromDConfiguration);
         routeFromD.start();
         breakPointRoutes.put(bpTargetdDestName, routeFromD);
         //stop original route
@@ -805,12 +805,18 @@ public class ApplicationHandle {
 
         List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
         for (com.fiorano.openesb.application.application.Route route : routes) {
-            if(srcPortName.equals(getPortName(appGUID, version, route.getSourcePortInstance(), route.getSourceServiceInstance()))
-                    && tgtPortName.equals(getPortName(appGUID, version, route.getTargetPortInstance(), route.getTargetServiceInstance()))){
+            if(route.getName().equals(rInfo.getRouteName())){
                 found = true;
                 String sourcePortInstance = route.getSourcePortInstance();
-                String sourceServiceInstance = route.getSourceServiceInstance();
-                OutputPortInstance sourcePort = application.getServiceInstance(sourceServiceInstance).getOutputPortInstance(sourcePortInstance);
+                String sourceServiceInstanceName = route.getSourceServiceInstance();
+                ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
+                if(sourceServiceInstance==null){
+                    RemoteServiceInstance remoteServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
+                    if(remoteServiceInstance!=null){
+                        sourceServiceInstance = applicationController.getApplicationHandle(remoteServiceInstance.getApplicationGUID(), remoteServiceInstance.getApplicationVersion()).getApplication().getServiceInstance(remoteServiceInstance.getRemoteName());
+                    }
+                }
+                OutputPortInstance sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
                 //check and update all route operation handlers
                 Transformation applicationContextTransformation = sourcePort.getApplicationContextTransformation();
                 if(applicationContextTransformation != null) {

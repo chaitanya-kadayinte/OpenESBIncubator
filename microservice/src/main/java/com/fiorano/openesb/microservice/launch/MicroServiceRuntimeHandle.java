@@ -40,6 +40,7 @@ public abstract class MicroServiceRuntimeHandle {
         this.serviceInstName = launchConfiguration.getServiceName();
         this.serviceGUID = launchConfiguration.getMicroserviceId();
         setRunningVersion(Float.parseFloat(launchConfiguration.getMicroserviceVersion()));
+        strStatus = EventStateConstants.SERVICE_HANDLE_CREATED;
         eventManager = FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getService(FrameworkUtil.getBundle(EventsManager.class).getBundleContext().getServiceReference(EventsManager.class));
     }
 

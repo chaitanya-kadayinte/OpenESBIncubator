@@ -19,8 +19,8 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     private String sourceDestintaion;
     private String targetDestination;
 
-    public JMSRouteImpl(final TransportService<JMSPort, JMSMessage> transportService, final RouteConfiguration routeConfiguration) throws Exception {
-        super(routeConfiguration.getRouteOperationConfigurations());
+    public JMSRouteImpl(String routeName, final TransportService<JMSPort, JMSMessage> transportService, final RouteConfiguration routeConfiguration) throws Exception {
+        super(routeName, routeConfiguration.getRouteOperationConfigurations());
         this.transportService = transportService;
         this.routeConfiguration = routeConfiguration;
 
