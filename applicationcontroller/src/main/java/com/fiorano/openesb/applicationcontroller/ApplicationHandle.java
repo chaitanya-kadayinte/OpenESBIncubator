@@ -303,14 +303,14 @@ public class ApplicationHandle {
         try {
             stopAllMicroServices();
         } catch (FioranoException e) {
-            logger.error("Error occured while stopping microservices of the Application: "+appGUID +":"+version, e);
+            logger.error("Error occurred while stopping microservices of the Application: "+appGUID +":"+version, e);
         }
         for(String routeName :routeMap.keySet()) {
             try {
                 Route route = routeMap.get(routeName);
                 route.stop();
             } catch (Exception e) {
-                logger.error("Error occured while stoping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
+                logger.error("Error occurred while stopping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
             }
         }
         for(ServiceInstance serviceInstance : application.getServiceInstances()) {
@@ -788,7 +788,7 @@ public class ApplicationHandle {
         try {
             transport.disablePort(portConfiguration);
         } catch (Exception e) {
-            logger.error("Error occured while disabling the port: " + portConfiguration.getName()+" of Application: " +appGUID +":"+version, e);
+            logger.error("Error occurred while disabling the port: " + portConfiguration.getName()+" of Application: " +appGUID +":"+version, e);
         }
     }
 

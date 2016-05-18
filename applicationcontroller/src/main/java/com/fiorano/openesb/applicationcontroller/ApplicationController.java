@@ -725,9 +725,7 @@ public class ApplicationController {
     }
 
     private void checkUniquenessOfDebugPorts(ServiceInstance instance, Application application) throws FioranoException {
-
-        for (Object o : application.getServiceInstances()) {
-            ServiceInstance localInstance = (ServiceInstance) o;
+        for (ServiceInstance localInstance : application.getServiceInstances()) {
             //  If it's the same instance then continue.
             if (localInstance.getName().equalsIgnoreCase(instance.getName()))
                 continue;
@@ -737,8 +735,6 @@ public class ApplicationController {
             int localPort = localInstance.getDebugPort();
             int globalPort = instance.getDebugPort();
             if (localPort == globalPort) {
-                logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_SERVICE_DEBUG_PORT_INUSE, instance.getName(),
-                        String.valueOf(globalPort), localInstance.getName()));
                 throw new FioranoException(I18NUtil.getMessage(Bundle.class, Bundle.ERROR_SERVICE_DEBUG_PORT_INUSE, instance.getName(),
                         String.valueOf(globalPort), localInstance.getName()));
 
