@@ -30,7 +30,7 @@
         <module>fiorano-feature</module>
         <module>management</module>
         <module>tools</module>
-        <module>fmq-transport</module>
+        <!--<module>fmq-transport</module>-->
     </modules>
     <packaging>pom</packaging>
     <properties>

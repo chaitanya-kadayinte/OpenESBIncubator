@@ -30,6 +30,7 @@
         <bundle start-level="89">mvn:com.fiorano.openesb/transport-api/1.0.0</bundle>
         <bundle start-level="89">mvn:com.fiorano.openesb/route-api/1.0.0</bundle>
         <bundle start-level="90">mvn:com.fiorano.openesb/activemq-transport/1.0.0</bundle>
+        <!-- Enable below when you need to use Fiorano MQ -->
         <!--<bundle start-level="90">mvn:com.fiorano.openesb/fmq-transport/1.0.0</bundle>-->
         <bundle start-level="91">mvn:com.fiorano.openesb/jms-route/1.0.0</bundle>
         <bundle start-level="92">mvn:com.fiorano.openesb/microservice/1.0.0</bundle>

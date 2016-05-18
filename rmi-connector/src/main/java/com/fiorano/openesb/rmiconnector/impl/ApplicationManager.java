@@ -984,10 +984,6 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    @Override
-    public String viewWSDL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException {
-        return null;
-    }
 
     @Override
     public String getComponentStats(String appGUID, float appVersion, String servInstName) throws ServiceException {

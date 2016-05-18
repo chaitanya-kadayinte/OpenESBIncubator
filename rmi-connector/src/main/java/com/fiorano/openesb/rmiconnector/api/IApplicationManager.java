@@ -423,17 +423,6 @@ public interface IApplicationManager extends Remote{
     void checkResourcesAndConnectivity(String appGUID, float version) throws RemoteException, ServiceException;
 
 
-    /**
-     * This method returns WSDL URL of the deployed web service , when an Event process is exposed as a web service using WSStub component
-     *
-     * @param appGUID      appGUID
-     * @param appVersion Application Version
-     * @param servInstName Service instance Name of the WSStub
-     * @return String - WSDL URL of the deployed web Service
-     * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
-     * @throws ServiceException ServiceException
-     */
-    String viewWSDL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException;
 
     /**
      * This method returns the statistics of the service instance
