@@ -268,26 +268,6 @@ public interface IApplicationManager extends Remote{
     void stopAllServiceInstances(String appGUID, float appVersion) throws RemoteException, ServiceException;
 
     /**
-     * This method stops the specified Service Instance from a running Event Process .It also deletes the
-     * destinations, incoming & outgoing routes and other resources for this serviceInstance
-     * If the service instance is not running, this method call is ignored
-     * Please note that the call will only stop the running instance of the service but the service will still be present in Application.
-     * Application should be deployed again and synchronized after this call else the changes won't be reflected in Application.
-     * <br>
-     * see {@link IApplicationManager#stopServiceInstance(String, float, String)}}
-     * </br>
-     * Note:StopServiceInstance only stops the specified Service Instance from a running Event Process where as deleteServiceInstance
-     * also deletes related resources like routes/destinations.
-     *
-     * @param appGUID  Application GUID of the Event Process
-     * @param appVersion Application Version
-     * @param serviceInstanceName - The name of the Service Instance
-     * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
-     * @throws ServiceException ServiceException
-     */
-    void deleteServiceInstance(String appGUID, float appVersion, String serviceInstanceName) throws RemoteException, ServiceException;
-
-    /**
      * This method returns the list of running Event Processes
      *
      * @return ApplicationMetadata Array - An array of ApplicationMetadata object, never <code>null</code>
@@ -625,82 +605,6 @@ public interface IApplicationManager extends Remote{
      * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
      */
     void changeRouteSelectorConfiguration(String appGUID, float appVersion, String routeGUID, String configurationName) throws RemoteException, ServiceException;
-
-    /**
-     * This method changes the Status Based Workflow (SBW) for a port of a service instance
-     * in an application. It also adds the port for which workflow needs to be monitored.
-     * Please note that it is to be used for RUNNING Application only
-     *
-     * @param servInstName service instance name
-     * @param appGUID      Application ID
-     * @param appVersion Application Version
-     * @param portName     name of the port for which workflow needs to be monitored
-     * @param isEndState   boolean to indicate whether to track the workflow for this port
-     * @param trackingType int to indicate what part of message to track
-     *                     <pre>
-     *                                         <br>Note: Allowed values for tracked data type are:</br>
-     *                                         <br>WORKFLOW_DATA_MESSAGE = 0;</br>
-     *                                         <br>WORKFLOW_DATA_MESSAGE_HEADER = 1;</br>
-     *                                         <br>WORKFLOW_DATA_MESSAGE_BODY = 2;</br>
-     *                                         <br>WORKFLOW_DATA_ATTACHMENTS = 4;</br>
-     *                                         <br>WORKFLOW_DATA_APP_CONTEXT = 8;</br>
-     *                                         <br>Values can be a combination of the above using (|).</br>
-     *                                         </pre>
-     * @throws ServiceException         ServiceException
-     * @throws java.rmi.RemoteException A communication-related exception that may occur during the execution of a remote method call
-     */
-    void enableSBW(String servInstName, String appGUID, float appVersion, String portName, boolean isEndState, int trackingType) throws RemoteException, ServiceException;
-
-
-    /**
-     * This method disables the Status Based Workflow (SBW) for a port of a service instance
-     * in an application. It also removes the port for which workflow needs to be disabled.
-     * Please note that it is to be used for a RUNNING Application only
-     *
-     * @param servInstName service instance name
-     * @param appGUID      Application ID
-     * @param appVersion Application Version
-     * @param portName     Name of the port for which workflow needs to be monitored
-     * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
-     * @throws ServiceException ServiceException
-     */
-    void disableSBW(String servInstName, String appGUID, float appVersion, String portName) throws RemoteException, ServiceException;
-
-    /**
-     * This method sets the tracking type of a Status Based Workflow (SBW) enabled port.
-     *
-     * @param servInstName service instance name
-     * @param appGUID      Application ID
-     * @param appVersion   Application Version
-     * @param portName     Name of the port for which workflow needs to be monitored
-     * @param trackingType int to indicate what part of message to track
-     *                     <pre>
-     *                                         <br>Note: Allowed values for tracked data type are:</br>
-     *                                         <br>WORKFLOW_DATA_MESSAGE = 0;</br>
-     *                                         <br>WORKFLOW_DATA_MESSAGE_HEADER = 1;</br>
-     *                                         <br>WORKFLOW_DATA_MESSAGE_BODY = 2;</br>
-     *                                         <br>WORKFLOW_DATA_ATTACHMENTS = 4;</br>
-     *                                         <br>WORKFLOW_DATA_APP_CONTEXT = 8;</br>
-     *                                         <br>Values can be a combination of the above using (|).</br>
-     *                                         </pre>
-     * @throws RemoteException  A communication-related exception that may occur during the execution of a remote method call
-     * @throws ServiceException ServiceException
-     */
-    void setTrackedDataType(String servInstName, String appGUID, float appVersion, String portName, int trackingType) throws RemoteException, ServiceException;
-
-    /**
-     * Changes the Status Based Workflow (SBW) named configuration for a port of a service instance in an application.
-     * Please note that it is to be used for RUNNING Application only
-     *
-     * @param servInstName service instance name
-     * @param appGUID      ApplicationID
-     * @param appVersion   Application Version
-     * @param portName     Name of the port to which the workflow configuration is to be applied
-     * @param configurationName The name of the new workflow configuration which should be applied to the port
-     * @throws ServiceException Thrown when either the workflow configuration does not exist or some exception happens while applying the configuration
-     * @throws java.rmi.RemoteException A communication-related exception that may occur during the execution of a remote method call
-     */
-    void changeSBWConfiguration(String servInstName, String appGUID, float appVersion, String portName, String configurationName) throws RemoteException, ServiceException;
 
     /**
      * This method returns the WADL URL of the deployed REST Service, when an Event process is exposed as a REST service using RESTStub component,

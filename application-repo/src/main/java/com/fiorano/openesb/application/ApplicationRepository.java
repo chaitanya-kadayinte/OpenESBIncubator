@@ -8,6 +8,7 @@ package com.fiorano.openesb.application;
 
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.utils.FileUtil;
+import com.fiorano.openesb.utils.RBUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ApplicationRepository {
 
@@ -380,5 +379,50 @@ public class ApplicationRepository {
         }
 
         return application;
+    }
+
+    public void deleteConfigs(Application application, Vector<String> components) throws FioranoException{
+        for(String component : components){
+            ServiceInstance service = application.getServiceInstance(component);
+
+            String configFolderPath = getAppRootDirectory(application.getGUID(), application.getVersion()) + File.separator + "config";
+            String child = service.getConfigFile();
+            if(child != null){
+                File configFile = new File(configFolderPath, child);
+                if(configFile.exists())
+                    configFile.delete();
+            }
+
+            String transformationsFolderPath = getPortTransformationDir(getAppRootDirectory(application.getGUID(), application.getVersion()), service.getName(), null);
+            File toDel = new File(transformationsFolderPath);
+            if(toDel.exists())//delete if present
+                FileUtil.deleteDir(toDel);
+        }
+    }
+
+    public void deleteRouteConfigs(Application application, Vector<String> routes) throws FioranoException {
+        for(Route route : application.getRoutes()) {
+            if(routes.contains(route.getName())) {
+                String transformationsFolderPath = getRouteTransformationDir(getAppRootDirectory(application.getGUID(), application.getVersion()), route.getName());
+                File toDel = new File(transformationsFolderPath);
+                if(toDel.exists())//delete if present
+                    FileUtil.deleteDir(toDel);
+            }
+        }
+    }
+
+    public void deletePortTransformations(Application application, HashMap<String, String> deletedPorts) throws FioranoException {
+        if(deletedPorts == null)
+            return;
+
+        List<ServiceInstance> serviceInstances = application.getServiceInstances();
+        for(ServiceInstance serviceInstance : serviceInstances) {
+            if(deletedPorts.containsKey(serviceInstance.getName())) {
+                String transformationsFolderPath = getPortTransformationDir(getAppRootDirectory(application.getGUID(), application.getVersion()), serviceInstance.getName(), deletedPorts.get(serviceInstance.getName()));
+                File toDel = new File(transformationsFolderPath);
+                if(toDel.exists())//delete if present
+                    FileUtil.deleteDir(toDel);
+            }
+        }
     }
 }

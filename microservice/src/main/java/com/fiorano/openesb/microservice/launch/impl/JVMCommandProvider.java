@@ -31,7 +31,6 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
     private Queue<String> genClassPath;
     private Queue<String> javaLibQueue;
     private Properties systemProps = new Properties();
-    protected Logger logger = LoggerFactory.getLogger(com.fiorano.openesb.microservice.bundle.Activator.class);
 
     public List<String> generateCommand(LaunchConfiguration<JavaLaunchConfiguration> launchConfiguration) throws FioranoException {
         this.launchConfiguration = launchConfiguration;
