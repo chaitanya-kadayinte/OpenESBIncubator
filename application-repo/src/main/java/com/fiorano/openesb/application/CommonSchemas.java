@@ -31,7 +31,7 @@ public class CommonSchemas{
 
         if(url==null){
             try {
-                url = new File(System.getProperty("user.dir")+"/xml-catalog/fiorano/fault.xsd").toURI().toURL();
+                url = new File(System.getProperty("FIORANO_HOME")+"/xml-catalog/fiorano/fault.xsd").toURI().toURL();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

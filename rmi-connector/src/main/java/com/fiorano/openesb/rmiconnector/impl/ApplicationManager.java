@@ -12,9 +12,9 @@ import com.fiorano.openesb.application.ServerConfig;
 import com.fiorano.openesb.application.application.*;
 import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
-import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
+import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.rmiconnector.Activator;
 import com.fiorano.openesb.rmiconnector.api.*;
@@ -35,9 +35,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     private ApplicationRepository applicationRepository;
 
+    private MicroServiceRepoManager microServiceRepoManager;
+
     private IApplicationManager clientProxyInstance;
 
-    private HashMap<String, File> tempFileNameMap = new HashMap<String, File>(8);
+    private HashMap<String, File> tempFileNameMap = new HashMap<>(8);
 
     private InstanceHandler handler;
 
@@ -56,6 +58,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         logger.trace("Initializing Application Manager");
         this.applicationController = rmiManager.getApplicationController();
         this.applicationRepository = rmiManager.getApplicationRepository();
+        this.microServiceRepoManager = rmiManager.getMicroServiceRepoManager();
         this.handler = instanceHandler;
         setHandleID(instanceHandler.getHandleID());
         logger.trace("Initialized Application Manager");
@@ -68,13 +71,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public boolean exists(String id, float version) throws RemoteException, ServiceException {
-        boolean exists = false;
         try {
-            applicationRepository.applicationExists(id, version);
+            return applicationRepository.applicationExists(id, version);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
-        return exists;
     }
 
     @Override
@@ -115,8 +116,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 if (outstream != null) {
                     outstream.close();
                 }
-                if (!successfulzip && tempZipFile != null) {
-                    tempZipFile.delete();
+                if (!successfulzip) {
+                    boolean delete = tempZipFile.delete();
+                    if(!delete){
+                        logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                    }
                 }
             } catch (IOException e) {
                 //ignore
@@ -130,7 +134,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         boolean successfulextract = true;
         try {
             appFileTempFolder = getTempFile("application", "tmp");
-            appFileTempFolder.mkdir();
+            boolean make = appFileTempFolder.mkdir();
+            if(!make){
+                logger.trace("Could not create " + appFileTempFolder.getAbsolutePath());
+            }
             //extractZip(appFileTempFolder, tempZipFile);
             ZipUtil.unzip(tempZipFile, appFileTempFolder);
         } catch (Exception e) {
@@ -143,7 +150,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             if (!successfulextract && appFileTempFolder != null) {
                 FileUtil.deleteDir(appFileTempFolder);
                 tempFileNameMap.remove(key);
-                tempZipFile.delete();
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                }
             }
         }
 
@@ -157,7 +167,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             // Temporaray application Folder is being deleted in Application Repository Code
 //            FileUtil.deleteDir(appFileTempFolder);
             tempFileNameMap.remove(key);
-            tempZipFile.delete();
+            boolean delete = tempZipFile.delete();
+            if(!delete){
+                logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+            }
         }
     }
 
@@ -191,8 +204,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 if (outstream != null) {
                     outstream.close();
                 }
-                if (!successfulzip && tempZipFile != null) {
-                    tempZipFile.delete();
+                if (!successfulzip) {
+                    boolean delete = tempZipFile.delete();
+                    if(!delete){
+                        logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                    }
                 }
             } catch (IOException e) {
                 //ignore
@@ -210,7 +226,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             File jmsScriptFile = null;
             File projDirFile = null;
             //extract contents.
-            appContextFileTempFolder.mkdir();
+            boolean make = appContextFileTempFolder.mkdir();
+            if(!make){
+                logger.trace("Could not create dir " + appContextFileTempFolder.getAbsolutePath());
+            }
             ZipUtil.unzip(tempZipFile, appContextFileTempFolder);
 
             if (projectDirName != null)
@@ -261,7 +280,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 }
             }
 
-            Application application = null;
+            Application application;
             try {
                 application = applicationController.getApplicationHandle(appGUID, appVersion, handleId).getApplication();
             } catch (Exception e) {
@@ -296,28 +315,27 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_APPCONTEXT_TRANSFORMATION3, portName, serviceName, appGUID, appVersion), e);
                 throw new ServiceException(e.getMessage());
             } finally {
-                if (key != null)
                     tempFileNameMap.remove(key);
-                if (tempZipFile != null)
-                    tempZipFile.delete();
-                if (appContextFileTempFolder != null)
-                    FileUtil.deleteDir(appContextFileTempFolder);
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                }
+                FileUtil.deleteDir(appContextFileTempFolder);
             }
 
-        } catch (IOException e) {
-            successfulextract = false;
-            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion), e);
-            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion));
-        } catch (XMLStreamException e) {
+        } catch (IOException | XMLStreamException e) {
             successfulextract = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion), e);
             throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_APPCONTEXT_TRANSFORMATION, portName, serviceName, appGUID, appVersion));
         } finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
-            if (!successfulextract && appContextFileTempFolder != null) {
+            if (!successfulextract) {
                 FileUtil.deleteDir(appContextFileTempFolder);
                 tempFileNameMap.remove(key);
-                tempZipFile.delete();
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                }
             }
         }
     }
@@ -370,8 +388,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 if (outstream != null) {
                     outstream.close();
                 }
-                if (!successfulzip && tempZipFile != null) {
-                    tempZipFile.delete();
+                if (!successfulzip) {
+                    boolean delete = tempZipFile.delete();
+                    if(!delete){
+                        logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                    }
                 }
             } catch (IOException e) {
                 //ignore
@@ -390,7 +411,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             File jmsScriptFile = null;
             File projDirFile = null;
             //extract contents.
-            routeFileTempFolder.mkdir();
+            boolean make = routeFileTempFolder.mkdir();
+            if(!make){
+                logger.trace("Could not create dir " + routeFileTempFolder.getAbsolutePath());
+            }
             ZipUtil.unzip(tempZipFile, routeFileTempFolder);
 
             if (projectDirName != null)
@@ -416,7 +440,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 //expecting app handle to not be null. check for 'is application running' is at method begining.
                 routes = applicationController.getApplicationHandle(appGUID, appVersion, handleId).getApplication().getRoutes();
             } catch (Exception willNeverBeThrown) {
-
+                //ignore
             }
 
             if (projDirFile != null)
@@ -432,7 +456,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                         if (fis != null)
                             fis.close();
                     } catch (IOException ignore) {
-                        ;
+                        //
                     }
                 }
 
@@ -447,26 +471,28 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                         if (fis != null)
                             fis.close();
                     } catch (IOException ignore) {
-                        ;
+                        //ignore
                     }
                 }
             }
 
-            for (Route route : routes) {
-                if (route.getName().equals(routeGUID)) {
-                    MessageTransformation transformation = route.getMessageTransformation();
-                    if (transformation == null && (jmsScriptFileName != null || scriptFileName != null || projectDirName != null)) {
-                        transformation = new MessageTransformation();
-                        transformation.setJMSScriptFile(jmsScriptFileName);
-                        transformation.setScriptFile(scriptFileName);
-                        transformation.setProjectFile(projectDirName);
-                        route.setMessageTransformation(transformation);
-                        break;
-                    } else if (transformation != null) {
-                        transformation.setJMSScriptFile(jmsScriptFileName);
-                        transformation.setScriptFile(scriptFileName);
-                        transformation.setProjectFile(projectDirName);
-                        break;
+            if (routes != null) {
+                for (Route route : routes) {
+                    if (route.getName().equals(routeGUID)) {
+                        MessageTransformation transformation = route.getMessageTransformation();
+                        if (transformation == null && (jmsScriptFileName != null || scriptFileName != null || projectDirName != null)) {
+                            transformation = new MessageTransformation();
+                            transformation.setJMSScriptFile(jmsScriptFileName);
+                            transformation.setScriptFile(scriptFileName);
+                            transformation.setProjectFile(projectDirName);
+                            route.setMessageTransformation(transformation);
+                            break;
+                        } else if (transformation != null) {
+                            transformation.setJMSScriptFile(jmsScriptFileName);
+                            transformation.setScriptFile(scriptFileName);
+                            transformation.setProjectFile(projectDirName);
+                            break;
+                        }
                     }
                 }
             }
@@ -477,28 +503,27 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CHANGE_ROUTE_TRANS, routeGUID, appGUID, appVersion, ""), e);
                 throw new ServiceException(e.getMessage());
             } finally {
-                if (key != null)
                     tempFileNameMap.remove(key);
-                if (tempZipFile != null)
-                    tempZipFile.delete();
-                if (routeFileTempFolder != null)
-                    FileUtil.deleteDir(routeFileTempFolder);
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                }
+                FileUtil.deleteDir(routeFileTempFolder);
             }
 
-        } catch (IOException e) {
-            successfulextract = false;
-            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion), e);
-            throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
-        } catch (XMLStreamException e) {
+        } catch (IOException | XMLStreamException e) {
             successfulextract = false;
             logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion), e);
             throw new ServiceException(Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION.toUpperCase(), I18NUtil.getMessage(Bundle.class, Bundle.ERROR_EXTRACTING_ZIPFILE_UNABLE_TO_SAVE_TRANSFORMATION, routeGUID, appGUID, appVersion));
         } finally {
             //Removing the temporary zip entry in hashmap. and deleteing the file
-            if (!successfulextract && routeFileTempFolder != null) {
+            if (!successfulextract) {
                 FileUtil.deleteDir(routeFileTempFolder);
                 tempFileNameMap.remove(key);
-                tempZipFile.delete();
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                }
             }
         }
     }
@@ -538,7 +563,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             try {
                 //Create Temporary Directory
                 tempdir = getTempFile("application", "tmp");
-                tempdir.mkdir();
+                boolean make = tempdir.mkdir();
+                if(!make){
+                    logger.trace("Could not create dir " + tempdir.getAbsolutePath());
+                }
                 //if the Application to be Zipped in APPID/Version/AppFiles.. We need to add the Required directories as follows.
 //                File appDir = new File(tempdir, appGUID + File.separator + versionString);
 //                appDir.mkdirs();
@@ -566,7 +594,10 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                     if (completed) {
                         tempFileNameMap.remove(eventProcessKey);
                         if (tempZipFile != null) {
-                            tempZipFile.delete();
+                            boolean delete = tempZipFile.delete();
+                            if(!delete){
+                                logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -580,7 +611,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         //Now we have Application Zip file, Read the contents of the Zip file by skipping till index.
         try {
             bis = new BufferedInputStream(new FileInputStream(tempZipFile));
-            bis.skip(index);
+            long skip = bis.skip(index);
+            logger.trace("skipped "+ skip +" bytes while fetching the application " + appGUID +":"+version);
             byte[] tempContents = new byte[Constants.CHUNK_SIZE];
             int readCount;
             readCount = bis.read(tempContents);
@@ -601,8 +633,9 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 }
                 if (completed) {
                     tempFileNameMap.remove(eventProcessKey);
-                    if (tempZipFile != null) {
-                        tempZipFile.delete();
+                    boolean delete = tempZipFile.delete();
+                    if(!delete){
+                        logger.trace("Could not delete " + tempZipFile.getAbsolutePath());
                     }
                 }
             } catch (IOException e) {
@@ -623,7 +656,49 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public boolean dependenciesExists(ServiceReference[] serviceRefs, ApplicationMetadata[] applicationRefs) throws RemoteException, ServiceException {
-        return false;
+        boolean dependenciesExists = true; // assume its all fine
+        try {
+
+            for (ServiceReference serviceReference : serviceRefs) {
+                @SuppressWarnings("unchecked")
+                Enumeration<ServiceReference> allVersionsOfService = microServiceRepoManager.getAllVersionsOfService(serviceReference.getId(), false);
+                boolean serviceFound = false;
+                while (allVersionsOfService.hasMoreElements()) {
+                    ServiceReference aService = allVersionsOfService.nextElement();
+                    if (aService.getVersion() == serviceReference.getVersion()) {
+                        serviceFound = true;
+                        break;
+                    }
+                }
+                if (!serviceFound) {
+                    dependenciesExists = false;
+                    break;
+                }
+            }
+
+            if (dependenciesExists) { // proceed with event process only if all service dependencies are satisfied
+
+                for (ApplicationMetadata eventProcessReference : applicationRefs) {
+
+                    boolean eventProcessFound = false;
+
+                    ApplicationReference anAppReference = applicationController.getHeaderOfSavedApplication(eventProcessReference.getId(), eventProcessReference.getVersion(), handleId);
+                    if (anAppReference.getVersion() == eventProcessReference.getVersion()) {
+                        eventProcessFound = true;
+                    }
+
+                    if (!eventProcessFound) {
+                        dependenciesExists = false;
+                        break;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_DEPENDENCIES_EXISTS), e);
+            throw new ServiceException(Bundle.ERROR_DEPENDENCIES_EXISTS.toUpperCase(),I18NUtil.getMessage(Bundle.class, Bundle.ERROR_DEPENDENCIES_EXISTS));
+        }
+        return dependenciesExists;
     }
 
     @Override
@@ -708,17 +783,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     }
 
     @Override
-    public void deleteServiceInstance(String appGUID, float appVersion, String serviceInstanceName) throws RemoteException, ServiceException {
-        try {
-            applicationController.deleteMicroService(appGUID, appVersion, serviceInstanceName, handleId);
-        } catch (FioranoException e) {
-            throw new ServiceException(e.getMessage());
-        }
-    }
-
-    @Override
     public ApplicationMetadata[] getRunningApplications() throws RemoteException, ServiceException {
-        List<ApplicationMetadata> runningEventProcesses = new ArrayList<ApplicationMetadata>();
+        List<ApplicationMetadata> runningEventProcesses = new ArrayList<>();
         try {
             @SuppressWarnings("unchecked")
             Enumeration<ApplicationReference> runningApplications = applicationController.getHeadersOfRunningApplications(handleId);
@@ -740,11 +806,11 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     }
 
     private List<PortInstanceMetaData> getPortsForService(Application application, String serviceInstName) throws ServiceException {
-        List<PortInstanceMetaData> portInstMetaData = new ArrayList<PortInstanceMetaData>();
+        List<PortInstanceMetaData> portInstMetaData = new ArrayList<>();
         if (application != null) {
             ServiceInstance serInst = application.getServiceInstance(serviceInstName);
             if (serInst != null) {
-                List<PortInstance> portInst = new ArrayList<PortInstance>();
+                List<PortInstance> portInst = new ArrayList<>();
                 portInst.addAll(serInst.getInputPortInstances());
                 portInst.addAll(serInst.getOutputPortInstances());
 
@@ -772,7 +838,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                         application = applicationRepository.readApplication(remoteAppGUID, String.valueOf(remoteAppVersion));
                         serInst = application.getServiceInstance(remoteInstanceName);
                         if (serInst != null) {
-                            List<PortInstance> portInst = new ArrayList<PortInstance>();
+                            List<PortInstance> portInst = new ArrayList<>();
                             portInst.addAll(serInst.getInputPortInstances());
                             portInst.addAll(serInst.getOutputPortInstances());
 
@@ -804,9 +870,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public List<RouteMetaData> getRoutesOfApplications(String appGUID, float version) throws RemoteException, ServiceException {
-        List<RouteMetaData> routes = new ArrayList<RouteMetaData>();
+        List<RouteMetaData> routes = new ArrayList<>();
         try {
-            ApplicationController applicationControllerManager = (applicationController);
             Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
             List<Route> dmiRoutes = application.getRoutes();
 
@@ -842,9 +907,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public List<PortInstanceMetaData> getPortsForApplications(String appGUID, float version) throws RemoteException, ServiceException {
 
-        List<PortInstanceMetaData> portInstMetaData = new ArrayList<PortInstanceMetaData>();
+        List<PortInstanceMetaData> portInstMetaData = new ArrayList<>();
         try {
-            ApplicationController applicationControllerManager = (applicationController);
             Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
             if (application != null) {
                 for (ServiceInstance serInst : application.getServiceInstances()) {
@@ -867,9 +931,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     }
 
     public List<PortInstanceMetaData> getPortsForService(String appGUID, float version, String serviceInstName) throws RemoteException, ServiceException {
-        List<PortInstanceMetaData> portInstMetaData = new ArrayList<PortInstanceMetaData>();
+        List<PortInstanceMetaData> portInstMetaData = new ArrayList<>();
         try {
-            ApplicationController applicationControllerManager = (applicationController);
             Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
             ServiceInstance serviceInst = application.getServiceInstance(serviceInstName);
             if (serviceInst != null) {
@@ -889,9 +952,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public List<ServiceInstanceMetaData> getServiceInstancesOfApp(String appGUID, float version) throws RemoteException, ServiceException {
-        List<ServiceInstanceMetaData> serviceInstances = new ArrayList<ServiceInstanceMetaData>();
+        List<ServiceInstanceMetaData> serviceInstances = new ArrayList<>();
         try {
-            ApplicationController applicationControllerManager = (applicationController);
             Application application = applicationRepository.readApplication(appGUID, String.valueOf(version));
             if (application != null) {
                 List<ServiceInstance> services = application.getServiceInstances();
@@ -1072,7 +1134,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     @Override
     public ApplicationMetadata[] getAllApplications() throws RemoteException, ServiceException {
-        List<ApplicationMetadata> savedEventProcesses = new ArrayList<ApplicationMetadata>();
+        List<ApplicationMetadata> savedEventProcesses = new ArrayList<>();
         try {
             @SuppressWarnings("unchecked")
             Enumeration<ApplicationReference> savedApplications = applicationController.getHeadersOfSavedApplications(handleId);
@@ -1201,26 +1263,6 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     }
 
     @Override
-    public void enableSBW(String servInstName, String appGUID, float appVersion, String portName, boolean isEndState, int trackingType) throws RemoteException, ServiceException {
-
-    }
-
-    @Override
-    public void disableSBW(String servInstName, String appGUID, float appVersion, String portName) throws RemoteException, ServiceException {
-
-    }
-
-    @Override
-    public void setTrackedDataType(String servInstName, String appGUID, float appVersion, String portName, int trackingType) throws RemoteException, ServiceException {
-
-    }
-
-    @Override
-    public void changeSBWConfiguration(String servInstName, String appGUID, float appVersion, String portName, String configurationName) throws RemoteException, ServiceException {
-
-    }
-
-    @Override
     public String getWADLURL(String appGUID, float appVersion, String servInstName) throws RemoteException, ServiceException {
         ApplicationHandle applicationHandle = applicationController.getApplicationHandle(appGUID, appVersion);
         if (applicationHandle == null) {
@@ -1268,7 +1310,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
 
     public List<String> getAllReferringApplications(String appGUID, float appVersion, String serviceInstName) throws RemoteException, ServiceException {
         try {
-            List<String> temp = new ArrayList<String>();
+            List<String> temp = new ArrayList<>();
             Set<String> allReferredApps = applicationController.getAllReferringApplications(appGUID, appVersion, serviceInstName);
             if (allReferredApps != null && allReferredApps.size() > 0)
                 temp.addAll(allReferredApps);
@@ -1295,8 +1337,8 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     }*/
 
     /**
-     * @param appGUID
-     * @param appVersion
+     * @param appGUID application guid
+     * @param appVersion application version
      * @return true is application is being referred by some other application i.e. if some other application is to have a remote instance of this application's service
      * @throws RemoteException
      * @throws ServiceException
@@ -1411,9 +1453,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 System.out.println("Named Configurations repository is empty. Please check configuration details");
                 throw new ServiceException("Named Configurations repository is empty. Please check configuration details");
             }
-            for (String value : categoryList) {
-                categoryDir.add(value);
-            }
+            Collections.addAll(categoryDir, categoryList);
             for (int i = 0; i < configsToChange.size(); i++) {
                 HashMap<String, String> configDetails = configsToChange.get(i);
                 String namedCategory = configDetails.get("category").toLowerCase();
@@ -1421,7 +1461,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
                 String source = configDetails.get("source");
                 String target = configDetails.get("target");
                 String compGUID = configDetails.get("compGUID");
-                String repoCategory = "";
+                String repoCategory;
                 String compVersion = configDetails.get("compVersion");
                 String portType = configDetails.get("portType");
                 try {
@@ -1482,7 +1522,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             int failure = 0;
             validateHandleID(handleId, "Synchronize All Running Event Processes");
             Enumeration<ApplicationReference> apprefs = applicationController.getHeadersOfRunningApplications(handleId);
-            ApplicationReference currentApp = null;
+            ApplicationReference currentApp;
             while (apprefs.hasMoreElements()) {
                 try {
                     currentApp = apprefs.nextElement();

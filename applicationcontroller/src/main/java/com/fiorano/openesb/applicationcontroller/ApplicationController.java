@@ -21,7 +21,6 @@ import com.fiorano.openesb.application.service.Service;
 import com.fiorano.openesb.application.service.ServiceRef;
 import com.fiorano.openesb.events.ApplicationEvent;
 import com.fiorano.openesb.events.Event;
-import com.fiorano.openesb.events.EventsManager;
 import com.fiorano.openesb.microservice.ccp.CCPEventManager;
 import com.fiorano.openesb.microservice.ccp.IEventListener;
 import com.fiorano.openesb.microservice.ccp.event.CCPEventType;
@@ -66,12 +65,11 @@ public class ApplicationController {
     private Map<String, Application> savedApplicationMap = new HashMap<>();
     private RouteService routeService;
     private SecurityManager securityManager;
-    private EventsManager eventsManager;
     private MicroServiceRepoManager microServiceRepoManager;
     //To store the list of applications referring particular component(key) and values(Event_Process)
     private HashMap<String, Set<String>> COMPONENTS_REFERRING_APPS;
 
-    private HashMap<String, File> applicationLogMap = new HashMap<String, File>(8);
+    private HashMap<String, File> applicationLogMap = new HashMap<>(8);
 
     //To store the set of applications referring particular
     private HashMap<String,Set<String>> REFERRING_APPS_LIST;
@@ -79,8 +77,6 @@ public class ApplicationController {
     //To store the list of applications GUID__Versions which the 'key' application is depends on
     private HashMap<String, Set<String>> DEPEND_APP_LIST;
 
-    // This will be set to true after the applications are started during the server startup
-    private transient boolean appsRestored;
     private CCPEventManager ccpEventManager;
 
     public ApplicationController(ApplicationRepository applicationRepository, BundleContext context) throws Exception {
@@ -88,16 +84,15 @@ public class ApplicationController {
         this.applicationRepository = applicationRepository;
         routeService = context.getService(context.getServiceReference(RouteService.class));
         microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
-        eventsManager = context.getService(context.getServiceReference(EventsManager.class));
         ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
         namedConfigRepository = context.getService(context.getServiceReference(NamedConfigRepository.class));
         microServiceRepoManager = context.getService(context.getServiceReference(MicroServiceRepoManager.class));
         registerConfigRequestListener(ccpEventManager);
         transport = context.getService(context.getServiceReference(TransportService.class));
         securityManager = context.getService(context.getServiceReference(SecurityManager.class));
-        COMPONENTS_REFERRING_APPS = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
-        REFERRING_APPS_LIST = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
-        DEPEND_APP_LIST = new HashMap<String, Set<String>>(Constants.INITIAL_CAPACITY);
+        COMPONENTS_REFERRING_APPS = new HashMap<>(Constants.INITIAL_CAPACITY);
+        REFERRING_APPS_LIST = new HashMap<>(Constants.INITIAL_CAPACITY);
+        DEPEND_APP_LIST = new HashMap<>(Constants.INITIAL_CAPACITY);
         String [] appIds = applicationRepository.getApplicationIds();
         for(String appid:appIds){
             float[] appVersions = new float[0];
@@ -108,7 +103,7 @@ public class ApplicationController {
                 Application application = applicationRepository.readApplication(appid, String.valueOf(ver));
                savedApplicationMap.put(appid + "__" + ver, application);
                 if (cyclicDependencyExists(application)) {//for app that are already in the repo before fix 25838
-                   // logger.error(Bundle.class, Bundle.ERROR_CYCLIC_DEPENDENCY_REFERRED_APPS, application.getGUID(), String.valueOf(application.getVersion()));
+                    logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_CYCLIC_DEPENDENCY_REFERRED_APPS, application.getGUID(), String.valueOf(application.getVersion())));
                 } else {
                     updateChainLaunchDS(application);
                 }
@@ -153,10 +148,10 @@ public class ApplicationController {
                         if(request == DataRequestEvent.DataIdentifier.PORT_CONFIGURATION) {
                             logger.info("Processing the "+DataRequestEvent.DataIdentifier.PORT_CONFIGURATION.name()+ " Data Request CCP Event coming from Service: "+serviceInstanceName+ "of Application: "+appName+":"+appVersion);
                             PortConfiguration portConfiguration = new PortConfiguration();
-                            Map<String, List<PortInstance>> portInstances = new HashMap();
-                            List<PortInstance> inPortInstanceList = new ArrayList();
+                            Map portInstances = new HashMap();
+                            List<InputPortInstance> inPortInstanceList = new ArrayList();
                             inPortInstanceList.addAll(application.getServiceInstance(serviceInstanceName).getInputPortInstances());
-                            List<PortInstance> outPortInstanceList = new ArrayList();
+                            List<OutputPortInstance> outPortInstanceList = new ArrayList();
                             outPortInstanceList.addAll(application.getServiceInstance(serviceInstanceName).getOutputPortInstances());
                             portInstances.put("IN_PORTS",inPortInstanceList);
                             portInstances.put("OUT_PORTS", outPortInstanceList);
@@ -193,7 +188,7 @@ public class ApplicationController {
     }
 
     private HashMap<String, ConfigurationProperty> getManageablePropertiesToBind(List manageablePropertiesList) {
-        HashMap<String, ConfigurationProperty> configurationProps = new HashMap<String, ConfigurationProperty>();
+        HashMap<String, ConfigurationProperty> configurationProps = new HashMap<>();
         if (manageablePropertiesList != null) {
             for (Object aManageablePropertiesList : manageablePropertiesList) {
                 ManageableProperty prop = (ManageableProperty) aManageablePropertiesList;
@@ -208,7 +203,7 @@ public class ApplicationController {
         Application application = applicationHandle.getApplication();
         ServiceInstance serviceInstance = application.getServiceInstance(servInstance);
         ArrayList<NamedConfigurationProperty> namedConfigurations = serviceInstance.getNamedConfigurations();
-        HashMap<String, String> resolvedConfigurations = new HashMap<String, String>();
+        HashMap<String, String> resolvedConfigurations = new HashMap<>();
 
         if (namedConfigurations != null && namedConfigurations.size() > 0) {
             for(NamedConfigurationProperty configurationProperty : namedConfigurations){
@@ -248,47 +243,46 @@ public class ApplicationController {
             String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath() + File.separator + ConfigurationRepoConstants.CONFIGURATIONS_DIR;
 
             ObjectCategory objectCategory = ObjectCategory.getObjectCategory(configurationType);
-            final String environmentLabel = label;
             switch (objectCategory) {
                 case SERVICE_CONFIGURATION:
-                    File serviceConfigurationFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationRepoPath, servInstanceGuid, String.valueOf(servVersion), environmentLabel, configurationName);
-                    return getConfigurationContents(serviceConfigurationFile, configurationName, configurationType);
+                    File serviceConfigurationFile = NamedConfigurationUtil.getServiceConfigurationFile(configurationRepoPath, servInstanceGuid, String.valueOf(servVersion), label, configurationName);
+                    return getConfigurationContents(serviceConfigurationFile);
                 case MISCELLANEOUS:
                     File miscConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.MISC,
-                            environmentLabel, configurationName);
-                    return getConfigurationContents(miscConfigurationFile, configurationName, configurationType);
+                            label, configurationName);
+                    return getConfigurationContents(miscConfigurationFile);
                 case RESOURCE_CONFIGURATION:
                     File resourceConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.RESOURCES,
-                            environmentLabel, configurationName);
-                    return getConfigurationContents(resourceConfigurationFile, configurationName, configurationType);
+                            label, configurationName);
+                    return getConfigurationContents(resourceConfigurationFile);
                 case ROUTE:
-                    File routeConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.ROUTES, environmentLabel,
+                    File routeConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.ROUTES, label,
                             configurationName);
-                    return getConfigurationContents(routeConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(routeConfigurationFile);
                 case SELECTOR:
-                    File selectorConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.SELECTORS, environmentLabel,
+                    File selectorConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.SELECTORS, label,
                             configurationName);
-                    return getConfigurationContents(selectorConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(selectorConfigurationFile);
                 case TRANSFORMATION:
-                    File transformationConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.TRANSFORMATIONS, environmentLabel,
+                    File transformationConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.TRANSFORMATIONS, label,
                             configurationName);
-                    return getConfigurationContents(transformationConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(transformationConfigurationFile);
                 case WORKFLOW:
-                    File workflowConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.WORKFLOWS, environmentLabel,
+                    File workflowConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.WORKFLOWS, label,
                             configurationName);
-                    return getConfigurationContents(workflowConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(workflowConfigurationFile);
                 case MESSAGEFILTERS:
-                    File messageFilterConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.MESSAGEFILTERS, environmentLabel,
+                    File messageFilterConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.MESSAGEFILTERS, label,
                             configurationName);
-                    return getConfigurationContents(messageFilterConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(messageFilterConfigurationFile);
                 case RUNTIME_ARG_CONFIGURATION:
-                    File runtimeConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.RUNTIME_ARGS, environmentLabel,
+                    File runtimeConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.RUNTIME_ARGS, label,
                             configurationName);
-                    return getConfigurationContents(runtimeConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(runtimeConfigurationFile);
                 case CONNECTION_FACTORY_CONFIGURATION:
-                    File connectionFactoryConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.CONNECTION_FACTORY, environmentLabel,
+                    File connectionFactoryConfigurationFile = NamedConfigurationUtil.getConfigurationFile(configurationRepoPath, ConfigurationRepoConstants.CONNECTION_FACTORY, label,
                             configurationName);
-                    return getConfigurationContents(connectionFactoryConfigurationFile, configurationName, configurationType);
+                    return getConfigurationContents(connectionFactoryConfigurationFile);
                 case PORT_CONFIGURATION:
                     throw new FioranoException(ComponentErrorCodes.PORT_CONFIGURATION_TYPE_NOT_SUPPORTED);
                 case DESTINATION:
@@ -300,7 +294,7 @@ public class ApplicationController {
             throw new FioranoException(ComponentErrorCodes.CONFIGURATION_TYPE_INVALID);
     }
 
-    private String getConfigurationContents(File file, String configurationName, String configurationType) throws FioranoException {
+    private String getConfigurationContents(File file) throws FioranoException {
         if (!file.exists())
             throw new FioranoException(ComponentErrorCodes.CONFIGURATION_NOT_PRESENT);
 
@@ -349,20 +343,10 @@ public class ApplicationController {
         return instance;
     }
 
-    private String getPortSuffix(ComponentCCPEvent event) {
-        String componentId = event.getComponentId();
-        String version = componentId.substring(componentId.indexOf("__") + 2);
-        String instance = version.substring(version.indexOf("__") + 2);
-        String portSuffix = instance.substring(instance.indexOf("__"));
-        return portSuffix;
-    }
-
-
     public void saveApplication(File appFileFolder, String handleID, byte[] zippedContents) throws FioranoException {
         String userName = securityManager.getUserName(handleID);
         logger.info("Reading Application from "+ appFileFolder.getName());
-        Application application = null;
-        application = ApplicationParser.readApplication(appFileFolder, Application.Label.none.toString(), false, false);
+        Application application = ApplicationParser.readApplication(appFileFolder, Application.Label.none.toString(), false, false);
         try {
             application.validate();
         } catch (FioranoException e3){
@@ -378,9 +362,9 @@ public class ApplicationController {
         savedApplicationMap.put(application.getGUID() + Constants.NAME_DELIMITER + application.getVersion(), application);
         if (oldApp != null) {
             removeChainLaunchDS(oldApp);
-            Vector<String> deletedComponents = new Vector<String>();
-            Vector<String> deletedConfigComponents = new Vector<String>();
-            HashMap<String, String> deletedPorts = new HashMap<String, String>();
+            Vector<String> deletedComponents = new Vector<>();
+            Vector<String> deletedConfigComponents = new Vector<>();
+            HashMap<String, String> deletedPorts = new HashMap<>();
 
             for (Object o1 : oldApp.getServiceInstances()) {
                 boolean check = false;
@@ -434,14 +418,10 @@ public class ApplicationController {
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
-            if (!deletedComponents.isEmpty()) {
-                deleteInPort(oldApp, deletedConfigComponents);
-            }
-
             if (!deletedPorts.isEmpty())
                 deletePortTransformations(oldApp, deletedPorts);
 
-            Vector<String> deletedRoutes = new Vector<String>();
+            Vector<String> deletedRoutes = new Vector<>();
             for (Route oldRoute : oldApp.getRoutes()) {
                 boolean check = false;
 
@@ -471,21 +451,13 @@ public class ApplicationController {
 
     public void saveApplication(Application application, boolean skipManagableProps, String handleID) throws FioranoException {
         String userName = securityManager.getUserName(handleID);
-        boolean applicationExists = applicationRepository.applicationExists(application.getGUID(), application.getVersion());
-        boolean applicationAnyVersionExists=applicationRepository.applicationExists(application.getGUID(), -1);
-
         Application oldApp = savedApplicationMap.get(application.getGUID() + Constants.NAME_DELIMITER + String.valueOf(application.getVersion()));
-
-            try {
-                applicationRepository.saveApplication(application, userName, handleID, skipManagableProps);
-            } catch (FioranoException e) {
-                throw e;
-            }
+        applicationRepository.saveApplication(application, userName, handleID, skipManagableProps);
 
         if (oldApp != null) {
-            Vector<String> deletedComponents = new Vector<String>();
-            Vector<String> deletedConfigComponents = new Vector<String>();
-            HashMap<String, String> deletedPorts = new HashMap<String, String>();
+            Vector<String> deletedComponents = new Vector<>();
+            Vector<String> deletedConfigComponents = new Vector<>();
+            HashMap<String, String> deletedPorts = new HashMap<>();
 
             for (Object o1 : oldApp.getServiceInstances()) {
                 boolean check = false;
@@ -538,14 +510,10 @@ public class ApplicationController {
             if (!deletedConfigComponents.isEmpty())
                 deleteConfigurations(oldApp, deletedConfigComponents);
 
-            if (!deletedComponents.isEmpty()) {
-                deleteInPort(oldApp, deletedConfigComponents);
-            }
-
             if (!deletedPorts.isEmpty())
                 deletePortTransformations(oldApp, deletedPorts);
 
-            Vector<String> deletedRoutes = new Vector<String>();
+            Vector<String> deletedRoutes = new Vector<>();
             for (Route oldRoute : oldApp.getRoutes()) {
                 boolean check = false;
 
@@ -586,27 +554,27 @@ public class ApplicationController {
      * @param deletedPorts HashMap of (ServiceInstanceName, PortName)
      */
     private void deletePortTransformations(Application oldApp, HashMap<String, String> deletedPorts) {
-        //todo
+        try {
+            applicationRepository.deletePortTransformations(oldApp, deletedPorts);
+        } catch (FioranoException e) {
+            logger.error("Error occurred while deleting port transformations.", e);
+        }
     }
 
     private void deleteConfigurations(Application oldApp, Vector<String> deletedConfigComponents) {
-        //Todo
+        try {
+            applicationRepository.deleteConfigs(oldApp, deletedConfigComponents);
+        } catch (FioranoException e) {
+            logger.error("Error occurred while deleting named configurations.", e);
+        }
     }
-
-
-    /**
-     * delete InPort when running components are deleted
-     *
-     * @param oldApp oldApplication dmi
-     * @param deletedComponent deleted components
-     */
-    private void deleteInPort(Application oldApp, Vector<String> deletedComponent) {
-        //todo
-    }
-
 
     private void deleteRouteConfigurations(Application oldApp, Vector<String> deletedRoutes) {
-        //todo
+        try {
+            applicationRepository.deleteRouteConfigs(oldApp, deletedRoutes);
+        } catch (FioranoException e) {
+            logger.error("Error occurred while deleting route configurations.");
+        }
     }
 
     private void deleteLogs(Application application, Vector<String> components) throws FioranoException {
@@ -616,7 +584,7 @@ public class ApplicationController {
         }
     }
 
-    public Set<String> getListOfRunningApplications(String handleId){
+    public Set<String> getListOfRunningApplications(){
         return applicationHandleMap.keySet();
     }
 
@@ -645,7 +613,6 @@ public class ApplicationController {
     }
 
     private void validateServicesBeforeLaunch(Application application, ServiceInstance instance) throws FioranoException {
-        String instName = instance.getName();
         String servGUID = instance.getGUID();
         String version = String.valueOf(instance.getVersion());
         //  If any of the services doesn't exist in SP-Repository then throw an exception.
@@ -706,7 +673,7 @@ public class ApplicationController {
                 if (dependency != null) {
                     String depServiceGUID = dependency.getGUID();
                     float depServiceVersion = dependency.getVersion();
-                    Service depSps = null;
+                    Service depSps;
                     try {
 
                         depSps = microServiceRepoManager.getServiceInfo(
@@ -751,7 +718,6 @@ public class ApplicationController {
             String currentGUID = appGUIDAndVersion[0];
             Float currentVersion = Float.valueOf(appGUIDAndVersion[1]);
             if (isApplicationRunning(currentGUID, currentVersion, handleID)) {
-                ApplicationStateDetails asd;
                 ApplicationHandle applicationHandle = getApplicationHandle(currentGUID, currentVersion, handleID);
                 applicationHandle.stopApplication();
                 removeApplicationHandleFromMap(currentGUID, String.valueOf(currentVersion));
@@ -802,6 +768,7 @@ public class ApplicationController {
     }
 
     public boolean startAllMicroServices(String appGuid, String version, String handleID) throws FioranoException{
+        logger.trace("User " + securityManager.getUserName(handleID) + " starting all services in the application " + getKey(appGuid, version));
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
@@ -812,6 +779,7 @@ public class ApplicationController {
     }
 
     public boolean stopAllMicroServices(String appGuid, String version, String handleID) throws FioranoException{
+        logger.trace("User "+ securityManager.getUserName(handleID) +" stopping all services in the application " + getKey(appGuid, version));
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
@@ -823,6 +791,7 @@ public class ApplicationController {
     }
 
     public boolean startMicroService(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+        logger.trace("User "+ securityManager.getUserName(handleID) +" starting service " +microServiceName+ " in the application " + getKey(appGuid, version));
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
@@ -833,7 +802,7 @@ public class ApplicationController {
         return false;
     }
 
-    public boolean isMicroserviceRunning(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+    public boolean isMicroserviceRunning(String appGuid, String version, String microServiceName) throws FioranoException{
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
@@ -841,15 +810,17 @@ public class ApplicationController {
         }
         return false;
     }
-    public MemoryUsage getMemoryUsage(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+   /* public MemoryUsage getMemoryUsage(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+        logger.trace("User "+ securityManager.getUserName(handleID) +" trying to access memory usage of the component "+ microServiceName+" of the application " + getKey(appGuid, version));
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
             return appHandle.getMemoryUsage(microServiceName);
         }
         return null;
-    }
+    }*/
     public boolean stopMicroService(String appGuid, String version, String microServiceName, String handleID) throws FioranoException{
+        logger.trace("User "+ securityManager.getUserName(handleID) +" stopping the service" + microServiceName+" in the application " + getKey(appGuid, version));
         String key = appGuid+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             ApplicationHandle appHandle = applicationHandleMap.get(key);
@@ -861,6 +832,7 @@ public class ApplicationController {
     }
 
     public void deleteApplication(String appGUID, String version, String handleID) throws FioranoException {
+        logger.trace("User "+ securityManager.getUserName(handleID) +" deleting the application " + getKey(appGUID, version));
         String key = appGUID+Constants.NAME_DELIMITER+version;
         if(applicationHandleMap.containsKey(key)){
             throw new FioranoException("Cannot delete running Application. Stop the Application and then delete");
@@ -879,6 +851,7 @@ public class ApplicationController {
     }
 
     public ApplicationHandle getApplicationHandle(String appGUID, float appVersion, String handleID) {
+        logger.trace("User "+ securityManager.getUserName(handleID) +" checking if the applicaiton "+ getKey(appGUID, String.valueOf(appVersion)) + " is running." );
         return applicationHandleMap.get(appGUID+"__"+appVersion);
     }
 
@@ -902,7 +875,7 @@ public class ApplicationController {
                 throw new FioranoException("ERR_APPCONTEXT_TRANSFORMATION_CHANGE_NOT_ALLOWED");
         }
 
-        Transformation trans = null;
+        Transformation trans;
         // set the new transformation
         if (StringUtil.isEmpty(newTransformation) && StringUtil.isEmpty(newJMSTransformation))
             port.setApplicationContextTransformation(null);
@@ -942,7 +915,7 @@ public class ApplicationController {
     }
 
     public void changePortAppContextConfiguration(String appGUID, float appVersion, String serviceName, String portName, String configurationName, String handleId) throws FioranoException{
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
+        Application application = savedApplicationMap.get(appGUID + Constants.NAME_DELIMITER + appVersion);
         ServiceInstance serviceInstance = application.getServiceInstance(serviceName);
         OutputPortInstance port = serviceInstance.getOutputPortInstance(portName);
         Transformation transformation = port.getApplicationContextTransformation();
@@ -962,7 +935,6 @@ public class ApplicationController {
             throw new FioranoException("ERR_READING_TRANSFORMATION_METADATA_CONFIGURATION", e);
         }
 
-        boolean hasJMSTransformation=false;
         try {
             if (transformationConfig != null) {
                 String scriptFileName = transformationConfig.getScriptFileName();
@@ -979,27 +951,20 @@ public class ApplicationController {
                 if (scriptFileName != null) {
                     File scriptFile = new File(transformationDirPath, scriptFileName);
                     if (scriptFile.exists()) {
-                        FileInputStream scriptFileStream = new FileInputStream(scriptFile);
-                        try {
+                        try (FileInputStream scriptFileStream = new FileInputStream(scriptFile)){
                             String script = DmiObject.getContents(scriptFileStream);
                             transformation.setScript(script);
-                        } finally {
-                            scriptFileStream.close();
                         }
                     } else
                         throw new FioranoException("SCRIPT_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
                 }
 
                 if (jmsScriptFileName != null) {
-                    hasJMSTransformation = true;
                     File jmsScriptFile = new File(transformationDirPath, jmsScriptFileName);
                     if (jmsScriptFile.exists()) {
-                        FileInputStream jmsScriptFileStream = new FileInputStream(jmsScriptFile);
-                        try {
+                        try(FileInputStream jmsScriptFileStream = new FileInputStream(jmsScriptFile)) {
                             String jmsScript = DmiObject.getContents(jmsScriptFileStream);
                             ((MessageTransformation) transformation).setJMSScript(jmsScript);
-                        } finally {
-                            jmsScriptFileStream.close();
                         }
                     } else
                         throw new FioranoException("JMS_SCRIPT_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
@@ -1009,12 +974,9 @@ public class ApplicationController {
                     File projectFile = new File(transformationDirPath, projectFileName);
                     if (projectFile.exists()) {
                         if (projectFile.isFile()) {
-                            FileInputStream projectFileStream = new FileInputStream(projectFile);
-                            try {
+                            try(FileInputStream projectFileStream = new FileInputStream(projectFile)) {
                                 String project = DmiObject.getContents(projectFileStream);
                                 transformation.setProject(project);
-                            } finally {
-                                projectFileStream.close();
                             }
                         } else {
                             String project = ApplicationParser.toXML(projectFile);
@@ -1058,9 +1020,7 @@ public class ApplicationController {
 //                }
             } else
                 throw new FioranoException("METADATA_FOR_APPCONTEXT_TRANSFORMATION_NOT_FOUND");
-        } catch (IOException e) {
-            throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
-        } catch (XMLStreamException e) {
+        } catch (IOException | XMLStreamException e) {
             throw new FioranoException("ERR_READING_TRANSFORMATION_CONFIGURATION", e);
         }
     }
@@ -1078,9 +1038,6 @@ public class ApplicationController {
                 throw new FioranoException("ERR_ROUTE_TRANSFORMATION_CHANGE_NOT_ALLOWED");
         }
 
-        // get source service instance and port name for this route
-        String srcPortName = route.getSourcePortInstance();
-        String srcServiceInstName = route.getSourceServiceInstance();
         ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
         // set the new route transformation
         if (StringUtil.isEmpty(newTransformation) && StringUtil.isEmpty(newJMSTransformation))
@@ -1153,12 +1110,9 @@ public class ApplicationController {
                     File scriptFile = new File(transformationDirPath, scriptFileName);
 
                     if (scriptFile.exists()) {
-                        FileInputStream scriptFileStream = new FileInputStream(scriptFile);
-                        try {
+                        try(FileInputStream scriptFileStream = new FileInputStream(scriptFile)) {
                             String script = DmiObject.getContents(scriptFileStream);
                             transformation.setScript(script);
-                        } finally {
-                            scriptFileStream.close();
                         }
                     } else
                         throw new FioranoException("SCRIPT_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
@@ -1168,12 +1122,9 @@ public class ApplicationController {
                     File jmsScriptFile = new File(transformationDirPath, jmsScriptFileName);
 
                     if (jmsScriptFile.exists()) {
-                        FileInputStream jmsScriptFileStream = new FileInputStream(jmsScriptFile);
-                        try {
+                        try(FileInputStream jmsScriptFileStream = new FileInputStream(jmsScriptFile)) {
                             String jmsScript = DmiObject.getContents(jmsScriptFileStream);
                             transformation.setJMSScript(jmsScript);
-                        } finally {
-                            jmsScriptFileStream.close();
                         }
                     } else
                         throw new FioranoException("JMS_SCRIPT_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
@@ -1184,12 +1135,9 @@ public class ApplicationController {
 
                     if (projectFile.exists()) {
                         if (projectFile.isFile()) {
-                            FileInputStream projectFileStream = new FileInputStream(projectFile);
-                            try {
+                            try(FileInputStream projectFileStream = new FileInputStream(projectFile)) {
                                 String project = DmiObject.getContents(projectFileStream);
                                 transformation.setProject(project);
-                            } finally {
-                                projectFileStream.close();
                             }
                         } else {
                             String project = ApplicationParser.toXML(projectFile);
@@ -1199,9 +1147,6 @@ public class ApplicationController {
                         throw new FioranoException("PROJECT_FOR_ROUTE_TRANSFORMATION_NOT_FOUND");
                 }
 
-                // get source service instance and port name for this route
-                String srcPortName = route.getSourcePortInstance();
-                String srcServiceInstName = route.getSourceServiceInstance();
                 ApplicationHandle appHandle = getApplicationHandle(appGUID, appVersion, handleId);
                 if (appHandle != null) {
                     try {
@@ -1331,14 +1276,11 @@ public class ApplicationController {
 
     public void changeRouteSelectorConfiguration(String appGUID, float appVersion, String routeGUID, String configurationName, String handleID) throws FioranoException {
 
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+ appVersion);
+        Application application = savedApplicationMap.get(appGUID + Constants.NAME_DELIMITER + appVersion);
 
         // get the route. This throws an exception if route is not present
         Route route = getRoute(routeGUID, application);
 
-        // get source service instance and port name for this route
-        String srcPortName = route.getSourcePortInstance();
-        String srcServiceInstName = route.getSourceServiceInstance();
         String configurationRepoPath = namedConfigRepository.getConfigurationRepositoryPath();
 
         FileInputStream fis = null;
@@ -1390,10 +1332,8 @@ public class ApplicationController {
                     }
                 }
             }
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | XMLStreamException e) {
             throw new FioranoException("ROUTE_SELECTOR_TRANSFORMATION_NOT_FOUND", e);
-        } catch (XMLStreamException e) {
-            throw new FioranoException("ERR_READING_SELECTOR_CONFIGURATION", e);
         } finally {
             try {
                 if (cursor != null)
@@ -1415,7 +1355,8 @@ public class ApplicationController {
     }
 
     public Enumeration<ApplicationReference> getHeadersOfRunningApplications(String handleId) throws FioranoException{
-        Vector<ApplicationReference> toReturn = new Vector<ApplicationReference>();
+        logger.trace("User "+ securityManager.getUserName(handleId) +" getting headers of the running applications.");
+        Vector<ApplicationReference> toReturn = new Vector<>();
         // get the running application handles and fetch the application info packet from the handles.
         for (ApplicationHandle appHandle:applicationHandleMap.values()) {
 
@@ -1429,7 +1370,8 @@ public class ApplicationController {
     }
 
     public Enumeration<ApplicationReference> getHeadersOfSavedApplications(String handleId) throws FioranoException{
-        Vector<ApplicationReference> toReturn = new Vector<ApplicationReference>();
+        logger.trace("User " + securityManager.getUserName(handleId) + " getting headers of saved applications.");
+        Vector<ApplicationReference> toReturn = new Vector<>();
         // get the running application handles and fetch the application info packet from the handles.
         for (Application app:savedApplicationMap.values()) {
 
@@ -1442,16 +1384,12 @@ public class ApplicationController {
         return toReturn.elements();
     }
 
-    public void deleteMicroService(String appGUID, float appVersion, String serviceInstanceName, String handleId)  throws FioranoException{
-
-    }
-
     public Map<String, Boolean> getApplicationChainForShutdown(String appGUID, float version, String handleId) throws FioranoException{
-        Set<String> applicationChain = new LinkedHashSet<String>();
+        Set<String> applicationChain = new LinkedHashSet<>();
         String app_version = appGUID + Constants.NAME_DELIMITER + version;
         populateReferringList(app_version, applicationChain);
         applicationChain.add(app_version);
-        Map<String, Boolean> result = new LinkedHashMap<String, Boolean>();
+        Map<String, Boolean> result = new LinkedHashMap<>();
         for (String appDetails : applicationChain){
             String[] details = returnAppGUIDAndVersion(appDetails);
             String GUID = details[0];
@@ -1461,11 +1399,11 @@ public class ApplicationController {
     }
 
     public Map<String, Boolean> getApplicationChainForLaunch(String appGUID, float appVersion, String handleId) throws FioranoException{
-        Set<String> orderedListOfApplicationsForLaunch = new  LinkedHashSet<String>();
+        Set<String> orderedListOfApplicationsForLaunch = new  LinkedHashSet<>();
         String appGUID_version = appGUID + Constants.NAME_DELIMITER + appVersion;
         orderedListOfApplicationsForLaunch = populateDependencyList(appGUID_version, orderedListOfApplicationsForLaunch, appGUID_version);
         orderedListOfApplicationsForLaunch.add(appGUID_version);
-        Map<String, Boolean> result = new LinkedHashMap<String, Boolean>();
+        Map<String, Boolean> result = new LinkedHashMap<>();
         for (String app_version : orderedListOfApplicationsForLaunch){
             String[] appDetails = returnAppGUIDAndVersion(app_version);
             result.put(app_version, isApplicationRunning(appDetails[0], Float.valueOf(appDetails[1]), handleId));
@@ -1518,11 +1456,12 @@ public class ApplicationController {
     }
 
     public ApplicationReference getHeaderOfSavedApplication(String appGUID, float version, String handleId) {
+        logger.trace("User "+ securityManager.getUserName(handleId) +" getting header of the saved application " + getKey(appGUID, String.valueOf(version)));
         return savedApplicationMap.get(appGUID + "__" + version);
     }
 
     public Set<String> getReferringRunningApplications(String appGUID, float appVersion, String servInstName) throws FioranoException{
-        Set<String> appGUIDSreferring = new HashSet<String>();
+        Set<String> appGUIDSreferring = new HashSet<>();
 
         for (ApplicationHandle handle: applicationHandleMap.values()) {
 
@@ -1572,7 +1511,7 @@ public class ApplicationController {
                 if (REFERRING_APPS_LIST.containsKey(key)) {
                     REFERRING_APPS_LIST.get(key).add(app_version);
                 } else {
-                    Set<String> referringApps = new LinkedHashSet<String>();
+                    Set<String> referringApps = new LinkedHashSet<>();
                     referringApps.add(app_version);
                     REFERRING_APPS_LIST.put(key, referringApps);
                 }
@@ -1580,7 +1519,7 @@ public class ApplicationController {
                 if (DEPEND_APP_LIST.containsKey(app_version)) {
                     DEPEND_APP_LIST.get(app_version).add(key);
                 } else {
-                    Set<String> dependsList = new LinkedHashSet<String>();
+                    Set<String> dependsList = new LinkedHashSet<>();
                     dependsList.add(key);
                     DEPEND_APP_LIST.put(app_version, dependsList);
                 }
@@ -1588,7 +1527,7 @@ public class ApplicationController {
                 if (COMPONENTS_REFERRING_APPS.containsKey(referredComponent)) {
                     COMPONENTS_REFERRING_APPS.get(referredComponent).add(app_version);
                 } else {
-                    LinkedHashSet<String> referringApps = new LinkedHashSet<String>();
+                    LinkedHashSet<String> referringApps = new LinkedHashSet<>();
                     referringApps.add(app_version);
                     COMPONENTS_REFERRING_APPS.put(referredComponent, referringApps);
                 }
@@ -1630,9 +1569,9 @@ public class ApplicationController {
     public boolean cyclicDependencyExists(Application application) throws FioranoException {
         boolean cyclicDependency = false;
         String actualAppGUID = application.getGUID();
-        Set<String> remoteList = new LinkedHashSet<String>();
+        Set<String> remoteList = new LinkedHashSet<>();
         if (application.getRemoteServiceInstances().isEmpty())
-            return cyclicDependency;
+            return false;
         String app_version = actualAppGUID + Constants.NAME_DELIMITER + application.getVersion();
         for (Object eachRemoteInstance : application.getRemoteServiceInstances()) {
             RemoteServiceInstance oldRemote = (RemoteServiceInstance) eachRemoteInstance;
@@ -1679,27 +1618,13 @@ public class ApplicationController {
         return result;
     }
 
-    public boolean isAppsRestored() {
-        return appsRestored;
-    }
-
-    public void setAppsRestored(boolean appsRestored) {
-        this.appsRestored = appsRestored;
-    }
-
     public boolean isServiceRunning(String eventProcessName, float appVersion, String servInstanceName) {
         ApplicationHandle applicationHandle = applicationHandleMap.get(eventProcessName + Constants.NAME_DELIMITER + appVersion);
 
-        if(applicationHandle!=null){
-            return applicationHandle.isMicroserviceRunning(servInstanceName);
-        }
-        return false;
+        return applicationHandle != null && applicationHandle.isMicroserviceRunning(servInstanceName);
     }
 
     public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws FioranoException {
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
-        ServiceInstance si = application.getServiceInstance(serviceName);
-        float serviceVersion = si.getVersion();
         //todo: remove hardcoded service logs path.
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceName.toUpperCase();
@@ -1710,36 +1635,33 @@ public class ApplicationController {
         File[] logfiles = f.listFiles();
         StringBuilder sb = new StringBuilder("");
         int lineCount=0;
-        for(File file:logfiles){
-            if(!file.getName().contains("out") || file.getName().contains("lck")){
-                continue;
-            }
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                    sb.append("\n");
-                    lineCount++;
+        if (logfiles != null) {
+            for(File file:logfiles){
+                if(!file.getName().contains("out") || file.getName().contains("lck")){
+                    continue;
+                }
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line);
+                        sb.append("\n");
+                        lineCount++;
+                        if(lineCount==numberOfLines){
+                            return sb.toString();
+                        }
+                    }
                     if(lineCount==numberOfLines){
                         return sb.toString();
                     }
+                } catch (IOException e) {
+                    throw new FioranoException(e);
                 }
-                if(lineCount==numberOfLines){
-                    return sb.toString();
-                }
-            } catch (FileNotFoundException e) {
-                throw new FioranoException(e);
-            } catch (IOException e) {
-                throw new FioranoException(e);
             }
         }
         return sb.toString();
     }
 
     public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws FioranoException{
-        Application application = savedApplicationMap.get(appGUID+Constants.NAME_DELIMITER+appVersion);
-        ServiceInstance si = application.getServiceInstance(serviceName);
-        float serviceVersion = si.getVersion();
         //todo: remove hardcoded service logs path.
         String path = ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                 +File.separator+appVersion+File.separator+serviceName.toUpperCase();
@@ -1750,27 +1672,27 @@ public class ApplicationController {
         File[] logfiles = f.listFiles();
         StringBuilder sb = new StringBuilder("");
         int lineCount=0;
-        for(File file:logfiles){
-            if(!file.getName().contains("err") || file.getName().contains("lck")){
-                continue;
-            }
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                    sb.append("\n");
-                    lineCount++;
+        if (logfiles != null) {
+            for(File file:logfiles){
+                if(!file.getName().contains("err") || file.getName().contains("lck")){
+                    continue;
+                }
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line);
+                        sb.append("\n");
+                        lineCount++;
+                        if(lineCount==numberOfLines){
+                            return sb.toString();
+                        }
+                    }
                     if(lineCount==numberOfLines){
                         return sb.toString();
                     }
+                } catch (IOException e) {
+                    throw new FioranoException(e);
                 }
-                if(lineCount==numberOfLines){
-                    return sb.toString();
-                }
-            } catch (FileNotFoundException e) {
-                throw new FioranoException(e);
-            } catch (IOException e) {
-                throw new FioranoException(e);
             }
         }
         return sb.toString();
@@ -1796,17 +1718,20 @@ public class ApplicationController {
             return;
         }
         File[] logfiles = f.listFiles();
-        for(File file:logfiles){
-            if(!file.getName().contains("out") || file.getName().contains("lck")){
-                continue;
+        if (logfiles != null) {
+            for(File file:logfiles){
+                if(!file.getName().contains("out") || file.getName().contains("lck")){
+                    continue;
+                }
+                boolean delete = file.delete();
+                if(!delete)
+                    logger.trace("Could not delete file " + file.getAbsolutePath());
             }
-            file.delete();
         }
     }
 
     public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) throws FioranoException {
         if(isServiceRunning(appGUID, appVersion, serviceInst)){
-            ApplicationHandle applicationHandle = getApplicationHandle(appGUID, appVersion);
             CommandEvent commandEvent = new CommandEvent();
             commandEvent.setCommand(CommandEvent.Command.CLEAR_ERR_LOGS);
             try {
@@ -1825,11 +1750,16 @@ public class ApplicationController {
             return;
         }
         File[] logfiles = f.listFiles();
-        for(File file:logfiles){
-            if(!file.getName().contains("err") || file.getName().contains("lck")){
-                continue;
+        if (logfiles != null) {
+            for(File file:logfiles){
+                if(!file.getName().contains("err") || file.getName().contains("lck")){
+                    continue;
+                }
+                boolean delete = file.delete();
+                if(!delete){
+                    logger.trace("Could not delte file " + file.getAbsolutePath());
+                }
             }
-            file.delete();
         }
     }
 
@@ -1864,11 +1794,16 @@ public class ApplicationController {
                 return;
             }
             File[] logfiles = f.listFiles();
-            for(File file:logfiles){
-                if(file.getName().contains("lck")){
-                    continue;
+            if (logfiles != null) {
+                for(File file:logfiles){
+                    if(file.getName().contains("lck")){
+                        continue;
+                    }
+                    boolean delete = file.delete();
+                    if(!delete){
+                        logger.trace("Could not delete file " + file.getAbsolutePath());
+                    }
                 }
-                file.delete();
             }
         }
     }
@@ -1898,6 +1833,7 @@ public class ApplicationController {
     }
 
     public void flushMessages(String appGUID, float appVersion, String servInstName, String handleId) throws Exception {
+        logger.trace("User " + securityManager.getUserName(handleId) + " flushing messages of the service " + servInstName +" of the application" + getKey(appGUID, String.valueOf(appVersion)));
         CommandEvent flushCommand = new CommandEvent();
         flushCommand.setCommand(CommandEvent.Command.FLUSH_MESSAGES);
         flushCommand.setReplyNeeded(false);
@@ -1935,7 +1871,6 @@ public class ApplicationController {
                 appStates = (Hashtable) obj;
 
             if (appStates == null) {
-                setAppsRestored(true);
                 return;
             }
 
@@ -1953,9 +1888,9 @@ public class ApplicationController {
                     ApplicationEventRaiser.generateApplicationEvent(ApplicationEvent.ApplicationEventType.APPLICATION_LAUNCHED, Event.EventCategory.INFORMATION,
                             appStateDetails.getAppGUID(), null, appStateDetails.getAppVersion(), "Application launched Successfully");
 
-                    Enumeration<String> enumeration = appStateDetails.getAllServiceNames();
+                    Enumeration enumeration = appStateDetails.getAllServiceNames();
                     while(enumeration.hasMoreElements()){
-                        String serviceName = enumeration.nextElement();
+                        String serviceName = (String) enumeration.nextElement();
                         ServiceInstanceStateDetails instanceStateDetails = appStateDetails.getServiceStatus(serviceName);
                         if(!instanceStateDetails.isGracefulKill()){
                             applicationHandle.startMicroService(serviceName);
@@ -1972,7 +1907,6 @@ public class ApplicationController {
            // logger.error(Bundle.class, Bundle.ERROR_RESTORING_STATES, ex);
             logger.error("", ex);
         }
-        setAppsRestored(true);
         logger.info("Restored Application state Successfully.");
     }
 
@@ -1988,7 +1922,7 @@ public class ApplicationController {
                 @SuppressWarnings("unchecked")
                 Hashtable<String, ApplicationInfo> appStates = (Hashtable) NamingManagerImpl.GETINSTANCE().lookup(ApplicationControllerConstants.RUNNING_APPLICATION_LIST);
                 if (appStates == null)
-                    appStates = new Hashtable<String, ApplicationInfo>();
+                    appStates = new Hashtable<>();
 
                 ApplicationInfo appInfo = new ApplicationInfo();
 
@@ -2029,41 +1963,48 @@ public class ApplicationController {
     public byte[] exportApplicationLogs(String appGUID, float version, long index) throws FioranoException {
         byte[] contents = new byte[0];
         String eventProcessKey = appGUID.toUpperCase() + "__" + version;
-        File tempZipFile = null;
+        File tempZipFile;
         FileInputStream fis = null;
         boolean completed = false;
         if (applicationLogMap.get(eventProcessKey) == null) {
-            File tempdir = null;
+            File tempdir;
             File path = new File(ServerConfig.getConfig().getRuntimeDataPath()+File.separator+"logs"+File.separator+appGUID.toUpperCase()
                     +File.separator+version);
             if(!path.exists()) {
                 throw new FioranoException("Logs are empty");
             }
             tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "applicationlogs","tmp");
-            tempdir.mkdir();
+            boolean mkdir = tempdir.mkdir();
+            if(!mkdir){
+                logger.trace("Could not create dir " + tempdir.getAbsolutePath());
+            }
             tempZipFile = FileUtil.findFreeFile(FileUtil.TEMP_DIR ,appGUID+"__"+version + "logs", "zip");
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile))){
                 ZipEntry e;
-                for(File service : path.listFiles()){
-                    for(File f : service.listFiles()){
-                        if(f.getName().endsWith("lck")){
-                            continue;
-                        }
-                        e = new ZipEntry(f.getName());
-                        out.putNextEntry(e);
+                File[] pathListFiles = path.listFiles();
+                if (pathListFiles != null) {
+                    for(File service : pathListFiles){
+                        File[] serviceListFiles = service.listFiles();
+                        if (serviceListFiles != null) {
+                            for(File f : serviceListFiles){
+                                if(f.getName().endsWith("lck")){
+                                    continue;
+                                }
+                                e = new ZipEntry(f.getName());
+                                out.putNextEntry(e);
 
-                        byte[] buffer = new byte[4092];
-                        int byteCount = 0;
-                        fis = new FileInputStream(f);
-                        while ((byteCount = fis.read(buffer)) != -1)
-                        {
-                            out.write(buffer, 0, byteCount);
+                                byte[] buffer = new byte[4092];
+                                int byteCount;
+                                fis = new FileInputStream(f);
+                                while ((byteCount = fis.read(buffer)) != -1)
+                                {
+                                    out.write(buffer, 0, byteCount);
+                                }
+                            }
                         }
                     }
                 }
                 applicationLogMap.put(eventProcessKey, tempZipFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -2074,11 +2015,11 @@ public class ApplicationController {
                         //ignore
                     }
                 }
-                if (tempdir != null)
                     FileUtil.deleteDir(tempdir);
-                if (completed) {
                     applicationLogMap.remove(eventProcessKey);
-                    tempZipFile.delete();
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete file " + tempZipFile.getAbsolutePath());
                 }
             }
         } else {
@@ -2086,7 +2027,8 @@ public class ApplicationController {
         }
 
         try ( BufferedInputStream bis = new BufferedInputStream(new FileInputStream(tempZipFile))){
-            bis.skip(index);
+            long skip = bis.skip(index);
+            logger.trace("skipped " + skip + "bytes");
             byte[] tempContents = new byte[Constants.CHUNK_SIZE];
             int readCount;
             readCount = bis.read(tempContents);
@@ -2102,8 +2044,9 @@ public class ApplicationController {
         } finally {
             if (completed) {
                 applicationLogMap.remove(eventProcessKey);
-                if (tempZipFile != null) {
-                    tempZipFile.delete();
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete file " + tempZipFile.getAbsolutePath());
                 }
             }
 
@@ -2115,7 +2058,7 @@ public class ApplicationController {
 
         byte[] contents = new byte[0];
         String serviceKey = appGUID.toUpperCase() + "__" + version +"__"+ serviceInst.toUpperCase();
-        File tempZipFile = null;
+        File tempZipFile;
         FileInputStream fis= null;
         boolean completed = false;
         if (applicationLogMap.get(serviceKey) == null) {
@@ -2128,9 +2071,14 @@ public class ApplicationController {
             }
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempZipFile))){
                 tempdir = FileUtil.findFreeFile(FileUtil.TEMP_DIR, "servicelogs","tmp");
-                tempdir.mkdir();
-                ZipEntry e = null;
-                    for(File f : path.listFiles()){
+                boolean mkdir = tempdir.mkdir();
+                if(!mkdir){
+                    logger.trace("Could not create dir " + tempZipFile.getAbsolutePath());
+                }
+                ZipEntry e;
+                File[] pathFileList = path.listFiles();
+                if (pathFileList != null) {
+                    for(File f : pathFileList){
                         if(f.getName().endsWith("lck")){
                             continue;
                         }
@@ -2138,7 +2086,7 @@ public class ApplicationController {
                         out.putNextEntry(e);
 
                         byte[] buffer = new byte[4092];
-                        int byteCount = 0;
+                        int byteCount;
                         fis = new FileInputStream(f);
                         while ((byteCount = fis.read(buffer)) != -1)
                         {
@@ -2146,10 +2094,9 @@ public class ApplicationController {
                         }
 
                     }
+                }
                 applicationLogMap.put(serviceKey, tempZipFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 if(fis!=null){
@@ -2161,9 +2108,10 @@ public class ApplicationController {
                 }
                 if (tempdir != null)
                     FileUtil.deleteDir(tempdir);
-                if (completed) {
-                    applicationLogMap.remove(serviceKey);
-                    tempZipFile.delete();
+                applicationLogMap.remove(serviceKey);
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete file " + tempZipFile.getAbsolutePath());
                 }
             }
         } else {
@@ -2171,7 +2119,8 @@ public class ApplicationController {
         }
 
         try (BufferedInputStream bis =  new BufferedInputStream(new FileInputStream(tempZipFile))){
-            bis.skip(index);
+            long skip = bis.skip(index);
+            logger.trace("Skipped " +skip + "bytes");
             byte[] tempContents = new byte[Constants.CHUNK_SIZE];
             int readCount;
             readCount = bis.read(tempContents);
@@ -2187,8 +2136,9 @@ public class ApplicationController {
         } finally {
             if (completed) {
                 applicationLogMap.remove(serviceKey);
-                if (tempZipFile != null) {
-                    tempZipFile.delete();
+                boolean delete = tempZipFile.delete();
+                if(!delete){
+                    logger.trace("Could not delete file " + tempZipFile.getAbsolutePath());
                 }
             }
         }
