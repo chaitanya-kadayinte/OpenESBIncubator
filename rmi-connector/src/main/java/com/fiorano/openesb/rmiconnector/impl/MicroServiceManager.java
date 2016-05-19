@@ -741,7 +741,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     }
 
     private void synchroniseAllDependentApplications(String serviceGUID, String version) throws FioranoException{
-        Set<String> listOfRunningApplications = applicationController.getListOfRunningApplications(handleId);
+        Set<String> listOfRunningApplications = applicationController.getListOfRunningApplications();
         HashMap<String, List<String>> directDependencyMap = getDependencyMap();
         for (String appGUID:listOfRunningApplications){
             String[] appGuidAndVer = LookUpUtil.returnAppGUIDAndVersion(appGUID);
@@ -754,7 +754,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
     }
 
     private void synchroniseAllDependentApplicationsMultiple(String serviceGUID, String version) throws FioranoException{
-        Set<String> listOfRunningApplications = applicationController.getListOfRunningApplications(handleId);
+        Set<String> listOfRunningApplications = applicationController.getListOfRunningApplications();
         HashMap<String, List<String>> directDependencyMap = getDependencyMap();
         for(String appGUID: listOfRunningApplications){
             String[] appGuidAndVer = LookUpUtil.returnAppGUIDAndVersion(appGUID);
