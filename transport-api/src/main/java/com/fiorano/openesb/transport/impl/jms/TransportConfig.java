@@ -31,7 +31,7 @@ public class TransportConfig {
         return userName;
     }
 
-    public void setuserName(String userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
@@ -77,11 +77,7 @@ public class TransportConfig {
             ConfigReader.readConfigFromPropertiesFile(configFile, this);
             properties = new Properties();
             ConfigReader.readPropertiesFromFile(configFile, properties);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (IOException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }

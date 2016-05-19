@@ -18,7 +18,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.util.Properties;
 
-public class FioranoMQDriver {
+public class FioranoMQDriverImpl implements MQDriver {
 
     private final MQAdminConnection ac;
     private final MQAdminService adminService;
@@ -26,7 +26,7 @@ public class FioranoMQDriver {
     private final Logger logger;
     private Properties properties;
 
-    public FioranoMQDriver(Properties properties) throws Exception {
+    public FioranoMQDriverImpl(Properties properties) throws Exception {
         this.properties = properties;
         logger = LoggerFactory.getILoggerFactory().getLogger(Activator.class.getName());
         ic = new InitialContext(properties);

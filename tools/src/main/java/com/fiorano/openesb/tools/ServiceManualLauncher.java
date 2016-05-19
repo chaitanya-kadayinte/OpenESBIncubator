@@ -9,7 +9,7 @@ package com.fiorano.openesb.tools;
 import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.applicationcontroller.MicroServiceLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
-import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
+import com.fiorano.openesb.microservice.launch.java.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
 import com.fiorano.openesb.microservice.launch.impl.JVMCommandProvider;

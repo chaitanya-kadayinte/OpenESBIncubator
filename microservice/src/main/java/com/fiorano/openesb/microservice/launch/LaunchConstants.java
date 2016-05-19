@@ -13,6 +13,7 @@ public class LaunchConstants {
     public final static String URL = "-url";
     public final static String BACKUP_URL = "-backupurl";
 
+    public final static String ICF = "-icf";
     public final static String FES_URL = "-fesurl";
     public final static String PRODUCT_NAME = "-productname";
     public final static String USERNAME = "-username";

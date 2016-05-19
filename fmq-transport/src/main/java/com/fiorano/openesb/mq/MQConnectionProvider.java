@@ -32,14 +32,13 @@ import com.fiorano.openesb.transport.impl.jms.JMSConnectionConfiguration;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import java.lang.reflect.Method;
 import java.util.Properties;
 
 public class MQConnectionProvider extends AbstractJMSConnectionProvider implements ConnectionProvider<Connection, JMSConnectionConfiguration> {
 
-    private FioranoMQDriver driver;
+    private MQDriver driver;
 
-    public MQConnectionProvider(Properties properties, FioranoMQDriver driver) {
+    public MQConnectionProvider(Properties properties, MQDriver driver) {
         super(properties);
         this.driver = driver;
     }

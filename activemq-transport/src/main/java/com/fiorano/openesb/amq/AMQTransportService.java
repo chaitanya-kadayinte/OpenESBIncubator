@@ -80,12 +80,10 @@ public class AMQTransportService extends AbstractJMSTransportService implements 
                 }
             }
             if (connector != null) {
-                //this could take time
                 connector.close();
             }
-        } catch(Exception e){
-                //todo
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            //Ignore - could be because AMQ stopped.
         }
     }
+}

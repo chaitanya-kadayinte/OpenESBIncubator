@@ -140,7 +140,7 @@ public class ESBClassLoaderRepository {
 
     private static void addPeerLevelURLs(ArrayList<URL> urls) {
         File configFile = new File(FIORANO_HOME + File.separator + "etc" + File.separator +
-                "com.fiorano.inmemory.classpath.cfg");
+                "com.fiorano.inmemory.classpath.properties");
         try (BufferedReader r = new BufferedReader(new FileReader(configFile))) {
             String line;
             while ((line = r.readLine()) != null) {

@@ -4,7 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.fiorano.openesb.microservice.launch;
+package com.fiorano.openesb.microservice.launch.java;
+
+import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 
 public class JavaLaunchConfiguration implements AdditionalConfiguration {
     private boolean isDebugMode;

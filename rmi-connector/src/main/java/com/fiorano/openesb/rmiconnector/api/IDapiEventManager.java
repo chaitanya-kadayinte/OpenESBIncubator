@@ -39,7 +39,7 @@ public interface IDapiEventManager {
      * @param appGUID       application GUID
      * @param handleId      handle id of client
      */
-    public void unRegisterApplicationEventListener(IAPIProjectManagerListener eventListener, String appGUID, float appVersion, String handleId);
+    public void unRegisterApplicationEventListener(IApplicationManagerListener eventListener, String appGUID, float appVersion, String handleId);
 
     /**
      * Registers specified Event Listener for security events of specified username

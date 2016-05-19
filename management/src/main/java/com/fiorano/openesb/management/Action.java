@@ -15,7 +15,6 @@ public class Action {
 
     private String action;
 
-
     public String getAction() {
         return action;
     }

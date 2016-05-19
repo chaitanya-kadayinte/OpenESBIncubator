@@ -43,26 +43,25 @@ import java.util.Properties;
 public class MQTransportService extends AbstractJMSTransportService
         implements TransportService<JMSPort, JMSMessage> {
 
-
-    private final FioranoMQDriver fioranoMQDriver;
+    private final MQDriver mqDriver;
 
     @SuppressWarnings("unchecked")
     protected MQTransportService(Properties properties) throws Exception {
         super(properties);
-        fioranoMQDriver = new FioranoMQDriver(properties);
+        mqDriver = new FioranoMQDriverImpl(properties);
         initialize();
     }
 
     @Override
     public ConnectionProvider getConnectionProvider() {
-        return new MQConnectionProvider(properties, fioranoMQDriver);
+        return new MQConnectionProvider(properties, mqDriver);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void disablePort(PortConfiguration portConfiguration) throws Exception {
         JMSPortConfiguration jmsPortConfiguration = (JMSPortConfiguration) portConfiguration;
-        fioranoMQDriver.deleteDestination(portConfiguration.getName(), jmsPortConfiguration.getPortType().name());
+        mqDriver.deleteDestination(portConfiguration.getName(), jmsPortConfiguration.getPortType().name());
     }
 
 }

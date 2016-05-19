@@ -11,7 +11,6 @@ import com.fiorano.openesb.application.application.ServiceInstance;
 import com.fiorano.openesb.application.service.RuntimeArgument;
 import com.fiorano.openesb.application.service.ServiceRef;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
-import com.fiorano.openesb.microservice.launch.JavaLaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 
 import java.util.Enumeration;

@@ -15,6 +15,7 @@ import com.fiorano.openesb.application.service.ServiceParser;
 import com.fiorano.openesb.microservice.launch.AdditionalConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConfiguration;
 import com.fiorano.openesb.microservice.launch.LaunchConstants;
+import com.fiorano.openesb.transport.impl.jms.TransportConfig;
 import com.fiorano.openesb.utils.LookUpUtil;
 import com.fiorano.openesb.utils.exception.FioranoException;
 
@@ -31,6 +32,8 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
         commandLineArgs.put(LaunchConstants.URL, connectURL);
         commandLineArgs.put(LaunchConstants.BACKUP_URL, connectURL);
         commandLineArgs.put(LaunchConstants.FES_URL, connectURL);
+        String icf = TransportConfig.getInstance().getValue("java.naming.factory.initial");
+        if(icf != null) commandLineArgs.put(LaunchConstants.ICF, icf);
         commandLineArgs.put(LaunchConstants.USERNAME, launchConfiguration.getUserName());
         commandLineArgs.put(LaunchConstants.PASSWORD, launchConfiguration.getPassword());
         commandLineArgs.put(LaunchConstants.CONN_FACTORY,"ConnectionFactory");
