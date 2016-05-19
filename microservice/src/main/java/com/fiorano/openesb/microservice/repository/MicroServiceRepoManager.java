@@ -30,7 +30,7 @@ public class MicroServiceRepoManager {
     private Hashtable<String, Service> m_committedServiceVsProperties;
     private Hashtable<String, Service> m_nonCommittedServiceVsProperties;
     private static final Map favorites = Collections.singletonMap("FIORANO_HOME", System.getProperty("user.dir"));
-    public static String COMPONENTS_REPOSITORY_FOLDER = System.getProperty("user.dir") + "/esb/fes/repository/components";
+    public static String COMPONENTS_REPOSITORY_FOLDER = System.getProperty("user.dir") + "/esb/server/repository/components";
     private boolean msRepoInSync = false;
     private final Object waitObject;
 
