@@ -157,15 +157,17 @@ public class ServiceManualLauncher extends FioranoTask {
             return;
         }
         ServiceInstance serviceInstance = null;
-        Map<String, String> jettyServerDetails=null;
+        Properties serverConfig = null;
+        Properties transportConfig = null;
         try {
             serviceInstance = rmiClient.getApplicationManager().getServiceInstance(eventProcessName, appVersion, servInstanceName);
-            jettyServerDetails = rmiClient.getApplicationManager().getJettyServerDetails();
+            serverConfig = rmiClient.getApplicationManager().getServerConfig();
+            transportConfig = rmiClient.getApplicationManager().getTransportConfig();
         } catch (ServiceException e) {
             e.printStackTrace();
         }
 
-        AdditionalConfiguration ac = new JavaLaunchConfiguration(serviceInstance.isDebugMode(), serviceInstance.getDebugPort(), prop.getProperty("-url"), COMP_REPOSITORY_PATH, SCHEMA_REPO_PATH, jettyServerDetails.get("NON_SSL"), jettyServerDetails.get("SSL"), watchForControlEvents, MS_JAVA_HOME, userDefinedJavaHome);
+        AdditionalConfiguration ac = new JavaLaunchConfiguration(serviceInstance.isDebugMode(), serviceInstance.getDebugPort(), transportConfig.getProperty("providerURL"), COMP_REPOSITORY_PATH, SCHEMA_REPO_PATH, serverConfig.getProperty("jettySSLUrl"), serverConfig.getProperty("jettyUrl"), watchForControlEvents, MS_JAVA_HOME, userDefinedJavaHome, transportConfig.getProperty("java.naming.factory.initial"));
         LaunchConfiguration launchConfiguration = new MicroServiceLaunchConfiguration(eventProcessName, String.valueOf(appVersion), loginInfo.user, loginInfo.pwd, serviceInstance, ac);
         com.fiorano.openesb.microservice.launch.impl.JVMCommandProvider jvmCommandProvider = new JVMCommandProvider();
         try {
