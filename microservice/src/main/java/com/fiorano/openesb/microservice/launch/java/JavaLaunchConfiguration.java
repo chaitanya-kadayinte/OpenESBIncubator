@@ -19,11 +19,12 @@ public class JavaLaunchConfiguration implements AdditionalConfiguration {
     private boolean watchForControlEvents;
     private String MS_JAVA_HOME;
     private String userDefinedJavaHome;
+    private String ICF;
 
     public JavaLaunchConfiguration(){
     }
 
-    public JavaLaunchConfiguration(boolean isDebugMode, int debugPort, String providerUrl, String compRepoPath, String schemaRepoPath, String jettyURL, String jettySSLUrl, boolean watchForControlEvents, String MS_JAVA_HOME, String userDefinedJavaHome){
+    public JavaLaunchConfiguration(boolean isDebugMode, int debugPort, String providerUrl, String compRepoPath, String schemaRepoPath, String jettyURL, String jettySSLUrl, boolean watchForControlEvents, String MS_JAVA_HOME, String userDefinedJavaHome, String ICF){
         this.isDebugMode = isDebugMode;
         this.debugPort = debugPort;
         this.providerUrl = providerUrl;
@@ -34,6 +35,7 @@ public class JavaLaunchConfiguration implements AdditionalConfiguration {
         this.watchForControlEvents = watchForControlEvents;
         this.MS_JAVA_HOME = MS_JAVA_HOME;
         this.userDefinedJavaHome = userDefinedJavaHome;
+        this.ICF = ICF;
     }
 
     public boolean isDebugMode() {
@@ -114,5 +116,14 @@ public class JavaLaunchConfiguration implements AdditionalConfiguration {
 
     public void setSchemaRepoPath(String schemaRepoPath) {
         this.schemaRepoPath = schemaRepoPath;
+    }
+
+    @Override
+    public String getICF() {
+        return ICF;
+    }
+
+    public void setICF(String ICF) {
+        this.ICF = ICF;
     }
 }

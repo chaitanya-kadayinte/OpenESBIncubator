@@ -29,7 +29,7 @@ public class Activator implements BundleActivator {
 
             applicationController = new ApplicationController(applicationRepository, context);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
-
+            context.registerService(ApplicationLogManager.class.getName(), applicationController.getApplicationLogManager(), null);
         }
         System.out.println("Activated Fiorano Applications Module");
         logger.trace("Started Application Controller bundle.");

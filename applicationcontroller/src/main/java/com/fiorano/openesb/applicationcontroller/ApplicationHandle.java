@@ -570,7 +570,7 @@ public class ApplicationHandle {
                 instance.getDebugPort(), TransportConfig.getInstance().getProviderURL(), MicroServiceRepoManager.getInstance().getRepositoryLocation(), ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME,
                 ServerConfig.getConfig().getJettyUrl(), ServerConfig.getConfig().getJettySSLUrl(),
                 Boolean.valueOf(TransportConfig.getInstance().getValue("WatchForControlEvents")), TransportConfig.getInstance().getValue("MS_JAVA_HOME"),
-                TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME));
+                TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME), TransportConfig.getInstance().getValue("java.naming.factory.initial"));
         MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance, javaLaunchConfiguration);
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
@@ -775,8 +775,8 @@ public class ApplicationHandle {
                 //delete ports
                 disableServicePorts(serviceInstance);
                 //delete logs
-                applicationController.clearServiceOutLogs(killcomp, appGUID, version);
-                applicationController.clearServiceErrLogs(killcomp, appGUID, version);
+                applicationController.getApplicationLogManager().clearServiceOutLogs(killcomp, appGUID, version);
+                applicationController.getApplicationLogManager().clearServiceErrLogs(killcomp, appGUID, version);
             } catch (Exception e) {
                 logger.error("error occured while stopping the component " + killcomp + "of Application " +appGUID +":"+version);
             }
