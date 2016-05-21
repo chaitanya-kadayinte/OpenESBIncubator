@@ -933,6 +933,9 @@ public interface Bundle {
      */
     String DEL_MSG_DEBUGGER= "del_msg_debugger";
 
-
+    /**
+     * @msg.message msg="Error stopping component: {0} of GUID {1} version {2} present in application {3} version {4}"
+     */
+    java.lang.String ERROR_STOPPING_COMPONENT = "error_stopping_component";
 }
 

@@ -282,12 +282,82 @@ public class ApplicationHandle {
         }
     }
 
+    private String getSourcePortName(com.fiorano.openesb.application.application.Route route) throws FioranoException {
+        String sourcePortInstance = route.getSourcePortInstance();
+        String sourceServiceInstanceName = route.getSourceServiceInstance();
+        OutputPortInstance sourcePort = null;
+        String sourcePortName=null;
+        ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
+        if(sourceServiceInstance==null){
+            RemoteServiceInstance remoteSourceServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
+            if(remoteSourceServiceInstance!=null){
+                String remoteAppGuid = remoteSourceServiceInstance.getApplicationGUID();
+                float remoteAppVersion = remoteSourceServiceInstance.getApplicationVersion();
+                ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                if(remoteAppHandle==null){
+                    throw new FioranoException("Remote Application not running");
+                }
+                Application remoteApplication = remoteAppHandle.getApplication();
+                sourceServiceInstance = remoteApplication.getServiceInstance(remoteSourceServiceInstance.getRemoteName());
+                sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
+                if(sourcePort.isSpecifiedDestinationUsed()){
+                    sourcePortName = sourcePort.getDestination();
+                }else{
+                    sourcePortName = getPortName(remoteAppGuid, remoteAppVersion, sourcePortInstance, remoteSourceServiceInstance.getRemoteName());
+                }
+            }
+        }else{
+            sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
+            if(sourcePort.isSpecifiedDestinationUsed()){
+                sourcePortName = sourcePort.getDestination();
+            }else{
+                sourcePortName = getPortName(appGUID, version, sourcePortInstance, sourceServiceInstanceName);
+            }
+        }
+        return sourcePortName;
+    }
+
+    private String getTargetPortName(com.fiorano.openesb.application.application.Route route) throws FioranoException {
+        String destPortInstance = route.getTargetPortInstance();
+        String targetServiceInstanceName = route.getTargetServiceInstance();
+        ServiceInstance targetServiceInstance = application.getServiceInstance(targetServiceInstanceName);
+        InputPortInstance targetPort = null;
+        String targetPortName = null;
+        if(targetServiceInstance==null){
+            RemoteServiceInstance remoteTgtServiceInstance = application.getRemoteServiceInstance(targetServiceInstanceName);
+            if(remoteTgtServiceInstance!=null){
+                String remoteAppGuid = remoteTgtServiceInstance.getApplicationGUID();
+                float remoteAppVersion = remoteTgtServiceInstance.getApplicationVersion();
+                ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                if(remoteAppHandle==null){
+                    throw new FioranoException("Remote Application not running");
+                }
+                Application remoteApplication = remoteAppHandle.getApplication();
+                targetPort = remoteApplication.getServiceInstance(remoteTgtServiceInstance.getRemoteName()).getInputPortInstance(destPortInstance);
+                if(targetPort.isSpecifiedDestinationUsed()){
+                    targetPortName = targetPort.getDestination();
+                }else{
+                    targetPortName = getPortName(remoteAppGuid, remoteAppVersion, destPortInstance, remoteTgtServiceInstance.getRemoteName());
+                }
+            }
+
+        }else{
+            targetPort = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(destPortInstance);
+            if(targetPort.isSpecifiedDestinationUsed()){
+                targetPortName = targetPort.getDestination();
+            }else{
+                targetPortName = getPortName(appGUID, version, destPortInstance, targetServiceInstanceName);
+            }
+        }
+        return targetPortName;
+    }
+
     private String getPortName(String appGUID, float version, String portInstance, String sourceServiceInstance) {
         return LookUpUtil.getServiceInstanceLookupName(appGUID, version, sourceServiceInstance) + Constants.NAME_DELIMITER + portInstance;
     }
 
     public void startAllMicroServices() {
-        logger.info("Starting all micro services of the Application "+appGUID+":"+version);
+        logger.info("Starting all micro services of the Application " + appGUID + ":" + version);
         for (ServiceInstance instance : application.getServiceInstances()) {
             try {
                 startMicroService(instance.getName());
@@ -295,23 +365,37 @@ public class ApplicationHandle {
                 logger.error("Error occured while starting the Service: " + instance.getName()+" of Application: " +appGUID +":"+version, e);
             }
         }
-        logger.info("Started all micro services of the Application "+appGUID+":"+version);
+        logger.info("Started all micro services of the Application " + appGUID + ":" + version);
     }
 
     public void stopApplication() {
-        try {
-            stopAllMicroServices();
-        } catch (FioranoException e) {
-            logger.error("Error occurred while stopping microservices of the Application: "+appGUID +":"+version, e);
-        }
+        stopAllMicroServices();
+        stopAllRoutes();
+        disableAllPorts();
+    }
+
+    public void stopAllRoutes(){
         for(String routeName :routeMap.keySet()) {
             try {
                 Route route = routeMap.get(routeName);
                 route.stop();
+                routeMap.remove(routeName);
             } catch (Exception e) {
                 logger.error("Error occurred while stopping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
             }
         }
+        for(String bpRouteName : breakPointRoutes.keySet()){
+            try {
+                Route route = routeMap.get(bpRouteName);
+                route.stop();
+                breakPointRoutes.remove(bpRouteName);
+            } catch (Exception e) {
+                logger.error("Error occurred while stopping the breakpoint route: " + bpRouteName +" of Application: " +appGUID +":"+version, e);
+            }
+        }
+    }
+
+    public void disableAllPorts(){
         for(ServiceInstance serviceInstance : application.getServiceInstances()) {
             disableServicePorts(serviceInstance);
         }
@@ -522,6 +606,7 @@ public class ApplicationHandle {
         breakpointMetaData.setSourceQName(bpSourceDestName);
         breakpointMetaData.setTargetQName(bpTargetdDestName);
         breakpoints.put(routeName, breakpointMetaData);
+        applicationController.persistApplicationState(this);
         ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_ADDED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully added breakpoint to the Route");
         return breakpointMetaData;
     }
@@ -543,6 +628,7 @@ public class ApplicationHandle {
         portConfiguration.setName(bpTargetdDestName);
         transport.disablePort(portConfiguration);
         breakpoints.remove(routeName);
+        applicationController.persistApplicationState(this);
         ApplicationEventRaiser.generateRouteEvent(ApplicationEvent.ApplicationEventType.ROUTE_BP_REMOVED, Event.EventCategory.INFORMATION, appGUID, application.getDisplayName(), String.valueOf(version), routeName, "Successfully removed breakpoint to the Route");
     }
 
@@ -550,7 +636,7 @@ public class ApplicationHandle {
         this.application = application;
     }
 
-    public void stopAllMicroServices() throws FioranoException{
+    public void stopAllMicroServices(){
         logger.info("Stopping all micro services of the Application "+appGUID+":"+version);
         for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
             stopMicroService(handle.getServiceInstName());
@@ -580,7 +666,7 @@ public class ApplicationHandle {
         logger.info("Started MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
     }
 
-    public void stopMicroService(String microServiceName) throws FioranoException {
+    public void stopMicroService(String microServiceName){
         if(!isMicroserviceRunning(microServiceName)){
             logger.warn("Microservice: "+ microServiceName + " of Application " + appGUID +":"+version+" is not running");
             return;

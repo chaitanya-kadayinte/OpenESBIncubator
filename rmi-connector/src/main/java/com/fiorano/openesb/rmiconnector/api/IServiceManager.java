@@ -75,7 +75,7 @@ public interface IServiceManager extends Remote {
      * @throws RemoteException  RemoteException
      * @throws ServiceException ServiceException
      */
-    public void deployService(byte[] zippedContents, boolean completed, boolean resync, boolean retainOldResources, List servicesToImport ) throws RemoteException, ServiceException;
+    public void deployService(byte[] zippedContents, boolean completed, boolean resync, boolean retainOldResources, List<String> servicesToImport ) throws RemoteException, ServiceException;
 
     /**
      * This method returns a map of dependencies for the service.

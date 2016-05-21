@@ -1162,15 +1162,10 @@ public class ApplicationController {
     }
 
     public void Stop() {
-        //do not delete ports and routes. Just stop the running components. Routes will be closed automatically when the server is stopped.
         for(ApplicationHandle appHandle: applicationHandleMap.values()){
-            try {
-                appHandle.stopAllMicroServices();
-            } catch (Exception e) {
-                logger.error("Error occured while stopping the Services of the Application: " +appHandle.getAppGUID()+":"+appHandle.getVersion()+" during bundle stop.");
-            }
+            appHandle.stopAllMicroServices();
+            appHandle.stopAllRoutes();
         }
-
     }
 
     public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws FioranoException{
@@ -1269,6 +1264,12 @@ public class ApplicationController {
                         if(!instanceStateDetails.isGracefulKill()){
                             applicationHandle.startMicroService(serviceName);
                         }
+                    }
+                    //create breakpoints
+                    Iterator debugRoutes = appStateDetails.getDebugRoutes();
+                    while(debugRoutes.hasNext()){
+                        String routeName = (String) debugRoutes.next();
+                        applicationHandle.addBreakPoint(routeName);
                     }
                     updateApplicationHandleMap(applicationHandle);
                 } catch (FioranoException ex1) {

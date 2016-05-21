@@ -9,6 +9,7 @@ package com.fiorano.openesb.rmiconnector.impl;
 import com.fiorano.openesb.application.DmiResourceData;
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.application.application.ServiceInstance;
+import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.application.service.*;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
@@ -147,7 +148,7 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
      * @param retainOldResources boolean specifying whether to retain old unique resources
      * @throws ServiceException
      */
-    public void deployService(byte[] zippedContents, boolean completed, boolean resync, boolean retainOldResources, List servicesToImport) throws ServiceException {
+    public void deployService(byte[] zippedContents, boolean completed, boolean resync, boolean retainOldResources, List<String> servicesToImport) throws ServiceException {
 
         validateHandleID(handleId, "deploy Service");
         File tempZipFile = null;
@@ -210,6 +211,16 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
         }
         if(servicesToImport == null || servicesToImport.isEmpty())
             return;//no service to import
+        if (resync) {
+            for(String appVersion : servicesToImport){
+                String appVersionArray[] = appVersion.split(":");
+                try {
+                    stopAllServices(appVersionArray[0], appVersionArray[1]);
+                } catch (FioranoException e) {
+                    logger.error(RBUtil.getMessage(Bundle.class, Bundle.ERROR_STOPPING_COMPONENT, e));;
+                }
+            }
+        }
         try{
             int count = 0;
             ArrayList errorServices = new ArrayList();
@@ -738,6 +749,155 @@ public class MicroServiceManager extends AbstractRmiManager implements IServiceM
                 }
         }
         return fileComplete;
+    }
+
+    private void stopAllServices(String serviceGUID, String version) throws FioranoException {
+        stopAllDirectDependentServices(serviceGUID, version);
+        stopAllOtherDependentServices(serviceGUID, version);
+    }
+
+    public void stopAllOtherDependentServices(String serviceGUID, String version) throws FioranoException {
+        HashMap<String, ArrayList<String>> directDependencyMap = new HashMap<String, ArrayList<String>>();    // Key : componentGUID , Value : List of all the components which depends directly on component with GUID as componentGUID
+        Enumeration componentList = microServiceRepository.getAllServicesInRepository();
+
+        // The while loop iterates over all the components in peer repository . The component entry is added in the directDependencyMap in the lists corresponding to each of its service references.
+        while (componentList.hasMoreElements()) {
+            String componentGUID = (String) componentList.nextElement();
+            int index = componentGUID.lastIndexOf('_');
+            List serviceRefList = microServiceRepository.getServiceInfo(componentGUID.substring(0, index), componentGUID.substring(index + 1)).getDeployment().getServiceRefs();
+            Iterator itr = serviceRefList.iterator();
+            // Go to List corresponding to each serviceRef and add the component in the list if its already not there
+            while (itr.hasNext()) {
+                ServiceRef serviceRef = ((ServiceRef) itr.next());
+                String serviceRefGUID = serviceRef.getGUID();
+                float serviceRefVersion = serviceRef.getVersion();
+                // get the list of all the components which depends on serviceRefGUID and add componentGUID to the list ,if its not already present in the list
+                ArrayList<String> list = directDependencyMap.get(serviceRefGUID + "_" + serviceRefVersion);
+                if (list == null) {
+                    list = new ArrayList<String>();
+                    list.add(componentGUID);
+                    directDependencyMap.put(serviceRefGUID + "_" + serviceRefVersion, list);
+                } else {
+                    if (!list.contains(componentGUID))
+                        list.add(componentGUID);
+                }
+            }
+        }
+
+        if (directDependencyMap.get(serviceGUID + "_" + version) == null)
+            return ;
+
+        ArrayList<String> finalDependentsList = new ArrayList<>();  // The list will contain all the services which directly or indirectly depends on serviceGUID,version
+
+        // auxiliary data structres
+        ArrayList<String> tempList1 = new ArrayList<>();
+        ArrayList<String> tempList2 = new ArrayList<>();
+        ArrayList<String>[] tempLists = new ArrayList[2];
+        tempList1.addAll(directDependencyMap.get(serviceGUID + "_" + version)); // tempList1 is intialized to all the services which directly depends on 'serviceGUID'
+        int i = 0;
+        tempLists[0] = tempList1;
+        tempLists[1] = tempList2;
+        ArrayList<String> dependentsList = new ArrayList<String>();
+
+        // add all the services in tempList[i] to finalDependencyList . Calculate the services which depends on the services in tempList[i] and are not already added to finalependencyList and put them in tempList[(i+1)%2] .
+        // Do this till there are no more services to be added from tempList[i]
+
+        // Example : lets say directDependencyMap is  A->L
+        //                                            B->M
+        //                                            C->A,B
+        //                                            D->A
+        //                                            E->C,D
+
+        //    We want to find all the dependencies of E
+        //    Before the loop ,tempList[i]=C,D and tempList[i+1%2] ,dependencyList ,finalDependencyList are empty
+        // Outer loop
+        // Iteration1 :  finalDependencyList = C,D
+        //
+        // Inner Loop
+        //   Iteration1 :
+        //             service : C
+        //             dependencyList : A,B
+        //             tempList[(i + 1) % 2] = A,B
+        //   Iteration2 :
+        //            service : D
+        //            dependencyList : A after step  "dependencyList.addAll(directDependencyMap.get(service))"
+        //            dependencyList : A after step "dependencyList.removeAll(finalDependencyList)"
+        //            dependencyList  : empty after step "dependencyList.removeAll(tempLists[(i + 1) % 2])" since tempList[(i+1)%2] already contains A
+        //            tempList[(i + 1) % 2] = A,B
+
+        // Iteration2 (outer loop)
+        // tempList[i] = A,B
+        // finalDependencyList =C,D,A,B
+        // Inner Loop
+        //   Iteration1 :
+        //             service : A
+        //             dependencyList : L
+        //             tempList[(i + 1) % 2] = L
+        //   Iteration2 :
+        //            service : B
+        //            dependencyList : M
+        //            tempList[(i + 1) % 2] = L,M
+        // Iteration3 (outer loop)
+        // tempList[i] = L,M
+        // finalDependencyList =C,D,A,B,L,M
+        // Inner Loop
+        //   Iteration1 :
+        //             service : L
+        //             returns  from check "if(directDependencyMap.get(service) == null)" as there is no entry for "L" in directDependecyMap
+        //
+        //   Iteration2 :
+        //            service : M
+        //            returns  from check "if(directDependencyMap.get(service) == null)" as there is no entry for "L" in directDependecyMap
+        //   So nothing gets added from tempList[i] to tempList[(i+1)%2] so the outer loop will at the start of next iteration
+        //
+        // After the execution of outer loop , finalDependencyMap = C,D,A,B,L,M
+
+        while (!tempLists[i].isEmpty()) {
+            finalDependentsList.addAll(tempLists[i]);
+            Iterator<String> itr = tempLists[i].iterator();
+            // The loop iterates over all the services in tempList[i] and feches the list of services which directly depend on the current service and add the services from the list to tempList[i+1%2] which are not present in finalDependencyList
+            while (itr.hasNext()) {
+                String service = itr.next();
+                if (directDependencyMap.get(service) == null)
+                    continue;
+                dependentsList.addAll(directDependencyMap.get(service));
+                dependentsList.removeAll(finalDependentsList);  // removes all the services from dependencyList which are already present in finalDepencyList
+                dependentsList.removeAll(tempLists[(i + 1) % 2]); // removes all the services from dependencyList which are already present in tempLists[(i + 1) % 2]
+                tempLists[(i + 1) % 2].addAll(dependentsList);
+                dependentsList.clear();
+            }
+            tempLists[i].clear();  // clear the tempList[i]
+            i = (i + 1) % 2;
+        }
+
+
+
+        // adds the ComponentHandle of all the running components which are also prensent in finalDependencyList to dependentRunningComponentList
+        for (ApplicationHandle appHandle : applicationController.getApplicationHandles().values()) {
+            Enumeration<ServiceInstanceStateDetails> appServiceStateDetails = appHandle.getApplicationDetails().getAllServiceStateDetails().elements();
+            while (appServiceStateDetails.hasMoreElements()) {
+                ServiceInstanceStateDetails sisd = appServiceStateDetails.nextElement();
+                if (finalDependentsList.indexOf( sisd.getServiceGUID()+ "_" + sisd.getRunningVersion()) != -1 && appHandle.isMicroserviceRunning(sisd.getServiceInstanceName()))  // add to the the runningComponentList if the componet is present in finalDependencyList
+                    appHandle.stopMicroService(sisd.getServiceInstanceName());
+            }
+        }
+    }
+
+    private void stopAllDirectDependentServices(String serviceGUID, String version) {
+        Map<String, ApplicationHandle> applicationHandles = applicationController.getApplicationHandles();
+        for(ApplicationHandle appHandle : applicationHandles.values()){
+            Hashtable<String, ServiceInstanceStateDetails> allServiceStateDetails = null;
+            try {
+                allServiceStateDetails = appHandle.getApplicationDetails().getAllServiceStateDetails();
+            } catch (FioranoException e) {
+                logger.error("Error occurred while getting the application state details.");
+            }
+            for(ServiceInstanceStateDetails sisd : allServiceStateDetails.values()){
+                if(sisd.getServiceGUID().equals(serviceGUID) && sisd.getRunningVersion().equals(version) && appHandle.isMicroserviceRunning(sisd.getServiceInstanceName())){
+                    appHandle.stopMicroService(sisd.getServiceInstanceName());
+                }
+            }
+        }
     }
 
     private void synchroniseAllDependentApplications(String serviceGUID, String version) throws FioranoException{
