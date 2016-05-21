@@ -26,7 +26,7 @@ public class ApplicationStateDetails extends DmiObject {
 
     private long m_killTime;
 
-    private Hashtable m_serviceStates;
+    private Hashtable<String, ServiceInstanceStateDetails> m_serviceStates;
 
     private Hashtable m_serviceExceptionTraces;
 
@@ -167,6 +167,10 @@ public class ApplicationStateDetails extends DmiObject {
      */
     public ServiceInstanceStateDetails getServiceStatus(String instName) {
         return (ServiceInstanceStateDetails) m_serviceStates.get(instName);
+    }
+
+    public Hashtable<String, ServiceInstanceStateDetails> getAllServiceStateDetails(){
+        return m_serviceStates;
     }
 
 
