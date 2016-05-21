@@ -16,4 +16,6 @@ public interface AdditionalConfiguration {
     public String getCompRepoPath();
 
     public String getProviderUrl();
+
+    public String getICF();
 }

@@ -22,6 +22,7 @@ public class ServerConfig {
     private String jettyUrl="http://localhost:8181";
     private String jettySSLUrl="https://localhost:8443";
     private String javaHome = System.getProperty("java.home");
+    private Properties properties;
 
     public String getRepositoryPath() {
         File file = new File(repositoryPath);
@@ -77,6 +78,8 @@ public class ServerConfig {
         }
         try {
             ConfigReader.readConfigFromPropertiesFile(configFile, this);
+            properties = new Properties();
+            ConfigReader.readPropertiesFromFile(configFile, properties);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -136,5 +139,13 @@ public class ServerConfig {
 
     public void setJavaHome(String javaHome) {
         this.javaHome = javaHome;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

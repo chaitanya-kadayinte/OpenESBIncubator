@@ -14,6 +14,7 @@ import com.fiorano.openesb.application.aps.ApplicationStateDetails;
 import com.fiorano.openesb.application.aps.ServiceInstanceStateDetails;
 import com.fiorano.openesb.applicationcontroller.ApplicationController;
 import com.fiorano.openesb.applicationcontroller.ApplicationHandle;
+import com.fiorano.openesb.applicationcontroller.ApplicationLogManager;
 import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.namedconfig.NamedConfigurationUtil;
 import com.fiorano.openesb.rmiconnector.Activator;
@@ -32,6 +33,8 @@ import java.util.zip.ZipOutputStream;
 
 public class ApplicationManager extends AbstractRmiManager implements IApplicationManager {
     private ApplicationController applicationController;
+
+    private ApplicationLogManager applicationLogManager;
 
     private ApplicationRepository applicationRepository;
 
@@ -58,6 +61,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         logger.trace("Initializing Application Manager");
         this.applicationController = rmiManager.getApplicationController();
         this.applicationRepository = rmiManager.getApplicationRepository();
+        this.applicationLogManager = applicationController.getApplicationLogManager();
         this.microServiceRepoManager = rmiManager.getMicroServiceRepoManager();
         this.handler = instanceHandler;
         setHandleID(instanceHandler.getHandleID());
@@ -1178,7 +1182,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public String getLastOutTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws RemoteException, ServiceException {
         try {
-            return applicationController.getLastOutTrace(numberOfLines, serviceName, appGUID, appVersion);
+            return applicationLogManager.getLastOutTrace(numberOfLines, serviceName, appGUID, appVersion);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1187,7 +1191,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public String getLastErrTrace(int numberOfLines, String serviceName, String appGUID, float appVersion) throws RemoteException, ServiceException {
         try {
-            return applicationController.getLastErrTrace(numberOfLines, serviceName, appGUID, appVersion);
+            return applicationLogManager.getLastErrTrace(numberOfLines, serviceName, appGUID, appVersion);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1196,7 +1200,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public void clearServiceOutLogs(String serviceInst, String appGUID, float appVersion) throws RemoteException, ServiceException {
         try {
-            applicationController.clearServiceOutLogs(serviceInst, appGUID, appVersion);
+            applicationLogManager.clearServiceOutLogs(serviceInst, appGUID, appVersion);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1205,7 +1209,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public void clearServiceErrLogs(String serviceInst, String appGUID, float appVersion) throws RemoteException, ServiceException {
         try {
-            applicationController.clearServiceErrLogs(serviceInst, appGUID, appVersion);
+            applicationLogManager.clearServiceErrLogs(serviceInst, appGUID, appVersion);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1214,7 +1218,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public void clearApplicationLogs(String appGUID, float appVersion) throws RemoteException, ServiceException {
         try {
-            applicationController.clearApplicationLogs(appGUID, appVersion);
+            applicationLogManager.clearApplicationLogs(appGUID, appVersion);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1223,7 +1227,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public byte[] exportServiceLogs(String appGUID, float version, String serviceInst, long index) throws RemoteException, ServiceException {
         try {
-            return applicationController.exportServiceLogs(appGUID, version, serviceInst, index);
+            return applicationLogManager.exportServiceLogs(appGUID, version, serviceInst, index);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1232,7 +1236,7 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
     @Override
     public byte[] exportApplicationLogs(String appGUID, float version, long index) throws RemoteException, ServiceException {
         try {
-            return applicationController.exportApplicationLogs(appGUID, version, index);
+            return applicationLogManager.exportApplicationLogs(appGUID, version, index);
         } catch (FioranoException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -1319,22 +1323,6 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
             throw new ServiceException(e.getMessage());
         }
     }
-
-   /* public Hashtable<String, ApplicationData> getAppInfo() throws RemoteException, ServiceException {
-        try {
-            return applicationController.getAppInfo();
-        } catch (FioranoException e) {
-            throw new ServiceException(e.getMessage());
-        }
-    }
-
-    public ApplicationData getAppInfo(String appGuid, float appVersion) throws RemoteException, ServiceException {
-        try {
-            return applicationController.getAppInfo(appGuid, appVersion);
-        } catch (FioranoException e) {
-            throw new ServiceException(e.getMessage());
-        }
-    }*/
 
     /**
      * @param appGUID application guid
@@ -1574,8 +1562,12 @@ public class ApplicationManager extends AbstractRmiManager implements IApplicati
         }
     }
 
-    public Map<String, String> getJettyServerDetails() throws ServiceException {
-        return applicationController.getJettyServerDetails();
+    public Properties getServerConfig() throws ServiceException {
+        return applicationController.getServerConfig();
+    }
+
+    public Properties getTransportConfig() throws ServiceException {
+        return applicationController.getTransportConfig();
     }
 
     public void unreferenced() {

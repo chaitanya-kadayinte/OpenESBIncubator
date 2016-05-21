@@ -754,5 +754,7 @@ public interface IApplicationManager extends Remote{
 
     public ServiceInstance getServiceInstance(String eventProcessName, float appVersion, String servInstanceName) throws ServiceException;
 
-    public Map<String, String> getJettyServerDetails() throws ServiceException;
+    public Properties getServerConfig() throws ServiceException;
+
+    public Properties getTransportConfig() throws ServiceException;
 }
