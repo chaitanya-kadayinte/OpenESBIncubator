@@ -35,7 +35,7 @@
     <properties>
         <maven-bundle-plugin.version>3.0.0</maven-bundle-plugin.version>
         <osgi.version>6.0.0</osgi.version>
-        <fiorano.home>/home/build/trunk/Installer</fiorano.home>
+        <fiorano.home>/root/Desktop/workspace/sources/branches/opensourcesvn/opensourcerepo/trunk/Installer</fiorano.home>
     </properties>
 
     <dependencies>
