@@ -332,7 +332,7 @@ public class JVMCommandProvider extends CommandProvider<JavaLaunchConfiguration>
         systemProps.setProperty("mx4j.log.priority", "error");
         systemProps.setProperty("COMP_REPOSITORY_DIR", m_componentRepositoryDir);
         systemProps.setProperty("FIORANO_HOME", getFioranoHomeDir());
-
+        systemProps.setProperty("java.util.logging.FileHandler.dir", "log");
         //todo need to assign log handlers
         List logModules = launchConfiguration.getLogModules();
 

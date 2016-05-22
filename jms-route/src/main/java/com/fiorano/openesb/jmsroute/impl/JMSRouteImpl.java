@@ -72,6 +72,7 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
     public void changeTargetDestination(PortConfiguration portConfiguration) throws Exception{
         producer.close();
         producer = null;
+        routeConfiguration.setDestinationConfiguration(portConfiguration);
         producer = transportService.createProducer(transportService.enablePort(portConfiguration), new JMSProducerConfiguration());
         this.targetDestination = portConfiguration.getName();
 
@@ -79,6 +80,8 @@ public class JMSRouteImpl extends AbstractRouteImpl<JMSMessage> implements Route
 
     public void changeSourceDestination(PortConfiguration portConfiguration) throws Exception{
         messageConsumer.close();
+        routeConfiguration.setSourceConfiguration(portConfiguration);
+        sourcePort = transportService.enablePort(routeConfiguration.getSourceConfiguration());
         messageConsumer = transportService.createConsumer(sourcePort, routeConfiguration.getConsumerConfiguration());
         this.sourceDestintaion = portConfiguration.getName();
         messageConsumer.attachMessageListener(new MessageListener<JMSMessage>() {
