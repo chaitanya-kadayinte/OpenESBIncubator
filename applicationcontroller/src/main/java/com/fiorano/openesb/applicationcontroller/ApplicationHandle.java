@@ -50,7 +50,8 @@ public class ApplicationHandle {
     private Map<String, Route> routeMap = new ConcurrentHashMap<>();
     private Map<String, Route> breakPointRoutes = new ConcurrentHashMap<>();
     private Map<String, BreakpointMetaData> breakpoints = new ConcurrentHashMap<>();
-    private Map<String, BreakpointMetaData> pendingBreakpointsForClouser = new ConcurrentHashMap<>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private Map<String, BreakpointMetaData> pendingBreakpointsForClosure = new ConcurrentHashMap<>();
     private ApplicationController applicationController;
 
 
@@ -69,9 +70,6 @@ public class ApplicationHandle {
     //  LaunchTime.
     private long launchTime;
 
-    //  KillTime.
-    private long killTime = -1;
-
     // List of RouteGUID's in the application
     //private Vector<String> debugrouteGUIDS;
 
@@ -79,7 +77,7 @@ public class ApplicationHandle {
 
     private String userName;
 
-    public ApplicationHandle(ApplicationController applicationController, Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService, TransportService transport, String userName, String passwd){
+    public ApplicationHandle(ApplicationController applicationController, Application application, MicroServiceLauncher service, RouteService<RouteConfiguration> routeService, TransportService transport, String userName, String passwd) {
         this.applicationController = applicationController;
         this.application = application;
         this.service = service;
@@ -93,7 +91,7 @@ public class ApplicationHandle {
         this.passwd = passwd;
     }
 
-    public Application getApplication(){
+    public Application getApplication() {
         return application;
     }
 
@@ -138,44 +136,44 @@ public class ApplicationHandle {
     }
 
     public void createRoutes() throws Exception {
-        for(final com.fiorano.openesb.application.application.Route route: application.getRoutes()) {
-            if(routeMap.containsKey(route.getName())){
+        for (final com.fiorano.openesb.application.application.Route route : application.getRoutes()) {
+            if (routeMap.containsKey(route.getName())) {
                 continue;
             }
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
             String sourceServiceInstanceName = route.getSourceServiceInstance();
             OutputPortInstance sourcePort = null;
-            String sourcePortName=null;
+            String sourcePortName = null;
             ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
-            if(sourceServiceInstance==null){
+            if (sourceServiceInstance == null) {
                 RemoteServiceInstance remoteSourceServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
-                if(remoteSourceServiceInstance!=null){
+                if (remoteSourceServiceInstance != null) {
                     String remoteAppGuid = remoteSourceServiceInstance.getApplicationGUID();
                     float remoteAppVersion = remoteSourceServiceInstance.getApplicationVersion();
-                   ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
-                    if(remoteAppHandle==null){
+                    ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
+                    if (remoteAppHandle == null) {
                         throw new FioranoException("Remote Application not running");
                     }
                     Application remoteApplication = remoteAppHandle.getApplication();
                     sourceServiceInstance = remoteApplication.getServiceInstance(remoteSourceServiceInstance.getRemoteName());
                     sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
-                    if(sourcePort.isSpecifiedDestinationUsed()){
+                    if (sourcePort.isSpecifiedDestinationUsed()) {
                         sourcePortName = sourcePort.getDestination();
-                    }else{
+                    } else {
                         sourcePortName = getPortName(remoteAppGuid, remoteAppVersion, sourcePortInstance, remoteSourceServiceInstance.getRemoteName());
                     }
                 }
-            }else{
+            } else {
                 sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
-                if(sourcePort.isSpecifiedDestinationUsed()){
+                if (sourcePort.isSpecifiedDestinationUsed()) {
                     sourcePortName = sourcePort.getDestination();
-                }else{
+                } else {
                     sourcePortName = getPortName(appGUID, version, sourcePortInstance, sourceServiceInstanceName);
                 }
             }
             sourceConfiguration.setName(sourcePortName);
-            int type = sourcePort.getDestinationType();
+            @SuppressWarnings("ConstantConditions") int type = sourcePort.getDestinationType();
             sourceConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
 
@@ -185,30 +183,33 @@ public class ApplicationHandle {
             ServiceInstance targetServiceInstance = application.getServiceInstance(targetServiceInstanceName);
             InputPortInstance targetPort = null;
             String targetPortName = null;
-            if(targetServiceInstance==null){
+            if (targetServiceInstance == null) {
                 RemoteServiceInstance remoteTgtServiceInstance = application.getRemoteServiceInstance(targetServiceInstanceName);
-                if(remoteTgtServiceInstance!=null){
+                if (remoteTgtServiceInstance != null) {
                     String remoteAppGuid = remoteTgtServiceInstance.getApplicationGUID();
                     float remoteAppVersion = remoteTgtServiceInstance.getApplicationVersion();
                     ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
                     Application remoteApplication = remoteAppHandle.getApplication();
                     targetPort = remoteApplication.getServiceInstance(remoteTgtServiceInstance.getRemoteName()).getInputPortInstance(destPortInstance);
-                    if(targetPort.isSpecifiedDestinationUsed()){
+                    if (targetPort.isSpecifiedDestinationUsed()) {
                         targetPortName = targetPort.getDestination();
-                    }else{
+                    } else {
                         targetPortName = getPortName(remoteAppGuid, remoteAppVersion, destPortInstance, remoteTgtServiceInstance.getRemoteName());
                     }
                 }
 
-            }else{
+            } else {
                 targetPort = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(destPortInstance);
-                if(targetPort.isSpecifiedDestinationUsed()){
+                if (targetPort.isSpecifiedDestinationUsed()) {
                     targetPortName = targetPort.getDestination();
-                }else{
+                } else {
                     targetPortName = getPortName(appGUID, version, destPortInstance, targetServiceInstanceName);
                 }
             }
             destinationConfiguration.setName(targetPortName);
+            if(targetPort == null) {
+                throw new FioranoException("Unexpected error encountered.");
+            }
             int inputPortInstanceDestinationType = targetPort.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
@@ -227,7 +228,7 @@ public class ApplicationHandle {
             routeConfiguration.getRouteOperationConfigurations().add(srcCFC);
 
             Transformation applicationContextTransformation = sourcePort.getApplicationContextTransformation();
-            if(applicationContextTransformation != null) {
+            if (applicationContextTransformation != null) {
                 TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
                 transformationConfiguration.setXsl(applicationContextTransformation.getScript());
                 transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
@@ -236,7 +237,7 @@ public class ApplicationHandle {
                 routeConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
             }
 
-            if(route.getSenderSelector()!=null){
+            if (route.getSenderSelector() != null) {
                 SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                 senderSelectorConfiguration.setSourceName(route.getSenderSelector());
                 senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
@@ -244,7 +245,7 @@ public class ApplicationHandle {
                 routeConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
             }
 
-            if(route.getApplicationContextSelector() != null) {
+            if (route.getApplicationContextSelector() != null) {
                 XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
                 appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
                 appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
@@ -252,7 +253,7 @@ public class ApplicationHandle {
                 routeConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
             }
 
-            if(route.getBodySelector() != null) {
+            if (route.getBodySelector() != null) {
                 XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
                 bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
                 bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
@@ -260,7 +261,7 @@ public class ApplicationHandle {
                 routeConfiguration.getRouteOperationConfigurations().add(bodySelectorConfig);
             }
 
-            if(route.getMessageTransformation()!=null) {
+            if (route.getMessageTransformation() != null) {
                 TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
                 transformationConfiguration.setXsl(route.getMessageTransformation().getScript());
                 transformationConfiguration.setTransformerType(route.getMessageTransformation().getFactory());
@@ -285,32 +286,32 @@ public class ApplicationHandle {
     private String getSourcePortName(com.fiorano.openesb.application.application.Route route) throws FioranoException {
         String sourcePortInstance = route.getSourcePortInstance();
         String sourceServiceInstanceName = route.getSourceServiceInstance();
-        OutputPortInstance sourcePort = null;
-        String sourcePortName=null;
+        OutputPortInstance sourcePort;
+        String sourcePortName = null;
         ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
-        if(sourceServiceInstance==null){
+        if (sourceServiceInstance == null) {
             RemoteServiceInstance remoteSourceServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
-            if(remoteSourceServiceInstance!=null){
+            if (remoteSourceServiceInstance != null) {
                 String remoteAppGuid = remoteSourceServiceInstance.getApplicationGUID();
                 float remoteAppVersion = remoteSourceServiceInstance.getApplicationVersion();
                 ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
-                if(remoteAppHandle==null){
+                if (remoteAppHandle == null) {
                     throw new FioranoException("Remote Application not running");
                 }
                 Application remoteApplication = remoteAppHandle.getApplication();
                 sourceServiceInstance = remoteApplication.getServiceInstance(remoteSourceServiceInstance.getRemoteName());
                 sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
-                if(sourcePort.isSpecifiedDestinationUsed()){
+                if (sourcePort.isSpecifiedDestinationUsed()) {
                     sourcePortName = sourcePort.getDestination();
-                }else{
+                } else {
                     sourcePortName = getPortName(remoteAppGuid, remoteAppVersion, sourcePortInstance, remoteSourceServiceInstance.getRemoteName());
                 }
             }
-        }else{
+        } else {
             sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
-            if(sourcePort.isSpecifiedDestinationUsed()){
+            if (sourcePort.isSpecifiedDestinationUsed()) {
                 sourcePortName = sourcePort.getDestination();
-            }else{
+            } else {
                 sourcePortName = getPortName(appGUID, version, sourcePortInstance, sourceServiceInstanceName);
             }
         }
@@ -321,31 +322,31 @@ public class ApplicationHandle {
         String destPortInstance = route.getTargetPortInstance();
         String targetServiceInstanceName = route.getTargetServiceInstance();
         ServiceInstance targetServiceInstance = application.getServiceInstance(targetServiceInstanceName);
-        InputPortInstance targetPort = null;
+        InputPortInstance targetPort;
         String targetPortName = null;
-        if(targetServiceInstance==null){
+        if (targetServiceInstance == null) {
             RemoteServiceInstance remoteTgtServiceInstance = application.getRemoteServiceInstance(targetServiceInstanceName);
-            if(remoteTgtServiceInstance!=null){
+            if (remoteTgtServiceInstance != null) {
                 String remoteAppGuid = remoteTgtServiceInstance.getApplicationGUID();
                 float remoteAppVersion = remoteTgtServiceInstance.getApplicationVersion();
                 ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
-                if(remoteAppHandle==null){
+                if (remoteAppHandle == null) {
                     throw new FioranoException("Remote Application not running");
                 }
                 Application remoteApplication = remoteAppHandle.getApplication();
                 targetPort = remoteApplication.getServiceInstance(remoteTgtServiceInstance.getRemoteName()).getInputPortInstance(destPortInstance);
-                if(targetPort.isSpecifiedDestinationUsed()){
+                if (targetPort.isSpecifiedDestinationUsed()) {
                     targetPortName = targetPort.getDestination();
-                }else{
+                } else {
                     targetPortName = getPortName(remoteAppGuid, remoteAppVersion, destPortInstance, remoteTgtServiceInstance.getRemoteName());
                 }
             }
 
-        }else{
+        } else {
             targetPort = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(destPortInstance);
-            if(targetPort.isSpecifiedDestinationUsed()){
+            if (targetPort.isSpecifiedDestinationUsed()) {
                 targetPortName = targetPort.getDestination();
-            }else{
+            } else {
                 targetPortName = getPortName(appGUID, version, destPortInstance, targetServiceInstanceName);
             }
         }
@@ -362,7 +363,7 @@ public class ApplicationHandle {
             try {
                 startMicroService(instance.getName());
             } catch (FioranoException e) {
-                logger.error("Error occured while starting the Service: " + instance.getName()+" of Application: " +appGUID +":"+version, e);
+                logger.error("Error occured while starting the Service: " + instance.getName() + " of Application: " + appGUID + ":" + version, e);
             }
         }
         logger.info("Started all micro services of the Application " + appGUID + ":" + version);
@@ -374,39 +375,39 @@ public class ApplicationHandle {
         disableAllPorts();
     }
 
-    public void stopAllRoutes(){
-        for(String routeName :routeMap.keySet()) {
+    public void stopAllRoutes() {
+        for (String routeName : routeMap.keySet()) {
             try {
                 Route route = routeMap.get(routeName);
                 route.stop();
                 routeMap.remove(routeName);
             } catch (Exception e) {
-                logger.error("Error occurred while stopping the route: " + routeName+" of Application: " +appGUID +":"+version, e);
+                logger.error("Error occurred while stopping the route: " + routeName + " of Application: " + appGUID + ":" + version, e);
             }
         }
-        for(String bpRouteName : breakPointRoutes.keySet()){
+        for (String bpRouteName : breakPointRoutes.keySet()) {
             try {
                 Route route = routeMap.get(bpRouteName);
                 route.stop();
                 breakPointRoutes.remove(bpRouteName);
             } catch (Exception e) {
-                logger.error("Error occurred while stopping the breakpoint route: " + bpRouteName +" of Application: " +appGUID +":"+version, e);
+                logger.error("Error occurred while stopping the breakpoint route: " + bpRouteName + " of Application: " + appGUID + ":" + version, e);
             }
         }
     }
 
-    public void disableAllPorts(){
-        for(ServiceInstance serviceInstance : application.getServiceInstances()) {
+    public void disableAllPorts() {
+        for (ServiceInstance serviceInstance : application.getServiceInstances()) {
             disableServicePorts(serviceInstance);
         }
     }
 
     private void disableServicePorts(ServiceInstance serviceInstance) {
-        for(PortInstance portInstance : serviceInstance.getInputPortInstances()) {
+        for (PortInstance portInstance : serviceInstance.getInputPortInstances()) {
             JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
             disablePort(portConfiguration);
         }
-        for(PortInstance portInstance : serviceInstance.getOutputPortInstances()) {
+        for (PortInstance portInstance : serviceInstance.getOutputPortInstances()) {
             JMSPortConfiguration portConfiguration = getPortConfiguration(serviceInstance, portInstance);
             disablePort(portConfiguration);
         }
@@ -418,10 +419,10 @@ public class ApplicationHandle {
         portConfiguration.setPortType(type == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
         String portName;
-        if(portInstance.isSpecifiedDestinationUsed()){
+        if (portInstance.isSpecifiedDestinationUsed()) {
             portName = portInstance.getDestination();
-        }else {
-            portName= getPortName(appGUID, version, portInstance.getName(), serviceInstance.getName());
+        } else {
+            portName = getPortName(appGUID, version, portInstance.getName(), serviceInstance.getName());
         }
         portConfiguration.setName(portName);
         return portConfiguration;
@@ -429,14 +430,14 @@ public class ApplicationHandle {
 
     public BreakpointMetaData addBreakPoint(String routeName) throws Exception {
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
-        if(route==null){
-            throw new FioranoException("Route with name: "+routeName+" does not exist in the Application: " + application.getGUID());
+        if (route == null) {
+            throw new FioranoException("Route with name: " + routeName + " does not exist in the Application: " + application.getGUID());
         }
         String bpSourceDestName = getBPSourceDestName(routeName);
         String bpTargetdDestName = getBPTargetDestinationName(routeName);
-        com.fiorano.openesb.application.application.Route routePS=null;
-        for(final com.fiorano.openesb.application.application.Route rPS: application.getRoutes()) {
-            if(rPS.getName().equals(routeName)){
+        com.fiorano.openesb.application.application.Route routePS = null;
+        for (final com.fiorano.openesb.application.application.Route rPS : application.getRoutes()) {
+            if (rPS.getName().equals(routeName)) {
                 routePS = rPS;
                 break;
             }
@@ -444,38 +445,41 @@ public class ApplicationHandle {
 
         //create route from Outport to C and start
         JMSPortConfiguration outPortConfiguration = new JMSPortConfiguration();
-        String outPortName = routePS.getSourcePortInstance();
+        @SuppressWarnings("ConstantConditions") String outPortName = routePS.getSourcePortInstance();
         String sourceServiceInstanceName = routePS.getSourceServiceInstance();
-        OutputPortInstance outPortInstnace = null;
-        String outPortFullName=null;
+        OutputPortInstance outputPortInstance = null;
+        String outPortFullName = null;
         ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
-        if(sourceServiceInstance==null){
+        if (sourceServiceInstance == null) {
             RemoteServiceInstance remoteSourceServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
-            if(remoteSourceServiceInstance!=null){
+            if (remoteSourceServiceInstance != null) {
                 String remoteAppGuid = remoteSourceServiceInstance.getApplicationGUID();
                 float remoteAppVersion = remoteSourceServiceInstance.getApplicationVersion();
                 ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
-                if(remoteAppHandle==null){
+                if (remoteAppHandle == null) {
                     throw new FioranoException("Remote Application not running");
                 }
                 Application remoteApplication = remoteAppHandle.getApplication();
                 sourceServiceInstance = remoteApplication.getServiceInstance(remoteSourceServiceInstance.getRemoteName());
-                outPortInstnace = sourceServiceInstance.getOutputPortInstance(outPortName);
-                if(outPortInstnace.isSpecifiedDestinationUsed()){
-                    outPortFullName = outPortInstnace.getDestination();
-                }else{
+                outputPortInstance = sourceServiceInstance.getOutputPortInstance(outPortName);
+                if (outputPortInstance.isSpecifiedDestinationUsed()) {
+                    outPortFullName = outputPortInstance.getDestination();
+                } else {
                     outPortFullName = getPortName(remoteAppGuid, remoteAppVersion, outPortName, remoteSourceServiceInstance.getRemoteName());
                 }
             }
-        }else{
-            outPortInstnace = sourceServiceInstance.getOutputPortInstance(outPortName);
-            if(outPortInstnace.isSpecifiedDestinationUsed()){
-                outPortFullName = outPortInstnace.getDestination();
-            }else{
+        } else {
+            outputPortInstance = sourceServiceInstance.getOutputPortInstance(outPortName);
+            if (outputPortInstance.isSpecifiedDestinationUsed()) {
+                outPortFullName = outputPortInstance.getDestination();
+            } else {
                 outPortFullName = getPortName(appGUID, version, outPortName, sourceServiceInstanceName);
             }
         }
-        int portType = outPortInstnace.getDestinationType();
+        if(outputPortInstance == null) {
+            throw new FioranoException("Unexpected error encountered.");
+        }
+        int portType = outputPortInstance.getDestinationType();
         outPortConfiguration.setPortType(portType == PortInstance.DESTINATION_TYPE_QUEUE ?
                 JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
         outPortConfiguration.setName(outPortFullName);
@@ -492,13 +496,13 @@ public class ApplicationHandle {
 
         CarryForwardContextConfiguration srcCFC = new CarryForwardContextConfiguration();
         srcCFC.setApplication(application);
-        srcCFC.setPortInstance(outPortInstnace);
+        srcCFC.setPortInstance(outputPortInstance);
         srcCFC.setServiceInstanceName(outPortName);
         srcCFC.setRouteOperationType(RouteOperationType.SRC_CARRY_FORWARD_CONTEXT);
         routeToCConfiguration.getRouteOperationConfigurations().add(srcCFC);
 
-        Transformation applicationContextTransformation = outPortInstnace.getApplicationContextTransformation();
-        if(applicationContextTransformation != null) {
+        Transformation applicationContextTransformation = outputPortInstance.getApplicationContextTransformation();
+        if (applicationContextTransformation != null) {
             TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
             transformationConfiguration.setXsl(applicationContextTransformation.getScript());
             transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
@@ -507,7 +511,7 @@ public class ApplicationHandle {
             routeToCConfiguration.getRouteOperationConfigurations().add(transformationConfiguration);
         }
 
-        if(routePS.getSenderSelector()!=null){
+        if (routePS.getSenderSelector() != null) {
             SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
             senderSelectorConfiguration.setSourceName(routePS.getSenderSelector());
             senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
@@ -515,7 +519,7 @@ public class ApplicationHandle {
             routeToCConfiguration.getRouteOperationConfigurations().add(senderSelectorConfiguration);
         }
 
-        if(routePS.getApplicationContextSelector() != null) {
+        if (routePS.getApplicationContextSelector() != null) {
             XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
             appContextSelectorConfig.setXpath(routePS.getApplicationContextSelector().getXPath());
             appContextSelectorConfig.setNsPrefixMap(routePS.getApplicationContextSelector().getNamespaces());
@@ -523,7 +527,7 @@ public class ApplicationHandle {
             routeToCConfiguration.getRouteOperationConfigurations().add(appContextSelectorConfig);
         }
 
-        if(routePS.getBodySelector() != null) {
+        if (routePS.getBodySelector() != null) {
             XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
             bodySelectorConfig.setXpath(routePS.getBodySelector().getXPath());
             bodySelectorConfig.setNsPrefixMap(routePS.getBodySelector().getNamespaces());
@@ -531,7 +535,7 @@ public class ApplicationHandle {
             routeToCConfiguration.getRouteOperationConfigurations().add(bodySelectorConfig);
         }
 
-        if(routePS.getMessageTransformation()!=null) {
+        if (routePS.getMessageTransformation() != null) {
             TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
             transformationConfiguration.setXsl(routePS.getMessageTransformation().getScript());
             transformationConfiguration.setTransformerType(routePS.getMessageTransformation().getFactory());
@@ -550,28 +554,31 @@ public class ApplicationHandle {
         ServiceInstance targetServiceInstance = application.getServiceInstance(targetServiceInstanceName);
         InputPortInstance inPortInstnace = null;
         String inPortFullName = null;
-        if(targetServiceInstance==null){
+        if (targetServiceInstance == null) {
             RemoteServiceInstance remoteTgtServiceInstance = application.getRemoteServiceInstance(targetServiceInstanceName);
-            if(remoteTgtServiceInstance!=null){
+            if (remoteTgtServiceInstance != null) {
                 String remoteAppGuid = remoteTgtServiceInstance.getApplicationGUID();
                 float remoteAppVersion = remoteTgtServiceInstance.getApplicationVersion();
                 ApplicationHandle remoteAppHandle = applicationController.getApplicationHandle(remoteAppGuid, remoteAppVersion);
                 Application remoteApplication = remoteAppHandle.getApplication();
                 inPortInstnace = remoteApplication.getServiceInstance(remoteTgtServiceInstance.getRemoteName()).getInputPortInstance(inPortName);
-                if(inPortInstnace.isSpecifiedDestinationUsed()){
+                if (inPortInstnace.isSpecifiedDestinationUsed()) {
                     inPortFullName = inPortInstnace.getDestination();
-                }else{
+                } else {
                     inPortFullName = getPortName(remoteAppGuid, remoteAppVersion, inPortName, remoteTgtServiceInstance.getRemoteName());
                 }
             }
 
-        }else{
+        } else {
             inPortInstnace = application.getServiceInstance(targetServiceInstanceName).getInputPortInstance(inPortName);
-            if(inPortInstnace.isSpecifiedDestinationUsed()){
+            if (inPortInstnace.isSpecifiedDestinationUsed()) {
                 inPortFullName = inPortInstnace.getDestination();
-            }else{
+            } else {
                 inPortFullName = getPortName(appGUID, version, inPortName, targetServiceInstanceName);
             }
+        }
+        if(inPortInstnace == null) {
+            throw new FioranoException("Unexpected error encountered");
         }
         int inPortType = inPortInstnace.getDestinationType();
         inPortConfiguration.setPortType(inPortType == PortInstance.DESTINATION_TYPE_QUEUE ?
@@ -611,7 +618,7 @@ public class ApplicationHandle {
         return breakpointMetaData;
     }
 
-    public void removeBreakPoint(String routeName) throws Exception{
+    public void removeBreakPoint(String routeName) throws Exception {
         com.fiorano.openesb.route.Route route = routeMap.get(routeName);
         route.start();
         //remove breakpoint routes C and D
@@ -636,69 +643,67 @@ public class ApplicationHandle {
         this.application = application;
     }
 
-    public void stopAllMicroServices(){
-        logger.info("Stopping all micro services of the Application "+appGUID+":"+version);
-        for(MicroServiceRuntimeHandle handle:microServiceHandleList.values()){
+    public void stopAllMicroServices() {
+        logger.info("Stopping all micro services of the Application " + appGUID + ":" + version);
+        for (MicroServiceRuntimeHandle handle : microServiceHandleList.values()) {
             stopMicroService(handle.getServiceInstName());
         }
         microServiceHandleList = new ConcurrentHashMap<>();
-        logger.info("Stopped all micro services of the Application "+appGUID+":"+version);
+        logger.info("Stopped all micro services of the Application " + appGUID + ":" + version);
     }
 
     public void startMicroService(String microServiceName) throws FioranoException {
         ServiceInstance instance = application.getServiceInstance(microServiceName);
-        if(isMicroserviceRunning(microServiceName)){
-            logger.info("MicroService: "+ microServiceName + " of Application " + appGUID +":"+version+" is already running");
+        if (isMicroserviceRunning(microServiceName)) {
+            logger.info("MicroService: " + microServiceName + " of Application " + appGUID + ":" + version + " is already running");
             return;
         }
-        logger.info("Starting MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
+        logger.info("Starting MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
+        TransportConfig transportConfig = TransportConfig.getInstance();
         JavaLaunchConfiguration javaLaunchConfiguration = new JavaLaunchConfiguration(instance.isDebugMode(),
-                instance.getDebugPort(), TransportConfig.getInstance().getProviderURL(), MicroServiceRepoManager.getInstance().getRepositoryLocation(), ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME,
+                instance.getDebugPort(), transportConfig.getProviderURL(), MicroServiceRepoManager.getInstance().getRepositoryLocation(), ServerConfig.getConfig().getRepositoryPath() + File.separator + SchemaRepoConstants.SCHEMA_REPOSITORY_NAME,
                 ServerConfig.getConfig().getJettyUrl(), ServerConfig.getConfig().getJettySSLUrl(),
-                Boolean.valueOf(TransportConfig.getInstance().getValue("WatchForControlEvents")), TransportConfig.getInstance().getValue("MS_JAVA_HOME"),
-                TransportConfig.getInstance().getValue(LaunchConstants.USER_DEFINED_JAVA_HOME), TransportConfig.getInstance().getValue("java.naming.factory.initial"));
-        MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), "karaf", "karaf", instance, javaLaunchConfiguration);
+                Boolean.valueOf(transportConfig.getValue("WatchForControlEvents")), transportConfig.getValue("MS_JAVA_HOME"),
+                transportConfig.getValue(LaunchConstants.USER_DEFINED_JAVA_HOME), transportConfig.getValue("java.naming.factory.initial"));
+        MicroServiceLaunchConfiguration mslc = new MicroServiceLaunchConfiguration(application.getGUID(), String.valueOf(application.getVersion()), transportConfig.getUserName(), transportConfig.getPassword(), instance, javaLaunchConfiguration);
         try {
             microServiceHandleList.put(microServiceName, service.launch(mslc, instance.getConfiguration()));
         } catch (Throwable e) {
-            logger.error("Error occurred while starting the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
+            logger.error("Error occurred while starting the Service: " + microServiceName + " of Application: " + appGUID + ":" + version, e);
         }
-        logger.info("Started MicroService: "+ microServiceName + " of Application " + appGUID +":"+version);
+        logger.info("Started MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
     }
 
-    public void stopMicroService(String microServiceName){
-        if(!isMicroserviceRunning(microServiceName)){
-            logger.warn("Microservice: "+ microServiceName + " of Application " + appGUID +":"+version+" is not running");
+    public void stopMicroService(String microServiceName) {
+        if (!isMicroserviceRunning(microServiceName)) {
+            logger.warn("Microservice: " + microServiceName + " of Application " + appGUID + ":" + version + " is not running");
             return;
         }
         try {
             logger.info("Stoping MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
             microServiceHandleList.get(microServiceName).stop();
-            if(application.getServiceInstance(microServiceName).getLaunchType()<3){
+            if (application.getServiceInstance(microServiceName).getLaunchType() < 3) {
                 microServiceHandleList.remove(microServiceName);
             }
             logger.info("Stopped MicroService: " + microServiceName + " of Application " + appGUID + ":" + version);
         } catch (Throwable e) {
-            logger.error("Error occured while stopping the Service: " + microServiceName+" of Application: " +appGUID +":"+version, e);
+            logger.error("Error occured while stopping the Service: " + microServiceName + " of Application: " + appGUID + ":" + version, e);
         }
     }
 
     public boolean isMicroserviceRunning(String microServiceName) {
         MicroServiceRuntimeHandle handle = microServiceHandleList.get(microServiceName);
-        if(handle==null){
-            return false;
-        }
-        return handle.isRunning();
+        return handle != null && handle.isRunning();
     }
 
     public MemoryUsage getMemoryUsage(String microServiceName) {
         MicroServiceRuntimeHandle handle = microServiceHandleList.get(microServiceName);
-        if(handle == null){
+        if (handle == null) {
             return null;
         }
-        if(handle instanceof SeparateProcessRuntimeHandle) {
-           return  ((SeparateProcessRuntimeHandle)handle).getMemoryUsage();
-        } else{
+        if (handle instanceof SeparateProcessRuntimeHandle) {
+            return ((SeparateProcessRuntimeHandle) handle).getMemoryUsage();
+        } else {
             return null;
         }
     }
@@ -711,35 +716,35 @@ public class ApplicationHandle {
     public ApplicationStateDetails getApplicationDetails() throws FioranoException {
 
 
-       // logger.debug(Bundle.class, Bundle.EXECUTING_CALL, "getApplicationDetails()");
+        // logger.debug(Bundle.class, Bundle.EXECUTING_CALL, "getApplicationDetails()");
 
         ApplicationStateDetails appDetails = new ApplicationStateDetails();
 
         appDetails.setAppGUID(appGUID);
         appDetails.setAppVersion(String.valueOf(application.getVersion()));
-        appDetails.setKillTime(killTime);
+        appDetails.setKillTime(-1);
         appDetails.setLaunchTime(launchTime);
         appDetails.setApplicationLabel(environmentLabel);
 
         List<ServiceInstance> serviceInstances = application.getServiceInstances();
-            for (ServiceInstance serviceInstance: serviceInstances) {
-                String serviceName = serviceInstance.getName();
-                ServiceInstanceStateDetails stateDetails;
-                MicroServiceRuntimeHandle serviceHandle = microServiceHandleList.get(serviceName);
-                if (serviceHandle == null){
-                    stateDetails = new ServiceInstanceStateDetails();
-                    stateDetails.setServiceGUID(serviceInstance.getGUID());
-                    stateDetails.setServiceInstanceName(serviceName);
-                    stateDetails.setRunningVersion(String.valueOf(serviceInstance.getVersion()));
-                    stateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
-                }else{
-                    stateDetails = serviceHandle.getServiceStateDetails();
-                    String exceptionTrace = serviceHandle.getExceptionTrace();
-                    if (exceptionTrace != null)
-                        appDetails.addServiceExceptionTrace(serviceName, exceptionTrace);
-                }
-                appDetails.addServiceStatus(serviceName, stateDetails);
+        for (ServiceInstance serviceInstance : serviceInstances) {
+            String serviceName = serviceInstance.getName();
+            ServiceInstanceStateDetails stateDetails;
+            MicroServiceRuntimeHandle serviceHandle = microServiceHandleList.get(serviceName);
+            if (serviceHandle == null) {
+                stateDetails = new ServiceInstanceStateDetails();
+                stateDetails.setServiceGUID(serviceInstance.getGUID());
+                stateDetails.setServiceInstanceName(serviceName);
+                stateDetails.setRunningVersion(String.valueOf(serviceInstance.getVersion()));
+                stateDetails.setStatusString(EventStateConstants.SERVICE_HANDLE_UNBOUND);
+            } else {
+                stateDetails = serviceHandle.getServiceStateDetails();
+                String exceptionTrace = serviceHandle.getExceptionTrace();
+                if (exceptionTrace != null)
+                    appDetails.addServiceExceptionTrace(serviceName, exceptionTrace);
             }
+            appDetails.addServiceStatus(serviceName, stateDetails);
+        }
 
         //  Get the details of External Services too.
 
@@ -749,7 +754,7 @@ public class ApplicationHandle {
             ApplicationHandle extAppHandle = applicationController.getApplicationHandle(extAppGUID, extInstance.getApplicationVersion());
 
             if (extAppHandle == null) {
-               // logger.error(Bundle.class, Bundle.APPHANDLE_NOT_PRESENT, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(application.getVersion()));
+                // logger.error(Bundle.class, Bundle.APPHANDLE_NOT_PRESENT, appGUID+ITifosiConstants.APP_VERSION_DELIM+Float.toString(application.getVersion()));
                 continue;
             }
 
@@ -783,15 +788,15 @@ public class ApplicationHandle {
             }
         }
 
-        if (pendingBreakpointsForClouser != null && pendingBreakpointsForClouser.size() > 0) {
-            for (String pendingDebugRouteGUID : pendingBreakpointsForClouser.keySet()) {
+        if (pendingBreakpointsForClosure != null && pendingBreakpointsForClosure.size() > 0) {
+            for (String pendingDebugRouteGUID : pendingBreakpointsForClosure.keySet()) {
                 appDetails.addPendingDebugRoutesForClosure(pendingDebugRouteGUID);
             }
         }
         return appDetails;
     }
 
-    private MicroServiceRuntimeHandle getMicroServiceHandle(String serviceName){
+    private MicroServiceRuntimeHandle getMicroServiceHandle(String serviceName) {
         return microServiceHandleList.get(serviceName);
     }
 
@@ -844,7 +849,7 @@ public class ApplicationHandle {
     private void killExcludedServices(Application alp) throws FioranoException {
         // set this to all running components initially
         Set<String> toBeKilledComponents = new HashSet<>();
-        for (String serviecName:microServiceHandleList.keySet()) {
+        for (String serviecName : microServiceHandleList.keySet()) {
             toBeKilledComponents.add(serviecName);
         }
 
@@ -864,7 +869,7 @@ public class ApplicationHandle {
                 applicationController.getApplicationLogManager().clearServiceOutLogs(killcomp, appGUID, version);
                 applicationController.getApplicationLogManager().clearServiceErrLogs(killcomp, appGUID, version);
             } catch (Exception e) {
-                logger.error("error occured while stopping the component " + killcomp + "of Application " +appGUID +":"+version);
+                logger.error("error occured while stopping the component " + killcomp + "of Application " + appGUID + ":" + version);
             }
         }
     }
@@ -873,12 +878,12 @@ public class ApplicationHandle {
         try {
             transport.disablePort(portConfiguration);
         } catch (Exception e) {
-            logger.error("Error occurred while disabling the port: " + portConfiguration.getName()+" of Application: " +appGUID +":"+version, e);
+            logger.error("Error occurred while disabling the port: " + portConfiguration.getName() + " of Application: " + appGUID + ":" + version, e);
         }
     }
 
     public void synchronizeRoutes() throws Exception {
-        Collection<String> toDelete = new ArrayList();
+        Collection<String> toDelete = new ArrayList<>();
         for (String routeName : routeMap.keySet())
             if (!checkForRouteExistanceAndUpdateRoute(routeMap.get(routeName)))
                 toDelete.add(routeName);
@@ -896,21 +901,21 @@ public class ApplicationHandle {
 
         List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
         for (com.fiorano.openesb.application.application.Route route : routes) {
-            if(route.getName().equals(rInfo.getRouteName())){
+            if (route.getName().equals(rInfo.getRouteName())) {
                 found = true;
                 String sourcePortInstance = route.getSourcePortInstance();
                 String sourceServiceInstanceName = route.getSourceServiceInstance();
                 ServiceInstance sourceServiceInstance = application.getServiceInstance(sourceServiceInstanceName);
-                if(sourceServiceInstance==null){
+                if (sourceServiceInstance == null) {
                     RemoteServiceInstance remoteServiceInstance = application.getRemoteServiceInstance(sourceServiceInstanceName);
-                    if(remoteServiceInstance!=null){
+                    if (remoteServiceInstance != null) {
                         sourceServiceInstance = applicationController.getApplicationHandle(remoteServiceInstance.getApplicationGUID(), remoteServiceInstance.getApplicationVersion()).getApplication().getServiceInstance(remoteServiceInstance.getRemoteName());
                     }
                 }
-                OutputPortInstance sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
+                @SuppressWarnings("ConstantConditions") OutputPortInstance sourcePort = sourceServiceInstance.getOutputPortInstance(sourcePortInstance);
                 //check and update all route operation handlers
                 Transformation applicationContextTransformation = sourcePort.getApplicationContextTransformation();
-                if(applicationContextTransformation != null) {
+                if (applicationContextTransformation != null) {
                     TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
                     transformationConfiguration.setXsl(applicationContextTransformation.getScript());
                     transformationConfiguration.setTransformerType(applicationContextTransformation.getFactory());
@@ -919,7 +924,7 @@ public class ApplicationHandle {
                     rInfo.modifyHandler(transformationConfiguration);
                 }
 
-                if(route.getSenderSelector()!=null){
+                if (route.getSenderSelector() != null) {
                     SenderSelectorConfiguration senderSelectorConfiguration = new SenderSelectorConfiguration();
                     senderSelectorConfiguration.setSourceName(route.getSenderSelector());
                     senderSelectorConfiguration.setAppID(application.getGUID() + ":" + application.getVersion());
@@ -927,7 +932,7 @@ public class ApplicationHandle {
                     rInfo.modifyHandler(senderSelectorConfiguration);
                 }
 
-                if(route.getApplicationContextSelector() != null) {
+                if (route.getApplicationContextSelector() != null) {
                     XmlSelectorConfiguration appContextSelectorConfig = new XmlSelectorConfiguration("AppContext");
                     appContextSelectorConfig.setXpath(route.getApplicationContextSelector().getXPath());
                     appContextSelectorConfig.setNsPrefixMap(route.getApplicationContextSelector().getNamespaces());
@@ -935,7 +940,7 @@ public class ApplicationHandle {
                     rInfo.modifyHandler(appContextSelectorConfig);
                 }
 
-                if(route.getBodySelector() != null) {
+                if (route.getBodySelector() != null) {
                     XmlSelectorConfiguration bodySelectorConfig = new XmlSelectorConfiguration("Body");
                     bodySelectorConfig.setXpath(route.getBodySelector().getXPath());
                     bodySelectorConfig.setNsPrefixMap(route.getBodySelector().getNamespaces());
@@ -943,7 +948,7 @@ public class ApplicationHandle {
                     rInfo.modifyHandler(bodySelectorConfig);
                 }
 
-                if(route.getMessageTransformation()!=null) {
+                if (route.getMessageTransformation() != null) {
                     TransformationConfiguration transformationConfiguration = new TransformationConfiguration();
                     transformationConfiguration.setXsl(route.getMessageTransformation().getScript());
                     transformationConfiguration.setTransformerType(route.getMessageTransformation().getFactory());
@@ -967,33 +972,33 @@ public class ApplicationHandle {
 
     public void removeAllBreakpoints() throws Exception {
         Set<String> routesWithBreakPoint = breakpoints.keySet();
-        for(String routeName: routesWithBreakPoint){
+        for (String routeName : routesWithBreakPoint) {
             removeBreakPoint(routeName);
         }
     }
 
     public void changeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception {
         com.fiorano.openesb.route.Route route = routeMap.get(routeGUID);
-        if(route==null){
-            throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
+        if (route == null) {
+            throw new FioranoException("route: " + routeGUID + " does not exists in the Application " + appGUID + ":" + version);
         }
         route.modifyHandler(configuration);
 
         com.fiorano.openesb.route.Route bpRoute = breakPointRoutes.get(getBPSourceDestName(routeGUID));
-        if(bpRoute!=null){
+        if (bpRoute != null) {
             bpRoute.modifyHandler(configuration);
         }
     }
 
-    public void removeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception{
+    public void removeRouteOperationHandler(String routeGUID, RouteOperationConfiguration configuration) throws Exception {
         com.fiorano.openesb.route.Route route = routeMap.get(routeGUID);
-        if(route==null){
-            throw new FioranoException("route: "+routeGUID+" does not exists in the Application "+appGUID+":"+version);
+        if (route == null) {
+            throw new FioranoException("route: " + routeGUID + " does not exists in the Application " + appGUID + ":" + version);
         }
         route.removeHandler(configuration);
 
         com.fiorano.openesb.route.Route bpRoute = breakPointRoutes.get(getBPSourceDestName(routeGUID));
-        if(bpRoute!=null){
+        if (bpRoute != null) {
             bpRoute.removeHandler(configuration);
         }
     }
@@ -1008,9 +1013,9 @@ public class ApplicationHandle {
 
     public ComponentStats getComponentStats(String serviceName) throws FioranoException {
         MicroServiceRuntimeHandle serviceRuntimeHandle = microServiceHandleList.get(serviceName);
-        if(serviceRuntimeHandle!=null){
+        if (serviceRuntimeHandle != null) {
             return serviceRuntimeHandle.getComponentStats();
-        }else {
+        } else {
             return null;
         }
     }

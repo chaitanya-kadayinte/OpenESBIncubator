@@ -41,6 +41,7 @@ import com.fiorano.openesb.utils.*;
 import com.fiorano.openesb.utils.exception.FioranoException;
 import com.fiorano.openesb.security.SecurityManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,13 @@ public class ApplicationController {
     public ApplicationController(ApplicationRepository applicationRepository, BundleContext context) throws Exception {
         logger.info("Initializing Application Controller.");
         this.applicationRepository = applicationRepository;
-        routeService = context.getService(context.getServiceReference(RouteService.class));
+        ServiceReference<RouteService> serviceReference = context.getServiceReference(RouteService.class);
+        if(serviceReference == null) {
+            logger.error("Route service is not available for Applications module.");
+            System.out.println("Startup Failed. Route service is not available for Microservice.");
+            return;
+        }
+        routeService = context.getService(serviceReference);
         microServiceLauncher = context.getService(context.getServiceReference(MicroServiceLauncher.class));
         ccpEventManager = context.getService(context.getServiceReference(CCPEventManager.class));
         applicationLogManager = new ApplicationLogManager(this, ccpEventManager);

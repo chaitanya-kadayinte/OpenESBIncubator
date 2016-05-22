@@ -90,7 +90,7 @@
                             com.fiorano.openesb.route*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            *
+                            javax.jms;version="[1.0,2.0]";resolution:="optional",*
                         </Import-Package>
                     </instructions>
                 </configuration>

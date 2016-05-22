@@ -6,15 +6,11 @@
  */
 package com.fiorano.openesb.microservice.ccp.event.common.data;
 
-import com.fiorano.openesb.application.application.InputPortInstance;
-import com.fiorano.openesb.application.application.OutputPortInstance;
 import com.fiorano.openesb.application.application.PortInstance;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,13 +29,11 @@ public class PortConfiguration extends Data {
         byte[] bytes = new byte[bytesMessage.readInt()];
         bytesMessage.readBytes(bytes);
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        ObjectInputStream is = null;
+        ObjectInputStream is;
         try {
             is = new ObjectInputStream(in);
             portInstances = (Map<String, List<PortInstance>>) is.readObject();
-        } catch (IOException e) {
-            throw new JMSException(e.getMessage());
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new JMSException(e.getMessage());
         }
 

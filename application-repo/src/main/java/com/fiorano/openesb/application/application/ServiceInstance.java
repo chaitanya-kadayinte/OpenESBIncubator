@@ -814,10 +814,9 @@ ServiceInstance extends InflatableDMIObject implements NamedObject{
      * @return PortInstance - Object of PortInstance referring to the port
      */
     public PortInstance getPortInstance(String name, List portInstances){
-        Iterator iter = portInstances.iterator();
-        while(iter.hasNext()){
-            PortInstance port = (PortInstance)iter.next();
-            if(name.equals(port.getName()))
+        for (Object portInstance : portInstances) {
+            PortInstance port = (PortInstance) portInstance;
+            if (name.equals(port.getName()))
                 return port;
         }
         return null;

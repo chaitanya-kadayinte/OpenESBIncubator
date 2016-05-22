@@ -24,14 +24,17 @@
         <bundle dependency="true" start-level='85'>mvn:org.codehaus.woodstox/stax2-api/3.1.4</bundle>
         <bundle dependency="true" start-level='85'>wrap:mvn:mx4j/mx4j-tools/3.0.1$Bundle-SymbolicName=mx4j&amp;Bundle-Version=3.0.1</bundle>
         <bundle dependency="true" start-level="85">mvn:javax.transaction/javax.transaction-api/1.2</bundle>
+        <bundle dependency="true" start-level="85">mvn:com.fasterxml.jackson.core/jackson-core/2.7.0</bundle>
+        <bundle dependency="true" start-level="85">mvn:com.fasterxml.jackson.core/jackson-databind/2.7.0</bundle>
+        <bundle dependency="true" start-level="85">mvn:com.fasterxml.jackson.core/jackson-annotations/2.7.0</bundle>
+        <bundle dependency="true" start-level="85">wrap:mvn:wsdl4j/wsdl4j/1.6.2</bundle>
+        <bundle dependency="true" start-level="85">mvn:javax.jms/javax.jms-api/2.0</bundle>
 
         <bundle start-level='88'>mvn:com.fiorano.openesb/security/0.1.0</bundle>
         <bundle start-level='87'>mvn:com.fiorano.openesb/utils/0.1.0</bundle>
         <bundle start-level="89">mvn:com.fiorano.openesb/transport-api/0.1.0</bundle>
         <bundle start-level="89">mvn:com.fiorano.openesb/route-api/0.1.0</bundle>
-        <bundle start-level="90">mvn:com.fiorano.openesb/activemq-transport/0.1.0</bundle>
-        <!-- Enable below when you need to use Fiorano MQ -->
-        <!--<bundle start-level="90">mvn:com.fiorano.openesb/fmq-transport/0.1.0</bundle>-->
+        <bundle start-level="90">mvn:com.fiorano.openesb/fmq-transport/0.1.0</bundle>
         <bundle start-level="91">mvn:com.fiorano.openesb/jms-route/0.1.0</bundle>
         <bundle start-level="92">mvn:com.fiorano.openesb/microservice/0.1.0</bundle>
         <bundle start-level='93'>mvn:com.fiorano.openesb/application-repo/0.1.0</bundle>

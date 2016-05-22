@@ -27,7 +27,7 @@
         <module>applicationcontroller</module>
         <module>schema-repo</module>
         <module>rmi-connector</module>
-        <module>fiorano-feature</module>
+        <module>fiorano-openesb-amq-feature</module>
         <module>management</module>
         <module>tools</module>
         <!--<module>fmq-transport</module>-->

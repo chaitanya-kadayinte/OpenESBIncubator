@@ -26,7 +26,6 @@ public class Activator implements BundleActivator {
         ServiceReference<ApplicationRepository> applicationRepositoryRef = context.getServiceReference(ApplicationRepository.class);
         if (applicationRepositoryRef != null) {
             ApplicationRepository applicationRepository = context.getService(applicationRepositoryRef);
-
             applicationController = new ApplicationController(applicationRepository, context);
             context.registerService(ApplicationController.class.getName(), applicationController, null);
             context.registerService(ApplicationLogManager.class.getName(), applicationController.getApplicationLogManager(), null);

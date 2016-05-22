@@ -13,6 +13,7 @@ import com.fiorano.openesb.microservice.repository.MicroServiceRepoManager;
 import com.fiorano.openesb.transport.TransportService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,15 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         logger = LoggerFactory.getLogger(getClass());
         logger.trace("Starting Microservice bundle.");
-        TransportService service = context.getService(context.getServiceReference(TransportService.class));
+        ServiceReference<TransportService> serviceReference = context.getServiceReference(TransportService.class);
+        if(serviceReference == null) {
+            logger.error("Transport service is not available for Microservice. Exiting");
+            System.out.println("Startup Failed. Transport service is not available for Microservice. Please make sure " +
+                    "transport provider is started and restart the OpenESB server");
+            return;
+        }
+
+        TransportService service = context.getService(serviceReference);
         CCPEventManager ccpEventManager = new CCPEventManager(service);
         MicroServiceLauncher microServiceLauncher = new MicroServiceLauncher(ccpEventManager);
         MicroServiceRepoManager microServiceRepoManager = MicroServiceRepoManager.getInstance();

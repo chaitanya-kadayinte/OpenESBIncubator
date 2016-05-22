@@ -43,8 +43,8 @@ public abstract class AbstractJMSTransportService implements TransportService<JM
 
     private Connection getConnection(ConnectionFactory cf) throws JMSException {
         try {
-            TransportConfig JMSPRoviderConfig = TransportConfig.getInstance();
-            Connection connection = cf.createConnection(JMSPRoviderConfig.getValue("userName"), JMSPRoviderConfig.getValue("password"));
+            TransportConfig providerConfig = TransportConfig.getInstance();
+            Connection connection = cf.createConnection(providerConfig.getValue("userName"), providerConfig.getValue("password"));
             connection.start();
             return connection;
         } catch (JMSException e) {

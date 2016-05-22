@@ -79,10 +79,8 @@
                             com.fiorano.openesb.application*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            *;resolution:=optional
+                            javax.jms;version="[1.0,2.0]";resolution:="optional",*;resolution:=optional
                         </Import-Package>
-                        <!--<Embed-Dependency>*;scope=compile|runtime,!</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>-->
                     </instructions>
                 </configuration>
             </plugin>

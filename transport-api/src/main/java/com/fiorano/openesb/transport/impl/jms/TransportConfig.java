@@ -31,7 +31,7 @@ public class TransportConfig {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public void setuserName(String userName) {
         this.userName = userName;
     }
 

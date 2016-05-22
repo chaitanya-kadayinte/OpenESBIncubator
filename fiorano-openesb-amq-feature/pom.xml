@@ -12,12 +12,12 @@
     <groupId>com.fiorano.openesb</groupId>
     <version>0.1.0</version>
 
-    <artifactId>fiorano-open-esb</artifactId>
+    <artifactId>fiorano-openesb</artifactId>
     <packaging>feature</packaging>
 
-    <name>Fiorano Open ESB</name>
-    <description>Feature which encapsulates Fiorano Open ESB</description>
-    <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/fiorano-feature</url>
+    <name>Fiorano Open ESB AMQ</name>
+    <description>Feature which encapsulates Fiorano Open ESB with ActiveMQ</description>
+    <url>https://github.com/FioranoSoftware/Fiorano-Open-ESB-Platform/fiorano-openesb-amq-feature</url>
     <licenses>
         <license>
             <name>CPAL, Version 1.0</name>
