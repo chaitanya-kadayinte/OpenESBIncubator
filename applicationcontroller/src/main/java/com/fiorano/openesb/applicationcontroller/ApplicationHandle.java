@@ -139,9 +139,7 @@ public class ApplicationHandle {
 
     public void createRoutes() throws Exception {
         for(final com.fiorano.openesb.application.application.Route route: application.getRoutes()) {
-            if(routeMap.containsKey(route.getName())){
-                continue;
-            }
+
             String sourcePortInstance = route.getSourcePortInstance();
             JMSPortConfiguration sourceConfiguration = new JMSPortConfiguration();
             String sourceServiceInstanceName = route.getSourceServiceInstance();
@@ -212,6 +210,19 @@ public class ApplicationHandle {
             int inputPortInstanceDestinationType = targetPort.getDestinationType();
             destinationConfiguration.setPortType(inputPortInstanceDestinationType == PortInstance.DESTINATION_TYPE_QUEUE ?
                     JMSPortConfiguration.PortType.QUEUE : JMSPortConfiguration.PortType.TOPIC);
+
+            if(routeMap.containsKey(route.getName())){
+                // check if the source or destination component is renamed. if renamed, change the source port or target port name accordingly in the route configuration
+                Route routeInstance = routeMap.get(route.getName());
+                if(!routeInstance.getSourceDestinationName().equals(sourcePortName)){
+                    routeInstance.changeSourceDestination(sourceConfiguration);
+                }
+                if(!routeInstance.getTargetDestinationName().equals(targetPortName)){
+                    routeInstance.changeTargetDestination(destinationConfiguration);
+                }
+                continue;
+            }
+
             JMSRouteConfiguration routeConfiguration = new JMSRouteConfiguration(sourceConfiguration, destinationConfiguration, route.getJMSSelector());
 
             MessageCreationConfiguration messageCreationConfiguration = new MessageCreationConfiguration();
@@ -797,18 +808,20 @@ public class ApplicationHandle {
 
     public void synchronizeApplication(Application newApplication) throws FioranoException {
         Application oldApplication = this.application;
-
-        // kill service which no longer remain as part of the ep
-        killExcludedServices(newApplication);
-
-        //launch or modify the rest of the services
-        logger.debug("launching the applicaiton with new properties");
         this.application = newApplication;
+
+        //create any extra routes that are added
         try {
             createRoutes();
         } catch (Exception e) {
             throw new FioranoException(e);
         }
+
+        // kill service which no longer remain as part of the ep
+        killExcludedServices(newApplication, oldApplication);
+
+        //launch or modify the rest of the services
+        logger.debug("launching the applicaiton with new properties");
         startAllMicroServices();
 
         //  Update routes for all remaining services. This should remove extra routes and add new routes and UPDATE existing route configuration.
@@ -838,10 +851,10 @@ public class ApplicationHandle {
      * kill all the extra services that are running on this TPS but which are
      * not part of the new ApplicationLaunchPacket
      *
-     * @param alp new application launch packet
+     * @param newAlp new application launch packet
      * @throws FioranoException If an exception occurs
      */
-    private void killExcludedServices(Application alp) throws FioranoException {
+    private void killExcludedServices(Application newAlp, Application oldApp) throws FioranoException {
         // set this to all running components initially
         Set<String> toBeKilledComponents = new HashSet<>();
         for (String serviecName:microServiceHandleList.keySet()) {
@@ -849,7 +862,7 @@ public class ApplicationHandle {
         }
 
         Set<String> tobeRunningComponents = new HashSet<>();
-        for (ServiceInstance serv : alp.getServiceInstances()) {
+        for (ServiceInstance serv : newAlp.getServiceInstances()) {
             tobeRunningComponents.add(serv.getName());
         }
 
@@ -857,7 +870,7 @@ public class ApplicationHandle {
         for (String killcomp : toBeKilledComponents) {
             try {
                 stopMicroService(killcomp);
-                ServiceInstance serviceInstance = application.getServiceInstance(killcomp);
+                ServiceInstance serviceInstance = oldApp.getServiceInstance(killcomp);
                 //delete ports
                 disableServicePorts(serviceInstance);
                 //delete logs
@@ -894,7 +907,7 @@ public class ApplicationHandle {
         String srcPortName = rInfo.getSourceDestinationName();
         String tgtPortName = rInfo.getTargetDestinationName();
 
-        List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
+         List<com.fiorano.openesb.application.application.Route> routes = application.getRoutes();
         for (com.fiorano.openesb.application.application.Route route : routes) {
             if(route.getName().equals(rInfo.getRouteName())){
                 found = true;

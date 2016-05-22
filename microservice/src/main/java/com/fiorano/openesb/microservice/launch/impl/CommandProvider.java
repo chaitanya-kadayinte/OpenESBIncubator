@@ -72,6 +72,7 @@ public abstract class CommandProvider<J extends AdditionalConfiguration> {
             sb.append(",");
         }
         commandLineArgs.put(LaunchConstants.LOG_MANAGER, sb.toString());
+        commandLineArgs.put("java.util.logging.FileHandler.dir", "log");
         commandLineArgs.put(LaunchConstants.PRODUCT_NAME, "openESB");
 
         RuntimeArgument arg = (RuntimeArgument) DmiObject.findNamedObject(launchConfiguration.getRuntimeArgs(), LaunchConstants.JCA_INTERACTION_SPEC);

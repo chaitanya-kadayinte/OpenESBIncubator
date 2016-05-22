@@ -21,4 +21,12 @@ public interface RouteConfiguration {
 
     List<RouteOperationConfiguration> getRouteOperationConfigurations();
 
+    void setSourceConfiguration(PortConfiguration sourceConfiguration);
+
+    void setDestinationConfiguration(PortConfiguration destinationConfiguration);
+
+    String getJmsSelector();
+
+    void setJmsSelector(String jmsSelector);
+
 }
