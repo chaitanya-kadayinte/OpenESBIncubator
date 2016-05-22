@@ -9,6 +9,7 @@ package com.fiorano.openesb.jmsroute.impl;
 import com.fiorano.openesb.application.application.Application;
 import com.fiorano.openesb.route.RouteConfiguration;
 import com.fiorano.openesb.route.impl.AbstractRouteConfiguration;
+import com.fiorano.openesb.transport.PortConfiguration;
 import com.fiorano.openesb.transport.impl.jms.JMSConsumerConfiguration;
 import com.fiorano.openesb.transport.impl.jms.JMSPortConfiguration;
 
@@ -38,4 +39,19 @@ public class JMSRouteConfiguration extends AbstractRouteConfiguration implements
         return new JMSConsumerConfiguration(jmsSelector);
     }
 
+    public void setSourceConfiguration(PortConfiguration sourceConfiguration) {
+        this.sourceConfiguration = (JMSPortConfiguration) sourceConfiguration;
+    }
+
+    public void setDestinationConfiguration(PortConfiguration destinationConfiguration) {
+        this.destinationConfiguration = (JMSPortConfiguration) destinationConfiguration;
+    }
+
+    public String getJmsSelector() {
+        return jmsSelector;
+    }
+
+    public void setJmsSelector(String jmsSelector) {
+        this.jmsSelector = jmsSelector;
+    }
 }
