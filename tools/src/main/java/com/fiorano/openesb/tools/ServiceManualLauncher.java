@@ -75,6 +75,7 @@ public class ServiceManualLauncher extends FioranoTask {
     public void setFioranoHome(String fioranoHome) {
         FIORANO_HOME = fixPath(fioranoHome);
         System.setProperty("FIORANO_HOME", FIORANO_HOME);
+        System.setProperty("user.dir", FIORANO_HOME);
     }
 
     /**
